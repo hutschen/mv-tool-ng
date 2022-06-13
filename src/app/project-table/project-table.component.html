@@ -11,7 +11,7 @@
       <tr *ngFor="let project of projects">
         <th scope="row">{{project.id}}</th>
         <td>{{project.name}}</td>
-        <td>{{project.description}}</td>
+        <td>{{project.description | truncate}}</td>
         <td>{{project.jira_project_id}}</td>
       </tr>
     </tbody>
