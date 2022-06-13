@@ -39,6 +39,15 @@ export class ProjectTableComponent implements OnInit {
       "name": "A test project"
     }
   ];
+  private _listFilter: string = '';
+
+  get listFilter(): string {
+    return this._listFilter
+  }
+
+  set listFilter(value: string) {
+    this._listFilter = value
+  }
 
   constructor() { }
 
