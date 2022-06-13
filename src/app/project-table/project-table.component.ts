@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { IProject } from '../interfaces';
 
 @Component({
   selector: 'mvtool-project-table',
@@ -6,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./project-table.component.css']
 })
 export class ProjectTableComponent implements OnInit {
-  projects: any[] = [
+  projects: IProject[] = [
     {
       "description": "Some description of the test project.",
       "jira_project_id": null,
