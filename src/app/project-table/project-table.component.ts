@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { IProject } from '../interfaces';
+import { IProject } from '../shared/interfaces';
+import { ProjectService } from '../shared/services';
 
 @Component({
   selector: 'mvtool-project-table',
@@ -7,39 +8,10 @@ import { IProject } from '../interfaces';
   styleUrls: ['./project-table.component.css']
 })
 export class ProjectTableComponent implements OnInit {
-  projects: IProject[] = [
-    {
-      "description": "Some description of the test project.",
-      "jira_project_id": null,
-      "id": 1,
-      "name": "A test project"
-    },
-    {
-      "description": "Some description of the test project.",
-      "jira_project_id": null,
-      "id": 2,
-      "name": "A test project"
-    },
-    {
-      "description": "Some description of the test project.",
-      "jira_project_id": null,
-      "id": 3,
-      "name": "A test project"
-    },
-    {
-      "description": "Some description of the test project.",
-      "jira_project_id": null,
-      "id": 4,
-      "name": "A test project"
-    },
-    {
-      "description": "Some description of the test project.",
-      "jira_project_id": null,
-      "id": 5,
-      "name": "A test project"
-    }
-  ];
   private _listFilter: string = '';
+  public projects: IProject[] = [];
+
+  constructor(private _projectService: ProjectService) {}
 
   get listFilter(): string {
     return this._listFilter
@@ -49,9 +21,8 @@ export class ProjectTableComponent implements OnInit {
     this._listFilter = value
   }
 
-  constructor() { }
-
   ngOnInit(): void {
+    this.projects = this._projectService.getProjects();
   }
 
 }
