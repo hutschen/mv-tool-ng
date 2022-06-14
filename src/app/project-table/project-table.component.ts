@@ -21,8 +21,8 @@ export class ProjectTableComponent implements OnInit {
     this._listFilter = value
   }
 
-  ngOnInit(): void {
-    this.projects = this._projectService.getProjects();
+  async ngOnInit(): Promise<void> {
+    this.projects = await this._projectService.getProjects();
   }
 
 }

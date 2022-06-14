@@ -1,42 +1,39 @@
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
+import { firstValueFrom } from "rxjs";
 import { IProject } from "./interfaces";
 
 @Injectable({
     providedIn: "root"
 })
+export class AuthService {
+    private _username: string | null = null
+    private _password: string | null = null
+
+    public logIn(username: string, password: string) {
+        this._username = username
+        this._password = password
+    }
+
+    public logOut() {
+        this._username = null
+        this._password = null
+    }
+
+    public getHttpHeader(): void {
+        // raise Http403Error, if user is not logged in
+    }
+}
+
+@Injectable({
+    providedIn: "root"
+})
 export class ProjectService {
-    getProjects(): IProject[] {
-        return [
-            {
-                "description": "Some description of the test project.",
-                "jira_project_id": null,
-                "id": 1,
-                "name": "A test project"
-            },
-            {
-                "description": "Some description of the test project.",
-                "jira_project_id": null,
-                "id": 2,
-                "name": "A test project"
-            },
-            {
-                "description": "Some description of the test project.",
-                "jira_project_id": null,
-                "id": 3,
-                "name": "A test project"
-            },
-            {
-                "description": "Some description of the test project.",
-                "jira_project_id": null,
-                "id": 4,
-                "name": "A test project"
-            },
-            {
-                "description": "Some description of the test project.",
-                "jira_project_id": null,
-                "id": 5,
-                "name": "A test project"
-            }
-        ]
+    private _projectsUrl = "http://localhost:8000/api/projects"
+    constructor(private _httpClient: HttpClient) {}
+
+    async getProjects(): Promise<IProject[]> {
+        const projects$ = this._httpClient.get<IProject[]>(this._projectsUrl)
+        return await firstValueFrom(projects$)
     }
 }
