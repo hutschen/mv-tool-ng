@@ -6,12 +6,14 @@ import { AppComponent } from './app.component';
 import { ProjectTableComponent } from './project-table/project-table.component';
 import { TruncatePipe } from './shared/pipes';
 import { RouterModule } from '@angular/router';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ProjectTableComponent,
-    TruncatePipe
+    TruncatePipe,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
