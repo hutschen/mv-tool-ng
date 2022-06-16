@@ -29,11 +29,11 @@ export class AuthService {
     providedIn: "root"
 })
 export class ProjectService {
-    private _projectsUrl = "http://localhost:8000/api/projects"
+    private _projectsUrl = "assets/api/projects.json"
     constructor(private _httpClient: HttpClient) {}
 
     async getProjects(): Promise<IProject[]> {
         const projects$ = this._httpClient.get<IProject[]>(this._projectsUrl)
-        return await firstValueFrom(projects$)
+        return firstValueFrom(projects$)
     }
 }
