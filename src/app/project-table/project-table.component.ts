@@ -22,7 +22,7 @@ export class ProjectTableComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.projects = await this._projectService.getProjects();
+    this.projects = await this._projectService.listProjects();
   }
 
 }

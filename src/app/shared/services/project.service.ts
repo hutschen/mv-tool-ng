@@ -13,7 +13,7 @@ export class ProjectService {
 
   constructor(private _httpClient: HttpClient, private _auth: AuthService) {}
 
-  async getProjects(): Promise<IProject[]> {
+  async listProjects(): Promise<IProject[]> {
     let credentials = this._auth.credentials
     let credentials_str = `${credentials.username}:${credentials.password}`
     const httpOptions = {
