@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IProject } from '../shared/interfaces';
-import { ProjectService } from '../shared/services';
+import { ProjectService } from '../shared/services/project.service';
 
 @Component({
   selector: 'mvtool-project-table',

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
+import { UnauthorizedError } from '../errors';
 
 interface ICredentials {
   username: string
