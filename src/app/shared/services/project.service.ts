@@ -34,15 +34,15 @@ export class ProjectService {
   }
 
   async listProjects(): Promise<IProject[]> {
-    const projects$ = this._httpClient.get<IProject[]>(
+    const request$ = this._httpClient.get<IProject[]>(
       ProjectService.projectsUrl, this._httpOptions)
-    return firstValueFrom(projects$)
+    return firstValueFrom(request$)
   }
 
   async createProject(project: IProjectInput): Promise<IProject> {
-    const project$ = this._httpClient.post<IProject>(
+    const request$ = this._httpClient.post<IProject>(
       ProjectService.projectsUrl, project, this._httpOptions)
-    return firstValueFrom(project$)
+    return firstValueFrom(request$)
   }
 
   protected _getProjectUrl(projectId: number): string {
@@ -50,15 +50,21 @@ export class ProjectService {
   }
 
   async getProject(projectId: number) : Promise<IProject> {
-    const project$ = this._httpClient.get<IProject>(
+    const request$ = this._httpClient.get<IProject>(
       this._getProjectUrl(projectId), this._httpOptions)
-    return firstValueFrom(project$)
+    return firstValueFrom(request$)
   }
 
   async updateProject(
       projectId: number, project: IProjectInput) : Promise<IProject> {
-    const project$ = this._httpClient.put<IProject>(
+    const request$ = this._httpClient.put<IProject>(
       this._getProjectUrl(projectId), project, this._httpOptions)
-    return firstValueFrom(project$)
+    return firstValueFrom(request$)
+  }
+
+  async deleteProject(projectId: number) {
+    const request$ = this._httpClient.delete<null>(
+      this._getProjectUrl(projectId), this._httpOptions)
+    return firstValueFrom(request$)
   }
 }

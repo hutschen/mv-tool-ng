@@ -24,6 +24,7 @@ export class ProjectTableComponent implements OnInit {
     })
     this.projects = await this._projectService.listProjects();
     console.log(await this._projectService.getProject(createdProject.id))
+    await this._projectService.deleteProject(createdProject.id)
   }
 
 }
