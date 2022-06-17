@@ -1,0 +1,1 @@
+class UnauthorizedError extends Error {}
