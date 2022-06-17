@@ -18,11 +18,11 @@ export interface IProject extends IProjectInput {
   providedIn: 'root'
 })
 export class ProjectService {
-  static projectUrl = `${environment.baseUrl}/projects`
+  static projectsUrl = `${environment.baseUrl}/projects`
 
   constructor(private _httpClient: HttpClient, private _auth: AuthService) {}
 
-  private get _httpOptions(): object {
+  protected get _httpOptions(): object {
     const credentials = this._auth.credentials
     const credentials_str = `${credentials.username}:${credentials.password}`
     return {
@@ -35,13 +35,30 @@ export class ProjectService {
 
   async listProjects(): Promise<IProject[]> {
     const projects$ = this._httpClient.get<IProject[]>(
-      ProjectService.projectUrl, this._httpOptions)
+      ProjectService.projectsUrl, this._httpOptions)
     return firstValueFrom(projects$)
   }
 
-  async createProject(project: IProjectInput) {
+  async createProject(project: IProjectInput): Promise<IProject> {
     const project$ = this._httpClient.post<IProject>(
-      ProjectService.projectUrl, project, this._httpOptions)
+      ProjectService.projectsUrl, project, this._httpOptions)
+    return firstValueFrom(project$)
+  }
+
+  protected _getProjectUrl(projectId: number): string {
+    return `${ProjectService.projectsUrl}/${projectId}`
+  }
+
+  async getProject(projectId: number) : Promise<IProject> {
+    const project$ = this._httpClient.get<IProject>(
+      this._getProjectUrl(projectId), this._httpOptions)
+    return firstValueFrom(project$)
+  }
+
+  async updateProject(
+      projectId: number, project: IProjectInput) : Promise<IProject> {
+    const project$ = this._httpClient.put<IProject>(
+      this._getProjectUrl(projectId), project, this._httpOptions)
     return firstValueFrom(project$)
   }
 }
