@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { IProject } from '../shared/interfaces';
-import { ProjectService } from '../shared/services/project.service';
+import { IProject, ProjectService } from '../shared/services/project.service';
 
 @Component({
   selector: 'mvtool-project-table',
@@ -8,20 +7,16 @@ import { ProjectService } from '../shared/services/project.service';
   styleUrls: ['./project-table.component.css']
 })
 export class ProjectTableComponent implements OnInit {
-  private _listFilter: string = '';
   public projects: IProject[] = [];
 
   constructor(private _projectService: ProjectService) {}
 
-  get listFilter(): string {
-    return this._listFilter
-  }
-
-  set listFilter(value: string) {
-    this._listFilter = value
-  }
-
   async ngOnInit(): Promise<void> {
+    await this._projectService.createProject({
+      name: 'A new project',
+      description: 'A not so long description of the new project.',
+      jira_project_id: null
+    });
     this.projects = await this._projectService.listProjects();
   }
 
