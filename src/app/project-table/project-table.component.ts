@@ -7,7 +7,8 @@ import { IProject, ProjectService } from '../shared/services/project.service';
   styleUrls: ['./project-table.component.css']
 })
 export class ProjectTableComponent implements OnInit {
-  public projects: IProject[] = [];
+  displayedColumns: string[] = ['id', 'name', 'description', 'jira_project_id']
+  projects: IProject[] = []
 
   constructor(private _projectService: ProjectService) {}
 
