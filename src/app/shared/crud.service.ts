@@ -39,7 +39,7 @@ export abstract class CRUDService<InputType, OutputType> {
         return firstValueFrom(request$)
       }
   
-      async get(itemId: number) : Promise<OutputType> {
+      async read(itemId: number) : Promise<OutputType> {
         const request$ = this._httpClient.get<OutputType>(
           this._getItemUrl(itemId), this._httpOptions)
         return firstValueFrom(request$)

@@ -23,7 +23,7 @@ export class ProjectTableComponent implements OnInit {
       jira_project_id: null
     })
     this.projects = await this._projectService.list();
-    console.log(await this._projectService.get(createdProject.id))
+    console.log(await this._projectService.read(createdProject.id))
     await this._projectService.delete(createdProject.id)
   }
 
