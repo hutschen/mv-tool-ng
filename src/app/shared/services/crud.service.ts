@@ -4,17 +4,13 @@ import { environment } from "src/environments/environment";
 import { AuthService } from "./auth.service";
 
 export abstract class CRUDService<InputType, OutputType> {
-    protected _itemsUrl: string;
+    protected _baseUrl: string = environment.baseUrl
   
     constructor(
-          protected _httpClient: HttpClient, protected _auth: AuthService,
-          relativeBaseUrl: string) {
-        this._itemsUrl = `${environment.baseUrl}/${relativeBaseUrl}`
-      }
-  
-      protected _getItemUrl(itemId: number): string {
-        return `${this._itemsUrl}/${itemId}`
-      }
+          protected _httpClient: HttpClient, protected _auth: AuthService) {}
+
+      protected abstract _getItemsUrl(pathArgs: object): string
+      protected abstract _getItemUrl(pathArgs: object): string
   
       protected get _httpOptions(): object {
         const credentials = this._auth.credentials
@@ -27,34 +23,45 @@ export abstract class CRUDService<InputType, OutputType> {
         }
       }
   
-      async list(): Promise<OutputType[]> {
+      protected async _list(
+          pathArgs: object = {}, 
+          queryArgs: object = {}): Promise<OutputType[]> {
         const request$ = this._httpClient.get<OutputType[]>(
-          this._itemsUrl, this._httpOptions)
+          this._getItemsUrl(pathArgs), this._httpOptions)
         return firstValueFrom(request$)
       }
   
-      async create(item: InputType): Promise<OutputType> {
+      protected async _create(
+          item: InputType, 
+          pathArgs: object = {},
+          queryArgs: object = {}): Promise<OutputType> {
         const request$ = this._httpClient.post<OutputType>(
-          this._itemsUrl, item, this._httpOptions)
+          this._getItemsUrl(pathArgs), item, this._httpOptions)
         return firstValueFrom(request$)
       }
   
-      async read(itemId: number) : Promise<OutputType> {
+      protected async _read(
+          pathArgs: object = {},
+          queryArgs: object = {}) : Promise<OutputType> {
         const request$ = this._httpClient.get<OutputType>(
-          this._getItemUrl(itemId), this._httpOptions)
+          this._getItemUrl(pathArgs), this._httpOptions)
         return firstValueFrom(request$)
       }
   
-      async update(
-          itemIt: number, item: InputType) : Promise<OutputType> {
+      protected async _update(
+          item: InputType, 
+          pathArgs: object = {},
+          queryArgs: object = {}) : Promise<OutputType> {
         const request$ = this._httpClient.put<OutputType>(
-          this._getItemUrl(itemIt), item, this._httpOptions)
+          this._getItemUrl(pathArgs), item, this._httpOptions)
         return firstValueFrom(request$)
       }
   
-      async delete(itemId: number) {
+      protected async _delete(
+          pathArgs: object = {}, 
+          queryArgs: object = {}): Promise<null> {
         const request$ = this._httpClient.delete<null>(
-          this._getItemUrl(itemId), this._httpOptions)
+          this._getItemUrl(pathArgs), this._httpOptions)
         return firstValueFrom(request$)
       }
   }
