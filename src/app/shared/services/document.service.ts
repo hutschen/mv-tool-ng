@@ -1,8 +1,6 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AuthService } from './auth.service';
 import { CRUDService } from './crud.service';
-import { IProject } from './project.service';
+import { IProject, ProjectService } from './project.service';
 
 export interface IDocumentInput {
   reference: string | null
@@ -19,14 +17,17 @@ export interface IDocument {
 @Injectable({
   providedIn: 'root'
 })
-export class DocumentService extends CRUDService<IDocumentInput, IDocument> {
-  constructor(httpClient: HttpClient, auth: AuthService) {
-    super(httpClient, auth)
+export class DocumentService {
+  constructor(
+    protected _crud: CRUDService<IDocumentInput, IDocument>,
+    protected _projects: ProjectService) {}
+
+  getDocumentsUrl(projectId: number): string {
+    return `${this._projects.getProjectUrl(projectId)}/documents`
   }
-  protected _getItemsUrl(pathArgs: object): string {
-    throw new Error('Method not implemented.');
+
+  getDocumentUrl(documentId: number): string {
+    return `documents`
   }
-  protected _getItemUrl(pathArgs: object): string {
-    throw new Error('Method not implemented.');
-  }
+
 }
