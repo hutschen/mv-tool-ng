@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { firstValueFrom } from "rxjs";
 import { environment } from "src/environments/environment";
-import { AuthService } from "./services/auth.service";
+import { AuthService } from "./auth.service";
 
 export abstract class CRUDService<InputType, OutputType> {
     protected _itemsUrl: string;

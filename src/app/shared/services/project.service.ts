@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CRUDService } from '../crud.service';
+import { CRUDService } from './crud.service';
 import { AuthService } from './auth.service';
 
 export interface IProjectInput {
