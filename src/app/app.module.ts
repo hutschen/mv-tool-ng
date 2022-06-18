@@ -8,9 +8,8 @@ import { TruncatePipe } from './shared/pipes';
 import { RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
+import { MaterialModule } from './shared/material.module';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -24,9 +23,8 @@ import { MatTableModule } from '@angular/material/table';
     HttpClientModule,
     RouterModule.forRoot([]),
     BrowserAnimationsModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTableModule
+    FormsModule,
+    MaterialModule
   ],
   providers: [],
   bootstrap: [AppComponent]
