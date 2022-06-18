@@ -10,7 +10,6 @@ export interface IDocumentInput {
 
 export interface IDocument {
   id: number | null
-  project_id: number | null
   project: IProject
 }
 
@@ -30,4 +29,25 @@ export class DocumentService {
     return `documents`
   }
 
+  async listDocuments(projectId: number): Promise<IDocument[]> {
+    return this._crud.list(this.getDocumentsUrl(projectId))
+  }
+
+  async createDocument(
+    projectId: number, documentInput: IDocumentInput): Promise<IDocument> {
+    return this._crud.create(this.getDocumentsUrl(projectId), documentInput)
+  }
+
+  async getDocument(documentId: number): Promise<IDocument> {
+    return this._crud.read(this.getDocumentUrl(documentId))
+  }
+
+  async updateDocument(
+    documentId: number, documentInput: IDocumentInput): Promise<IDocument> {
+    return this._crud.update(this.getDocumentUrl(documentId), documentInput)
+  }
+
+  async deleteDocument(documentId: number): Promise<null> {
+    return this._crud.delete(this.getDocumentUrl(documentId))
+  }
 }
