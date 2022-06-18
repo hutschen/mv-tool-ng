@@ -1,7 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CRUDService } from './crud.service';
-import { AuthService } from './auth.service';
 
 export interface IProjectInput {
   name: string;
@@ -13,46 +11,37 @@ export interface IProject extends IProjectInput {
   id: number;
 }
 
-interface IProjectPathArgs {
-  projectId: number;
-}
-
 @Injectable({
   providedIn: 'root'
 })
-export class ProjectService extends CRUDService<IProjectInput, IProject> {
-  constructor(httpClient: HttpClient, auth: AuthService) {
-    super(httpClient, auth)
+export class ProjectService {
+  constructor(protected _crud: CRUDService<IProjectInput, IProject>) {}
+
+  getProjectsUrl(): string {
+    return 'projects'
   }
 
-  protected _getItemsUrl(pathArgs = {}): string {
-    return `${this._baseUrl}/projects`;
-  }
-
-  protected _getItemUrl(pathArgs: IProjectPathArgs): string {
-    return `${this._baseUrl}/projects/${pathArgs.projectId}`;
+  getProjectUrl(projectId: number): string {
+    return `${this.getProjectsUrl()}/${projectId}`
   }
 
   async list(): Promise<IProject[]> {
-    return this._list()
+    return this._crud.list(this.getProjectsUrl())
   }
 
-  async create(project: IProjectInput): Promise<IProject> {
-    return this._create(project)
+  async create(projectInput: IProjectInput): Promise<IProject> {
+    return this._crud.create(this.getProjectsUrl(), projectInput)
   }
 
   async read(projectId: number): Promise<IProject> {
-    let pathArgs: IProjectPathArgs = {projectId: projectId}
-    return this._read(pathArgs)
+    return this._crud.read(this.getProjectUrl(projectId))
   }
 
-  async update(projectId: number, project: IProjectInput): Promise<IProject> {
-    let pathArgs: IProjectPathArgs = {projectId: projectId}
-    return this._update(project, pathArgs)
+  async update(projectId: number, projectInput: IProjectInput): Promise<IProject> {
+    return this._crud.update(this.getProjectUrl(projectId), projectInput)
   }
 
   async delete(projectId: number): Promise<null> {
-    let pathArgs: IProjectPathArgs = {projectId: projectId}
-    return this._delete(pathArgs)
+    return this._crud.delete(this.getProjectUrl(projectId))
   }
 }
