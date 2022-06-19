@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CRUDService } from './crud.service';
+import { IJiraProject } from './jira-project.service';
 
 export interface IProjectInput {
   name: string;
@@ -9,6 +10,7 @@ export interface IProjectInput {
 
 export interface IProject extends IProjectInput {
   id: number;
+  jira_project: IJiraProject | null
 }
 
 @Injectable({
