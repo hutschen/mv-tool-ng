@@ -3,13 +3,13 @@ import { CRUDService } from './crud.service';
 import { IProject, ProjectService } from './project.service';
 
 export interface IDocumentInput {
-  reference: string | null
+  reference?: string | null
   title: string
-  description: string | null
+  description?: string | null
 }
 
-export interface IDocument {
-  id: number | null
+export interface IDocument extends IDocumentInput {
+  id: number
   project: IProject
 }
 
@@ -26,7 +26,7 @@ export class DocumentService {
   }
 
   getDocumentUrl(documentId: number): string {
-    return `documents`
+    return `documents/${documentId}`
   }
 
   async listDocuments(projectId: number): Promise<IDocument[]> {

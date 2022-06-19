@@ -10,7 +10,7 @@ export interface IProjectInput {
 
 export interface IProject extends IProjectInput {
   id: number;
-  jira_project: IJiraProject | null
+  jira_project?: IJiraProject | null
 }
 
 @Injectable({
