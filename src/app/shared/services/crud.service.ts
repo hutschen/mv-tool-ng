@@ -11,7 +11,7 @@ export class CRUDService<InputType, OutputType> {
   constructor(
         protected _httpClient: HttpClient, protected _auth: AuthService) {}
 
-  protected _toAbsoluteUrl(relativeUrl: string): string {
+  toAbsoluteUrl(relativeUrl: string): string {
     return `${environment.baseUrl}/${relativeUrl}`
   }
 
@@ -28,31 +28,31 @@ export class CRUDService<InputType, OutputType> {
   
   async list(relativeUrl: string): Promise<OutputType[]> {
     const request$ = this._httpClient.get<OutputType[]>(
-      this._toAbsoluteUrl(relativeUrl), this._httpOptions)
+      this.toAbsoluteUrl(relativeUrl), this._httpOptions)
     return firstValueFrom(request$)
   }
   
   async create(relativeUrl: string, itemInput: InputType): Promise<OutputType> {
     const request$ = this._httpClient.post<OutputType>(
-      this._toAbsoluteUrl(relativeUrl), itemInput, this._httpOptions)
+      this.toAbsoluteUrl(relativeUrl), itemInput, this._httpOptions)
     return firstValueFrom(request$)
   }
   
   async read(relativeUrl: string) : Promise<OutputType> {
     const request$ = this._httpClient.get<OutputType>(
-      this._toAbsoluteUrl(relativeUrl), this._httpOptions)
+      this.toAbsoluteUrl(relativeUrl), this._httpOptions)
     return firstValueFrom(request$)
   }
   
   async update(relativeUrl: string, itemInput: InputType) : Promise<OutputType> {
     const request$ = this._httpClient.put<OutputType>(
-      this._toAbsoluteUrl(relativeUrl), itemInput, this._httpOptions)
+      this.toAbsoluteUrl(relativeUrl), itemInput, this._httpOptions)
     return firstValueFrom(request$)
   }
   
   async delete(relativeUrl: string): Promise<null> {
     const request$ = this._httpClient.delete<null>(
-      this._toAbsoluteUrl(relativeUrl), this._httpOptions)
+      this.toAbsoluteUrl(relativeUrl), this._httpOptions)
     return firstValueFrom(request$)
   }
 }

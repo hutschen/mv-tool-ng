@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-
+import { 
+  HttpClientTestingModule, 
+  HttpTestingController} from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
 import { environment } from 'src/environments/environment';
-import { __values } from 'tslib';
 
 interface IItemInput {
     name: string
@@ -17,8 +17,8 @@ describe('CRUDService', () => {
   let sut: CRUDService<IItemInput, IItemOutput>;
   let httpMock: HttpTestingController;
   let baseUrl: string
-  let mockInput: IItemInput
-  let mockOutput: IItemOutput
+  let inputMock: IItemInput
+  let outputMock: IItemOutput
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -27,12 +27,12 @@ describe('CRUDService', () => {
     sut = TestBed.inject(CRUDService<IItemInput, IItemOutput>);
     httpMock = TestBed.inject(HttpTestingController);
     baseUrl = environment.baseUrl
-    mockInput = {
+    inputMock = {
         name: 'A test item'
     }
-    mockOutput = {
+    outputMock = {
         id: 1,
-        name: mockInput.name
+        name: inputMock.name
     }
   });
 
@@ -44,53 +44,58 @@ describe('CRUDService', () => {
     expect(sut).toBeTruthy();
   });
 
+  it('should convert a relative to a absolute url', () => {
+    const relativeUrl = 'this/is/a/test'
+    expect(sut.toAbsoluteUrl(relativeUrl)).toEqual(`${baseUrl}/${relativeUrl}`)
+  })
+
   it('should list items', (done: DoneFn) => {
     sut.list('items').then((value) => {
         expect(value.length).toEqual(1)
-        expect(value[0]).toEqual(mockOutput)
+        expect(value[0]).toEqual(outputMock)
         done()
     })
     const mockResponse = httpMock.expectOne({
         method: 'get', 
         url: baseUrl + '/items'
     })
-    mockResponse.flush([mockOutput])
+    mockResponse.flush([outputMock])
   });
 
   it('should create an item', (done: DoneFn) => {
-    sut.create('items', mockInput).then((value) => {
-        expect(value).toEqual(mockOutput)
+    sut.create('items', inputMock).then((value) => {
+        expect(value).toEqual(outputMock)
         done()
     })
     const mockResponse = httpMock.expectOne({
         method: 'post',
         url: baseUrl + '/items'
     })
-    mockResponse.flush(mockOutput)
+    mockResponse.flush(outputMock)
   })
 
   it('should read an item', (done: DoneFn) => {
     sut.read('items/1').then((value) => {
-        expect(value).toEqual(mockOutput)
+        expect(value).toEqual(outputMock)
         done()
     })
     const mockResponse = httpMock.expectOne({
         method: 'get',
         url: baseUrl + '/items/1'
     })
-    mockResponse.flush(mockOutput)
+    mockResponse.flush(outputMock)
   })
 
   it('should update an item', (done: DoneFn) => {
-    sut.update('items/1', mockInput).then((value) => {
-        expect(value).toEqual(mockOutput)
+    sut.update('items/1', inputMock).then((value) => {
+        expect(value).toEqual(outputMock)
         done()
     })
     const mockResponse = httpMock.expectOne({
         method: 'put',
         url: baseUrl + '/items/1'
     })
-    mockResponse.flush(mockOutput)
+    mockResponse.flush(outputMock)
   })
 
   it('should delete an item', (done: DoneFn) => {
