@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { UnauthorizedError } from '../errors';
 
-interface ICredentials {
+export interface ICredentials {
   username: string
   password: string
 }
@@ -11,24 +11,20 @@ interface ICredentials {
   providedIn: 'root'
 })
 export class AuthService {
-  static STORAGE_KEY = 'mvtool_credentials'
+  static STORAGE_KEY = 'credentials'
 
   constructor() { 
     if (!environment.production) {
-      this.logIn(environment.username, environment.password)
+      this.logIn(environment.credentials)
     }
   }
 
-  public logIn(username: string, password: string, keepLoggedIn=false) {
-    let credentials: ICredentials = {
-      username: username,
-      password: password
-    }
+  logIn(credentials: ICredentials, keepLoggedIn=false) {
     let storage: Storage = keepLoggedIn? localStorage : sessionStorage
     storage.setItem(AuthService.STORAGE_KEY, JSON.stringify(credentials))
   }
 
-  private get _storage(): Storage {
+  protected get _storage(): Storage {
     if(localStorage.getItem(AuthService.STORAGE_KEY)) {
       return localStorage
     } else {
@@ -36,7 +32,11 @@ export class AuthService {
     }
   }
 
-  public logOut(username: string, password: string) {
+  get isLoggedIn(): boolean {
+    return Boolean(this._storage.getItem(AuthService.STORAGE_KEY))
+  }
+
+  logOut() {
     if (this._storage.getItem(AuthService.STORAGE_KEY)) {
       this._storage.removeItem(AuthService.STORAGE_KEY)
     }
