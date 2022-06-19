@@ -2,8 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { 
   HttpClientTestingModule, 
   HttpTestingController } from '@angular/common/http/testing';
-import { ProjectService, IProjectInput, IProject } from './project.service';
 import { CRUDService } from './crud.service';
+import { ProjectService, IProjectInput, IProject } from './project.service';
 
 describe('ProjectService', () => {
   let sut: ProjectService;
@@ -17,7 +17,7 @@ describe('ProjectService', () => {
       imports: [HttpClientTestingModule]
     });
     sut = TestBed.inject(ProjectService);
-    crudMock = TestBed.inject(CRUDService<IProjectInput, IProject>)
+    crudMock = TestBed.inject(CRUDService)
     httpMock = TestBed.inject(HttpTestingController)
     inputMock = {
       name: 'A test project',
@@ -41,8 +41,8 @@ describe('ProjectService', () => {
   })
 
   it('should return project url', () => {
-    const projectId = 1
-    expect(sut.getProjectUrl(projectId)).toEqual(`projects/${projectId}`)
+    expect(sut.getProjectUrl(outputMock.id)
+      ).toEqual(`projects/${outputMock.id}`)
   })
 
   it('should list projects', (done: DoneFn) => {

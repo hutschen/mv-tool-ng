@@ -24,7 +24,7 @@ describe('CRUDService', () => {
     TestBed.configureTestingModule({
         imports: [HttpClientTestingModule]
     });
-    sut = TestBed.inject(CRUDService<IItemInput, IItemOutput>);
+    sut = TestBed.inject(CRUDService);
     httpMock = TestBed.inject(HttpTestingController);
     baseUrl = environment.baseUrl
     inputMock = {
