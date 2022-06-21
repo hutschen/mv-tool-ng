@@ -10,6 +10,7 @@ export interface IRequirementInput {
   compliance_status?: string | null
   compliance_comment?: string | null
 }
+
 export interface IRequirement extends IRequirementInput {
   id: number
   project: IProject
