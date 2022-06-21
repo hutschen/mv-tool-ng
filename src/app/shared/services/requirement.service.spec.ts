@@ -1,23 +1,26 @@
-import { CRUDService } from './crud.service';
-import { ProjectService } from './project.service';
+import { TestBed } from '@angular/core/testing';
 import { 
-  IRequirementInput, IRequirement, 
-  RequirementService } from './requirement.service';
+  HttpClientTestingModule, 
+  HttpTestingController } from '@angular/common/http/testing';
+import { CRUDService } from './crud.service';
+import { 
+  RequirementService, 
+  IRequirementInput, IRequirement } from './requirement.service';
 
 describe('RequirementService', () => {
   let sut: RequirementService;
-  let crudMock: jasmine.SpyObj<CRUDService<any, any>>
-  let projectsMock: jasmine.SpyObj<ProjectService>
+  let crud: CRUDService<IRequirementInput, IRequirement>
+  let httpMock: HttpTestingController
   let inputMock: IRequirementInput
   let outputMock: IRequirement
 
-
   beforeEach(() => {
-    crudMock = jasmine.createSpyObj([
-      'toAbsoluteUrl', 'list', 'create', 'read', 'update', 'delete'])
-    projectsMock = jasmine.createSpyObj([
-      'getProjectsUrl', 'getProjectUrl', 'listProjects', 'createProject', 
-      'getProject', 'updateProject', 'deleteProject'])
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule]
+    })
+    sut = TestBed.inject(RequirementService)
+    crud = TestBed.inject(CRUDService)
+    httpMock = TestBed.inject(HttpTestingController)
     inputMock = {
       summary: 'A test requirement'
     }
@@ -29,8 +32,11 @@ describe('RequirementService', () => {
         name: 'A test project'
       }
     }
-    sut = new RequirementService(crudMock, projectsMock)
   });
+
+  afterEach(() => {
+    httpMock.verify()
+  })
 
   it('should be created', () => {
     expect(sut).toBeTruthy();
@@ -38,7 +44,6 @@ describe('RequirementService', () => {
 
   it('should return requirements url', () => {
     const projectId = outputMock.project.id
-    projectsMock.getProjectUrl.and.returnValue(`projects/${projectId}`)
     expect(sut.getRequirementsUrl(projectId)
       ).toEqual(`projects/${projectId}/requirements`)
   })
@@ -52,14 +57,65 @@ describe('RequirementService', () => {
   it('should list requirements', (done: DoneFn) => {
     const projectId = outputMock.project.id
     const requirementsList = [outputMock]
-    crudMock.list.and.returnValue(Promise.resolve(requirementsList))
-    projectsMock.getProjectUrl.and.returnValue(`projects/${projectId}`)
-    
+
     sut.listRequirements(projectId).then((value) => {
       expect(value).toEqual(requirementsList)
-      expect(projectsMock.getProjectUrl).toHaveBeenCalledWith(projectId)
-      expect(crudMock.list).toHaveBeenCalledWith(sut.getRequirementsUrl(projectId))
       done()
     })
+    const mockResponse = httpMock.expectOne({
+      method: 'get',
+      url: crud.toAbsoluteUrl(sut.getRequirementsUrl(projectId))
+    })
+    mockResponse.flush([outputMock])
+  })
+
+  it('should create requirement', (done: DoneFn) => {
+    const projectId = outputMock.project.id
+    
+    sut.createRequirement(projectId, inputMock).then((value) => {
+      expect(value).toEqual(outputMock)
+      done()
+    })
+    const mockResponse = httpMock.expectOne({
+      method: 'post',
+      url: crud.toAbsoluteUrl(sut.getRequirementsUrl(projectId))
+    })
+    mockResponse.flush(outputMock)
+  })
+
+  it('should get a requirement', (done: DoneFn) => {
+    sut.getRequirement(outputMock.id).then((value) => {
+      expect(value).toEqual(outputMock)
+      done()
+    })
+    const mockResponse = httpMock.expectOne({
+      method: 'get',
+      url: crud.toAbsoluteUrl(sut.getRequirementUrl(outputMock.id))
+    })
+    mockResponse.flush(outputMock)
+  })
+
+  it('should update a requirement', (done: DoneFn) => {
+    sut.updateRequirement(outputMock.id, inputMock).then((value) => {
+      expect(value).toEqual(outputMock)
+      done()
+    })
+    const mockResponse = httpMock.expectOne({
+      method: 'put',
+      url: crud.toAbsoluteUrl(sut.getRequirementUrl(outputMock.id))
+    })
+    mockResponse.flush(outputMock)
+  })
+
+  it('should delete a requirement', (done: DoneFn) => {
+    sut.deleteRequirement(outputMock.id).then((value) => {
+      expect(value).toBeNull()
+      done()
+    })
+    const mockResponse = httpMock.expectOne({
+      method: 'delete',
+      url: crud.toAbsoluteUrl(sut.getRequirementUrl(outputMock.id))
+    })
+    mockResponse.flush(null)
   })
 });
