@@ -7,7 +7,7 @@ import { ProjectService, IProjectInput, IProject } from './project.service';
 
 describe('ProjectService', () => {
   let sut: ProjectService;
-  let crudMock: CRUDService<IProjectInput, IProject>
+  let crud: CRUDService<IProjectInput, IProject>
   let httpMock: HttpTestingController;
   let inputMock: IProjectInput
   let outputMock: IProject
@@ -17,7 +17,7 @@ describe('ProjectService', () => {
       imports: [HttpClientTestingModule]
     });
     sut = TestBed.inject(ProjectService);
-    crudMock = TestBed.inject(CRUDService)
+    crud = TestBed.inject(CRUDService)
     httpMock = TestBed.inject(HttpTestingController)
     inputMock = {
       name: 'A test project',
@@ -54,7 +54,7 @@ describe('ProjectService', () => {
     })
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crudMock.toAbsoluteUrl(sut.getProjectsUrl())
+      url: crud.toAbsoluteUrl(sut.getProjectsUrl())
     })
     mockResponse.flush([outputMock])
   })
@@ -66,7 +66,7 @@ describe('ProjectService', () => {
     })
     const mockResponse = httpMock.expectOne({
       method: 'post',
-      url: crudMock.toAbsoluteUrl(sut.getProjectsUrl())
+      url: crud.toAbsoluteUrl(sut.getProjectsUrl())
     })
     mockResponse.flush(outputMock)
   })
@@ -78,7 +78,7 @@ describe('ProjectService', () => {
     })
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crudMock.toAbsoluteUrl(sut.getProjectUrl(outputMock.id))
+      url: crud.toAbsoluteUrl(sut.getProjectUrl(outputMock.id))
     })
     mockResponse.flush(outputMock)
   })
@@ -90,7 +90,7 @@ describe('ProjectService', () => {
     })
     const mockResponse = httpMock.expectOne({
       method: 'put',
-      url: crudMock.toAbsoluteUrl(sut.getProjectUrl(outputMock.id))
+      url: crud.toAbsoluteUrl(sut.getProjectUrl(outputMock.id))
     })
     mockResponse.flush(outputMock)
   })
@@ -102,7 +102,7 @@ describe('ProjectService', () => {
     })
     const mockResponse = httpMock.expectOne({
       method: 'delete',
-      url: crudMock.toAbsoluteUrl(sut.getProjectUrl(outputMock.id))
+      url: crud.toAbsoluteUrl(sut.getProjectUrl(outputMock.id))
     })
     mockResponse.flush(null)
   })

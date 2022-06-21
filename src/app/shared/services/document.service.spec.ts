@@ -8,8 +8,8 @@ import { DocumentService, IDocumentInput, IDocument } from './document.service';
 
 describe('DocumentService', () => {
   let sut: DocumentService;
-  let crudMock: CRUDService<IDocumentInput, IDocument>
-  let projectsMock: ProjectService 
+  let crud: CRUDService<IDocumentInput, IDocument>
+  let projects: ProjectService 
   let httpMock: HttpTestingController
   let inputMock: IDocumentInput
   let outputMock: IDocument
@@ -19,8 +19,8 @@ describe('DocumentService', () => {
       imports: [HttpClientTestingModule]
     });
     sut = TestBed.inject(DocumentService);
-    crudMock = TestBed.inject(CRUDService)
-    projectsMock = TestBed.inject(ProjectService)
+    crud = TestBed.inject(CRUDService)
+    projects = TestBed.inject(ProjectService)
     httpMock = TestBed.inject(HttpTestingController)
     inputMock = {
       title: 'A test document'
@@ -45,7 +45,7 @@ describe('DocumentService', () => {
 
   it('should return documents url', () => {
     expect(sut.getDocumentsUrl(outputMock.project.id)).toEqual(
-      `${projectsMock.getProjectUrl(outputMock.project.id)}/documents`)
+      `${projects.getProjectUrl(outputMock.project.id)}/documents`)
   })
 
   it('should return document url', () => {
@@ -61,7 +61,7 @@ describe('DocumentService', () => {
     })
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crudMock.toAbsoluteUrl(sut.getDocumentsUrl(outputMock.project.id))
+      url: crud.toAbsoluteUrl(sut.getDocumentsUrl(outputMock.project.id))
     })
     mockResponse.flush([outputMock])
   })
@@ -73,7 +73,7 @@ describe('DocumentService', () => {
     })
     const mockResponse = httpMock.expectOne({
       method: 'post',
-      url: crudMock.toAbsoluteUrl(sut.getDocumentsUrl(outputMock.project.id))
+      url: crud.toAbsoluteUrl(sut.getDocumentsUrl(outputMock.project.id))
     })
     mockResponse.flush(outputMock)
   })
@@ -85,7 +85,7 @@ describe('DocumentService', () => {
     })
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crudMock.toAbsoluteUrl(sut.getDocumentUrl(outputMock.id))
+      url: crud.toAbsoluteUrl(sut.getDocumentUrl(outputMock.id))
     })
     mockResponse.flush(outputMock)
   })
@@ -97,7 +97,7 @@ describe('DocumentService', () => {
     })
     const mockResponse = httpMock.expectOne({
       method: 'put',
-      url: crudMock.toAbsoluteUrl(sut.getDocumentUrl(outputMock.id))
+      url: crud.toAbsoluteUrl(sut.getDocumentUrl(outputMock.id))
     })
     mockResponse.flush(outputMock)
   })
@@ -109,7 +109,7 @@ describe('DocumentService', () => {
     })
     const mockResponse = httpMock.expectOne({
       method: 'delete',
-      url: crudMock.toAbsoluteUrl(sut.getDocumentUrl(outputMock.id))
+      url: crud.toAbsoluteUrl(sut.getDocumentUrl(outputMock.id))
     })
     mockResponse.flush(null)
   })

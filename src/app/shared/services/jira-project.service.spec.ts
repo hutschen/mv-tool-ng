@@ -7,7 +7,7 @@ import { JiraProjectService,  IJiraProject} from './jira-project.service';
 
 describe('JiraProjectService', () => {
   let sut: JiraProjectService;
-  let crudMock: CRUDService<IJiraProject, IJiraProject>
+  let crud: CRUDService<IJiraProject, IJiraProject>
   let httpMock: HttpTestingController
   let outputMock: IJiraProject
 
@@ -16,7 +16,7 @@ describe('JiraProjectService', () => {
       imports: [HttpClientTestingModule]
     });
     sut = TestBed.inject(JiraProjectService);
-    crudMock = TestBed.inject(CRUDService)
+    crud = TestBed.inject(CRUDService)
     httpMock = TestBed.inject(HttpTestingController)
     outputMock = {
       id: '10000',
@@ -50,7 +50,7 @@ describe('JiraProjectService', () => {
     })
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crudMock.toAbsoluteUrl(sut.getJiraProjectsUrl())
+      url: crud.toAbsoluteUrl(sut.getJiraProjectsUrl())
     })
     mockResponse.flush([outputMock])
   })
@@ -62,7 +62,7 @@ describe('JiraProjectService', () => {
     })
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crudMock.toAbsoluteUrl(sut.getJiraProjectUrl(outputMock.id))
+      url: crud.toAbsoluteUrl(sut.getJiraProjectUrl(outputMock.id))
     })
     mockResponse.flush(outputMock)
   })
