@@ -1,9 +1,19 @@
 import { Injectable } from '@angular/core';
 import { CRUDService } from './crud.service';
-import { MeasureService } from './measure.service';
+import { IDocument } from './document.service';
+import { IMeasure, MeasureService } from './measure.service';
 
-export interface ITaskInput {}
-export interface ITask extends ITaskInput {}
+export interface ITaskInput {
+  summary: string
+  description?: string | null
+  completed?: boolean
+}
+
+export interface ITask extends ITaskInput {
+  id: number
+  measure: IMeasure
+  document: IDocument | null 
+}
 
 @Injectable({
   providedIn: 'root'
