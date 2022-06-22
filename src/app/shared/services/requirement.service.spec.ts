@@ -66,7 +66,7 @@ describe('RequirementService', () => {
       method: 'get',
       url: crud.toAbsoluteUrl(sut.getRequirementsUrl(projectId))
     })
-    mockResponse.flush([outputMock])
+    mockResponse.flush(requirementsList)
   })
 
   it('should create requirement', (done: DoneFn) => {

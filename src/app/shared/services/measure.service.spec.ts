@@ -36,6 +36,10 @@ describe('MeasureService', () => {
     }
   });
 
+  afterEach(() => {
+    httpMock.verify()
+  })
+
   it('should be created', () => {
     expect(sut).toBeTruthy();
   });
@@ -51,9 +55,68 @@ describe('MeasureService', () => {
     expect(sut.getMeasureUrl(measureId)).toEqual(`measures/${measureId}`)
   })
 
-  xit('should list measures', () => {})
-  xit('should create measure', () => {})
-  xit('should get measure', () => {})
-  xit('should update measure', () => {})
-  xit('should delete measure', () => {})
+  it('should list measures', (done: DoneFn) => {
+    const requirementId = outputMock.requirement.id
+    const measuresList = [outputMock]
+
+    sut.listMeasures(requirementId).then((value) => {
+      expect(value).toEqual(measuresList)
+      done()
+    })
+    const mockResponse = httpMock.expectOne({
+      method: 'get',
+      url: crud.toAbsoluteUrl(sut.getMeasuresUrl(requirementId))
+    })
+    mockResponse.flush(measuresList)
+  })
+
+  it('should create measure', (done: DoneFn) => {
+    const requirementId = outputMock.requirement.id
+    
+    sut.createMeasure(requirementId, inputMock).then((value) => {
+      expect(value).toEqual(outputMock)
+      done()
+    })
+    const mockResponse = httpMock.expectOne({
+      method: 'post',
+      url: crud.toAbsoluteUrl(sut.getMeasuresUrl(requirementId))
+    })
+    mockResponse.flush(outputMock)
+  })
+
+  it('should get measure', (done: DoneFn) => {
+    sut.getMeasure(outputMock.id).then((value) => {
+      expect(value).toEqual(outputMock)
+      done()
+    })
+    const mockResponse = httpMock.expectOne({
+      method: 'get',
+      url: crud.toAbsoluteUrl(sut.getMeasureUrl(outputMock.id))
+    })
+    mockResponse.flush(outputMock)
+  })
+
+  it('should update measure', (done: DoneFn) => {
+    sut.updateMeasure(outputMock.id, inputMock).then((value) => {
+      expect(value).toEqual(outputMock)
+      done()
+    })
+    const mockResponse = httpMock.expectOne({
+      method: 'put',
+      url: crud.toAbsoluteUrl(sut.getMeasureUrl(outputMock.id))
+    })
+    mockResponse.flush(outputMock)
+  })
+
+  it('should delete measure', (done: DoneFn) => {
+    sut.deleteMeasure(outputMock.id).then((value) => {
+      expect(value).toBeNull()
+      done()
+    })
+    const mockResponse = httpMock.expectOne({
+      method: 'delete',
+      url: crud.toAbsoluteUrl(sut.getMeasureUrl(outputMock.id))
+    })
+    mockResponse.flush(null)
+  })
 });
