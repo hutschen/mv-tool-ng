@@ -12,6 +12,9 @@ export class ProjectTableComponent implements OnInit {
 
   constructor(private _projectService: ProjectService) {}
 
+  async uploadExcel(): Promise<void> {}
+  async downloadExcel(): Promise<void> {}
+
   async createProject(): Promise<void> {
     await this._projectService.createProject({
       name: 'A test project',

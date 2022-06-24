@@ -1,7 +1,25 @@
- <!-- button to create project -->
+<!-- button to create project -->
 <button mat-button (click)="createProject()">
-    <mat-icon>add</mat-icon>
-    Create Project
+  <mat-icon>add</mat-icon>
+  Create Project
+</button>
+
+<!-- button to upload Excel -->
+<button mat-button (click)="uploadExcel()">
+  <mat-icon>file_upload</mat-icon>
+  Upload Excel
+</button>
+
+<!-- button to download sample Excel -->
+<button *ngIf="!projects.length" mat-button>
+    <mat-icon>file_download</mat-icon>
+    Download Sample Excel
+</button>
+
+<!-- button to download Excel -->
+<button *ngIf="projects.length" mat-button (click)="downloadExcel()">
+  <mat-icon>file_download</mat-icon>
+  Download Excel
 </button>
 
 <table mat-table [dataSource]="projects" class="mat-elevation-z8">
