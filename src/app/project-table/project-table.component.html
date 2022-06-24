@@ -1,32 +1,46 @@
+ <!-- button to create project -->
+<button mat-button (click)="createProject()">
+    <mat-icon>add</mat-icon>
+    Create Project
+</button>
+
 <table mat-table [dataSource]="projects" class="mat-elevation-z8">
 
-  <!--- Note that these columns can be defined in any order.
-        The actual rendered columns are set as a property on the row definition" -->
-
-  <!-- Position Column -->
+  <!-- ID Column -->
   <ng-container matColumnDef="id">
     <th mat-header-cell *matHeaderCellDef> ID </th>
     <td mat-cell *matCellDef="let project"> {{project.id}} </td>
   </ng-container>
 
-  <!-- Name Column -->
+  <!-- Name column -->
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef> Name </th>
     <td mat-cell *matCellDef="let project"> {{project.name}} </td>
   </ng-container>
 
-  <!-- Weight Column -->
+  <!-- Description column -->
   <ng-container matColumnDef="description">
     <th mat-header-cell *matHeaderCellDef> Description </th>
     <td mat-cell *matCellDef="let project"> {{project.description | truncate}} </td>
   </ng-container>
 
-  <!-- Symbol Column -->
+  <!-- JIRA project column -->
   <ng-container matColumnDef="jira_project_id">
     <th mat-header-cell *matHeaderCellDef> JIRA Project </th>
     <td mat-cell *matCellDef="let project"> {{project.jira_project_id}} </td>
   </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <ng-container matColumnDef="options">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let project">
+      <button mat-icon-button (click)="editProject(project)">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button (click)="deleteProject(project)">
+        <mat-icon>delete</mat-icon>
+      </button>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
