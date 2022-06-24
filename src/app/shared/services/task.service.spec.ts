@@ -112,7 +112,7 @@ describe('TaskService', () => {
     mockResponse.flush(outputMock)
   })
 
-  xit('should delete task', (done: DoneFn) => {
+  it('should delete task', (done: DoneFn) => {
     sut.deleteTask(outputMock.id).then((value) => {
       expect(value).toBeNull()
       done()
