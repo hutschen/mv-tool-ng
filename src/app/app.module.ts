@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { ProjectModule } from './project/project.module';
 import { MaterialModule } from './material/material.module';
 import { UserModule } from './user/user.module';
+import { AppToolbarComponent } from './app-toolbar.component';
 
 const routes = [
   { 
@@ -19,6 +20,7 @@ const routes = [
 @NgModule({
   declarations: [
     AppComponent,
+    AppToolbarComponent,
   ],
   imports: [
     BrowserModule,
