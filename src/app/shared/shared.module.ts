@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TruncatePipe } from './pipes';
+import { HttpClientModule } from '@angular/common/http';
 
 
 
@@ -12,6 +13,7 @@ import { TruncatePipe } from './pipes';
     CommonModule,
   ],
   exports: [
+    HttpClientModule,
     TruncatePipe,
   ]
 })
