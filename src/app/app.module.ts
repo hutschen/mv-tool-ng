@@ -3,6 +3,16 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { RouterModule } from '@angular/router';
+import { ProjectModule } from './project/project.module';
+
+const routes = [
+  { 
+    path: 'projects', 
+    loadChildren: () => import('./project/project.module').then(
+      m => m.ProjectModule) 
+  },
+  { path: '**', redirectTo: 'projects' },
+]
 
 @NgModule({
   declarations: [
@@ -10,7 +20,8 @@ import { RouterModule } from '@angular/router';
   ],
   imports: [
     BrowserModule,
-    RouterModule.forRoot([]),
+    ProjectModule,
+    RouterModule.forRoot(routes),
   ],
   providers: [],
   bootstrap: [AppComponent]
