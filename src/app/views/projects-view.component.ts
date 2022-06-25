@@ -3,9 +3,7 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'mvtool-projects-view',
   template: `
-    <p>
-      projects-view works!
-    </p>
+    <mvtool-project-table></mvtool-project-table>
   `,
   styles: [
   ]

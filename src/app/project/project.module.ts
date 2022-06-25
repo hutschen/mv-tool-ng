@@ -13,5 +13,8 @@ import { SharedModule } from '../shared/shared.module';
     SharedModule,
     MaterialModule,
   ],
+  exports: [
+    ProjectTableComponent
+  ]
 })
 export class ProjectModule { }

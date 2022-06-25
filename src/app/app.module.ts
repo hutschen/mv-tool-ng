@@ -21,6 +21,7 @@ const routes = [
     AppComponent,
     AppToolbarComponent,
     LoginViewComponent,
+    ProjectsViewComponent
   ],
   imports: [
     BrowserModule,
