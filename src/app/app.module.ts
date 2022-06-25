@@ -6,7 +6,6 @@ import { AppComponent } from './app.component';
 import { ProjectTableComponent } from './project-table/project-table.component';
 import { TruncatePipe } from './shared/pipes';
 import { RouterModule } from '@angular/router';
-import { LoginComponent } from './login/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './shared/material.module';
 import { FormsModule } from '@angular/forms';
@@ -15,8 +14,7 @@ import { FormsModule } from '@angular/forms';
   declarations: [
     AppComponent,
     ProjectTableComponent,
-    TruncatePipe,
-    LoginComponent
+    TruncatePipe
   ],
   imports: [
     BrowserModule,
