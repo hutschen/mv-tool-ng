@@ -1,1 +1,12 @@
-<p>user-menu works!</p>
+<!-- display username here -->
+<button mat-button [matMenuTriggerFor]="menu">
+  <mat-icon>account_circle</mat-icon>
+  {{username}}
+</button>
+<mat-menu #menu="matMenu">
+  <!-- button to log out -->
+  <button mat-menu-item>
+    <mat-icon>exit_to_app</mat-icon>
+    Log out
+  </button>
+</mat-menu>

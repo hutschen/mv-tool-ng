@@ -6,10 +6,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./user-menu.component.css']
 })
 export class UserMenuComponent implements OnInit {
+  username: string = ''
 
   constructor() { }
 
-  ngOnInit(): void {
-  }
+  async logout(): Promise<void> {}
 
+  ngOnInit(): void {
+    this.username = 'Firstname Lastname'
+  }
 }

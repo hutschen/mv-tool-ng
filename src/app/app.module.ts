@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { RouterModule } from '@angular/router';
 import { ProjectModule } from './project/project.module';
 import { MaterialModule } from './material/material.module';
+import { UserModule } from './user/user.module';
 
 const routes = [
   { 
@@ -22,6 +23,7 @@ const routes = [
   imports: [
     BrowserModule,
     RouterModule.forRoot(routes),
+    UserModule,
     ProjectModule,
     MaterialModule,
   ],

@@ -12,6 +12,10 @@ import { UserLoginComponent } from './user-login.component';
   imports: [
     CommonModule,
     MaterialModule,
+  ],
+  exports: [
+    UserMenuComponent,
+    UserLoginComponent,
   ]
 })
 export class UserModule { }
