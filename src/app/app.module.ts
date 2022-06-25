@@ -7,13 +7,12 @@ import { ProjectModule } from './project/project.module';
 import { MaterialModule } from './material/material.module';
 import { UserModule } from './user/user.module';
 import { AppToolbarComponent } from './app-toolbar.component';
+import { LoginViewComponent } from './views/login-view.component';
+import { ProjectsViewComponent } from './views/projects-view.component';
 
 const routes = [
-  { 
-    path: 'projects', 
-    loadChildren: () => import('./project/project.module').then(
-      m => m.ProjectModule) 
-  },
+  { path: 'projects', component: ProjectsViewComponent },
+  { path: 'login', component: LoginViewComponent},
   { path: '**', redirectTo: 'projects' },
 ]
 
@@ -21,6 +20,7 @@ const routes = [
   declarations: [
     AppComponent,
     AppToolbarComponent,
+    LoginViewComponent,
   ],
   imports: [
     BrowserModule,

@@ -2,13 +2,10 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'mvtool-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  template: `
+    <mvtool-app-toolbar></mvtool-app-toolbar>
+    <router-outlet></router-outlet>
+  `,
+  styles: []
 })
-export class AppComponent {
-  title = 'mv-tool-ng';
-
-  onLogIn(): void {
-    alert('toLogIn');
-  }
-}
+export class AppComponent {}
