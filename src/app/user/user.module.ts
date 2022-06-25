@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../material/material.module';
 
-
-
 @NgModule({
   declarations: [],
   imports: [
@@ -11,4 +9,4 @@ import { MaterialModule } from '../material/material.module';
     MaterialModule,
   ]
 })
-export class AuthModule { }
+export class UserModule { }
