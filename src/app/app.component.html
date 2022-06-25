@@ -1,1 +1,17 @@
+<mat-toolbar color="primary">
+  <span>MV-Tool</span>
+  <span class="spacer"></span>
+  <!-- display username here -->
+  <button mat-button [matMenuTriggerFor]="menu">
+    <mat-icon>account_circle</mat-icon>
+    Helmar Hutschenreuter
+  </button>
+  <mat-menu #menu="matMenu">
+    <!-- button to log out -->
+    <button mat-menu-item>
+      <mat-icon>exit_to_app</mat-icon>
+      Log out
+    </button>
+  </mat-menu>
+</mat-toolbar>
 <router-outlet></router-outlet>

@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { RouterModule } from '@angular/router';
 import { ProjectModule } from './project/project.module';
+import { MaterialModule } from './material/material.module';
 
 const routes = [
   { 
@@ -20,8 +21,9 @@ const routes = [
   ],
   imports: [
     BrowserModule,
-    ProjectModule,
     RouterModule.forRoot(routes),
+    ProjectModule,
+    MaterialModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
