@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { AuthService } from '../shared/services/auth.service';
+import { IUser, UserService } from '../shared/services/user.service';
 
 @Component({
   selector: 'mvtool-user-menu',
@@ -6,13 +8,27 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./user-menu.component.css']
 })
 export class UserMenuComponent implements OnInit {
-  username: string = ''
+  @Output() loggedOut: EventEmitter<void> = new EventEmitter<void>();
+  @Output() logIn: EventEmitter<void> = new EventEmitter<void>();
+  displayName: string = ''
 
-  constructor() { }
+  constructor(protected _user: UserService, protected _auth: AuthService) { }
 
-  async logout(): Promise<void> {}
+  onLogIn(): void {
+    this.logIn.emit();
+  }
 
-  ngOnInit(): void {
-    this.username = 'Firstname Lastname'
+  onLogOut(): void {
+    this._auth.logOut();
+    this.loggedOut.emit();
+  }
+
+  get isLoggedIn(): boolean {
+    return this._auth.isLoggedIn;
+  }
+
+  async ngOnInit(): Promise<void> {
+    const user = await this._user.getUser();
+    this.displayName = user.display_name
   }
 }

@@ -1,12 +1,22 @@
-<!-- display username here -->
-<button mat-button [matMenuTriggerFor]="menu">
-  <mat-icon>account_circle</mat-icon>
-  {{username}}
-</button>
-<mat-menu #menu="matMenu">
-  <!-- button to log out -->
-  <button mat-menu-item>
-    <mat-icon>exit_to_app</mat-icon>
-    Log out
+<!-- If user is logged in, display username and options -->
+<span *ngIf="isLoggedIn">
+  <button mat-button [matMenuTriggerFor]="menu">
+    <mat-icon>account_circle</mat-icon>
+    {{displayName}}
   </button>
-</mat-menu>
+  <mat-menu #menu="matMenu">
+    <!-- button to log out -->
+    <button mat-menu-item (click)="onLogOut()">
+      <mat-icon>exit_to_app</mat-icon>
+      Log out
+    </button>
+  </mat-menu>
+</span>
+
+<!-- If user is not logged in, display button to log in -->
+<span *ngIf="!isLoggedIn">
+  <button mat-button (click)="onLogIn()">
+    <mat-icon>account_circle</mat-icon>
+    Log in
+  </button>
+</span>

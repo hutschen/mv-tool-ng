@@ -1,6 +1,6 @@
 <mat-toolbar color="primary">
   <span>MV-Tool</span>
   <span class="spacer"></span>
-  <mvtool-user-menu></mvtool-user-menu>
+  <mvtool-user-menu (loggedOut)="onLogIn()" (logIn)="onLogIn()"></mvtool-user-menu>
 </mat-toolbar>
 <router-outlet></router-outlet>
