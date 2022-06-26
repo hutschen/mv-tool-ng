@@ -1,22 +1,29 @@
-<form>
+<form #form="ngForm" (reset)="onReset()" (submit)="onSubmit(form)">
   <!-- Username input -->
   <mat-form-field class="form-field-width" appearance="fill">
     <mat-label>Enter your username</mat-label>
-    <input matInput>
+    <input name="username" matInput [(ngModel)]="credentials.username" required>
   </mat-form-field>
 
   <!-- Password input -->
   <mat-form-field class="form-field-width" appearance="fill">
     <mat-label>Enter your password</mat-label>
-    <input matInput [type]="hidePassword ? 'password' : 'text'">
+    <input matInput name="password" [(ngModel)]="credentials.password" [type]="hidePassword ? 'password' : 'text'" required>
     <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
       <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
     </button>
   </mat-form-field>
 
+  <!-- Checkbox to keep logged in -->
+  <mat-checkbox name="keepLoggedIn" [(ngModel)]="keepLoggedIn" matTooltip="When you check this box, your login information will be saved locally in your browser until you log out." ngModel>Keep me logged in</mat-checkbox>
+
   <!-- Buttons --> 
   <div align="end">
-    <button mat-button class="form-button">Cancel</button>
-    <button mat-raised-button class="form-button" color="primary">Log in</button>
+    <button mat-button disabled="{{form.pristine}}" class="form-button" type="reset">Reset</button>
+    <button mat-raised-button disabled="{{form.invalid}}" class="form-button" color="accent" type="submit">Log in</button>
   </div>
 </form>
+
+<code>
+  {{credentials | json}}
+</code>
