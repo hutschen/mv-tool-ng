@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { AuthService } from '../shared/services/auth.service';
 
 @Component({
   selector: 'mvtool-user-login',
@@ -7,6 +8,7 @@ import { NgForm } from '@angular/forms';
   styleUrls: ['./user-login.component.css']
 })
 export class UserLoginComponent implements OnInit {
+  @Output() loggedIn: EventEmitter<void> = new EventEmitter<void>();
   hidePassword: boolean = true;
   keepLoggedIn: boolean = false;
   credentials = {
@@ -14,7 +16,7 @@ export class UserLoginComponent implements OnInit {
     password: ''
   }
   
-  constructor() { }
+  constructor(protected _auth: AuthService) { }
 
   onReset() {
     this.keepLoggedIn = false;
@@ -24,9 +26,10 @@ export class UserLoginComponent implements OnInit {
     }
   }
 
-  async onSubmit(form: NgForm) {
+  onSubmit(form: NgForm) {
     if (form.valid) {
-      console.log(this.credentials);
+      this._auth.logIn(this.credentials, this.keepLoggedIn);
+      this.loggedIn.emit();
     }
   }
 

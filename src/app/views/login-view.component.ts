@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'mvtool-login-view',
   template: `
     <div class='container' fxLayout='row' fxLayoutAlign='center center'>
       <mat-card>
-        <mvtool-user-login></mvtool-user-login>
+        <mvtool-user-login (loggedIn)="onLoggedIn()"></mvtool-user-login>
       </mat-card>
     </div>
   `,
@@ -15,7 +16,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LoginViewComponent implements OnInit {
 
-  constructor() { }
+  constructor(protected _router: Router) { }
+
+  onLoggedIn(): void {
+    this._router.navigate(['/']);
+  }
 
   ngOnInit(): void {
   }
