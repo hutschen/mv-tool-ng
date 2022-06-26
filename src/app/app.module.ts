@@ -9,9 +9,13 @@ import { UserModule } from './user/user.module';
 import { AppToolbarComponent } from './app-toolbar.component';
 import { LoginViewComponent } from './views/login-view.component';
 import { ProjectsViewComponent } from './views/projects-view.component';
+import { AuthGuard } from './auth.guard';
 
 const routes = [
-  { path: 'projects', component: ProjectsViewComponent },
+  { path: 'projects',
+    canActivate: [AuthGuard],
+    component: ProjectsViewComponent 
+  },
   { path: 'login', component: LoginViewComponent},
   { path: '**', redirectTo: 'projects' },
 ]
