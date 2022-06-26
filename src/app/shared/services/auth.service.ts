@@ -13,11 +13,7 @@ export interface ICredentials {
 export class AuthService {
   static STORAGE_KEY = 'credentials'
 
-  constructor() { 
-    if (!environment.production) {
-      this.logIn(environment.credentials)
-    }
-  }
+  constructor() {}
 
   logIn(credentials: ICredentials, keepLoggedIn=false) {
     let storage: Storage = keepLoggedIn? localStorage : sessionStorage

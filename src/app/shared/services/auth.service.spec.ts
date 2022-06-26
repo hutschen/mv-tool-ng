@@ -11,30 +11,32 @@ describe('AuthService', () => {
     TestBed.configureTestingModule({});
     sut = TestBed.inject(AuthService);
     credentials = environment.credentials
+    
+    if (sut.isLoggedIn) {
+      sut.logOut()
+      expect(sut.isLoggedIn).toBeFalse()
+    }
   });
 
   it('should be created', () => {
     expect(sut).toBeTruthy();
   });
 
-  it('should be logged in', () => {
-    expect(sut.isLoggedIn).toBeTrue()
-  })
-
-  it('should return credentials', () => {
-    expect(sut.credentials).toEqual(credentials)
-  }) 
-
-  it('should log out', () => {
-    sut.logOut()
-    expect(sut.isLoggedIn).toBeFalse()
-    expect( () => { sut.credentials }).toThrowError(UnauthorizedError)
-  })
-
   it('should log in', () => {
-    sut.logOut()
     sut.logIn(credentials)
     expect(sut.isLoggedIn).toBeTrue()
     expect(sut.credentials).toEqual(credentials)
+  })
+
+  it('should return credentials', () => {
+    sut.logIn(credentials)
+    expect(sut.credentials).toEqual(credentials)
+  })
+
+  it('should log out', () => {
+    sut.logIn(credentials)
+    sut.logOut()
+    expect(sut.isLoggedIn).toBeFalse()
+    expect( () => { sut.credentials }).toThrowError(UnauthorizedError)
   })
 });
