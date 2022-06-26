@@ -1,5 +1,6 @@
-import { TestBed } from '@angular/core/testing';
-import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { 
+  ActivatedRouteSnapshot, Router, 
+  RouterStateSnapshot } from '@angular/router';
 
 import { AuthGuard } from './auth.guard';
 import { AuthService, ICredentials } from './shared/services/auth.service';
@@ -7,14 +8,16 @@ import { AuthService, ICredentials } from './shared/services/auth.service';
 describe('AuthGuard', () => {
   let sut: AuthGuard;
   let auth: AuthService;
+  let routerMock: jasmine.SpyObj<Router>;
   let credentials: ICredentials;
   let routeMock: ActivatedRouteSnapshot;
   let stateMock: RouterStateSnapshot;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    auth = TestBed.inject(AuthService);
-    sut = TestBed.inject(AuthGuard);
+    auth = new AuthService();
+    routerMock = jasmine.createSpyObj('Router', ['navigate']);
+    sut = new AuthGuard(auth, routerMock);
+
     credentials = {username: 'test', password: 'test'}
     routeMock = {} as ActivatedRouteSnapshot
     stateMock = {url: 'test'} as RouterStateSnapshot
@@ -34,6 +37,7 @@ describe('AuthGuard', () => {
     const result = sut.canActivate(routeMock, stateMock)
     expect(result).toEqual(auth.isLoggedIn)
     expect(result).toBeTrue()
+    expect(routerMock.navigate).not.toHaveBeenCalled()
   });
 
   it('should recognize logged out user', () => {
@@ -41,6 +45,7 @@ describe('AuthGuard', () => {
     const result = sut.canActivate(routeMock, stateMock)
     expect(result).toEqual(auth.isLoggedIn)
     expect(result).toBeFalse()
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/login'])
   });
 
 });
