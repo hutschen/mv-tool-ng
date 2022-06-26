@@ -4,6 +4,7 @@ import {
   HttpTestingController } from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
 import { TaskService, ITaskInput, ITask } from './task.service';
+import { AuthService } from './auth.service';
 
 describe('TaskService', () => {
   let sut: TaskService;
@@ -16,9 +17,11 @@ describe('TaskService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule]
     });
-    sut = TestBed.inject(TaskService);
+    TestBed.inject(AuthService).logIn({username: 'test', password: 'test'})
     crud = TestBed.inject(CRUDService)
     httpMock = TestBed.inject(HttpTestingController)
+    sut = TestBed.inject(TaskService);
+
     inputMock = {
       summary: 'A test task'
     }

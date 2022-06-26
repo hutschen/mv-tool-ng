@@ -5,6 +5,7 @@ import {
 import { CRUDService } from './crud.service';
 import { ProjectService } from './project.service';
 import { DocumentService, IDocumentInput, IDocument } from './document.service';
+import { AuthService } from './auth.service';
 
 describe('DocumentService', () => {
   let sut: DocumentService;
@@ -18,10 +19,12 @@ describe('DocumentService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule]
     });
-    sut = TestBed.inject(DocumentService);
+    TestBed.inject(AuthService).logIn({username: 'test', password: 'test'})
     crud = TestBed.inject(CRUDService)
     projects = TestBed.inject(ProjectService)
     httpMock = TestBed.inject(HttpTestingController)
+    sut = TestBed.inject(DocumentService);
+    
     inputMock = {
       title: 'A test document'
     }

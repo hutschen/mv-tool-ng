@@ -6,6 +6,7 @@ import { CRUDService } from './crud.service';
 import { 
   RequirementService, 
   IRequirementInput, IRequirement } from './requirement.service';
+import { AuthService } from './auth.service';
 
 describe('RequirementService', () => {
   let sut: RequirementService;
@@ -18,9 +19,11 @@ describe('RequirementService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule]
     })
-    sut = TestBed.inject(RequirementService)
+    TestBed.inject(AuthService).logIn({username: 'test', password: 'test'})
     crud = TestBed.inject(CRUDService)
     httpMock = TestBed.inject(HttpTestingController)
+    sut = TestBed.inject(RequirementService)
+
     inputMock = {
       summary: 'A test requirement'
     }

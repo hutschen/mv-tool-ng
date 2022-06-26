@@ -4,6 +4,7 @@ import {
   HttpTestingController} from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
 import { environment } from 'src/environments/environment';
+import { AuthService } from './auth.service';
 
 interface IItemInput {
     name: string
@@ -26,6 +27,8 @@ describe('CRUDService', () => {
     });
     sut = TestBed.inject(CRUDService);
     httpMock = TestBed.inject(HttpTestingController);
+    const auth = TestBed.inject(AuthService)
+    auth.logIn({username: 'test', password: 'test'})
     baseUrl = environment.baseUrl
     inputMock = {
         name: 'A test item'

@@ -5,6 +5,7 @@ import {
 } from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
 import { UserService, IUser } from './user.service';
+import { AuthService } from './auth.service';
 
 describe('UserService', () => {
   let sut: UserService;
@@ -16,9 +17,11 @@ describe('UserService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule]
     });
-    sut = TestBed.inject(UserService);
+    TestBed.inject(AuthService).logIn({username: 'test', password: 'test'})
     crud = TestBed.inject(CRUDService)
     httpMock = TestBed.inject(HttpTestingController)
+    sut = TestBed.inject(UserService);
+
     outputMock = {
       display_name: 'Firstname Lastname',
       email_address: 'firstname.lastname@domain'

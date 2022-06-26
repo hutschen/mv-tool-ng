@@ -4,6 +4,7 @@ import {
   HttpTestingController } from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
 import { MeasureService, IMeasureInput, IMeasure } from './measure.service';
+import { AuthService } from './auth.service';
 
 describe('MeasureService', () => {
   let sut: MeasureService;
@@ -16,9 +17,11 @@ describe('MeasureService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule]
     });
-    sut = TestBed.inject(MeasureService);
+    TestBed.inject(AuthService).logIn({username: 'test', password: 'test'})
     crud = TestBed.inject(CRUDService)
     httpMock = TestBed.inject(HttpTestingController)
+    sut = TestBed.inject(MeasureService);
+    
     inputMock = {
       summary: 'A test measure'
     }

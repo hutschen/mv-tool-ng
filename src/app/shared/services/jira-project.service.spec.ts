@@ -4,6 +4,7 @@ import {
   HttpTestingController } from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
 import { JiraProjectService,  IJiraProject} from './jira-project.service';
+import { AuthService } from './auth.service';
 
 describe('JiraProjectService', () => {
   let sut: JiraProjectService;
@@ -15,9 +16,11 @@ describe('JiraProjectService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule]
     });
-    sut = TestBed.inject(JiraProjectService);
+    TestBed.inject(AuthService).logIn({username: 'test', password: 'test'})
     crud = TestBed.inject(CRUDService)
     httpMock = TestBed.inject(HttpTestingController)
+    sut = TestBed.inject(JiraProjectService);
+    
     outputMock = {
       id: '10000',
       key: 'MT',

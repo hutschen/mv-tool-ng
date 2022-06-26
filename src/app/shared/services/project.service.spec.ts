@@ -4,6 +4,7 @@ import {
   HttpTestingController } from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
 import { ProjectService, IProjectInput, IProject } from './project.service';
+import { AuthService } from './auth.service';
 
 describe('ProjectService', () => {
   let sut: ProjectService;
@@ -16,9 +17,11 @@ describe('ProjectService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule]
     });
-    sut = TestBed.inject(ProjectService);
+    TestBed.inject(AuthService).logIn({username: 'test', password: 'test'})
     crud = TestBed.inject(CRUDService)
     httpMock = TestBed.inject(HttpTestingController)
+    sut = TestBed.inject(ProjectService);
+
     inputMock = {
       name: 'A test project',
     }
