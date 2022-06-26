@@ -12,11 +12,3 @@
     </button>
   </mat-menu>
 </span>
-
-<!-- If user is not logged in, display button to log in -->
-<span *ngIf="!isLoggedIn">
-  <button mat-button (click)="onLogIn()">
-    <mat-icon>account_circle</mat-icon>
-    Log in
-  </button>
-</span>

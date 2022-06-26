@@ -9,14 +9,9 @@ import { IUser, UserService } from '../shared/services/user.service';
 })
 export class UserMenuComponent implements OnInit {
   @Output() loggedOut: EventEmitter<void> = new EventEmitter<void>();
-  @Output() logIn: EventEmitter<void> = new EventEmitter<void>();
   displayName: string = ''
 
   constructor(protected _user: UserService, protected _auth: AuthService) { }
-
-  onLogIn(): void {
-    this.logIn.emit();
-  }
 
   onLogOut(): void {
     this._auth.logOut();

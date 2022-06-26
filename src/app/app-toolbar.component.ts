@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
     <mat-toolbar color="primary">
       <span>MV-Tool</span>
       <span class="spacer"></span>
-      <mvtool-user-menu (loggedOut)="onLogIn()" (logIn)="onLogIn()"></mvtool-user-menu>
+      <mvtool-user-menu (loggedOut)="onLoggedOut()"></mvtool-user-menu>
     </mat-toolbar>
   `,
   styles: [
@@ -18,7 +18,7 @@ export class AppToolbarComponent implements OnInit {
 
   constructor(protected _router: Router) {}
 
-  onLogIn() {
+  onLoggedOut() {
     this._router.navigate(['/login']);
   }
 
