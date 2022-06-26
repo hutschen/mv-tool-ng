@@ -2,11 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'mvtool-login-view',
-  template: `
-    <p>
-      login-view works!
-    </p>
-  `,
+  template: `<mvtool-user-login></mvtool-user-login>`,
   styles: [
   ]
 })
