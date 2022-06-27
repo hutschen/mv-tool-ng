@@ -8,29 +8,35 @@ import { IUser, UserService } from '../shared/services/user.service';
   styleUrls: ['./user-menu.component.css']
 })
 export class UserMenuComponent implements OnInit {
-  @Output() loggedOut: EventEmitter<void> = new EventEmitter<void>();
+  protected _user: UserService;
+  protected _auth: AuthService;
+  @Output() loggedOut: EventEmitter<void>;
   displayName: string = ''
 
-  constructor(protected _user: UserService, protected _auth: AuthService) { }
-
-  onLogOut(): void {
-    this._auth.logOut();
-    this.loggedOut.emit();
+  constructor(user: UserService, auth: AuthService) { 
+    this._user = user;
+    this._auth = auth;
+    this.loggedOut = auth.loggedOut;
   }
 
   get isLoggedIn(): boolean {
     return this._auth.isLoggedIn;
   }
 
-  protected async onLogInChanged() {
-    if (this._auth.isLoggedIn) {
-      const user: IUser = await this._user.getUser();
-      this.displayName = user.display_name;
-    }
+  protected async _onLoggedIn() {
+    const user: IUser = await this._user.getUser();
+    this.displayName = user.display_name;
+  }
+
+  onLogOut(): void {
+    this._auth.logOut();
+    this.displayName = '';
   }
 
   async ngOnInit() {
-    await this.onLogInChanged();
-    this._auth.stateChanged.subscribe(() => this.onLogInChanged());
+    if (this.isLoggedIn) {
+      await this._onLoggedIn();
+    }
+    this._auth.loggedIn.subscribe(() => this._onLoggedIn());
   }
 }

@@ -12,14 +12,15 @@ export interface ICredentials {
 })
 export class AuthService {
   static STORAGE_KEY = 'credentials'
-  stateChanged = new EventEmitter<void>()
+  loggedIn = new EventEmitter<void>()
+  loggedOut = new EventEmitter<void>()
 
   constructor() {}
 
   logIn(credentials: ICredentials, keepLoggedIn=false) {
     let storage: Storage = keepLoggedIn? localStorage : sessionStorage
     storage.setItem(AuthService.STORAGE_KEY, JSON.stringify(credentials))
-    this.stateChanged.emit()
+    this.loggedIn.emit()
   }
 
   protected get _storage(): Storage {
@@ -38,7 +39,7 @@ export class AuthService {
     if (this._storage.getItem(AuthService.STORAGE_KEY)) {
       this._storage.removeItem(AuthService.STORAGE_KEY)
     }
-    this.stateChanged.emit()
+    this.loggedOut.emit()
   }
 
   public get credentials(): ICredentials {
