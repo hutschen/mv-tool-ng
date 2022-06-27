@@ -1,4 +1,4 @@
-import { Component, DoCheck, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { AuthService } from '../shared/services/auth.service';
 import { IUser, UserService } from '../shared/services/user.service';
 
@@ -7,7 +7,7 @@ import { IUser, UserService } from '../shared/services/user.service';
   templateUrl: './user-menu.component.html',
   styleUrls: ['./user-menu.component.css']
 })
-export class UserMenuComponent implements OnInit, DoCheck {
+export class UserMenuComponent implements OnInit {
   @Output() loggedOut: EventEmitter<void> = new EventEmitter<void>();
   displayName: string = ''
 
@@ -27,10 +27,6 @@ export class UserMenuComponent implements OnInit, DoCheck {
       const user: IUser = await this._user.getUser();
       this.displayName = user.display_name;
     }
-  }
-
-  async ngDoCheck(): Promise<void> {
-    return this._updateDisplayName();
   }
 
   async ngOnInit(): Promise<void> {
