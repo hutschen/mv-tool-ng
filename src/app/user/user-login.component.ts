@@ -8,7 +8,8 @@ import { AuthService } from '../shared/services/auth.service';
   styleUrls: ['./user-login.component.css']
 })
 export class UserLoginComponent implements OnInit {
-  @Output() loggedIn: EventEmitter<void> = new EventEmitter<void>();
+  protected _auth: AuthService;
+  @Output() loggedIn: EventEmitter<void>;
   hidePassword: boolean = true;
   keepLoggedIn: boolean = false;
   credentials = {
@@ -16,7 +17,10 @@ export class UserLoginComponent implements OnInit {
     password: ''
   }
   
-  constructor(protected _auth: AuthService) { }
+  constructor(auth: AuthService) {
+    this._auth = auth;
+    this.loggedIn = this._auth.loggedIn;
+  }
 
   onReset() {
     this.keepLoggedIn = false;
@@ -29,7 +33,6 @@ export class UserLoginComponent implements OnInit {
   onSubmit(form: NgForm) {
     if (form.valid) {
       this._auth.logIn(this.credentials, this.keepLoggedIn);
-      this.loggedIn.emit();
     }
   }
 

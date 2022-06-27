@@ -22,14 +22,15 @@ export class UserMenuComponent implements OnInit {
     return this._auth.isLoggedIn;
   }
 
-  protected async _updateDisplayName(): Promise<void> {
+  protected async onLogInChanged() {
     if (this._auth.isLoggedIn) {
       const user: IUser = await this._user.getUser();
       this.displayName = user.display_name;
     }
   }
 
-  async ngOnInit(): Promise<void> {
-    return this._updateDisplayName();
+  async ngOnInit() {
+    await this.onLogInChanged();
+    this._auth.stateChanged.subscribe(() => this.onLogInChanged());
   }
 }
