@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { IProject, ProjectService } from '../shared/services/project.service';
 
@@ -12,6 +13,7 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['name', 'description', 'jira_project_id', 'options'];
   dataSource: MatTableDataSource<IProject> = new MatTableDataSource<IProject>();
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
+  @ViewChild(MatSort) sort: MatSort | null = null;
 
   constructor(private _projectService: ProjectService) {}
 
@@ -40,6 +42,7 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
 
   async ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
   
   async ngOnInit(): Promise<void> {

@@ -13,6 +13,7 @@ import { MatInputModule} from '@angular/material/input';
 import { MatMenuModule} from '@angular/material/menu';
 import { MatPaginatorModule} from '@angular/material/paginator';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSortModule} from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule} from '@angular/material/toolbar';
 import { MatTooltipModule} from '@angular/material/tooltip';
@@ -34,6 +35,7 @@ import { MatTooltipModule} from '@angular/material/tooltip';
     MatMenuModule,
     MatPaginatorModule,
     MatSnackBarModule,
+    MatSortModule,
     MatTableModule,
     MatToolbarModule,
     MatTooltipModule,
