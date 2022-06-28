@@ -33,6 +33,11 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
 
   editProject(project: IProject): void {}
 
+  applyFilter(event: Event) { 
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
   async ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
   }
