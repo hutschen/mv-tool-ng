@@ -11,18 +11,18 @@
   </button>
   
   <!-- button to download sample Excel -->
-  <button *ngIf="!projects.length" mat-button>
+  <button *ngIf="!dataSource.data.length" mat-button>
       <mat-icon>file_download</mat-icon>
       Download Sample Excel
   </button>
   
   <!-- button to download Excel -->
-  <button *ngIf="projects.length" mat-button (click)="downloadExcel()">
+  <button *ngIf="dataSource.data.length" mat-button (click)="downloadExcel()">
     <mat-icon>file_download</mat-icon>
     Download Excel
   </button>
   
-<table mat-table [dataSource]="projects" class="mat-elevation-z8">
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
   <!-- ID Column -->
   <ng-container matColumnDef="id">
@@ -61,4 +61,7 @@
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>  
+</table>
+
+<mat-paginator [pageSize]="25" [pageSizeOptions]="[10, 25, 50, 100, 150]" showFirstLastButtons>
+</mat-paginator>
