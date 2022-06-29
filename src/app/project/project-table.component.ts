@@ -1,8 +1,10 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { IProject, ProjectService } from '../shared/services/project.service';
+import { ProjectDialogComponent } from './project-dialog.component';
 
 @Component({
   selector: 'mvtool-project-table',
@@ -15,7 +17,7 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort | null = null;
 
-  constructor(private _projectService: ProjectService) {}
+  constructor(protected _projectService: ProjectService, protected _dialog: MatDialog) {}
 
   async uploadExcel(): Promise<void> {}
   async downloadExcel(): Promise<void> {}
@@ -33,7 +35,15 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
     this.dataSource.data = await this._projectService.listProjects()
   }
 
-  editProject(project: IProject): void {}
+  editProject(project: IProject): void {
+    let dialogRef = this._dialog.open(ProjectDialogComponent, {width: '500px'})
+    dialogRef.afterClosed().subscribe(async projectInput => {
+      if (projectInput) {
+        await this._projectService.updateProject(project.id, projectInput)
+        this.dataSource.data = await this._projectService.listProjects()
+      }
+    })
+  }
 
   applyFilter(event: Event) { 
     const filterValue = (event.target as HTMLInputElement).value;
