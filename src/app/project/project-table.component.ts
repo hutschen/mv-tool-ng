@@ -36,7 +36,10 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
   }
 
   editProject(project: IProject): void {
-    let dialogRef = this._dialog.open(ProjectDialogComponent, {width: '500px'})
+    let dialogRef = this._dialog.open(ProjectDialogComponent, {
+      width: '500px',
+      data: project,
+    })
     dialogRef.afterClosed().subscribe(async projectInput => {
       if (projectInput) {
         await this._projectService.updateProject(project.id, projectInput)
