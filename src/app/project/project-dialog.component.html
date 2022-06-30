@@ -1,25 +1,50 @@
-<h1 mat-dialog-title>Edit Project</h1>
-<div mat-dialog-content>
-  <div class="container">
-    <mat-form-field appearance="fill">
-      <mat-label>Project name</mat-label>
-      <input matInput [(ngModel)]="projectInput.name" required>
-    </mat-form-field>
-    <mat-form-field appearance="fill">
-      <mat-label>Project description</mat-label>
-      <textarea matInput [(ngModel)]="projectInput.description"></textarea>
-    </mat-form-field>
-  </div>
+<div mat-dialog-title>
+  <h1>
+    <span *ngIf="createMode">Create</span>
+    <span *ngIf="!createMode">Edit</span>
+    <span>&nbsp;</span>
+    <span>Project</span>
+  </h1>
 </div>
-<div mat-dialog-actions>
-  <div align="end">
-    <button mat-button color="primary" (click)="onSave()">
-      <mat-icon>save</mat-icon>
-      Save
-    </button>
-    <button mat-button color="warn" (click)="onCancel()">
-      <mat-icon>cancel</mat-icon>
-      Cancel
-    </button>
-  </div>
+<!-- content -->
+<div mat-dialog-content>
+  <code>
+    {{ jiraProjects | json }}
+  </code>
+
+  <form id="projectForm" #form="ngForm" (submit)="onSave()">
+    <!-- Project name input -->
+    <mat-form-field class="form-field-width" appearance="fill">
+      <mat-label>Project name</mat-label>
+      <input name="name" matInput [(ngModel)]="projectInput.name" required>
+    </mat-form-field>
+
+    <!-- Project description input -->
+    <mat-form-field class="form-field-width" appearance="fill">
+      <mat-label>Project description</mat-label>
+      <textarea name="description" matInput [(ngModel)]="projectInput.description"></textarea>
+    </mat-form-field>
+
+    <!-- select jira project -->
+    <div *ngIf="createMode">
+      <mat-form-field class="form-field-width" appearance="fill">
+        <mat-label>Assign Jira project</mat-label>
+        <mat-select name="jiraProject" [(ngModel)]="projectInput.jira_project_id">
+          <mat-option *ngFor="let jiraProject of jiraProjects" [value]="jiraProject.id">{{jiraProject.name}}</mat-option>
+        </mat-select>
+      </mat-form-field>  
+    </div>
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button class="form-button" (click)="onCancel()">
+    <mat-icon>cancel</mat-icon>
+    Cancel
+  </button>
+  <button mat-raised-button disabled="{{form.invalid}}" class="form-button" color="accent" type="submit" form="projectForm">
+    <mat-icon>save</mat-icon>
+    <span>&nbsp;</span>
+    <span *ngIf="createMode">Create</span>
+    <span *ngIf="!createMode">Save</span>
+  </button>
 </div>
