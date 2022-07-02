@@ -51,15 +51,7 @@
   <ng-container matColumnDef="jira_project_id">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> JIRA Project </th>
       <td mat-cell *matCellDef="let project">
-        <span *ngIf="project.hasPermissionOnJiraProject">
-          {{project.jira_project?.name}}
-        </span>
-        <span *ngIf="!project.hasPermissionOnJiraProject">
-          <mat-icon 
-            matTooltip="You have not the permission to view the JIRA project">
-            block
-          </mat-icon>
-        </span>
+        <mvtool-jira-project-label [project]="project"></mvtool-jira-project-label>
       </td>
   </ng-container>
 
