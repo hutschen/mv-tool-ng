@@ -3,7 +3,7 @@ import {
   HttpClientTestingModule, 
   HttpTestingController } from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
-import { TaskService, ITaskInput, ITask } from './task.service';
+import { TaskService, ITaskInput, ITask, Task } from './task.service';
 import { AuthService } from './auth.service';
 
 describe('TaskService', () => {
@@ -23,11 +23,15 @@ describe('TaskService', () => {
     sut = TestBed.inject(TaskService);
 
     inputMock = {
-      summary: 'A test task'
+      summary: 'A test task',
+      description: 'A test task description',
+      completed: false
     }
     outputMock = {
       id: 1,
       summary: inputMock.summary,
+      description: inputMock.description,
+      completed: inputMock.completed,
       measure: {
         id: 1,
         summary: 'A test measure',
@@ -67,7 +71,7 @@ describe('TaskService', () => {
     const tasksList = [outputMock]
 
     sut.listTasks(measureId).then((value) => {
-      expect(value).toEqual(tasksList)
+      expect(value).toEqual(tasksList.map(task => new Task(task)))
       done()
     })
     const mockResponse = httpMock.expectOne({
@@ -81,7 +85,7 @@ describe('TaskService', () => {
     const measureId = outputMock.measure.id
 
     sut.createTask(measureId, inputMock).then((value) => {
-      expect(value).toEqual(outputMock)
+      expect(value).toEqual(new Task(outputMock))
       done()
     })
     const mockResponse = httpMock.expectOne({
@@ -93,7 +97,7 @@ describe('TaskService', () => {
   
   it('should get task', (done: DoneFn) => {
     sut.getTask(outputMock.id).then((value) => {
-      expect(value).toEqual(outputMock)
+      expect(value).toEqual(new Task(outputMock))
       done()
     })
     const mockResponse = httpMock.expectOne({
@@ -105,7 +109,7 @@ describe('TaskService', () => {
   
   it('should update task', (done: DoneFn) => {
     sut.updateTask(outputMock.id, inputMock).then((value) => {
-      expect(value).toEqual(outputMock)
+      expect(value).toEqual(new Task(outputMock))
       done()
     })
     const mockResponse = httpMock.expectOne({
