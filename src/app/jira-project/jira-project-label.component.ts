@@ -5,8 +5,13 @@ import { Project } from '../shared/services/project.service';
   selector: 'mvtool-jira-project-label',
   template: `
     <span *ngIf="project">
-      <span *ngIf="project.hasPermissionOnJiraProject">
-        {{project.jira_project?.name}}
+      <span *ngIf="project.hasPermissionOnJiraProject && project.jira_project">
+        <a mat-button
+          href="{{project.jira_project.url}}" 
+          target="_blank" rel="noopener noreferrer">
+          <mat-icon>open_in_new</mat-icon>
+          {{project.jira_project.name}} / {{project.jira_project.key}}
+        </a>
       </span>
       <span *ngIf="!project.hasPermissionOnJiraProject">
         <mat-icon 

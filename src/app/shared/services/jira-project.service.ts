@@ -5,6 +5,7 @@ export interface IJiraProject {
   id: string
   key: string
   name: string
+  url: string
 }
 
 @Injectable({

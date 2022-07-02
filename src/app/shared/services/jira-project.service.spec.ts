@@ -24,7 +24,8 @@ describe('JiraProjectService', () => {
     outputMock = {
       id: '10000',
       key: 'MT',
-      name: 'A test JIRA project'
+      name: 'A test JIRA project',
+      url: 'https://...',
     }
   });
 

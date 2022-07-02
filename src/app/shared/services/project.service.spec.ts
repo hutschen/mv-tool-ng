@@ -24,6 +24,7 @@ describe('Project', () => {
       id: '10000',
       key: 'TEST',
       name: 'A test project',
+      url: 'https://...',
     }
   });
 
