@@ -1,31 +1,39 @@
-<!-- button to create project -->
-<button mat-button (click)="createProject()">
-    <mat-icon>add</mat-icon>
-    Create Project
-  </button>
-  
-  <!-- button to upload Excel -->
-  <button mat-button (click)="uploadExcel()">
-    <mat-icon>file_upload</mat-icon>
-    Upload Excel
-  </button>
-  
-  <!-- button to download sample Excel -->
-  <button *ngIf="!dataSource.data.length" mat-button>
-      <mat-icon>file_download</mat-icon>
-      Download Sample Excel
-  </button>
-  
-  <!-- button to download Excel -->
-  <button *ngIf="dataSource.data.length" mat-button (click)="downloadExcel()">
-    <mat-icon>file_download</mat-icon>
-    Download Excel
-  </button>
+<div fxLayout="row" fxLayoutAlign="space-between center">
+  <!-- Buttons -->
+  <div fxLayout="row" fxLayoutAlign="start center">
+    <!-- button to create project -->
+    <button mat-button (click)="createProject()">
+      <mat-icon>add</mat-icon>
+      Create Project
+    </button>
+      
+    <!-- button to upload Excel -->
+    <button mat-button (click)="uploadExcel()">
+      <mat-icon>file_upload</mat-icon>
+      Upload Excel
+    </button>
+      
+    <!-- button to download sample Excel -->
+    <button *ngIf="!dataSource.data.length" mat-button>
+        <mat-icon>file_download</mat-icon>
+        Download Sample Excel
+    </button>
 
-<mat-form-field appearance="standard">
-<mat-label>Filter</mat-label>
-<input matInput (keyup)="applyFilter($event)" placeholder="Filter ..." #filterInput>
-</mat-form-field>
+    <!-- button to download Excel -->
+    <button *ngIf="dataSource.data.length" mat-button (click)="downloadExcel()">
+      <mat-icon>file_download</mat-icon>
+      Download Excel
+    </button>
+  </div>
+
+  <div fxFlex="30" fxLayout="column">
+    <mat-form-field appearance="fill">
+      <mat-label>Filter projects</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput (keyup)="applyFilter($event)" #filterInput>
+    </mat-form-field>
+  </div>
+</div>
   
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
 
