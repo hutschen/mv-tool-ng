@@ -6,6 +6,44 @@ import { CRUDService } from './crud.service';
 import { 
   ProjectService, IProjectInput, IProject, Project } from './project.service';
 import { AuthService } from './auth.service';
+import { IJiraProject } from './jira-project.service';
+
+describe('Project', () => {
+  let sut: Project;
+  let jiraProjectMock: IJiraProject
+
+  beforeEach(() => {
+    sut = new Project({
+      id: 1,
+      name: 'A test project',
+      description: 'A test project description',
+      jira_project_id: null,
+      jira_project: null,
+    })
+    jiraProjectMock = {
+      id: '10000',
+      key: 'TEST',
+      name: 'A test project',
+    }
+  });
+
+  it('should be created', () => {
+    expect(sut).toBeTruthy();
+  });
+
+  it('should check that user is permitted to view JIRA project', () => {
+    expect(sut.hasPermissionOnJiraProject).toBeTruthy();
+    sut.jira_project_id = '10000'
+    sut.jira_project = jiraProjectMock
+    expect(sut.hasPermissionOnJiraProject).toBeTruthy();
+  })
+
+  it('should check that user is not permitted to view JIRA project', () => {
+    expect(sut.hasPermissionOnJiraProject).toBeTruthy();
+    sut.jira_project_id = '10000'
+    expect(sut.hasPermissionOnJiraProject).toBeFalsy();
+  })
+})
 
 describe('ProjectService', () => {
   let sut: ProjectService;

@@ -27,6 +27,12 @@ export class Project implements IProject {
     this.jira_project_id = project.jira_project_id
     this.jira_project = project.jira_project
   }
+
+  get hasPermissionOnJiraProject(): boolean {
+    return (
+      (this.jira_project === null && this.jira_project_id === null) || 
+      (this.jira_project !== null && this.jira_project_id !== null))
+  }
 }
 
 @Injectable({
