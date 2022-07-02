@@ -22,13 +22,16 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
   async uploadExcel(): Promise<void> {}
   async downloadExcel(): Promise<void> {}
 
-  async createProject(): Promise<void> {
-    await this._projectService.createProject({
-      name: 'A test project',
-      description: 'A test project description',
-      jira_project_id: null,
-    });
-    this.dataSource.data = await this._projectService.listProjects()
+  createProject() {
+    let dialogRef = this._dialog.open(ProjectDialogComponent, {
+      width: '500px'
+    })
+    dialogRef.afterClosed().subscribe(async projectInput => {
+      if (projectInput) {
+        await this._projectService.createProject(projectInput)
+        this.dataSource.data = await this._projectService.listProjects()
+      }
+    })
   }
 
   async deleteProject(project: IProject): Promise<void> {
