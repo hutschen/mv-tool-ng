@@ -5,7 +5,7 @@ import {
 import { CRUDService } from './crud.service';
 import { 
   RequirementService, 
-  IRequirementInput, IRequirement } from './requirement.service';
+  IRequirementInput, IRequirement, Requirement } from './requirement.service';
 import { AuthService } from './auth.service';
 
 describe('RequirementService', () => {
@@ -25,11 +25,21 @@ describe('RequirementService', () => {
     sut = TestBed.inject(RequirementService)
 
     inputMock = {
-      summary: 'A test requirement'
+      reference: null,
+      summary: 'A test requirement',
+      description: 'A test requirement description',
+      target_object: null,
+      compliance_status: null,
+      compliance_comment: null,
     }
     outputMock = {
       id: 1,
+      reference: inputMock.reference,
       summary: inputMock.summary,
+      description: inputMock.description,
+      target_object: inputMock.target_object,
+      compliance_status: inputMock.compliance_status,
+      compliance_comment: inputMock.compliance_comment,
       project: {
         id: 1,
         name: 'A test project'
@@ -62,7 +72,8 @@ describe('RequirementService', () => {
     const requirementsList = [outputMock]
 
     sut.listRequirements(projectId).then((value) => {
-      expect(value).toEqual(requirementsList)
+      expect(value).toEqual(
+        requirementsList.map(requirement => new Requirement(requirement)))
       done()
     })
     const mockResponse = httpMock.expectOne({
@@ -76,7 +87,7 @@ describe('RequirementService', () => {
     const projectId = outputMock.project.id
     
     sut.createRequirement(projectId, inputMock).then((value) => {
-      expect(value).toEqual(outputMock)
+      expect(value).toEqual(new Requirement(outputMock))
       done()
     })
     const mockResponse = httpMock.expectOne({
@@ -88,7 +99,7 @@ describe('RequirementService', () => {
 
   it('should get a requirement', (done: DoneFn) => {
     sut.getRequirement(outputMock.id).then((value) => {
-      expect(value).toEqual(outputMock)
+      expect(value).toEqual(new Requirement(outputMock))
       done()
     })
     const mockResponse = httpMock.expectOne({
@@ -100,7 +111,7 @@ describe('RequirementService', () => {
 
   it('should update a requirement', (done: DoneFn) => {
     sut.updateRequirement(outputMock.id, inputMock).then((value) => {
-      expect(value).toEqual(outputMock)
+      expect(value).toEqual(new Requirement(outputMock))
       done()
     })
     const mockResponse = httpMock.expectOne({

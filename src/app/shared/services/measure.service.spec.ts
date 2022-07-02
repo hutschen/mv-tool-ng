@@ -33,7 +33,12 @@ describe('MeasureService', () => {
       description: inputMock.description,
       requirement: {
         id: 1,
+        reference: null,
         summary: 'A test requirement',
+        description: 'A test requirement description',
+        target_object: null,
+        compliance_status: null,
+        compliance_comment: null,
         project: {
           id: 1,
           name: 'A test project'

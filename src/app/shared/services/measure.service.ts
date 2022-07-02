@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CRUDService } from './crud.service';
-import { IRequirement, RequirementService } from './requirement.service';
+import { IRequirement, Requirement, RequirementService } from './requirement.service';
 
 export interface IMeasureInput {
   summary: string
@@ -16,13 +16,13 @@ export class Measure implements IMeasure {
   id: number;
   summary: string;
   description: string | null;
-  requirement: IRequirement;
+  requirement: Requirement;
 
   constructor(measure: IMeasure) {
     this.id = measure.id
     this.summary = measure.summary
     this.description = measure.description
-    this.requirement = measure.requirement
+    this.requirement = new Requirement(measure.requirement)
   }
 }
 
