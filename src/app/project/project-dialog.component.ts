@@ -1,7 +1,8 @@
 import { Component, Inject, Input, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IJiraProject, JiraProjectService } from '../shared/services/jira-project.service';
-import { IProject, IProjectInput, ProjectService } from '../shared/services/project.service';
+import { Project, IProjectInput, ProjectService } from '../shared/services/project.service';
 
 @Component({
   selector: 'mvtool-project-dialog',
@@ -9,7 +10,6 @@ import { IProject, IProjectInput, ProjectService } from '../shared/services/proj
   styleUrls: ['./project-dialog.component.css']
 })
 export class ProjectDialogComponent implements OnInit {
-  jiraProjects: IJiraProject[] = [];
   projectInput: IProjectInput = {
     name: '',
     description: '',
@@ -20,10 +20,12 @@ export class ProjectDialogComponent implements OnInit {
     protected _dialogRef: MatDialogRef<ProjectDialogComponent>, 
     protected _projectService: ProjectService,
     protected _jiraProjectService: JiraProjectService,
-    @Inject(MAT_DIALOG_DATA) protected _project: IProject | null) { }
+    @Inject(MAT_DIALOG_DATA) protected _project: Project | null) { }
 
-  onSave(): void {
-    this._dialogRef.close(this.projectInput);
+  onSave(form: NgForm): void {
+    if (form.valid) {
+      this._dialogRef.close(this.projectInput);
+    }
   }
   onCancel(): void {
     this._dialogRef.close(null);
@@ -31,6 +33,14 @@ export class ProjectDialogComponent implements OnInit {
 
   get createMode(): boolean {
     return this._project === null;
+  }
+
+  get jiraProjectLocked(): boolean {
+    if (this.createMode) {
+      return false;
+    } else {
+      return !this._project?.hasPermissionOnJiraProject;
+    }
   }
 
   async ngOnInit() {
@@ -46,10 +56,6 @@ export class ProjectDialogComponent implements OnInit {
         description: '',
         jira_project_id: null,
       }
-    }
-
-    if (!this.projectInput.jira_project_id) {
-      this.jiraProjects = await this._jiraProjectService.getJiraProjects();
     }
   }
 

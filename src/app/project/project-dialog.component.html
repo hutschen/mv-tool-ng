@@ -8,11 +8,7 @@
 </div>
 <!-- content -->
 <div mat-dialog-content>
-  <code>
-    {{ jiraProjects | json }}
-  </code>
-
-  <form id="projectForm" #form="ngForm" (submit)="onSave()">
+  <form id="projectForm" #form="ngForm" (submit)="onSave(form)">
     <!-- Project name input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Project name</mat-label>
@@ -26,14 +22,10 @@
     </mat-form-field>
 
     <!-- select jira project -->
-    <div *ngIf="createMode">
-      <mat-form-field class="form-field-width" appearance="fill">
-        <mat-label>Assign Jira project</mat-label>
-        <mat-select name="jiraProject" [(ngModel)]="projectInput.jira_project_id">
-          <mat-option *ngFor="let jiraProject of jiraProjects" [value]="jiraProject.id">{{jiraProject.name}}</mat-option>
-        </mat-select>
-      </mat-form-field>  
-    </div>
+    <mvtool-jira-project-input 
+      [locked]="jiraProjectLocked"
+      [(jiraProjectId)]="projectInput.jira_project_id">
+    </mvtool-jira-project-input>
   </form>
 </div>
 <div mat-dialog-actions align="end">

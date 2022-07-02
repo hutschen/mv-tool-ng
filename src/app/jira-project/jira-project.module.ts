@@ -10,7 +10,7 @@ import { JiraProjectInputComponent } from './jira-project-input.component';
 @NgModule({
   declarations: [
     JiraProjectLabelComponent,
-    JiraProjectInputComponent
+    JiraProjectInputComponent,
   ],
   imports: [
     CommonModule,
@@ -18,7 +18,8 @@ import { JiraProjectInputComponent } from './jira-project-input.component';
     MaterialModule,
   ],
   exports: [
-    JiraProjectLabelComponent
+    JiraProjectLabelComponent,
+    JiraProjectInputComponent,
   ]
 })
 export class JiraProjectModule { }
