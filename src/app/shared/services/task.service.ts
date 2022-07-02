@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CRUDService } from './crud.service';
 import { IDocument } from './document.service';
-import { IMeasure, MeasureService } from './measure.service';
+import { IMeasure, Measure, MeasureService } from './measure.service';
 
 export interface ITaskInput {
   summary: string
@@ -20,7 +20,7 @@ export class Task implements ITask {
   summary: string;
   description: string | null;
   completed: boolean;
-  measure: IMeasure;
+  measure: Measure;
   document: IDocument | null;
 
   constructor(task: ITask) {
@@ -28,7 +28,7 @@ export class Task implements ITask {
     this.summary = task.summary
     this.description = task.description
     this.completed = task.completed
-    this.measure = task.measure
+    this.measure = new Measure(task.measure)
     this.document = task.document
   }
 }

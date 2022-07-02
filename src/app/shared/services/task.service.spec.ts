@@ -35,6 +35,7 @@ describe('TaskService', () => {
       measure: {
         id: 1,
         summary: 'A test measure',
+        description: 'A test measure description',
         requirement: {
           id: 1,
           summary: 'A test requirement',

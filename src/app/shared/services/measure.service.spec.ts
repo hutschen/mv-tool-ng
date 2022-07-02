@@ -3,7 +3,8 @@ import {
   HttpClientTestingModule, 
   HttpTestingController } from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
-import { MeasureService, IMeasureInput, IMeasure } from './measure.service';
+import { 
+  MeasureService, IMeasureInput, IMeasure, Measure } from './measure.service';
 import { AuthService } from './auth.service';
 
 describe('MeasureService', () => {
@@ -23,11 +24,13 @@ describe('MeasureService', () => {
     sut = TestBed.inject(MeasureService);
     
     inputMock = {
-      summary: 'A test measure'
+      summary: 'A test measure',
+      description: 'A test measure description',
     }
     outputMock = {
       id: 1,
       summary: inputMock.summary,
+      description: inputMock.description,
       requirement: {
         id: 1,
         summary: 'A test requirement',
@@ -63,7 +66,7 @@ describe('MeasureService', () => {
     const measuresList = [outputMock]
 
     sut.listMeasures(requirementId).then((value) => {
-      expect(value).toEqual(measuresList)
+      expect(value).toEqual(measuresList.map(measure => new Measure(measure)))
       done()
     })
     const mockResponse = httpMock.expectOne({
@@ -77,7 +80,7 @@ describe('MeasureService', () => {
     const requirementId = outputMock.requirement.id
     
     sut.createMeasure(requirementId, inputMock).then((value) => {
-      expect(value).toEqual(outputMock)
+      expect(value).toEqual(new Measure(outputMock))
       done()
     })
     const mockResponse = httpMock.expectOne({
@@ -89,7 +92,7 @@ describe('MeasureService', () => {
 
   it('should get measure', (done: DoneFn) => {
     sut.getMeasure(outputMock.id).then((value) => {
-      expect(value).toEqual(outputMock)
+      expect(value).toEqual(new Measure(outputMock))
       done()
     })
     const mockResponse = httpMock.expectOne({
@@ -101,7 +104,7 @@ describe('MeasureService', () => {
 
   it('should update measure', (done: DoneFn) => {
     sut.updateMeasure(outputMock.id, inputMock).then((value) => {
-      expect(value).toEqual(outputMock)
+      expect(value).toEqual(new Measure(outputMock))
       done()
     })
     const mockResponse = httpMock.expectOne({

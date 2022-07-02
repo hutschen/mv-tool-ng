@@ -4,12 +4,26 @@ import { IRequirement, RequirementService } from './requirement.service';
 
 export interface IMeasureInput {
   summary: string
-  description?: string | null
+  description: string | null
 }
 
 export interface IMeasure extends IMeasureInput {
   id: number
   requirement: IRequirement
+}
+
+export class Measure implements IMeasure {
+  id: number;
+  summary: string;
+  description: string | null;
+  requirement: IRequirement;
+
+  constructor(measure: IMeasure) {
+    this.id = measure.id
+    this.summary = measure.summary
+    this.description = measure.description
+    this.requirement = measure.requirement
+  }
 }
 
 @Injectable({
@@ -29,22 +43,29 @@ export class MeasureService {
     return `measures/${measureId}`
   }
 
-  async listMeasures(requirementId: number): Promise<IMeasure[]> {
-    return this._crud.list(this.getMeasuresUrl(requirementId))
+  async listMeasures(requirementId: number): Promise<Measure[]> {
+    const measures = await this._crud.list(this.getMeasuresUrl(requirementId))
+    return measures.map(measure => new Measure(measure))
   }
 
   async createMeasure(
-      requirementId: number, measureInput: IMeasureInput): Promise<IMeasure> {
-    return this._crud.create(this.getMeasuresUrl(requirementId), measureInput)
+      requirementId: number, measureInput: IMeasureInput): Promise<Measure> {
+    const measure = await this._crud.create(
+      this.getMeasuresUrl(requirementId), measureInput)
+    return new Measure(measure)
   }
 
-  async getMeasure(measureId: number): Promise<IMeasure> {
-    return this._crud.read(this.getMeasureUrl(measureId))
+  async getMeasure(measureId: number): Promise<Measure> {
+    const measure = await this._crud.read(this.getMeasureUrl(measureId))
+    return new Measure(measure)
   }
 
   async updateMeasure(
-      measureId: number, measureInput: IMeasureInput): Promise<IMeasure> {
-    return this._crud.update(this.getMeasureUrl(measureId), measureInput)
+      measureId: number, measureInput: IMeasureInput): Promise<Measure> {
+    const measure = await this._crud.update(
+      this.getMeasureUrl(measureId), measureInput)
+    return new Measure(measure)
+
   }
 
   async deleteMeasure(measureId: number): Promise<null> {
