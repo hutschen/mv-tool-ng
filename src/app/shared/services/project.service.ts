@@ -13,6 +13,22 @@ export interface IProject extends IProjectInput {
   jira_project: IJiraProject | null
 }
 
+export class Project implements IProject {
+  id: number;
+  name: string;
+  description: string | null;
+  jira_project_id: string | null;
+  jira_project: IJiraProject | null;
+
+  constructor(project: IProject) {
+    this.id = project.id
+    this.name = project.name
+    this.description = project.description
+    this.jira_project_id = project.jira_project_id
+    this.jira_project = project.jira_project
+  }
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,20 +43,26 @@ export class ProjectService {
     return `${this.getProjectsUrl()}/${projectId}`
   }
 
-  async listProjects(): Promise<IProject[]> {
-    return this._crud.list(this.getProjectsUrl())
+  async listProjects(): Promise<Project[]> {
+    const projects = await this._crud.list(this.getProjectsUrl())
+    return projects.map(project => new Project(project))
   }
 
-  async createProject(projectInput: IProjectInput): Promise<IProject> {
-    return this._crud.create(this.getProjectsUrl(), projectInput)
+  async createProject(projectInput: IProjectInput): Promise<Project> {
+    const project = await this._crud.create(this.getProjectsUrl(), projectInput)
+    return new Project(project)
   }
 
-  async getProject(projectId: number): Promise<IProject> {
-    return this._crud.read(this.getProjectUrl(projectId))
+  async getProject(projectId: number): Promise<Project> {
+    const project = await this._crud.read(this.getProjectUrl(projectId))
+    return new Project(project)
   }
 
-  async updateProject(projectId: number, projectInput: IProjectInput): Promise<IProject> {
-    return this._crud.update(this.getProjectUrl(projectId), projectInput)
+  async updateProject(
+      projectId: number, projectInput: IProjectInput): Promise<Project> {
+    const project = await this._crud.update(
+      this.getProjectUrl(projectId), projectInput)
+    return new Project(project)
   }
 
   async deleteProject(projectId: number): Promise<null> {

@@ -3,7 +3,8 @@ import {
   HttpClientTestingModule, 
   HttpTestingController } from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
-import { ProjectService, IProjectInput, IProject } from './project.service';
+import { 
+  ProjectService, IProjectInput, IProject, Project } from './project.service';
 import { AuthService } from './auth.service';
 
 describe('ProjectService', () => {
@@ -54,21 +55,21 @@ describe('ProjectService', () => {
   })
 
   it('should list projects', (done: DoneFn) => {
+    const projectList = [outputMock]
     sut.listProjects().then((value) => {
-      expect(value.length).toEqual(1)
-      expect(value[0]).toEqual(outputMock)
+      expect(value).toEqual(projectList.map(project => new Project(project)))
       done()
     })
     const mockResponse = httpMock.expectOne({
       method: 'get',
       url: crud.toAbsoluteUrl(sut.getProjectsUrl())
     })
-    mockResponse.flush([outputMock])
+    mockResponse.flush(projectList)
   })
 
   it('should create project', (done: DoneFn) => {
     sut.createProject(inputMock).then((value) => {
-      expect(value).toEqual(outputMock)
+      expect(value).toEqual(new Project(outputMock))
       done()
     })
     const mockResponse = httpMock.expectOne({
@@ -80,7 +81,7 @@ describe('ProjectService', () => {
 
   it('should get a project', (done: DoneFn) => {
     sut.getProject(outputMock.id).then((value) => {
-      expect(value).toEqual(outputMock)
+      expect(value).toEqual(new Project(outputMock))
       done()
     })
     const mockResponse = httpMock.expectOne({
@@ -92,7 +93,7 @@ describe('ProjectService', () => {
 
   it('should update a project', (done: DoneFn) => {
     sut.updateProject(outputMock.id, inputMock).then((value) => {
-      expect(value).toEqual(outputMock)
+      expect(value).toEqual(new Project(outputMock))
       done()
     })
     const mockResponse = httpMock.expectOne({

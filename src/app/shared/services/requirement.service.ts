@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CRUDService } from './crud.service';
-import { IProject, ProjectService } from './project.service';
+import { IProject, Project, ProjectService } from './project.service';
 
 export interface IRequirementInput {
   reference: string | null
@@ -24,7 +24,7 @@ export class Requirement implements IRequirement {
   target_object: string | null;
   compliance_status: string | null;
   compliance_comment: string | null;
-  project: IProject;
+  project: Project;
 
   constructor(requirement: IRequirement) {
     this.id = requirement.id
@@ -34,7 +34,7 @@ export class Requirement implements IRequirement {
     this.target_object = requirement.target_object
     this.compliance_status = requirement.compliance_status
     this.compliance_comment = requirement.compliance_comment
-    this.project = requirement.project
+    this.project = new Project(requirement.project)
   }
 }
 
