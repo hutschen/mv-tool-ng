@@ -24,10 +24,14 @@ describe('ProjectService', () => {
 
     inputMock = {
       name: 'A test project',
+      description: 'A test project description',
+      jira_project_id: null
     }
     outputMock = {
       id: 1,
       name: inputMock.name,
+      description: inputMock.description,
+      jira_project_id: inputMock.jira_project_id,
       jira_project: null
     }
   });

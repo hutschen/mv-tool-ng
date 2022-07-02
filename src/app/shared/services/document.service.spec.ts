@@ -33,7 +33,10 @@ describe('DocumentService', () => {
       title: inputMock.title,
       project: {
         id: 1,
-        name: 'A test project'
+        name: 'A test project',
+        description: 'A test project description',
+        jira_project_id: null,
+        jira_project: null
       }
     }
   });

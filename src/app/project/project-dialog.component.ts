@@ -12,6 +12,8 @@ export class ProjectDialogComponent implements OnInit {
   jiraProjects: IJiraProject[] = [];
   projectInput: IProjectInput = {
     name: '',
+    description: '',
+    jira_project_id: null,
   }
 
   constructor(

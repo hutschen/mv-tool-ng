@@ -26,6 +26,7 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
     await this._projectService.createProject({
       name: 'A test project',
       description: 'A test project description',
+      jira_project_id: null,
     });
     this.dataSource.data = await this._projectService.listProjects()
   }

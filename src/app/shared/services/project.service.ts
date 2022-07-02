@@ -4,13 +4,13 @@ import { IJiraProject } from './jira-project.service';
 
 export interface IProjectInput {
   name: string;
-  description?: string | null;
-  jira_project_id?: string | null;
+  description: string | null;
+  jira_project_id: string | null;
 }
 
 export interface IProject extends IProjectInput {
   id: number;
-  jira_project?: IJiraProject | null
+  jira_project: IJiraProject | null
 }
 
 @Injectable({

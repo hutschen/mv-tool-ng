@@ -42,7 +42,10 @@ describe('RequirementService', () => {
       compliance_comment: inputMock.compliance_comment,
       project: {
         id: 1,
-        name: 'A test project'
+        name: 'A test project',
+        description: 'A test project description',
+        jira_project_id: null,
+        jira_project: null,
       }
     }
   });
