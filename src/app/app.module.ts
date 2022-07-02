@@ -11,6 +11,7 @@ import { LoginViewComponent } from './views/login-view.component';
 import { ProjectsViewComponent } from './views/projects-view.component';
 import { AuthGuard } from './auth.guard';
 import { GlobalErrorHandler } from './global-error-handler';
+import { JiraProjectModule } from './jira-project/jira-project.module';
 
 const routes = [
   { path: 'projects',
@@ -32,6 +33,7 @@ const routes = [
     BrowserModule,
     RouterModule.forRoot(routes),
     UserModule,
+    JiraProjectModule,
     ProjectModule,
     MaterialModule,
   ],
