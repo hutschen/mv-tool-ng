@@ -3,25 +3,31 @@
   <div fxLayout="row" fxLayoutAlign="space-between center">
     <!-- Buttons -->
     <div fxLayout="row" fxLayoutAlign="start center">
-      <!-- button to create project -->
+      <!-- Button to reload requirements -->
+      <button mat-button (click)="onReloadRequirements()">
+        <mat-icon>refresh</mat-icon>
+        Refresh Table
+      </button>
+
+      <!-- Button to create requirement -->
       <button mat-button (click)="onCreateRequirement()">
         <mat-icon>add</mat-icon>
         Create Requirement
       </button>
         
-      <!-- button to upload Excel -->
+      <!-- Button to upload Excel -->
       <button mat-button (click)="onImportRequirements()">
         <mat-icon>file_upload</mat-icon>
         Upload Excel
       </button>
         
-      <!-- button to download sample Excel -->
+      <!-- Button to download sample Excel -->
       <button *ngIf="!dataSource.data.length" mat-button>
           <mat-icon>file_download</mat-icon>
           Download Sample Excel
       </button>
   
-      <!-- button to download Excel -->
+      <!-- Button to download Excel -->
       <button *ngIf="dataSource.data.length" mat-button (click)="onExportRequirements()">
         <mat-icon>file_download</mat-icon>
         Download Excel
