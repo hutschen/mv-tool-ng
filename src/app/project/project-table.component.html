@@ -1,89 +1,76 @@
-<div fxLayout="row" fxLayoutAlign="space-between center">
-  <!-- Buttons -->
-  <div fxLayout="row" fxLayoutAlign="start center">
-    <!-- button to create project -->
-    <button mat-button (click)="createProject()">
-      <mat-icon>add</mat-icon>
-      Create Project
-    </button>
-      
-    <!-- button to upload Excel -->
-    <button mat-button (click)="uploadExcel()">
-      <mat-icon>file_upload</mat-icon>
-      Upload Excel
-    </button>
-      
-    <!-- button to download sample Excel -->
-    <button *ngIf="!dataSource.data.length" mat-button>
-        <mat-icon>file_download</mat-icon>
-        Download Sample Excel
-    </button>
-
-    <!-- button to download Excel -->
-    <button *ngIf="dataSource.data.length" mat-button (click)="downloadExcel()">
-      <mat-icon>file_download</mat-icon>
-      Download Excel
-    </button>
-  </div>
-
-  <div fxFlex="30" fxLayout="column">
-    <mat-form-field appearance="fill">
-      <mat-label>Filter projects</mat-label>
-      <mat-icon matPrefix>search</mat-icon>
-      <input matInput (keyup)="applyFilter($event)" #filterInput>
-    </mat-form-field>
-  </div>
-</div>
+<div fxLayout="column">
+  <!-- Toolbar -->
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <!-- Buttons -->
+    <div fxLayout="row" fxLayoutAlign="start center">
+      <button mat-button (click)="onCreateProject()">
+        <mat-icon>add</mat-icon>
+        Create Project
+      </button>
+    </div>
   
-<table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+    <!-- Search -->
+    <div fxFlex="30" fxLayout="column">
+      <mat-form-field appearance="fill">
+        <mat-label>Filter projects</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput (keyup)="onFilterProjects($event)" #filterInput>
+      </mat-form-field>
+    </div>
+  </div>
 
-  <!-- ID Column -->
-  <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-      <td mat-cell *matCellDef="let project"> {{project.id}} </td>
-  </ng-container>
+  <!-- Projects table -->
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
 
-  <!-- Name column -->
-  <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
-      <td mat-cell *matCellDef="let project"> {{project.name}} </td>
-  </ng-container>
-
-  <!-- Description column -->
-  <ng-container matColumnDef="description">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
-      <td mat-cell *matCellDef="let project"> {{project.description | truncate}} </td>
-  </ng-container>
-
-  <!-- JIRA project column -->
-  <ng-container matColumnDef="jira_project_id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> JIRA Project </th>
-      <td mat-cell *matCellDef="let project">
-        <mvtool-jira-project-label [project]="project"></mvtool-jira-project-label>
-      </td>
-  </ng-container>
-
-  <ng-container matColumnDef="options">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let project">
-        <div align="end">
-          <button mat-icon-button (click)="editProject(project)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" (click)="deleteProject(project)">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
-  </ng-container>
-
-  <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-  <!-- Row shown when there is no matching data. -->
-  <tr class="mat-row" *matNoDataRow>
-    <td *ngIf="filterInput.value" class="mat-cell" colspan="4">No data matching the filter "{{filterInput.value}}"</td>
-  </tr>
-</table>
-
-<mat-paginator [pageSize]="25" [pageSizeOptions]="[10, 25, 50, 100, 150]" showFirstLastButtons>
-</mat-paginator>
+    <!-- ID Column -->
+    <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+        <td mat-cell *matCellDef="let project"> {{project.id}} </td>
+    </ng-container>
+  
+    <!-- Name column -->
+    <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+        <td mat-cell *matCellDef="let project"> {{project.name}} </td>
+    </ng-container>
+  
+    <!-- Description column -->
+    <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
+        <td mat-cell *matCellDef="let project"> {{project.description | truncate}} </td>
+    </ng-container>
+  
+    <!-- JIRA project column -->
+    <ng-container matColumnDef="jira_project_id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> JIRA Project </th>
+        <td mat-cell *matCellDef="let project">
+          <mvtool-jira-project-label [project]="project"></mvtool-jira-project-label>
+        </td>
+    </ng-container>
+  
+    <ng-container matColumnDef="options">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let project">
+          <div align="end">
+            <button mat-icon-button (click)="onEditProject(project)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="onDeleteProject(project)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+    </ng-container>
+  
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  
+    <!-- Row shown when there is no matching data. -->
+    <tr class="mat-row" *matNoDataRow>
+      <td *ngIf="filterInput.value" class="mat-cell" colspan="4">No data matching the filter "{{filterInput.value}}"</td>
+    </tr>
+  </table>
+  
+  <!-- Table pagniator -->
+  <mat-paginator [pageSize]="25" [pageSizeOptions]="[10, 25, 50, 100, 150]" showFirstLastButtons>
+  </mat-paginator>
+</div>
