@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { IJiraProject, JiraProjectService } from '../shared/services/jira-project.service';
-import { IProjectInput } from '../shared/services/project.service';
 
 @Component({
   selector: 'mvtool-jira-project-input',
