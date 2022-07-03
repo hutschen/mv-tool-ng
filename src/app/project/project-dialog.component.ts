@@ -12,7 +12,7 @@ import { Project, IProjectInput, ProjectService } from '../shared/services/proje
 export class ProjectDialogComponent implements OnInit {
   projectInput: IProjectInput = {
     name: '',
-    description: '',
+    description: null,
     jira_project_id: null,
   }
 
@@ -22,13 +22,14 @@ export class ProjectDialogComponent implements OnInit {
     protected _jiraProjectService: JiraProjectService,
     @Inject(MAT_DIALOG_DATA) protected _project: Project | null) { }
 
-  onSave(form: NgForm): void {
-    if (form.valid) {
-      this._dialogRef.close(this.projectInput);
+  ngOnInit() {
+    if (this._project) {
+      this.projectInput = {
+        name: this._project.name,
+        description: this._project.description,
+        jira_project_id: this._project.jira_project_id,
+      }
     }
-  }
-  onCancel(): void {
-    this._dialogRef.close(null);
   }
 
   get createMode(): boolean {
@@ -43,20 +44,12 @@ export class ProjectDialogComponent implements OnInit {
     }
   }
 
-  async ngOnInit() {
-    if (this._project) {
-      this.projectInput = {
-        name: this._project.name,
-        description: this._project.description,
-        jira_project_id: this._project.jira_project_id,
-      }
-    } else {
-      this.projectInput = {
-        name: '',
-        description: '',
-        jira_project_id: null,
-      }
+  onSave(form: NgForm): void {
+    if (form.valid) {
+      this._dialogRef.close(this.projectInput);
     }
   }
-
+  onCancel(): void {
+    this._dialogRef.close(null);
+  }
 }
