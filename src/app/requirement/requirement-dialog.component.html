@@ -30,7 +30,7 @@
     </mat-form-field>
 
     <!-- Target object input -->
-    <mvtool-target-object-input></mvtool-target-object-input>
+    <mvtool-target-object-input [projectId]="projectId" [(targetObject)]="requirementInput.target_object"></mvtool-target-object-input>
   </form>
 </div>
 <div mat-dialog-actions align="end">

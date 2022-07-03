@@ -3,6 +3,11 @@ import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IRequirementInput, Requirement, RequirementService } from '../shared/services/requirement.service';
 
+export interface IRequirementDialogData {
+  projectId: number;
+  requirement: Requirement | null;
+}
+
 @Component({
   selector: 'mvtool-requirement-dialog',
   templateUrl: './requirement-dialog.component.html',
@@ -11,6 +16,7 @@ import { IRequirementInput, Requirement, RequirementService } from '../shared/se
   ]
 })
 export class RequirementDialogComponent implements OnInit {
+  projectId: number;
   requirementInput: IRequirementInput = {
     reference: null,
     summary: '',
@@ -23,23 +29,26 @@ export class RequirementDialogComponent implements OnInit {
   constructor(
     protected _dialogRef: MatDialogRef<RequirementDialogComponent>, 
     protected _requirementService: RequirementService,
-    @Inject(MAT_DIALOG_DATA) protected _requirement: Requirement | null) { }
+    @Inject(MAT_DIALOG_DATA) protected _dialogData: IRequirementDialogData) { 
+      this.projectId = _dialogData.projectId;
+    }
 
   ngOnInit(): void {
-    if (this._requirement) {
+    const requirement = this._dialogData.requirement;
+    if (requirement) {
       this.requirementInput = {
-        reference: this._requirement.reference,
-        summary: this._requirement.summary,
-        description: this._requirement.description,
-        target_object: this._requirement.target_object,
-        compliance_status: this._requirement.compliance_status,
-        compliance_comment: this._requirement.compliance_comment,
+        reference: requirement.reference,
+        summary: requirement.summary,
+        description: requirement.description,
+        target_object: requirement.target_object,
+        compliance_status: requirement.compliance_status,
+        compliance_comment: requirement.compliance_comment,
       }
     }
   }
 
   get createMode(): boolean {
-    return this._requirement === null;
+    return this._dialogData === null;
   }
 
   onSave(form: NgForm): void {

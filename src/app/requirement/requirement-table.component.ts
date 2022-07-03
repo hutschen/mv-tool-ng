@@ -44,7 +44,8 @@ export class RequirementTableComponent implements OnInit {
   
   onCreateRequirement(): void {
     let dialogRef = this._dialog.open(RequirementDialogComponent, {
-      width: '500px'
+      width: '500px',
+      data: { projectId: this.projectId, requirement: null }
     })
     dialogRef.afterClosed().subscribe(async requirementInput => {
       if (requirementInput && this.projectId !== null) {
@@ -57,7 +58,7 @@ export class RequirementTableComponent implements OnInit {
   onEditRequirement(requirement: Requirement): void {
     let dialogRef = this._dialog.open(RequirementDialogComponent, {
       width: '500px',
-      data: requirement
+      data: { projectId: this.projectId, requirement: requirement }
     })
     dialogRef.afterClosed().subscribe(async requirementInput => {
       if (requirementInput) {
