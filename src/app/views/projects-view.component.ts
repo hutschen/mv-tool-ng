@@ -9,8 +9,7 @@ import { Project } from '../shared/services/project.service';
       (projectClicked)="onProjectClicked($event)">
     </mvtool-project-table>
   `,
-  styles: [
-  ]
+  styles: []
 })
 export class ProjectsViewComponent implements OnInit {
 

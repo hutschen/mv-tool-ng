@@ -16,6 +16,7 @@ import { RequirementViewComponent } from './views/requirement-view.component';
 import { DocumentViewComponent } from './views/document-view.component';
 import { MeasureViewComponent } from './views/measure-view.component';
 import { TaskViewComponent } from './views/task-view.component';
+import { RequirementModule } from './requirement/requirement.module';
 
 const routes = [
   { 
@@ -61,10 +62,11 @@ const routes = [
   imports: [
     BrowserModule,
     RouterModule.forRoot(routes),
+    MaterialModule,
     UserModule,
     JiraProjectModule,
     ProjectModule,
-    MaterialModule,
+    RequirementModule,
   ],
   providers: [
     { provide: ErrorHandler, useClass: GlobalErrorHandler }
