@@ -45,17 +45,41 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
         <td mat-cell *matCellDef="let requirement"> {{requirement.id}} </td>
     </ng-container>
+
+    <!-- Reference column -->
+    <ng-container matColumnDef="reference">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Reference </th>
+        <td mat-cell *matCellDef="let requirement"> {{requirement.reference | truncate}} </td>
+    </ng-container>
   
-    <!-- Name column -->
-    <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
-        <td mat-cell *matCellDef="let requirement"> {{requirement.name | truncate}} </td>
+    <!-- Summary column -->
+    <ng-container matColumnDef="summary">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Summary </th>
+        <td mat-cell *matCellDef="let requirement"> {{requirement.summary | truncate}} </td>
     </ng-container>
   
     <!-- Description column -->
     <ng-container matColumnDef="description">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
         <td mat-cell *matCellDef="let requirement"> {{requirement.description | truncate}} </td>
+    </ng-container>
+
+    <!-- Target object column -->
+    <ng-container matColumnDef="target_object">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Target Object </th>
+        <td mat-cell *matCellDef="let requirement"> {{requirement.target_object | truncate}} </td>
+    </ng-container>
+
+    <!-- Compliance status column -->
+    <ng-container matColumnDef="compliance_status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Compliance Status </th>
+        <td mat-cell *matCellDef="let requirement"> {{requirement.compliance_status}} </td>
+    </ng-container>
+
+    <!-- Compliance comment column -->
+    <ng-container matColumnDef="compliance_comment">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Compliance Comment </th>
+        <td mat-cell *matCellDef="let requirement"> {{requirement.compliance_comment | truncate}} </td>
     </ng-container>
   
     <ng-container matColumnDef="options">
@@ -86,7 +110,7 @@
       <!-- Shown when the table is empty -->
       <td 
         *ngIf="!filterInput.value" 
-        class="mat-cell" colspan="4">
+        class="mat-cell" colspan="100">
         <div fxLayout="row" fxLayoutAlign="space-between center">
           <div>No requirements to display.</div>
           <button 
@@ -99,4 +123,8 @@
       </td>
     </tr>
   </table>
+
+  <!-- Table paginator -->
+  <mat-paginator [pageSize]="25" [pageSizeOptions]="[10, 25, 50, 100, 150]" showFirstLastButtons>
+  </mat-paginator>
 </div>

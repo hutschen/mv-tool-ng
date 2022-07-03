@@ -12,7 +12,9 @@ import { Requirement, RequirementService } from '../shared/services/requirement.
   styleUrls: ['./requirement-table.component.css']
 })
 export class RequirementTableComponent implements OnInit {
-  displayedColumns: string[] = ['name', 'description', 'options'];
+  displayedColumns: string[] = [
+    'reference', 'summary', 'description', 'target_object', 'compliance_status', 
+    'compliance_comment', 'options'];
   dataSource = new MatTableDataSource<Requirement>();
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort | null = null;
