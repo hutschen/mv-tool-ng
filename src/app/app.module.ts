@@ -18,6 +18,7 @@ import { MeasureViewComponent } from './views/measure-view.component';
 import { TaskViewComponent } from './views/task-view.component';
 import { RequirementModule } from './requirement/requirement.module';
 import { AppBreadcrumbTrailComponent } from './app-breadcrumb-trail.component';
+import { SharedModule } from './shared/shared.module';
 
 const routes = [
   { 
@@ -65,6 +66,7 @@ const routes = [
     BrowserModule,
     RouterModule.forRoot(routes),
     MaterialModule,
+    SharedModule,
     UserModule,
     JiraProjectModule,
     ProjectModule,
