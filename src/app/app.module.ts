@@ -12,11 +12,36 @@ import { ProjectsViewComponent } from './views/projects-view.component';
 import { AuthGuard } from './auth.guard';
 import { GlobalErrorHandler } from './global-error-handler';
 import { JiraProjectModule } from './jira-project/jira-project.module';
+import { RequirementViewComponent } from './views/requirement-view.component';
+import { DocumentViewComponent } from './views/document-view.component';
+import { MeasureViewComponent } from './views/measure-view.component';
+import { TaskViewComponent } from './views/task-view.component';
 
 const routes = [
-  { path: 'projects',
+  { 
+    path: 'projects',
     canActivate: [AuthGuard],
     component: ProjectsViewComponent 
+  },
+  { 
+    path: 'projects/:projectId/requirements', 
+    canActivate: [AuthGuard],
+    component: RequirementViewComponent 
+  },
+  {
+    path: 'projects/:projectId/documents',
+    canActivate: [AuthGuard],
+    component: DocumentViewComponent
+  },
+  {
+    path: 'requirements/:requirementId/measures',
+    canActivate: [AuthGuard],
+    component: MeasureViewComponent
+  },
+  {
+    path: 'measures/:measureId/tasks',
+    canActivate: [AuthGuard],
+    component: MeasureViewComponent
   },
   { path: 'login', component: LoginViewComponent},
   { path: '**', redirectTo: 'projects' },
@@ -27,7 +52,11 @@ const routes = [
     AppComponent,
     AppToolbarComponent,
     LoginViewComponent,
-    ProjectsViewComponent
+    ProjectsViewComponent,
+    RequirementViewComponent,
+    DocumentViewComponent,
+    MeasureViewComponent,
+    TaskViewComponent
   ],
   imports: [
     BrowserModule,
