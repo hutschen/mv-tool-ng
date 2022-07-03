@@ -3,6 +3,11 @@
   <div fxLayout="row" fxLayoutAlign="space-between center">
     <!-- Buttons -->
     <div fxLayout="row" fxLayoutAlign="start center">
+      <button mat-button (click)="onReloadProjects()">
+        <mat-icon>refresh</mat-icon>
+        Refresh Table
+      </button>
+
       <button mat-button (click)="onCreateProject()">
         <mat-icon>add</mat-icon>
         Create Project

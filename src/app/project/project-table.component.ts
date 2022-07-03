@@ -25,7 +25,7 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
     protected _dialog: MatDialog) {}
 
   async ngOnInit() {
-    this.dataSource.data = await this._projectService.listProjects()
+    this.onReloadProjects()
   }
 
   ngAfterViewInit() {
@@ -44,7 +44,7 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe(async projectInput => {
       if (projectInput) {
         await this._projectService.createProject(projectInput)
-        this.dataSource.data = await this._projectService.listProjects()
+        this.onReloadProjects()
       }
     })
   }
@@ -57,18 +57,22 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe(async projectInput => {
       if (projectInput) {
         await this._projectService.updateProject(project.id, projectInput)
-        this.dataSource.data = await this._projectService.listProjects()
+        this.onReloadProjects()
       }
     })
   }
 
   async onDeleteProject(project: Project): Promise<void> {
     await this._projectService.deleteProject(project.id)
-    this.dataSource.data = await this._projectService.listProjects()
+    this.onReloadProjects()
   }
 
   onFilterProjects(event: Event) { 
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  async onReloadProjects() {
+    this.dataSource.data = await this._projectService.listProjects()
   }
 }
