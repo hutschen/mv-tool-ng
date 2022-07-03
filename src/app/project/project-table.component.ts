@@ -9,13 +9,16 @@ import { ProjectDialogComponent } from './project-dialog.component';
 @Component({
   selector: 'mvtool-project-table',
   templateUrl: './project-table.component.html',
-  styles: []
+  styles: [
+    '.data-row:hover { cursor: pointer; background-color: #f5f5f5; }',
+  ]
 })
 export class ProjectTableComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['name', 'description', 'jira_project_id', 'options'];
   dataSource: MatTableDataSource<Project> = new MatTableDataSource<Project>();
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort | null = null;
+  @Output() projectClicked = new EventEmitter<Project>();
 
   constructor(
     protected _projectService: ProjectService, 
@@ -28,6 +31,10 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+  }
+
+  onClickProject(project: Project) {
+    this.projectClicked.emit(project);
   }
 
   onCreateProject() {
