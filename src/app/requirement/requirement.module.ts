@@ -21,6 +21,8 @@ import { TargetObjectInputComponent } from './target-object-input.component';
   ],
   exports: [
     RequirementTableComponent,
+    RequirementDialogComponent,
+    TargetObjectInputComponent
   ]
 })
 export class RequirementModule { }
