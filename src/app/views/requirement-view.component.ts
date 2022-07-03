@@ -6,6 +6,7 @@ import { Requirement } from '../shared/services/requirement.service';
   selector: 'mvtool-requirement-view',
   template: `
     <mvtool-requirement-table 
+      [projectId]="projectId"
       (requirementClicked)="onRequirementClicked($event)">
     </mvtool-requirement-table>
   `,
