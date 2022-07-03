@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
   template: `
     <mat-toolbar color="primary">
       <span>MV-Tool</span>
+      <ng-content></ng-content>
       <span class="spacer"></span>
       <mvtool-user-menu (loggedOut)="onLoggedOut()"></mvtool-user-menu>
     </mat-toolbar>
