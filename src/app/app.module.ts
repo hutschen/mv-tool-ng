@@ -17,6 +17,7 @@ import { DocumentViewComponent } from './views/document-view.component';
 import { MeasureViewComponent } from './views/measure-view.component';
 import { TaskViewComponent } from './views/task-view.component';
 import { RequirementModule } from './requirement/requirement.module';
+import { AppBreadcrumbTrailComponent } from './app-breadcrumb-trail.component';
 
 const routes = [
   { 
@@ -57,7 +58,8 @@ const routes = [
     RequirementViewComponent,
     DocumentViewComponent,
     MeasureViewComponent,
-    TaskViewComponent
+    TaskViewComponent,
+    AppBreadcrumbTrailComponent
   ],
   imports: [
     BrowserModule,
