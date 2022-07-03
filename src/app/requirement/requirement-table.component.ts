@@ -5,6 +5,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { Requirement, RequirementService } from '../shared/services/requirement.service';
+import { RequirementDialogComponent } from './requirement-dialog.component';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -27,10 +28,7 @@ export class RequirementTableComponent implements OnInit {
     protected _dialog: MatDialog) {}
 
   async ngOnInit() {
-    if(this.projectId !== null) {
-      this.dataSource.data = await this._requirementService.listRequirements(
-        this.projectId)
-    }
+    await this.onReloadRequirements()
   }
 
   ngAfterViewInit() {
@@ -38,10 +36,28 @@ export class RequirementTableComponent implements OnInit {
     this.dataSource.sort = this.sort;
   }
   
-  onCreateRequirement() {}
+  onCreateRequirement() {
+    let dialogRef = this._dialog.open(RequirementDialogComponent, {
+      width: '500px'
+    })
+    dialogRef.afterClosed().subscribe(async requirementInput => {
+      if (requirementInput && this.projectId !== null) {
+        await this._requirementService.createRequirement(
+          this.projectId, requirementInput)
+        this.onReloadRequirements()
+      }
+    })
+  }
   onEditRequirement(requirement: Requirement): void {}
   async onDeleteRequirement(requirement: Requirement): Promise<void> {}
   onFilterRequirements(event: Event) {}
   onExportRequirements() {}
   onImportRequirements() {}
+
+  async onReloadRequirements() {
+    if(this.projectId !== null) {
+      this.dataSource.data = await this._requirementService.listRequirements(
+        this.projectId)
+    }
+  }
 }
