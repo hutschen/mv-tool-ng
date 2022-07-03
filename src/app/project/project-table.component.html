@@ -3,11 +3,13 @@
   <div fxLayout="row" fxLayoutAlign="space-between center">
     <!-- Buttons -->
     <div fxLayout="row" fxLayoutAlign="start center">
+      <!-- Button to reload projects -->
       <button mat-button (click)="onReloadProjects()">
         <mat-icon>refresh</mat-icon>
         Refresh Table
       </button>
 
+      <!-- Button to create project -->
       <button mat-button (click)="onCreateProject()">
         <mat-icon>add</mat-icon>
         Create Project
@@ -81,7 +83,7 @@
       mat-row
       class="data-row"
       *matRowDef="let project; columns: displayedColumns;" 
-      (click)="onClickProject(project)">
+      (click)="onProjectClicked(project)">
     </tr>
   
     <tr class="mat-row" *matNoDataRow>
@@ -95,7 +97,7 @@
       <!-- Shown when the table is empty -->
       <td 
         *ngIf="!filterInput.value" 
-        class="mat-cell" colspan="4">
+        class="mat-cell" colspan="100">
         <div fxLayout="row" fxLayoutAlign="space-between center">
           <div>No projects to display.</div>
           <button 
@@ -109,7 +111,7 @@
     </tr>
   </table>
   
-  <!-- Table pagniator -->
+  <!-- Table paginator -->
   <mat-paginator [pageSize]="25" [pageSizeOptions]="[10, 25, 50, 100, 150]" showFirstLastButtons>
   </mat-paginator>
 </div>

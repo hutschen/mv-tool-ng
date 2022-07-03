@@ -33,7 +33,7 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
-  onClickProject(project: Project) {
+  onProjectClicked(project: Project) {
     this.projectClicked.emit(project);
   }
 
