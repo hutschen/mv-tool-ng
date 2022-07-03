@@ -49,7 +49,9 @@
     <ng-container matColumnDef="jira_project_id">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> JIRA Project </th>
         <td mat-cell *matCellDef="let project">
-          <mvtool-jira-project-label [project]="project"></mvtool-jira-project-label>
+          <mvtool-jira-project-label 
+            [project]="project" (click)="$event.stopPropagation()">
+          </mvtool-jira-project-label>
         </td>
     </ng-container>
   
@@ -57,10 +59,14 @@
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let project">
           <div align="end">
-            <button mat-icon-button (click)="onEditProject(project)">
+            <button 
+              mat-icon-button 
+              (click)="onEditProject(project); $event.stopPropagation()">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button color="warn" (click)="onDeleteProject(project)">
+            <button 
+              mat-icon-button color="warn" 
+              (click)="onDeleteProject(project); $event.stopPropagation()">
               <mat-icon>delete</mat-icon>
             </button>
           </div>

@@ -49,7 +49,7 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
     })
   }
 
-  onEditProject(project: Project): void {
+  onEditProject(project: Project) {
     let dialogRef = this._dialog.open(ProjectDialogComponent, {
       width: '500px',
       data: project,
@@ -62,7 +62,7 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
     })
   }
 
-  async onDeleteProject(project: Project): Promise<void> {
+  async onDeleteProject(project: Project) {
     await this._projectService.deleteProject(project.id)
     this.onReloadProjects()
   }
