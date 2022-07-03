@@ -1,1 +1,36 @@
-<p>requirement-table works!</p>
+<div fxLayout="row" fxLayoutAlign="space-between center">
+    <!-- Buttons -->
+    <div fxLayout="row" fxLayoutAlign="start center">
+      <!-- button to create project -->
+      <button mat-button (click)="onCreateRequirement()">
+        <mat-icon>add</mat-icon>
+        Create Requirement
+      </button>
+        
+      <!-- button to upload Excel -->
+      <button mat-button (click)="onImportRequirements()">
+        <mat-icon>file_upload</mat-icon>
+        Upload Excel
+      </button>
+        
+      <!-- button to download sample Excel -->
+      <button *ngIf="!dataSource.data.length" mat-button>
+          <mat-icon>file_download</mat-icon>
+          Download Sample Excel
+      </button>
+  
+      <!-- button to download Excel -->
+      <button *ngIf="dataSource.data.length" mat-button (click)="onExportRequirements()">
+        <mat-icon>file_download</mat-icon>
+        Download Excel
+      </button>
+    </div>
+  
+    <div fxFlex="30" fxLayout="column">
+      <mat-form-field appearance="fill">
+        <mat-label>Filter projects</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput (keyup)="onFilterRequirements($event)" #filterInput>
+      </mat-form-field>
+    </div>
+  </div>
