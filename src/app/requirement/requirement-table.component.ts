@@ -10,7 +10,9 @@ import { RequirementDialogComponent } from './requirement-dialog.component';
 @Component({
   selector: 'mvtool-requirement-table',
   templateUrl: './requirement-table.component.html',
-  styleUrls: ['./requirement-table.component.css']
+  styles: [
+    '.data-row:hover { cursor: pointer; background-color: #f5f5f5; }',
+  ]
 })
 export class RequirementTableComponent implements OnInit {
   displayedColumns: string[] = [
@@ -27,16 +29,20 @@ export class RequirementTableComponent implements OnInit {
     protected _route: ActivatedRoute,
     protected _dialog: MatDialog) {}
 
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
     await this.onReloadRequirements()
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
+
+  onRequirementClicked(requirement: Requirement): void {
+    this.requirementClicked.emit(requirement)
+  }
   
-  onCreateRequirement() {
+  onCreateRequirement(): void {
     let dialogRef = this._dialog.open(RequirementDialogComponent, {
       width: '500px'
     })
@@ -48,9 +54,30 @@ export class RequirementTableComponent implements OnInit {
       }
     })
   }
-  onEditRequirement(requirement: Requirement): void {}
-  async onDeleteRequirement(requirement: Requirement): Promise<void> {}
-  onFilterRequirements(event: Event) {}
+  onEditRequirement(requirement: Requirement): void {
+    let dialogRef = this._dialog.open(RequirementDialogComponent, {
+      width: '500px',
+      data: requirement
+    })
+    dialogRef.afterClosed().subscribe(async requirementInput => {
+      if (requirementInput) {
+        await this._requirementService.updateRequirement(
+          requirement.id, requirementInput)
+        this.onReloadRequirements()
+      }
+    })
+  }
+
+  async onDeleteRequirement(requirement: Requirement): Promise<void> {
+    await this._requirementService.deleteRequirement(requirement.id)
+    this.onReloadRequirements()
+  }
+
+  onFilterRequirements(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
   onExportRequirements() {}
   onImportRequirements() {}
 
