@@ -1,8 +1,9 @@
-import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { ActivatedRoute } from '@angular/router';
 import { Requirement, RequirementService } from '../shared/services/requirement.service';
 
 @Component({
@@ -15,16 +16,19 @@ export class RequirementTableComponent implements OnInit {
   dataSource = new MatTableDataSource<Requirement>();
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort | null = null;
-  @Output() requirementSelected = new EventEmitter<Requirement>()
+  @Input() projectId: number | null = null;
+  @Output() requirementClicked = new EventEmitter<Requirement>()
 
   constructor(
     protected _requirementService: RequirementService, 
+    protected _route: ActivatedRoute,
     protected _dialog: MatDialog) {}
 
   async ngOnInit() {
-    // TODO: get project id from route
-    const projectId = 1
-    this.dataSource.data = await this._requirementService.listRequirements(projectId)
+    if(this.projectId !== null) {
+      this.dataSource.data = await this._requirementService.listRequirements(
+        this.projectId)
+    }
   }
 
   ngAfterViewInit() {

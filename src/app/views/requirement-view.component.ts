@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'mvtool-requirement-view',
@@ -11,10 +12,11 @@ import { Component, OnInit } from '@angular/core';
   ]
 })
 export class RequirementViewComponent implements OnInit {
+  projectId: number | null = null
 
-  constructor() { }
+  constructor(protected _route: ActivatedRoute) { }
 
-  ngOnInit(): void {
+  ngOnInit() {
+    this.projectId = Number(this._route.snapshot.paramMap.get('projectId'))
   }
-
 }
