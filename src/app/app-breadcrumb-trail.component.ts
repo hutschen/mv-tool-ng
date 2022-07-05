@@ -16,39 +16,7 @@ interface IBreadcrumbTrailState {
 
 @Component({
   selector: 'mvtool-app-breadcrumb-trail',
-  template: `
-    <div *ngIf="!hide">
-      <button mat-button (click)="onSwitchToProjects()">All Projects</button>
-      <span *ngIf="project">
-        <span>/</span>
-        <button mat-button (click)="onSwitchToProject()">{{project.name | truncate:25 }}</button>
-        <span *ngIf="!requirement">
-          <span>/</span>
-          <button mat-button [matMenuTriggerFor]="menu">
-            <span  *ngIf="!showDocuments">Requirements</span> 
-            <span  *ngIf="showDocuments">Documents</span>
-            <mat-icon>expand_more</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item *ngIf="showDocuments" (click)="onSwitchToRequirements()">Requirements</button>
-            <button mat-menu-item *ngIf="!showDocuments" (click)="onSwitchToDocuments()">Documents</button>
-          </mat-menu>
-        </span>
-        <span *ngIf="requirement">
-          <span>/</span>
-          <button mat-button>{{requirement.summary | truncate:25}}</button>
-          <span *ngIf="measure">
-            <span>/</span>
-            <button mat-button>Measure</button>
-            <span *ngIf="task">
-              <span>/</span>
-              <button mat-button>Task</button>
-            </span>
-          </span>
-        </span>
-      </span>
-    </div>
-  `,
+  templateUrl: './app-breadcrumb-trail.component.html',
   styles: []
 })
 export class AppBreadcrumbTrailComponent implements OnInit {
@@ -68,7 +36,7 @@ export class AppBreadcrumbTrailComponent implements OnInit {
     this._router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         const url = this._router.url.split('/').filter(s => s.length > 0);
-        console.log(url);
+        // console.log(url);
         this._handleUrl(url);
       }
      });
