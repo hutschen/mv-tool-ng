@@ -11,6 +11,7 @@ import { IRequirement, IRequirementInput, Requirement, RequirementService } from
   ]
 })
 export class ComplianceDialogComponent {
+  complianceStates = ['C', 'PC', 'NC', 'N/A']
   requirementInput: IRequirementInput;
 
   constructor(
@@ -19,6 +20,21 @@ export class ComplianceDialogComponent {
     @Inject(MAT_DIALOG_DATA) protected _requirement: Requirement) { 
       this.requirementInput = this._requirement.toRequirementInput();
     }
+
+  get complianceCommentDisabled(): boolean {
+    return this.requirementInput.compliance_status === null
+  }
+
+  set complianceStatus(value: string | null) {
+    this.requirementInput.compliance_status = value;
+    if (this.complianceCommentDisabled) {
+      this.requirementInput.compliance_comment = null;
+    }
+  }
+
+  get complianceStatus(): string | null {
+    return this.requirementInput.compliance_status
+  }
 
   onSave(form: NgForm): void {
     if (form.valid) {

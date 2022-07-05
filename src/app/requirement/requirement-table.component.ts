@@ -5,6 +5,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { Requirement, RequirementService } from '../shared/services/requirement.service';
+import { ComplianceDialogComponent } from './compliance-dialog.component';
 import { RequirementDialogComponent } from './requirement-dialog.component';
 
 @Component({
@@ -59,6 +60,20 @@ export class RequirementTableComponent implements OnInit {
     let dialogRef = this._dialog.open(RequirementDialogComponent, {
       width: '500px',
       data: { projectId: this.projectId, requirement: requirement }
+    })
+    dialogRef.afterClosed().subscribe(async requirementInput => {
+      if (requirementInput) {
+        await this._requirementService.updateRequirement(
+          requirement.id, requirementInput)
+        this.onReloadRequirements()
+      }
+    })
+  }
+
+  onEditCompliance(requirement: Requirement): void {
+    let dialogRef = this._dialog.open(ComplianceDialogComponent, {
+      width: '500px',
+      data: requirement
     })
     dialogRef.afterClosed().subscribe(async requirementInput => {
       if (requirementInput) {
