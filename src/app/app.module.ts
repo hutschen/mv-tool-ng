@@ -19,6 +19,7 @@ import { TaskViewComponent } from './views/task-view.component';
 import { RequirementModule } from './requirement/requirement.module';
 import { AppBreadcrumbTrailComponent } from './app-breadcrumb-trail.component';
 import { SharedModule } from './shared/shared.module';
+import { MeasureIdGuard, ProjectIdGuard, RequirementIdGuard } from './shared/id.guard';
 
 const routes = [
   { 
@@ -28,22 +29,22 @@ const routes = [
   },
   { 
     path: 'projects/:projectId/requirements', 
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ProjectIdGuard],
     component: RequirementViewComponent 
   },
   {
     path: 'projects/:projectId/documents',
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, ProjectIdGuard],
     component: DocumentViewComponent
   },
   {
     path: 'requirements/:requirementId/measures',
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, RequirementIdGuard],
     component: MeasureViewComponent
   },
   {
     path: 'measures/:measureId/tasks',
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, MeasureIdGuard],
     component: MeasureViewComponent
   },
   { path: 'login', component: LoginViewComponent},
