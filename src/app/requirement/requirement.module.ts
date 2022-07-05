@@ -5,6 +5,7 @@ import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
 import { RequirementDialogComponent } from './requirement-dialog.component';
 import { TargetObjectInputComponent } from './target-object-input.component';
+import { ComplianceDialogComponent } from './compliance-dialog.component';
 
 
 
@@ -12,7 +13,8 @@ import { TargetObjectInputComponent } from './target-object-input.component';
   declarations: [
     RequirementTableComponent,
     RequirementDialogComponent,
-    TargetObjectInputComponent
+    TargetObjectInputComponent,
+    ComplianceDialogComponent
   ],
   imports: [
     CommonModule,
