@@ -36,6 +36,17 @@ export class Requirement implements IRequirement {
     this.compliance_comment = requirement.compliance_comment
     this.project = new Project(requirement.project)
   }
+
+  toRequirementInput(): IRequirementInput {
+    return {
+      reference: this.reference,
+      summary: this.summary,
+      description: this.description,
+      target_object: this.target_object,
+      compliance_status: this.compliance_status,
+      compliance_comment: this.compliance_comment,
+    }
+  }
 }
 
 @Injectable({

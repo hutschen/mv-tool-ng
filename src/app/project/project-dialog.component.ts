@@ -1,15 +1,14 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { IJiraProject, JiraProjectService } from '../shared/services/jira-project.service';
-import { Project, IProjectInput, ProjectService } from '../shared/services/project.service';
+import { Project, IProjectInput } from '../shared/services/project.service';
 
 @Component({
   selector: 'mvtool-project-dialog',
   templateUrl: './project-dialog.component.html',
   styleUrls: ['./project-dialog.component.css']
 })
-export class ProjectDialogComponent implements OnInit {
+export class ProjectDialogComponent {
   projectInput: IProjectInput = {
     name: '',
     description: null,
@@ -18,19 +17,11 @@ export class ProjectDialogComponent implements OnInit {
 
   constructor(
     protected _dialogRef: MatDialogRef<ProjectDialogComponent>, 
-    protected _projectService: ProjectService,
-    protected _jiraProjectService: JiraProjectService,
-    @Inject(MAT_DIALOG_DATA) protected _project: Project | null) { }
-
-  ngOnInit() {
-    if (this._project) {
-      this.projectInput = {
-        name: this._project.name,
-        description: this._project.description,
-        jira_project_id: this._project.jira_project_id,
+    @Inject(MAT_DIALOG_DATA) protected _project: Project | null) {
+      if (this._project) {
+        this.projectInput = this._project.toProjectInput();
       }
     }
-  }
 
   get createMode(): boolean {
     return this._project === null;

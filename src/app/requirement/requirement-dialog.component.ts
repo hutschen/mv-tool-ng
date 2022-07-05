@@ -1,7 +1,7 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { IRequirementInput, Requirement, RequirementService } from '../shared/services/requirement.service';
+import { IRequirementInput, Requirement } from '../shared/services/requirement.service';
 
 export interface IRequirementDialogData {
   projectId: number;
@@ -15,7 +15,7 @@ export interface IRequirementDialogData {
     'textarea { min-height: 100px; }'
   ]
 })
-export class RequirementDialogComponent implements OnInit {
+export class RequirementDialogComponent {
   projectId: number;
   requirementInput: IRequirementInput = {
     reference: null,
@@ -28,27 +28,15 @@ export class RequirementDialogComponent implements OnInit {
 
   constructor(
     protected _dialogRef: MatDialogRef<RequirementDialogComponent>, 
-    protected _requirementService: RequirementService,
     @Inject(MAT_DIALOG_DATA) protected _dialogData: IRequirementDialogData) { 
-      this.projectId = _dialogData.projectId;
-    }
-
-  ngOnInit(): void {
-    const requirement = this._dialogData.requirement;
-    if (requirement) {
-      this.requirementInput = {
-        reference: requirement.reference,
-        summary: requirement.summary,
-        description: requirement.description,
-        target_object: requirement.target_object,
-        compliance_status: requirement.compliance_status,
-        compliance_comment: requirement.compliance_comment,
+      this.projectId = this._dialogData.projectId;
+      if (this._dialogData.requirement) {
+        this.requirementInput = this._dialogData.requirement.toRequirementInput();
       }
     }
-  }
 
   get createMode(): boolean {
-    return this._dialogData === null;
+    return this._dialogData.requirement === null;
   }
 
   onSave(form: NgForm): void {

@@ -28,6 +28,14 @@ export class Project implements IProject {
     this.jira_project = project.jira_project
   }
 
+  toProjectInput(): IProjectInput {
+    return {
+      name: this.name,
+      description: this.description,
+      jira_project_id: this.jira_project_id,
+    }
+  }
+
   get hasPermissionOnJiraProject(): boolean {
     return (
       (this.jira_project === null && this.jira_project_id === null) || 
