@@ -1,16 +1,42 @@
-import { TestBed } from '@angular/core/testing';
-
-import { IdGuard } from './id.guard';
+import {
+  ActivatedRouteSnapshot, Router,
+  RouterStateSnapshot } from '@angular/router';
+import { ProjectIdGuard } from './id.guard';
 
 describe('IdGuard', () => {
-  let guard: IdGuard;
+  let sut: ProjectIdGuard;
+  let routerMock: jasmine.SpyObj<Router>;
+  let stateMock: RouterStateSnapshot;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    guard = TestBed.inject(IdGuard);
+    routerMock = jasmine.createSpyObj('Router', ['navigate']);
+    stateMock = {url: 'test'} as RouterStateSnapshot
+    sut = new ProjectIdGuard(routerMock);
   });
 
   it('should be created', () => {
-    expect(guard).toBeTruthy();
+    expect(sut).toBeTruthy();
   });
+
+  it('should return true when id is valid', () => {
+    const result = sut.canActivate(
+      {paramMap: {get: (_: string) => '1'}} as ActivatedRouteSnapshot, stateMock)
+    expect(result).toEqual(true)
+    expect(routerMock.navigate).not.toHaveBeenCalled()
+  });
+
+  it('should return false when id is negative', () => {
+    const result = sut.canActivate(
+      {paramMap: {get: (_: string) => '-1'}} as ActivatedRouteSnapshot, stateMock)
+    expect(result).toEqual(false)
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/'])
+  });
+
+  it('should return false when id is not a number', () => {
+    const result = sut.canActivate(
+      {paramMap: {get: (_: string) => 'test'}} as ActivatedRouteSnapshot, stateMock)
+    expect(result).toEqual(false)
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/'])
+  });
+
 });
