@@ -1,1 +1,114 @@
-<p>document-table works!</p>
+<div fxLayout="column">
+  <!-- Toolbar -->
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <!-- Buttons -->
+    <div fxLayout="row" fxLayoutAlign="start center">
+      <!-- Button to reload documents -->
+      <button mat-button (click)="onReloadDocuments()">
+        <mat-icon>refresh</mat-icon>
+        Refresh Table
+      </button>
+      <!-- Button to create document -->
+      <button mat-button (click)="onCreateDocument()">
+        <mat-icon>add</mat-icon>
+        Create Document
+      </button>
+      <!-- Button to upload Excel -->
+      <button mat-button (click)="onImportDocuments()">
+        <mat-icon>file_upload</mat-icon>
+        Upload Excel
+      </button>
+      <!-- Button to download Excel -->
+      <button mat-button (click)="onExportDocuments()">
+        <mat-icon>file_download</mat-icon>
+        Download Excel
+      </button>
+    </div>
+
+    <!-- Filter -->
+    <div fxFlex="30" fxLayout="column">
+      <mat-form-field appearance="fill">
+        <mat-label>Filter documents</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput (keyup)="onFilterDocuments($event)" #filterInput>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Documents table -->
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+    <!-- ID Column -->
+    <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+        <td mat-cell *matCellDef="let document"> {{document.id}} </td>
+    </ng-container>
+
+    <!-- Reference column -->
+    <ng-container matColumnDef="reference">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Reference </th>
+        <td mat-cell *matCellDef="let document"> {{document.reference | truncate}} </td>
+    </ng-container>
+
+    <!-- Title column -->
+    <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Title </th>
+        <td mat-cell *matCellDef="let document"> {{document.title | truncate}} </td>
+    </ng-container>
+
+    <!-- Description column -->
+    <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
+        <td mat-cell *matCellDef="let document"> {{document.description | truncate}} </td>
+    </ng-container>
+
+    <!-- Options column -->
+    <ng-container matColumnDef="options">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let document">
+          <div align="end">
+            <button mat-icon-button (click)="onEditDocument(document); $event.stopPropagation()">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="onDeleteDocument(document); $event.stopPropagation()">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <tr
+      mat-row *matRowDef="let document; columns: displayedColumns;"
+      (click)="onDocumentClicked(document)">
+    </tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <!-- Shown when there is no matching data -->
+      <td 
+        *ngIf="filterInput.value"
+        class="mat-cell" colspan="100">
+        No data matching the filter: 
+        <strong>{{filterInput.value}}</strong>
+      </td>
+
+      <!-- Shown when the table is empty -->
+      <td 
+        *ngIf="!filterInput.value" 
+        class="mat-cell" colspan="100">
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+          <div>No documents to display.</div>
+          <button 
+            mat-raised-button (click)="onCreateDocument()"
+            color="accent">
+            <mat-icon>add</mat-icon>
+            Create One
+          </button>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Table paginator -->
+  <mat-paginator [pageSize]="25" [pageSizeOptions]="[10, 25, 50, 100, 150]" showFirstLastButtons>
+  </mat-paginator>
+</div>
