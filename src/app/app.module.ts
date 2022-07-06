@@ -20,6 +20,7 @@ import { RequirementModule } from './requirement/requirement.module';
 import { AppBreadcrumbTrailComponent } from './app-breadcrumb-trail.component';
 import { SharedModule } from './shared/shared.module';
 import { MeasureIdGuard, ProjectIdGuard, RequirementIdGuard } from './shared/id.guard';
+import { DocumentModule } from './document/document.module';
 
 const routes = [
   { 
@@ -72,6 +73,7 @@ const routes = [
     JiraProjectModule,
     ProjectModule,
     RequirementModule,
+    DocumentModule,
   ],
   providers: [
     { provide: ErrorHandler, useClass: GlobalErrorHandler }

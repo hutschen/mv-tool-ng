@@ -8,10 +8,13 @@ import { DocumentDialogComponent } from './document-dialog.component';
 @NgModule({
   declarations: [
     DocumentTableComponent,
-    DocumentDialogComponent
+    DocumentDialogComponent,
   ],
   imports: [
     CommonModule
-  ]
+  ],
+  exports: [
+    DocumentTableComponent,
+  ],
 })
 export class DocumentModule { }

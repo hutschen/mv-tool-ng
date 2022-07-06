@@ -3,12 +3,9 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'mvtool-document-view',
   template: `
-    <p>
-      document-view works!
-    </p>
+    <mvtool-document-table></mvtool-document-table>
   `,
-  styles: [
-  ]
+  styles: []
 })
 export class DocumentViewComponent implements OnInit {
 
