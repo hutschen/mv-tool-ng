@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -15,7 +15,7 @@ import { RequirementDialogComponent } from './requirement-dialog.component';
     '.data-row:hover { cursor: pointer; background-color: #f5f5f5; }',
   ]
 })
-export class RequirementTableComponent implements OnInit {
+export class RequirementTableComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     'reference', 'summary', 'description', 'target_object', 'compliance_status', 
     'compliance_comment', 'options'];
