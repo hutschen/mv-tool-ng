@@ -4,7 +4,7 @@ import {
   HttpTestingController } from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
 import { ProjectService } from './project.service';
-import { DocumentService, IDocumentInput, IDocument } from './document.service';
+import { DocumentService, IDocumentInput, IDocument, Document } from './document.service';
 import { AuthService } from './auth.service';
 
 describe('DocumentService', () => {
@@ -26,11 +26,15 @@ describe('DocumentService', () => {
     sut = TestBed.inject(DocumentService);
     
     inputMock = {
-      title: 'A test document'
+      reference: null,
+      title: 'A test document',
+      description: 'A test document description'
     }
     outputMock = {
       id: 1,
+      reference: inputMock.reference,
       title: inputMock.title,
+      description: inputMock.description,
       project: {
         id: 1,
         name: 'A test project',
@@ -61,8 +65,7 @@ describe('DocumentService', () => {
 
   it('should list documents', (done: DoneFn) => {
     sut.listDocuments(outputMock.project.id).then((value) => {
-      expect(value.length).toEqual(1)
-      expect(value[0]).toEqual(outputMock)
+      expect(value).toEqual([new Document(outputMock)])
       done()
     })
     const mockResponse = httpMock.expectOne({
@@ -74,7 +77,7 @@ describe('DocumentService', () => {
 
   it('should create document', (done: DoneFn) => {
     sut.createDocument(outputMock.project.id, inputMock).then((value) => {
-      expect(value).toEqual(outputMock)
+      expect(value).toEqual(new Document(outputMock))
       done()
     })
     const mockResponse = httpMock.expectOne({
@@ -86,7 +89,7 @@ describe('DocumentService', () => {
 
   it('should get document', (done: DoneFn) => {
     sut.getDocument(outputMock.id).then((value) => {
-      expect(value).toEqual(outputMock)
+      expect(value).toEqual(new Document(outputMock))
       done()
     })
     const mockResponse = httpMock.expectOne({
@@ -98,7 +101,7 @@ describe('DocumentService', () => {
 
   it('should update document', (done: DoneFn) => {
     sut.updateDocument(outputMock.id, inputMock).then((value) => {
-      expect(value).toEqual(outputMock)
+      expect(value).toEqual(new Document(outputMock))
       done()
     })
     const mockResponse = httpMock.expectOne({
