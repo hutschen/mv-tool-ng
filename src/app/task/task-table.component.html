@@ -55,20 +55,20 @@
       <td mat-cell *matCellDef="let task"> {{task.description | truncate}} </td>
     </ng-container>
 
+    <!-- Document column -->
+    <ng-container matColumnDef="document">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Document </th>
+      <td mat-cell *matCellDef="let task">
+        {{ task.document ? task.document.name : '' }}
+      </td>
+    </ng-container>
+
     <!-- Completed column -->
     <ng-container matColumnDef="completed">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Completed </th>
       <td mat-cell *matCellDef="let task">
         <mat-icon *ngIf="task.completed">check</mat-icon>
         <mat-icon *ngIf="!task.completed">close</mat-icon>
-      </td>
-    </ng-container>
-
-    <!-- Document column -->
-    <ng-container matColumnDef="document">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Document </th>
-      <td mat-cell *matCellDef="let task">
-        {{ task.document ? task.document.name : '' }}
       </td>
     </ng-container>
 
