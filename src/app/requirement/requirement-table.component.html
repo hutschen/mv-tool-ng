@@ -1,42 +1,14 @@
 <div fxLayout="column">
   <!-- Toolbar -->
-  <div fxLayout="row" fxLayoutAlign="space-between center">
-    <!-- Buttons -->
-    <div fxLayout="row" fxLayoutAlign="start center">
-      <!-- Button to reload requirements -->
-      <button mat-button (click)="onReloadRequirements()">
-        <mat-icon>refresh</mat-icon>
-        Refresh Table
-      </button>
-
-      <!-- Button to create requirement -->
-      <button mat-button (click)="onCreateRequirement()">
-        <mat-icon>add</mat-icon>
-        Create Requirement
-      </button>
-        
-      <!-- Button to upload Excel -->
-      <button mat-button (click)="onImportRequirements()">
-        <mat-icon>file_upload</mat-icon>
-        Upload Excel
-      </button>
-  
-      <!-- Button to download Excel -->
-      <button mat-button (click)="onExportRequirements()">
-        <mat-icon>file_download</mat-icon>
-        Download Excel
-      </button>
-    </div>
-  
-    <!-- Filter -->
-    <div fxFlex="30" fxLayout="column">
-      <mat-form-field appearance="fill">
-        <mat-label>Filter requirements</mat-label>
-        <mat-icon matPrefix>search</mat-icon>
-        <input matInput (keyup)="onFilterRequirements($event)" #filterInput>
-      </mat-form-field>
-    </div>
-  </div>
+  <mvtool-table-toolbar 
+    (refresh)="onReloadRequirements()"
+    (create)="onCreateRequirement()"
+    (upload)="onImportRequirements()"
+    (download)="onExportRequirements()"
+    (filter)="onFilterRequirements($event)"
+    filterLabel="Filter Requirements"
+    createLabel="Create Requirement">
+  </mvtool-table-toolbar>
 
   <!-- Requirements table -->
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
@@ -115,14 +87,14 @@
     <tr class="mat-row" *matNoDataRow>
       <!-- Shown when there is no matching data -->
       <td 
-        *ngIf="filterInput.value"
+        *ngIf="filterValue"
         class="mat-cell" colspan="100">
         No data matching the filter: 
-        <strong>{{filterInput.value}}</strong>
+        <strong>{{filterValue}}</strong>
       </td>
       <!-- Shown when the table is empty -->
       <td 
-        *ngIf="!filterInput.value" 
+        *ngIf="!filterValue" 
         class="mat-cell" colspan="100">
         <div fxLayout="row" fxLayoutAlign="space-between center">
           <div>No requirements to display.</div>

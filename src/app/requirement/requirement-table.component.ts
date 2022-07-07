@@ -20,6 +20,7 @@ export class RequirementTableComponent implements OnInit, AfterViewInit {
     'reference', 'summary', 'description', 'target_object', 'compliance_status', 
     'compliance_comment', 'options'];
   dataSource = new MatTableDataSource<Requirement>();
+  filterValue: string = '';
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort | null = null;
   @Input() projectId: number | null = null;
@@ -89,8 +90,8 @@ export class RequirementTableComponent implements OnInit, AfterViewInit {
     this.onReloadRequirements()
   }
 
-  onFilterRequirements(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
+  onFilterRequirements(filterValue: string) {
+    this.filterValue = filterValue;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
