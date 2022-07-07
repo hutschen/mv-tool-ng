@@ -11,12 +11,14 @@ import { TaskDialogComponent } from './task-dialog.component';
   selector: 'mvtool-task-table',
   templateUrl: './task-table.component.html',
   styles: [
+    '.spinner { margin: 20px; }',
   ]
 })
 export class TaskTableComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     'summary', 'description', 'completed', 'document', 'options'];
   dataSource = new MatTableDataSource<Task>();
+  dataLoaded = false
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort | null = null;
   @Input() measureId: number | null = null;
@@ -29,6 +31,7 @@ export class TaskTableComponent implements OnInit, AfterViewInit {
 
   async ngOnInit(): Promise<void> {
     await this.onReloadTasks()
+    this.dataLoaded = true
   }
 
   ngAfterViewInit(): void {

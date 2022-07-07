@@ -112,7 +112,7 @@
       </td>
       <!-- Shown when the table is empty -->
       <td 
-        *ngIf="!filterInput.value" 
+        *ngIf="!filterInput.value && dataLoaded" 
         class="mat-cell" colspan="100">
         <div fxLayout="row" fxLayoutAlign="space-between center">
           <div>No tasks to display.</div>
@@ -122,6 +122,13 @@
             <mat-icon>add</mat-icon>
             Create One
           </button>
+        </div>
+      </td>
+      <td
+        *ngIf="!filterInput.value && !dataLoaded"
+        class="mat-cell" colspan="100">
+        <div fxLayout="row" fxLayoutAlign="center center">
+          <mat-spinner class="spinner"></mat-spinner>
         </div>
       </td>
     </tr>
