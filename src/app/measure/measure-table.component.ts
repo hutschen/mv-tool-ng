@@ -62,7 +62,7 @@ export class MeasureTableComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe(async measureInput => {
       if (measureInput && this.requirementId !== null) {
         await this._measureService.updateMeasure(
-          this.requirementId, measureInput)
+          measure.id, measureInput)
         this.onReloadMeasures()
       }
     })
