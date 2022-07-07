@@ -5,6 +5,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { DocumentService, Document } from '../shared/services/document.service';
+import { DocumentDialogComponent } from './document-dialog.component';
 
 @Component({
   selector: 'mvtool-document-table',
@@ -38,15 +39,47 @@ export class DocumentTableComponent implements OnInit, AfterViewInit {
     this.documentClicked.emit(document)
   }
 
-  onCreateDocument(): void {}
-  onEditDocument(document: Document): void {}
-  onDeleteDocument(document: Document): void {}
+  onCreateDocument(): void {
+    let dialogRef = this._dialog.open(DocumentDialogComponent, {
+      width: '500px',
+      data: { projectId: this.projectId, document: null }
+    })
+    dialogRef.afterClosed().subscribe(async documentInput => {
+      if (documentInput && this.projectId !== null) {
+        await this._documentService.createDocument(
+          this.projectId, documentInput)
+        this.onReloadDocuments()
+      }
+    })
+  }
+
+  onEditDocument(document: Document): void {
+    let dialogRef = this._dialog.open(DocumentDialogComponent, {
+      width: '500px',
+      data: { projectId: this.projectId, document: document }
+    })
+    dialogRef.afterClosed().subscribe(async documentInput => {
+      if (documentInput && this.projectId !== null) {
+        await this._documentService.updateDocument(
+          this.projectId, documentInput)
+        this.onReloadDocuments()
+      }
+    })
+  }
+
+  async onDeleteDocument(document: Document): Promise<void> {
+    await this._documentService.deleteDocument(document.id)
+    this.onReloadDocuments()
+  }
+
   onFilterDocuments(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
+
   onExportDocuments(): void {}
   onImportDocuments(): void {}
+  
   async onReloadDocuments(): Promise<void> {
     if (this.projectId !== null) {
       this.dataSource.data = await this._documentService.listDocuments(
