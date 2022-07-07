@@ -22,6 +22,7 @@ import { SharedModule } from './shared/shared.module';
 import { MeasureIdGuard, ProjectIdGuard, RequirementIdGuard } from './shared/id.guard';
 import { DocumentModule } from './document/document.module';
 import { MeasureModule } from './measure/measure.module';
+import { TaskModule } from './task/task.module';
 
 const routes = [
   { 
@@ -76,6 +77,7 @@ const routes = [
     RequirementModule,
     DocumentModule,
     MeasureModule,
+    TaskModule,
   ],
   providers: [
     { provide: ErrorHandler, useClass: GlobalErrorHandler }

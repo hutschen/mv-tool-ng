@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CRUDService } from './crud.service';
-import { IDocument } from './document.service';
+import { Document, IDocument } from './document.service';
 import { IMeasure, Measure, MeasureService } from './measure.service';
 
 export interface ITaskInput {
@@ -21,7 +21,7 @@ export class Task implements ITask {
   description: string | null;
   completed: boolean;
   measure: Measure;
-  document: IDocument | null;
+  document: Document | null = null
 
   constructor(task: ITask) {
     this.id = task.id
@@ -29,7 +29,7 @@ export class Task implements ITask {
     this.description = task.description
     this.completed = task.completed
     this.measure = new Measure(task.measure)
-    this.document = task.document
+    this.document = task.document ? new Document(task.document) : null
   }
 
   toTaskInput(): ITaskInput {

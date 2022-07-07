@@ -1,20 +1,25 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'mvtool-task-view',
   template: `
-    <p>
-      task-view works!
-    </p>
+    <mvtool-task-table
+      [measureId]="measureId">
+    </mvtool-task-table>
   `,
   styles: [
   ]
 })
 export class TaskViewComponent implements OnInit {
+  measureId: number | null = null
 
-  constructor() { }
+  constructor(
+    protected _route: ActivatedRoute,
+    protected _router: Router) { }
 
   ngOnInit(): void {
+    this.measureId = Number(this._route.snapshot.paramMap.get('measureId'))
   }
 
 }
