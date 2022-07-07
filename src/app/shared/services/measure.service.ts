@@ -24,6 +24,13 @@ export class Measure implements IMeasure {
     this.description = measure.description
     this.requirement = new Requirement(measure.requirement)
   }
+
+  toMeasureInput(): IMeasureInput {
+    return {
+      summary: this.summary,
+      description: this.description
+    }
+  }
 }
 
 @Injectable({
