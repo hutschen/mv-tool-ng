@@ -4,6 +4,7 @@ import { TruncatePipe } from './pipes';
 import { HttpClientModule } from '@angular/common/http';
 import { TableOptionsComponent } from './components/table-options.component';
 import { MaterialModule } from '../material/material.module';
+import { TableToolbarComponent } from './components/table-toolbar.component';
 
 
 
@@ -11,6 +12,7 @@ import { MaterialModule } from '../material/material.module';
   declarations: [
     TruncatePipe,
     TableOptionsComponent,
+    TableToolbarComponent,
   ],
   imports: [
     CommonModule,
@@ -20,6 +22,7 @@ import { MaterialModule } from '../material/material.module';
     HttpClientModule,
     TruncatePipe,
     TableOptionsComponent,
+    TableToolbarComponent,
   ]
 })
 export class SharedModule { }
