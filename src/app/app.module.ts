@@ -21,6 +21,7 @@ import { AppBreadcrumbTrailComponent } from './app-breadcrumb-trail.component';
 import { SharedModule } from './shared/shared.module';
 import { MeasureIdGuard, ProjectIdGuard, RequirementIdGuard } from './shared/id.guard';
 import { DocumentModule } from './document/document.module';
+import { MeasureModule } from './measure/measure.module';
 
 const routes = [
   { 
@@ -74,6 +75,7 @@ const routes = [
     ProjectModule,
     RequirementModule,
     DocumentModule,
+    MeasureModule,
   ],
   providers: [
     { provide: ErrorHandler, useClass: GlobalErrorHandler }

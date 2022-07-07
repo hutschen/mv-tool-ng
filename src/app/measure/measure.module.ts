@@ -8,10 +8,13 @@ import { MeasureDialogComponent } from './measure-dialog.component';
 @NgModule({
   declarations: [
     MeasureTableComponent,
-    MeasureDialogComponent
+    MeasureDialogComponent,
   ],
   imports: [
     CommonModule
-  ]
+  ],
+  exports: [
+    MeasureTableComponent,
+  ],
 })
 export class MeasureModule { }
