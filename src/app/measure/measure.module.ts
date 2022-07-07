@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MeasureTableComponent } from './measure-table.component';
 import { MeasureDialogComponent } from './measure-dialog.component';
+import { SharedModule } from '../shared/shared.module';
+import { MaterialModule } from '../material/material.module';
 
 
 
@@ -11,7 +13,9 @@ import { MeasureDialogComponent } from './measure-dialog.component';
     MeasureDialogComponent,
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    SharedModule,
+    MaterialModule,
   ],
   exports: [
     MeasureTableComponent,
