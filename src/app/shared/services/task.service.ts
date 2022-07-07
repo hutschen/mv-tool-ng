@@ -31,6 +31,14 @@ export class Task implements ITask {
     this.measure = new Measure(task.measure)
     this.document = task.document
   }
+
+  toTaskInput(): ITaskInput {
+    return {
+      summary: this.summary,
+      description: this.description,
+      completed: this.completed
+    }
+  }
 }
 
 @Injectable({

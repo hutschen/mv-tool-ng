@@ -4,7 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IMeasureInput, Measure } from '../shared/services/measure.service';
 
 export interface IMeasureDialogData {
-  projectId: number;
+  requirementId: number;
   measure: Measure | null;
 }
 
@@ -25,7 +25,7 @@ export class MeasureDialogComponent {
   constructor(
     protected _dialogRef: MatDialogRef<MeasureDialogComponent>, 
     @Inject(MAT_DIALOG_DATA) protected _dialogData: IMeasureDialogData) { 
-    this.requirementId = this._dialogData.projectId;
+    this.requirementId = this._dialogData.requirementId;
     if (this._dialogData.measure) {
       this.measureInput = this._dialogData.measure.toMeasureInput();
     }
