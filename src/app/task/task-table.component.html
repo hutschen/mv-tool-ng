@@ -1,1 +1,134 @@
-<p>task-table works!</p>
+<!-- Toolbar -->
+<div fxLayout="column">
+  <div fxLayout="row" fxLayoutAlign="space-between center">
+    <!-- Buttons -->
+    <div fxLayout="row" fxLayoutAlign="start center">
+      <!-- Button to reload requirements -->
+      <button mat-button (click)="onReloadTasks()">
+        <mat-icon>refresh</mat-icon>
+        Refresh Table
+      </button>
+      <!-- Button to create requirement -->
+      <button mat-button (click)="onCreateTask()">
+        <mat-icon>add</mat-icon>
+        Create Measure
+      </button>
+      <!-- Button to upload Excel -->
+      <button mat-button (click)="onImportTasks()">
+        <mat-icon>file_upload</mat-icon>
+        Upload Excel
+      </button>
+      <!-- Button to download Excel -->
+      <button mat-button (click)="onExportTasks()">
+        <mat-icon>file_download</mat-icon>
+        Download Excel
+      </button>
+    </div>
+    <!-- Filter -->
+    <div fxFlex="30" fxLayout="column">
+      <mat-form-field appearance="fill">
+        <mat-label>Filter tasks</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput (keyup)="onFilterTasks($event)" #filterInput>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Tasks table -->
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
+    
+    <!-- ID Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+      <td mat-cell *matCellDef="let task"> {{task.id}} </td>
+    </ng-container>
+
+    <!-- Summary column -->
+    <ng-container matColumnDef="summary">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Summary </th>
+      <td mat-cell *matCellDef="let task"> {{task.summary | truncate}} </td>
+    </ng-container>
+
+    <!-- Description column -->
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
+      <td mat-cell *matCellDef="let task"> {{task.description | truncate}} </td>
+    </ng-container>
+
+    <!-- Completed column -->
+    <ng-container matColumnDef="completed">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Completed </th>
+      <td mat-cell *matCellDef="let task">
+        <mat-icon *ngIf="task.completed">check</mat-icon>
+        <mat-icon *ngIf="!task.completed">close</mat-icon>
+      </td>
+    </ng-container>
+
+    <!-- Document column -->
+    <ng-container matColumnDef="document">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Document </th>
+      <td mat-cell *matCellDef="let task">
+        {{ task.document ? task.document.name : '' }}
+      </td>
+    </ng-container>
+
+    <!-- Options column -->
+    <ng-container matColumnDef="options">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let task">
+        <div align="end">
+          <button 
+            mat-icon-button 
+            (click)="onEditTask(task); $event.stopPropagation()">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button 
+            mat-icon-button color="warn" 
+            (click)="onDeleteTask(task); $event.stopPropagation()">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr 
+      mat-header-row 
+      *matHeaderRowDef="displayedColumns; sticky: true">
+    </tr>
+
+    <tr 
+      mat-row
+      class="data-row" 
+      *matRowDef="let measure; columns: displayedColumns;">
+    </tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <!-- Shown when there is no matching data -->
+      <td 
+        *ngIf="filterInput.value"
+        class="mat-cell" colspan="100">
+        No data matching the filter: 
+        <strong>{{filterInput.value}}</strong>
+      </td>
+      <!-- Shown when the table is empty -->
+      <td 
+        *ngIf="!filterInput.value" 
+        class="mat-cell" colspan="100">
+        <div fxLayout="row" fxLayoutAlign="space-between center">
+          <div>No tasks to display.</div>
+          <button 
+            mat-raised-button (click)="onCreateTask()"
+            color="accent">
+            <mat-icon>add</mat-icon>
+            Create One
+          </button>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Table paginator -->
+  <mat-paginator [pageSize]="25" [pageSizeOptions]="[10, 25, 50, 100, 150]" showFirstLastButtons>
+  </mat-paginator>
+</div>
+    

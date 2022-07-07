@@ -15,7 +15,7 @@ import { TaskDialogComponent } from './task-dialog.component';
 })
 export class TaskTableComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
-    'summary', 'description', 'completed', 'options'];
+    'summary', 'description', 'completed', 'document', 'options'];
   dataSource = new MatTableDataSource<Task>();
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort | null = null;
