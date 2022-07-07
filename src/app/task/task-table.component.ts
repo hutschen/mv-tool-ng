@@ -61,8 +61,8 @@ export class TaskTableComponent implements OnInit, AfterViewInit {
     })
     dialogRef.afterClosed().subscribe(async taskInput => {
       if (taskInput && this.measureId !== null) {
-        await this._taskService.createTask(
-          this.measureId, taskInput)
+        await this._taskService.updateTask(
+          task.id, taskInput)
         this.onReloadTasks()
       }
     })
