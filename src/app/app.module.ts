@@ -47,7 +47,7 @@ const routes = [
   {
     path: 'measures/:measureId/tasks',
     canActivate: [AuthGuard, MeasureIdGuard],
-    component: MeasureViewComponent
+    component: TaskViewComponent
   },
   { path: 'login', component: LoginViewComponent},
   { path: '**', redirectTo: 'projects' },

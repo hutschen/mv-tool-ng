@@ -17,7 +17,7 @@
     </span>
     <span *ngIf="requirement">
       <span>/</span>
-      <button mat-button>
+      <button mat-button (click)="onSwitchToRequirement()">
         <span *ngIf="!requirement.reference">{{requirement.summary | truncate:25 }}</span>
         <span *ngIf="requirement.reference">{{requirement.reference | truncate:25 }}</span>
       </button>
@@ -27,7 +27,11 @@
       </span>
       <span *ngIf="measure">
         <span>/</span>
-        <button mat-button>Measure</button>
+        <button mat-button>{{measure.summary | truncate:25 }}</button>
+        <span *ngIf="!task">
+          <span>/</span>
+          <button mat-button>Tasks</button>
+        </span>
         <span *ngIf="task">
           <span>/</span>
           <button mat-button>Task</button>

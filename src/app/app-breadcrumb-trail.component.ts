@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { Measure } from './shared/services/measure.service';
+import { Measure, MeasureService } from './shared/services/measure.service';
 import { Project, ProjectService } from './shared/services/project.service';
 import { Requirement, RequirementService } from './shared/services/requirement.service';
 import { Task } from './shared/services/task.service';
@@ -30,7 +30,8 @@ export class AppBreadcrumbTrailComponent implements OnInit {
   constructor(
     protected _router: Router,
     protected _projectService: ProjectService,
-    protected _requirementService: RequirementService) {}
+    protected _requirementService: RequirementService,
+    protected _measureService: MeasureService) {}
 
   ngOnInit(): void {
     this._router.events.subscribe(event => {
@@ -70,7 +71,7 @@ export class AppBreadcrumbTrailComponent implements OnInit {
 
   onSwitchToRequirement(): void {
     if (this.requirement) {
-      this._router.navigate(['requirements', this.requirement.id])
+      this._router.navigate(['requirements', this.requirement.id, 'measures'])
     }
   }
 
@@ -100,6 +101,9 @@ export class AppBreadcrumbTrailComponent implements OnInit {
           newState.project = newState.requirement.project
           break;
         case 'measures':
+          newState.measure = await this._measureService.getMeasure(idSegment)
+          newState.requirement = newState.measure.requirement
+          newState.project = newState.measure.requirement.project
           break;
         case 'tasks':
           break;
