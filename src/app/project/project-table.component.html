@@ -1,30 +1,12 @@
 <div fxLayout="column">
   <!-- Toolbar -->
-  <div fxLayout="row" fxLayoutAlign="space-between center">
-    <!-- Buttons -->
-    <div fxLayout="row" fxLayoutAlign="start center">
-      <!-- Button to reload projects -->
-      <button mat-button (click)="onReloadProjects()">
-        <mat-icon>refresh</mat-icon>
-        Refresh Table
-      </button>
-
-      <!-- Button to create project -->
-      <button mat-button (click)="onCreateProject()">
-        <mat-icon>add</mat-icon>
-        Create Project
-      </button>
-    </div>
-  
-    <!-- Search -->
-    <div fxFlex="30" fxLayout="column">
-      <mat-form-field appearance="fill">
-        <mat-label>Filter projects</mat-label>
-        <mat-icon matPrefix>search</mat-icon>
-        <input matInput (keyup)="onFilterProjects($event)" #filterInput>
-      </mat-form-field>
-    </div>
-  </div>
+  <mvtool-table-toolbar
+    (refresh)="onReloadProjects()"
+    (create)="onCreateProject()"
+    (filter)="onFilterProjects($event)"
+    filterLabel="Filter Projects"
+    createLabel="Create Project">
+  </mvtool-table-toolbar>
 
   <!-- Projects table -->
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort>
@@ -81,14 +63,14 @@
     <tr class="mat-row" *matNoDataRow>
       <!-- Shown when there is no matching data -->
       <td 
-        *ngIf="filterInput.value"
+        *ngIf="filterValue"
         class="mat-cell" colspan="4">
         No data matching the filter: 
-        <strong>{{filterInput.value}}</strong>
+        <strong>{{filterValue}}</strong>
       </td>
       <!-- Shown when the table is empty -->
       <td 
-        *ngIf="!filterInput.value" 
+        *ngIf="!filterValue" 
         class="mat-cell" colspan="100">
         <div fxLayout="row" fxLayoutAlign="space-between center">
           <div>No projects to display.</div>

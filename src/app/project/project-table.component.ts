@@ -16,6 +16,7 @@ import { ProjectDialogComponent } from './project-dialog.component';
 export class ProjectTableComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['name', 'description', 'jira_project_id', 'options'];
   dataSource: MatTableDataSource<Project> = new MatTableDataSource<Project>();
+  filterValue: string = '';
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort | null = null;
   @Output() projectClicked = new EventEmitter<Project>();
@@ -67,8 +68,8 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
     this.onReloadProjects()
   }
 
-  onFilterProjects(event: Event) { 
-    const filterValue = (event.target as HTMLInputElement).value;
+  onFilterProjects(filterValue: string) { 
+    this.filterValue = filterValue;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
