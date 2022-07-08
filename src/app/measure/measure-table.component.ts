@@ -17,6 +17,7 @@ import { MeasureDialogComponent } from './measure-dialog.component';
 export class MeasureTableComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = ['summary', 'description', 'options'];
   dataSource = new MatTableDataSource<Measure>();
+  filterValue: string = '';
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
   @ViewChild(MatSort) sort: MatSort | null = null;
   @Input() requirementId: number | null = null;
@@ -73,8 +74,8 @@ export class MeasureTableComponent implements OnInit, AfterViewInit {
     this.onReloadMeasures()
   }
 
-  onFilterMeasures(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
+  onFilterMeasures(filterValue: string) {
+    this.filterValue = filterValue;
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
