@@ -1,34 +1,55 @@
 import { Injectable } from '@angular/core';
 import { CRUDService } from './crud.service';
+import { IDocument, Document } from './document.service';
 import { IRequirement, Requirement, RequirementService } from './requirement.service';
 
 export interface IMeasureInput {
   summary: string
   description: string | null
+  completed: boolean
+  jira_issue_id: string | null
+  document_id: number | null
 }
 
-export interface IMeasure extends IMeasureInput {
+export interface IMeasure {
   id: number
+  summary: string
+  description: string | null
+  completed: boolean
+  jira_issue_id: string | null
+  jira_issue: null
   requirement: IRequirement
+  document: IDocument | null
 }
 
 export class Measure implements IMeasure {
   id: number;
   summary: string;
   description: string | null;
+  completed: boolean;
+  jira_issue_id: string | null;
+  jira_issue: null;
   requirement: Requirement;
+  document: Document | null;
 
   constructor(measure: IMeasure) {
     this.id = measure.id
     this.summary = measure.summary
     this.description = measure.description
+    this.completed = measure.completed
+    this.jira_issue_id = measure.jira_issue_id
+    this.jira_issue = measure.jira_issue
     this.requirement = new Requirement(measure.requirement)
+    this.document = measure.document ? new Document(measure.document) : null
   }
 
   toMeasureInput(): IMeasureInput {
     return {
       summary: this.summary,
-      description: this.description
+      description: this.description,
+      completed: this.completed,
+      jira_issue_id: this.jira_issue_id,
+      document_id: this.document ? this.document.id : null
     }
   }
 }

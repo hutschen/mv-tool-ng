@@ -26,11 +26,18 @@ describe('MeasureService', () => {
     inputMock = {
       summary: 'A test measure',
       description: 'A test measure description',
+      completed: false,
+      jira_issue_id: '10000',
+      document_id: null
     }
     outputMock = {
       id: 1,
       summary: inputMock.summary,
       description: inputMock.description,
+      completed: inputMock.completed,
+      jira_issue_id: inputMock.jira_issue_id,
+      jira_issue: null,
+      document: null,
       requirement: {
         id: 1,
         reference: null,
