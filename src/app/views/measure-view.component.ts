@@ -7,8 +7,7 @@ import { Requirement } from '../shared/services/requirement.service';
   selector: 'mvtool-measure-view',
   template: `
     <mvtool-measure-table
-      [requirementId]="requirementId"
-      (measureClicked)="onMeasureClicked($event)">
+      [requirementId]="requirementId">
     </mvtool-measure-table>
   `,
   styles: [
@@ -23,13 +22,5 @@ export class MeasureViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.requirementId = Number(this._route.snapshot.paramMap.get('requirementId'))
-  }
-
-  onRequirementClicked(requirement: Requirement) {
-    this._router.navigate(['/requirements', requirement.id, 'measures']);
-  }
-
-  onMeasureClicked(measure: Measure) {
-    this._router.navigate(['/measures', measure.id, 'tasks']);
   }
 }

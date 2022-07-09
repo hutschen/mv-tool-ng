@@ -18,7 +18,6 @@
     [filterValue]="tableToolbar.filterValue"
     (create)="onCreateMeasure()"
     noContentText="No measures found."
-    (rowClicked)="measureClicked.emit($event)"
     matSort #sort="matSort"
     [sort]="sort">
 

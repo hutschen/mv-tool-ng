@@ -13,7 +13,6 @@ export class MeasureTableComponent implements OnInit {
   displayedColumns: string[] = ['summary', 'description', 'options'];
   data: Measure[] = [];
   @Input() requirementId: number | null = null;
-  @Output() measureClicked = new EventEmitter<Measure>();
 
   constructor(
     protected _measureService: MeasureService, 
