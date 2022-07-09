@@ -10,7 +10,8 @@ import { MeasureDialogComponent } from './measure-dialog.component';
   styles: []
 })
 export class MeasureTableComponent implements OnInit {
-  displayedColumns: string[] = ['summary', 'description', 'options'];
+  displayedColumns: string[] = [
+    'summary', 'description', 'document', 'completed', 'jira_issue', 'options'];
   data: Measure[] = [];
   @Input() requirementId: number | null = null;
 
