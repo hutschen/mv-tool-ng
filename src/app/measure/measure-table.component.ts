@@ -1,8 +1,5 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { MeasureDialogComponent } from './measure-dialog.component';
@@ -10,18 +7,13 @@ import { MeasureDialogComponent } from './measure-dialog.component';
 @Component({
   selector: 'mvtool-measure-table',
   templateUrl: './measure-table.component.html',
-  styles: [
-    '.data-row:hover { cursor: pointer; background-color: #f5f5f5; }',
-  ]
+  styles: []
 })
-export class MeasureTableComponent implements OnInit, AfterViewInit {
+export class MeasureTableComponent implements OnInit {
   displayedColumns: string[] = ['summary', 'description', 'options'];
-  dataSource = new MatTableDataSource<Measure>();
-  filterValue: string = '';
-  @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
-  @ViewChild(MatSort) sort: MatSort | null = null;
+  data: Measure[] = [];
   @Input() requirementId: number | null = null;
-  @Output() measureClicked = new EventEmitter<Measure>()
+  @Output() measureClicked = new EventEmitter<Measure>();
 
   constructor(
     protected _measureService: MeasureService, 
@@ -30,15 +22,6 @@ export class MeasureTableComponent implements OnInit, AfterViewInit {
 
   async ngOnInit(): Promise<void> {
     await this.onReloadMeasures()
-  }
-
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
-  onMeasureClicked(measure: Measure): void {
-    this.measureClicked.emit(measure)
   }
 
   onCreateMeasure(): void {
@@ -74,18 +57,12 @@ export class MeasureTableComponent implements OnInit, AfterViewInit {
     this.onReloadMeasures()
   }
 
-  onFilterMeasures(filterValue: string) {
-    this.filterValue = filterValue;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
   onExportMeasures() {}
   onImportMeasures() {}
 
   async onReloadMeasures() {
     if(this.requirementId !== null) {
-      this.dataSource.data = await this._measureService.listMeasures(
-        this.requirementId)
+      this.data = await this._measureService.listMeasures(this.requirementId)
     }
   }
 }
