@@ -15,14 +15,12 @@ import { JiraProjectModule } from './jira-project/jira-project.module';
 import { RequirementViewComponent } from './views/requirement-view.component';
 import { DocumentViewComponent } from './views/document-view.component';
 import { MeasureViewComponent } from './views/measure-view.component';
-import { TaskViewComponent } from './views/task-view.component';
 import { RequirementModule } from './requirement/requirement.module';
 import { AppBreadcrumbTrailComponent } from './app-breadcrumb-trail.component';
 import { SharedModule } from './shared/shared.module';
-import { MeasureIdGuard, ProjectIdGuard, RequirementIdGuard } from './shared/id.guard';
+import { ProjectIdGuard, RequirementIdGuard } from './shared/id.guard';
 import { DocumentModule } from './document/document.module';
 import { MeasureModule } from './measure/measure.module';
-import { TaskModule } from './task/task.module';
 
 const routes = [
   { 
@@ -45,11 +43,6 @@ const routes = [
     canActivate: [AuthGuard, RequirementIdGuard],
     component: MeasureViewComponent
   },
-  {
-    path: 'measures/:measureId/tasks',
-    canActivate: [AuthGuard, MeasureIdGuard],
-    component: TaskViewComponent
-  },
   { path: 'login', component: LoginViewComponent},
   { path: '**', redirectTo: 'projects' },
 ]
@@ -63,7 +56,6 @@ const routes = [
     RequirementViewComponent,
     DocumentViewComponent,
     MeasureViewComponent,
-    TaskViewComponent,
     AppBreadcrumbTrailComponent
   ],
   imports: [
@@ -77,7 +69,6 @@ const routes = [
     RequirementModule,
     DocumentModule,
     MeasureModule,
-    TaskModule,
   ],
   providers: [
     { provide: ErrorHandler, useClass: GlobalErrorHandler }
