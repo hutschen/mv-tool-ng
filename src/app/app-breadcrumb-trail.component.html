@@ -21,21 +21,9 @@
         <span *ngIf="!requirement.reference">{{requirement.summary | truncate:25 }}</span>
         <span *ngIf="requirement.reference">{{requirement.reference | truncate:25 }}</span>
       </button>
-      <span *ngIf="!measure">
+      <span>
         <span>/</span>
         <button mat-button>Measures</button>
-      </span>
-      <span *ngIf="measure">
-        <span>/</span>
-        <button mat-button>{{measure.summary | truncate:25 }}</button>
-        <span *ngIf="!task">
-          <span>/</span>
-          <button mat-button>Tasks</button>
-        </span>
-        <span *ngIf="task">
-          <span>/</span>
-          <button mat-button>Task</button>
-        </span>
       </span>
     </span>
   </span>

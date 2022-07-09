@@ -3,13 +3,10 @@ import { NavigationEnd, Router } from '@angular/router';
 import { Measure, MeasureService } from './shared/services/measure.service';
 import { Project, ProjectService } from './shared/services/project.service';
 import { Requirement, RequirementService } from './shared/services/requirement.service';
-import { Task } from './shared/services/task.service';
 
 interface IBreadcrumbTrailState {
   project: Project | null;
   requirement: Requirement | null;
-  measure: Measure | null;
-  task: Task | null;
   showDocuments: boolean;
   hide: boolean;
 }
@@ -22,8 +19,6 @@ interface IBreadcrumbTrailState {
 export class AppBreadcrumbTrailComponent implements OnInit {
   project: Project | null = null
   requirement: Requirement | null = null
-  measure: Measure | null = null
-  task: Task | null = null
   showDocuments: boolean = false
   hide: boolean = false
 
@@ -79,8 +74,6 @@ export class AppBreadcrumbTrailComponent implements OnInit {
     let newState: IBreadcrumbTrailState = {
       project: null,
       requirement: null,
-      measure: null,
-      task: null,
       showDocuments: false,
       hide: false
     }
@@ -100,13 +93,6 @@ export class AppBreadcrumbTrailComponent implements OnInit {
           newState.requirement = await this._requirementService.getRequirement(idSegment)
           newState.project = newState.requirement.project
           break;
-        case 'measures':
-          newState.measure = await this._measureService.getMeasure(idSegment)
-          newState.requirement = newState.measure.requirement
-          newState.project = newState.measure.requirement.project
-          break;
-        case 'tasks':
-          break;
         default:
           newState.hide = true
           break;
@@ -121,8 +107,6 @@ export class AppBreadcrumbTrailComponent implements OnInit {
     // Apply new state
     this.project = newState.project
     this.requirement = newState.requirement
-    this.measure = newState.measure
-    this.task = newState.task
     this.showDocuments = newState.showDocuments
     this.hide = newState.hide
   }
