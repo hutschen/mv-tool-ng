@@ -1,8 +1,5 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute } from '@angular/router';
 import { Requirement, RequirementService } from '../shared/services/requirement.service';
 import { ComplianceDialogComponent } from './compliance-dialog.component';
@@ -11,18 +8,13 @@ import { RequirementDialogComponent } from './requirement-dialog.component';
 @Component({
   selector: 'mvtool-requirement-table',
   templateUrl: './requirement-table.component.html',
-  styles: [
-    '.data-row:hover { cursor: pointer; background-color: #f5f5f5; }',
-  ]
+  styles: []
 })
-export class RequirementTableComponent implements OnInit, AfterViewInit {
+export class RequirementTableComponent implements OnInit {
   displayedColumns: string[] = [
     'reference', 'summary', 'description', 'target_object', 'compliance_status', 
     'compliance_comment', 'options'];
-  dataSource = new MatTableDataSource<Requirement>();
-  filterValue: string = '';
-  @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
-  @ViewChild(MatSort) sort: MatSort | null = null;
+  data: Requirement[] = []
   @Input() projectId: number | null = null;
   @Output() requirementClicked = new EventEmitter<Requirement>()
 
@@ -33,15 +25,6 @@ export class RequirementTableComponent implements OnInit, AfterViewInit {
 
   async ngOnInit(): Promise<void> {
     await this.onReloadRequirements()
-  }
-
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
-  onRequirementClicked(requirement: Requirement): void {
-    this.requirementClicked.emit(requirement)
   }
   
   onCreateRequirement(): void {
@@ -90,17 +73,12 @@ export class RequirementTableComponent implements OnInit, AfterViewInit {
     this.onReloadRequirements()
   }
 
-  onFilterRequirements(filterValue: string) {
-    this.filterValue = filterValue;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
   onExportRequirements() {}
   onImportRequirements() {}
 
   async onReloadRequirements() {
     if(this.projectId !== null) {
-      this.dataSource.data = await this._requirementService.listRequirements(
+      this.data = await this._requirementService.listRequirements(
         this.projectId)
     }
   }

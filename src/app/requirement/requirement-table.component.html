@@ -14,11 +14,14 @@
   <!-- Requirements table -->
   <mvtool-table
     [displayedColumns]="displayedColumns"
-    [data]="dataSource.data"
+    [data]="data"
     [filterValue]="tableToolbar.filterValue"
     (create)="onCreateRequirement()"
-    (rowClicked)="onRequirementClicked($event)" matSort #mySort="matSort"
-    [sort]="mySort">
+    noContentText="No requirements found."
+    (rowClicked)="requirementClicked.emit($event)" 
+    matSort #sort="matSort"
+    [sort]="sort">
+
     <!-- ID Column -->
     <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef> ID </th>
