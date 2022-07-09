@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TableOptionsComponent } from './components/table-options.component';
 import { MaterialModule } from '../material/material.module';
 import { TableToolbarComponent } from './components/table-toolbar.component';
+import { TableComponent } from './components/table.component';
 
 
 
@@ -13,6 +14,7 @@ import { TableToolbarComponent } from './components/table-toolbar.component';
     TruncatePipe,
     TableOptionsComponent,
     TableToolbarComponent,
+    TableComponent,
   ],
   imports: [
     CommonModule,
