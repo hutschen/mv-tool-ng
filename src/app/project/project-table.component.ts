@@ -1,8 +1,5 @@
-import { AfterViewInit, Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
 import { Project, ProjectService } from '../shared/services/project.service';
 import { ProjectDialogComponent } from './project-dialog.component';
 
@@ -13,12 +10,9 @@ import { ProjectDialogComponent } from './project-dialog.component';
     '.data-row:hover { cursor: pointer; background-color: #f5f5f5; }',
   ]
 })
-export class ProjectTableComponent implements OnInit, AfterViewInit {
+export class ProjectTableComponent implements OnInit {
   displayedColumns: string[] = ['name', 'description', 'jira_project_id', 'options'];
-  dataSource: MatTableDataSource<Project> = new MatTableDataSource<Project>();
-  filterValue: string = '';
-  @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
-  @ViewChild(MatSort) sort: MatSort | null = null;
+  data: Project[] = []
   @Output() projectClicked = new EventEmitter<Project>();
 
   constructor(
@@ -27,15 +21,6 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
 
   async ngOnInit() {
     this.onReloadProjects()
-  }
-
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
-  onProjectClicked(project: Project) {
-    this.projectClicked.emit(project);
   }
 
   onCreateProject() {
@@ -68,12 +53,7 @@ export class ProjectTableComponent implements OnInit, AfterViewInit {
     this.onReloadProjects()
   }
 
-  onFilterProjects(filterValue: string) { 
-    this.filterValue = filterValue;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
   async onReloadProjects() {
-    this.dataSource.data = await this._projectService.listProjects()
+    this.data = await this._projectService.listProjects()
   }
 }
