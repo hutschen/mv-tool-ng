@@ -25,6 +25,7 @@ import { TableComponent } from './components/table.component';
     TruncatePipe,
     TableOptionsComponent,
     TableToolbarComponent,
+    TableComponent
   ]
 })
 export class SharedModule { }

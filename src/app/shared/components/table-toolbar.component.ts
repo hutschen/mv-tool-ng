@@ -40,7 +40,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
       <!-- Filter -->
       <div 
-        *ngIf="filter.observed"
+        *ngIf="filter.observed || showFilter"
         fxFlex="30" fxLayout="column">
         <mat-form-field appearance="fill">
           <mat-label>{{ filterLabel }}</mat-label>
@@ -63,11 +63,13 @@ export class TableToolbarComponent {
   @Input() uploadLabel: string = 'Upload Excel';
   @Input() downloadLabel: string = 'Download Excel';
   @Input() filterLabel: string = 'Filter';
+  @Input() showFilter: boolean = false;
+  filterValue: string = '';
 
   constructor() { }
 
   onFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.filter.emit(filterValue);
+    this.filterValue = (event.target as HTMLInputElement).value;
+    this.filter.emit(this.filterValue);
   }
 }
