@@ -10,7 +10,8 @@ import { Project } from '../shared/services/project.service';
           href="{{project.jira_project.url}}" 
           target="_blank" rel="noopener noreferrer">
           <mat-icon>open_in_new</mat-icon>
-          {{project.jira_project.name}} / {{project.jira_project.key}}
+          {{project.jira_project.key | truncate }} /
+          {{project.jira_project.name | truncate }}
         </a>
       </span>
       <span *ngIf="!project.hasPermissionOnJiraProject">
