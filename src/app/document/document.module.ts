@@ -4,6 +4,7 @@ import { DocumentTableComponent } from './document-table.component';
 import { DocumentDialogComponent } from './document-dialog.component';
 import { MaterialModule } from '../material/material.module';
 import { SharedModule } from '../shared/shared.module';
+import { DocumentInputComponent } from './document-input.component';
 
 
 
@@ -11,6 +12,7 @@ import { SharedModule } from '../shared/shared.module';
   declarations: [
     DocumentTableComponent,
     DocumentDialogComponent,
+    DocumentInputComponent,
   ],
   imports: [
     CommonModule,
