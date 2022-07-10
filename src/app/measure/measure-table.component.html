@@ -43,7 +43,10 @@
     <ng-container matColumnDef="document">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Document </th>
       <td mat-cell *matCellDef="let measure">
-        {{ measure.document ? measure.document.name : '' }}
+        <span *ngIf="measure.document">
+          {{ measure.document.reference | truncate }} 
+          {{ measure.document.title | truncate }}
+        </span>
       </td>
     </ng-container>
 
