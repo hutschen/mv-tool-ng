@@ -32,17 +32,29 @@ describe('Project', () => {
     expect(sut).toBeTruthy();
   });
 
+  it('should check if JIRA project is assigned', () => {
+    expect(sut.hasJiraProject).toBeFalse();
+    sut.jira_project = jiraProjectMock;
+    expect(sut.hasJiraProject).toBeTrue();
+    sut.jira_project_id = '10000';
+    expect(sut.hasJiraProject).toBeTrue();
+    sut.jira_project = null;
+    expect(sut.hasJiraProject).toBeTrue();
+    sut.jira_project_id = null;
+    expect(sut.hasJiraProject).toBeFalse();
+  });
+
   it('should check that user is permitted to view JIRA project', () => {
-    expect(sut.hasPermissionOnJiraProject).toBeTruthy();
+    expect(sut.hasPermissionOnJiraProject).toBeTrue();
     sut.jira_project_id = '10000'
     sut.jira_project = jiraProjectMock
-    expect(sut.hasPermissionOnJiraProject).toBeTruthy();
+    expect(sut.hasPermissionOnJiraProject).toBeTrue();
   })
 
   it('should check that user is not permitted to view JIRA project', () => {
-    expect(sut.hasPermissionOnJiraProject).toBeTruthy();
+    expect(sut.hasPermissionOnJiraProject).toBeTrue();
     sut.jira_project_id = '10000'
-    expect(sut.hasPermissionOnJiraProject).toBeFalsy();
+    expect(sut.hasPermissionOnJiraProject).toBeFalse();
   })
 })
 

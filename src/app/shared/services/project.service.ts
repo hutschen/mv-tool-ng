@@ -36,6 +36,10 @@ export class Project implements IProject {
     }
   }
 
+  get hasJiraProject(): boolean {
+    return (this.jira_project !== null || this.jira_project_id !== null)
+  }
+
   get hasPermissionOnJiraProject(): boolean {
     return (
       (this.jira_project === null && this.jira_project_id === null) || 
