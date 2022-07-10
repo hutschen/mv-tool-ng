@@ -53,6 +53,16 @@ export class Measure implements IMeasure {
       document_id: this.document ? this.document.id : null
     }
   }
+
+  get hasJiraIssue(): boolean {
+    return (this.jira_issue !== null || this.jira_issue_id !== null)
+  }
+
+  get hasPermissionOnJiraIssue(): boolean {
+    return (
+      (this.jira_issue === null && this.jira_issue_id === null) || 
+      (this.jira_issue !== null && this.jira_issue_id !== null))
+  }
 }
 
 @Injectable({

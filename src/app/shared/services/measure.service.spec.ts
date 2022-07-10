@@ -6,6 +6,83 @@ import { CRUDService } from './crud.service';
 import { 
   MeasureService, IMeasureInput, IMeasure, Measure } from './measure.service';
 import { AuthService } from './auth.service';
+import { IJiraIssue } from './jira-issue.service';
+
+describe('Measure', () => {
+  let sut: Measure;
+  let jiraIssueMock: IJiraIssue;
+
+  beforeEach(() => {
+    sut = new Measure({
+      id: 1,
+      summary: 'A test measure',
+      description: 'A test measure description',
+      completed: false,
+      jira_issue_id: null,
+      jira_issue: null,
+      document: null,
+      requirement: {
+        id: 1,
+        reference: null,
+        summary: 'A test requirement',
+        description: 'A test requirement description',
+        target_object: null,
+        compliance_status: null,
+        compliance_comment: null,
+        project: {
+          id: 1,
+          name: 'A test project',
+          description: 'A test project description',
+          jira_project_id: null,
+          jira_project: null
+        }
+      }
+    })
+    jiraIssueMock = {
+      id: '10000',
+      summary: 'A test issue',
+      description: 'A test issue description',
+      key: 'MT-1',
+      url: 'https://...',
+      project_id: '10000',
+      issuetype_id: '10000',
+      status: {
+        name: 'Backlog',
+        color_name: 'blue',
+        completed: false,
+      }
+    }
+  });
+
+  it('should be created', () => {
+    expect(sut).toBeTruthy();
+  });
+
+  it('should check if JIRA issue is assigned', () => {
+    expect(sut.hasJiraIssue).toBeFalse();
+    sut.jira_issue = jiraIssueMock;
+    expect(sut.hasJiraIssue).toBeTrue();
+    sut.jira_issue_id = '10000';
+    expect(sut.hasJiraIssue).toBeTrue();
+    sut.jira_issue = null;
+    expect(sut.hasJiraIssue).toBeTrue();
+    sut.jira_issue_id = null;
+    expect(sut.hasJiraIssue).toBeFalse();
+  });
+
+  it('should check that user is permitted to view JIRA issue', () => {
+    expect(sut.hasPermissionOnJiraIssue).toBeTrue();
+    sut.jira_issue_id = '10000'
+    sut.jira_issue = jiraIssueMock
+    expect(sut.hasPermissionOnJiraIssue).toBeTrue();
+  });
+
+  it('should check that user is not permitted to view JIRA issue', () => {
+    expect(sut.hasPermissionOnJiraIssue).toBeTrue();
+    sut.jira_issue_id = '10000'
+    expect(sut.hasPermissionOnJiraIssue).toBeFalse();
+  });
+})
 
 describe('MeasureService', () => {
   let sut: MeasureService;
