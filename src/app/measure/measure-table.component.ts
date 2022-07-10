@@ -1,6 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute } from '@angular/router';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { MeasureDialogComponent } from './measure-dialog.component';
 
@@ -17,7 +16,6 @@ export class MeasureTableComponent implements OnInit {
 
   constructor(
     protected _measureService: MeasureService, 
-    protected _route: ActivatedRoute,
     protected _dialog: MatDialog) {}
 
   async ngOnInit(): Promise<void> {
