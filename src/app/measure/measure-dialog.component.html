@@ -25,7 +25,10 @@
     </mat-form-field>
 
     <!-- Assign document -->
-    <mvtool-document-input></mvtool-document-input>
+    <mvtool-document-input 
+      [requirementId]="requirementId"
+      [(documentId)]="measureInput.document_id">
+    </mvtool-document-input>
 
     <!-- Assign JIRA issue -->
 
