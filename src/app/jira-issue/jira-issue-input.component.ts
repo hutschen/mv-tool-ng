@@ -8,12 +8,28 @@ import { JiraIssueDialogComponent } from './jira-issue-dialog.component';
 @Component({
   selector: 'mvtool-jira-issue-input',
   template: `
-    <span *ngIf="project?.hasPermissionOnJiraProject && project?.hasJiraProject">
-      <!-- Button to create jira issue -->
-      <button mat-button (click)="onCreateJiraIssue()">
-        <mat-icon>add</mat-icon>
-        Create JIRA Issue
-      </button>
+    <span *ngIf="project">
+      <span *ngIf="project.hasPermissionOnJiraProject">
+        <!-- Button to create jira issue -->
+        <span *ngIf="project.hasJiraProject">
+          <button mat-button (click)="onCreateJiraIssue()">
+            <mat-icon>add</mat-icon>
+            Create JIRA Issue
+          </button>
+        </span>
+        <span *ngIf="!project.hasJiraProject">
+          <mat-icon 
+            matTooltip="To this project is no JIRA project assigned">
+            info
+          </mat-icon>
+        </span>
+      </span>
+      <span *ngIf="!project.hasPermissionOnJiraProject">
+        <mat-icon 
+          matTooltip="You have not the permission to create issues on the JIRA project">
+          block
+        </mat-icon>
+      </span>
     </span>
   `,
   styles: [
