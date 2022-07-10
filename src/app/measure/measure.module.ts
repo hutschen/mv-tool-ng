@@ -5,6 +5,7 @@ import { MeasureDialogComponent } from './measure-dialog.component';
 import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
 import { DocumentModule } from '../document/document.module';
+import { JiraIssueModule } from '../jira-issue/jira-issue.module';
 
 
 
@@ -18,6 +19,7 @@ import { DocumentModule } from '../document/document.module';
     SharedModule,
     MaterialModule,
     DocumentModule,
+    JiraIssueModule,
   ],
   exports: [
     MeasureTableComponent,

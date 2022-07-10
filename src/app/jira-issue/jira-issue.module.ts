@@ -12,6 +12,10 @@ import { JiraIssueLabelComponent } from './jira-issue-label.component';
   ],
   imports: [
     CommonModule
+  ],
+  exports: [
+    JiraIssueInputComponent,
+    JiraIssueLabelComponent,
   ]
 })
 export class JiraIssueModule { }
