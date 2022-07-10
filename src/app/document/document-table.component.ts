@@ -1,9 +1,5 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { ActivatedRoute } from '@angular/router';
 import { DocumentService, Document } from '../shared/services/document.service';
 import { DocumentDialogComponent } from './document-dialog.component';
 
@@ -13,30 +9,18 @@ import { DocumentDialogComponent } from './document-dialog.component';
   styles: [
   ]
 })
-export class DocumentTableComponent implements OnInit, AfterViewInit {
+export class DocumentTableComponent implements OnInit {
   displayedColumns: string[] = ['reference', 'title', 'description', 'options'];
-  dataSource = new MatTableDataSource<Document>()
-  @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
-  @ViewChild(MatSort) sort: MatSort | null = null;
+  data: Document[] = [];
   @Input() projectId: number | null = null;
   @Output() documentClicked = new EventEmitter<Document>()
 
   constructor(
     protected _documentService: DocumentService, 
-    protected _route: ActivatedRoute,
     protected _dialog: MatDialog) {}
 
   async ngOnInit(): Promise<void> {
     await this.onReloadDocuments()
-  }
-
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
-  onDocumentClicked(document: Document): void {
-    this.documentClicked.emit(document)
   }
 
   onCreateDocument(): void {
@@ -72,17 +56,12 @@ export class DocumentTableComponent implements OnInit, AfterViewInit {
     this.onReloadDocuments()
   }
 
-  onFilterDocuments(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
   onExportDocuments(): void {}
   onImportDocuments(): void {}
   
   async onReloadDocuments(): Promise<void> {
     if (this.projectId !== null) {
-      this.dataSource.data = await this._documentService.listDocuments(
+      this.data = await this._documentService.listDocuments(
         this.projectId)
     }
   }
