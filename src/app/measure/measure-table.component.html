@@ -55,6 +55,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header> JIRA Issue </th>
       <td mat-cell *matCellDef="let measure">
         <mvtool-jira-issue-label
+          [measure]="measure"
           (click)="$event.stopPropagation()">
         </mvtool-jira-issue-label>
       </td>
