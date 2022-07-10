@@ -24,14 +24,15 @@
       <textarea name="description" matInput [(ngModel)]="measureInput.description"></textarea>
     </mat-form-field>
 
+    <!-- Assign document -->
+    <mvtool-document-input></mvtool-document-input>
+
+    <!-- Assign JIRA issue -->
+
     <!-- Completed checkbox -->
     <mat-checkbox name="completed" [(ngModel)]="measureInput.completed">
       Completed
     </mat-checkbox>
-
-    <!-- Assign document -->
-
-    <!-- Assign JIRA issue -->
   </form>
 </div>
 <!-- Actions -->

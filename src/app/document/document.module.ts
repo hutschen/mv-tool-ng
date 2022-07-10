@@ -21,6 +21,7 @@ import { DocumentInputComponent } from './document-input.component';
   ],
   exports: [
     DocumentTableComponent,
+    DocumentInputComponent,
   ],
 })
 export class DocumentModule { }
