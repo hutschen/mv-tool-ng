@@ -3,9 +3,20 @@ import { RequirementService } from '../shared/services/requirement.service';
 
 @Component({
   selector: 'mvtool-target-object-input',
-  templateUrl: './target-object-input.component.html',
-  styles: [
-  ]
+  template: `
+    <div fxLayout="column">
+      <mat-form-field appearance="fill">
+        <mat-label>Target object</mat-label>
+        <input type="text" matInput [(ngModel)]="filterValue" [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let targetObject of filteredTargetObjects" [value]="targetObject">
+            {{targetObject}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+  `,
+  styles: []
 })
 export class TargetObjectInputComponent implements OnInit {
   @Input() projectId: number | null = null;
