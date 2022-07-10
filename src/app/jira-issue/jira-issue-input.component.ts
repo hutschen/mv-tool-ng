@@ -1,20 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Measure } from '../shared/services/measure.service';
 
 @Component({
   selector: 'mvtool-jira-issue-input',
   template: `
-    <p>
-      jira-issue-input works!
-    </p>
+    <div>
+      <button mat-button>
+        <mat-icon>add</mat-icon>
+        Create JIRA issue
+      </button>
+    </div>
   `,
   styles: [
   ]
 })
-export class JiraIssueInputComponent implements OnInit {
+export class JiraIssueInputComponent {
+  @Input() measure: Measure | null = null
 
   constructor() { }
 
-  ngOnInit(): void {
-  }
+  createJiraIssue(): void {
 
+  }
 }
