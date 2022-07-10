@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CRUDService } from './crud.service';
 import { IDocument, Document } from './document.service';
+import { IJiraIssue } from './jira-issue.service';
 import { IRequirement, Requirement, RequirementService } from './requirement.service';
 
 export interface IMeasureInput {
@@ -17,7 +18,7 @@ export interface IMeasure {
   description: string | null
   completed: boolean
   jira_issue_id: string | null
-  jira_issue: null
+  jira_issue: IJiraIssue | null
   requirement: IRequirement
   document: IDocument | null
 }
@@ -28,7 +29,7 @@ export class Measure implements IMeasure {
   description: string | null;
   completed: boolean;
   jira_issue_id: string | null;
-  jira_issue: null;
+  jira_issue: IJiraIssue | null;
   requirement: Requirement;
   document: Document | null;
 
