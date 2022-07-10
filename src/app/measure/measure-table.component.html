@@ -54,10 +54,19 @@
     <ng-container matColumnDef="jira_issue">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> JIRA Issue </th>
       <td mat-cell *matCellDef="let measure">
-        <mvtool-jira-issue-label
-          [measure]="measure"
-          (click)="$event.stopPropagation()">
-        </mvtool-jira-issue-label>
+        <span *ngIf="measure.hasJiraIssue">
+          <mvtool-jira-issue-label
+            [measure]="measure"
+            (click)="$event.stopPropagation()">
+          </mvtool-jira-issue-label>
+        </span>
+        <span *ngIf="!measure.hasJiraIssue">
+          <mvtool-jira-issue-input
+            [projectId]="measure.requirement.project.id"
+            [measureInput]="measure.toMeasureInput()"
+            (click)="$event.stopPropagation()">
+          </mvtool-jira-issue-input>
+        </span>
       </td>
     </ng-container>
 
