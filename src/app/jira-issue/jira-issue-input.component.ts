@@ -38,7 +38,7 @@ import { JiraIssueDialogComponent } from './jira-issue-dialog.component';
 export class JiraIssueInputComponent implements OnInit {
   @Input() projectId: number | null = null;
   @Input() measureInput: IMeasureInput | null = null;
-  @Output() onJiraIssueInput = new EventEmitter<IJiraIssue>();
+  @Output() jiraIssueCreated = new EventEmitter<IJiraIssue>();
   project: Project | null = null;
 
   constructor(
@@ -64,7 +64,7 @@ export class JiraIssueInputComponent implements OnInit {
       if (jiraIssueInput && this.project?.jira_project_id) {
         const jiraIssue = await this._jiraIssueService.createJiraIssue(
           this.project.jira_project_id, jiraIssueInput);
-        this.onJiraIssueInput.emit(jiraIssue);
+        this.jiraIssueCreated.emit(jiraIssue);
       }
     })
   }

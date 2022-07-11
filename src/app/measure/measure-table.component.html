@@ -64,6 +64,7 @@
           <mvtool-jira-issue-input
             [projectId]="measure.requirement.project.id"
             [measureInput]="measure.toMeasureInput()"
+            (jiraIssueCreated)="onJiraIssueCreated($event, measure)"
             (click)="$event.stopPropagation()">
           </mvtool-jira-issue-input>
         </span>

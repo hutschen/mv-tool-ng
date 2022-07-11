@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { IJiraIssue } from '../shared/services/jira-issue.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { MeasureDialogComponent } from './measure-dialog.component';
 
@@ -52,6 +53,13 @@ export class MeasureTableComponent implements OnInit {
 
   async onDeleteMeasure(measure: Measure): Promise<void> {
     await this._measureService.deleteMeasure(measure.id)
+    this.onReloadMeasures()
+  }
+
+  async onJiraIssueCreated(jiraIssue: IJiraIssue, measure: Measure): Promise<void> {
+    const measureInput = measure.toMeasureInput()
+    measureInput.jira_issue_id = jiraIssue.id
+    await this._measureService.updateMeasure(measure.id, measureInput)
     this.onReloadMeasures()
   }
 
