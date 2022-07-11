@@ -1,0 +1,44 @@
+<div mat-dialog-title>
+  <h1>
+    <span>Create JIRA Issue</span>
+  </h1>
+</div>
+<!-- Content -->
+<div mat-dialog-content>
+  <form 
+    id="jiraIssueForm" #form="ngForm" (submit)="onSave(form)" fxLayout="column">
+
+    <!-- Select issue type -->
+    <mat-form-field class="form-field-width" appearance="fill">
+      <mat-label>Issue type</mat-label>
+      <mat-select name="jiraIssueType" [(ngModel)]="jiraIssueInput.issuetype_id" required>
+        <mat-option *ngFor="let jiraIssueType of jiraIssueTypes" [value]="jiraIssueType.id">
+          {{jiraIssueType.name | truncate }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Summary input -->
+    <mat-form-field class="form-field-width" appearance="fill">
+      <mat-label>Summary</mat-label>
+      <input name="summary" matInput [(ngModel)]="jiraIssueInput.summary" required>
+    </mat-form-field>
+
+    <!-- Description input -->
+    <mat-form-field class="form-field-width" appearance="fill">
+      <mat-label>Description</mat-label>
+      <textarea name="description" matInput [(ngModel)]="jiraIssueInput.description"></textarea>
+    </mat-form-field>
+  </form>
+</div>
+<!-- Actions -->
+<div mat-dialog-actions align="end">
+  <button mat-button class="form-button" (click)="onCancel()">
+    <mat-icon>cancel</mat-icon>
+    Cancel
+  </button>
+  <button mat-raised-button disabled="{{form.invalid}}" class="form-button" color="accent" type="submit" form="jiraIssueForm">
+    <mat-icon>save</mat-icon>
+    Create
+  </button>
+</div>
