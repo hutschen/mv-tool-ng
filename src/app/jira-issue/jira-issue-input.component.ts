@@ -8,7 +8,7 @@ import { JiraIssueDialogComponent } from './jira-issue-dialog.component';
 @Component({
   selector: 'mvtool-jira-issue-input',
   template: `
-    <span *ngIf="project">
+    <span *ngIf="project && !loading">
       <span *ngIf="project.hasPermissionOnJiraProject">
         <!-- Button to create jira issue -->
         <span *ngIf="project.hasJiraProject">
@@ -31,6 +31,9 @@ import { JiraIssueDialogComponent } from './jira-issue-dialog.component';
         </mat-icon>
       </span>
     </span>
+    <div fxLayout="column" fxLayoutAlign="center center">
+      <mat-spinner color="accent" diameter="20" *ngIf="loading"></mat-spinner>
+    </div>
   `,
   styles: [
   ]
@@ -40,6 +43,7 @@ export class JiraIssueInputComponent implements OnInit {
   @Input() measureInput: IMeasureInput | null = null;
   @Output() jiraIssueCreated = new EventEmitter<IJiraIssue>();
   project: Project | null = null;
+  loading: boolean = false;
 
   constructor(
     protected _projectService: ProjectService,
@@ -62,6 +66,7 @@ export class JiraIssueInputComponent implements OnInit {
     })
     dialogRef.afterClosed().subscribe(async jiraIssueInput => {
       if (jiraIssueInput && this.project?.jira_project_id) {
+        this.loading = true
         const jiraIssue = await this._jiraIssueService.createJiraIssue(
           this.project.jira_project_id, jiraIssueInput);
         this.jiraIssueCreated.emit(jiraIssue);
