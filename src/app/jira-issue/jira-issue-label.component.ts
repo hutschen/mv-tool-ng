@@ -10,8 +10,7 @@ import { Measure } from '../shared/services/measure.service';
           href="{{measure.jira_issue.url}}" 
           target="_blank" rel="noopener noreferrer">
           <mat-icon>open_in_new</mat-icon>
-          {{measure.jira_issue.key | truncate }} / 
-          {{measure.jira_issue.summary | truncate }}
+          {{measure.jira_issue.key | truncate }}
           <mat-icon *ngIf="measure.jira_issue.status.completed">check</mat-icon>
           <mat-icon *ngIf="!measure.jira_issue.status.completed">close</mat-icon>
         </a>
