@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { IJiraIssueInput } from '../shared/services/jira-issue.service';
+import { IJiraIssue, IJiraIssueInput, JiraIssueService } from '../shared/services/jira-issue.service';
 import { IMeasureInput } from '../shared/services/measure.service';
 import { Project, ProjectService } from '../shared/services/project.service';
 import { JiraIssueDialogComponent } from './jira-issue-dialog.component';
@@ -38,11 +38,12 @@ import { JiraIssueDialogComponent } from './jira-issue-dialog.component';
 export class JiraIssueInputComponent implements OnInit {
   @Input() projectId: number | null = null;
   @Input() measureInput: IMeasureInput | null = null;
-  @Output() onJiraIssueInput = new EventEmitter<IJiraIssueInput>();
+  @Output() onJiraIssueInput = new EventEmitter<IJiraIssue>();
   project: Project | null = null;
 
   constructor(
     protected _projectService: ProjectService,
+    protected _jiraIssueService: JiraIssueService,
     protected _dialog: MatDialog) { }
 
   async ngOnInit(): Promise<void> {
@@ -59,9 +60,11 @@ export class JiraIssueInputComponent implements OnInit {
         measureInput: this.measureInput
       }
     })
-    dialogRef.afterClosed().subscribe(jiraIssueInput => {
-      if (jiraIssueInput) {
-        this.onJiraIssueInput.emit(jiraIssueInput);
+    dialogRef.afterClosed().subscribe(async jiraIssueInput => {
+      if (jiraIssueInput && this.project?.jira_project_id) {
+        const jiraIssue = await this._jiraIssueService.createJiraIssue(
+          this.project.jira_project_id, jiraIssueInput);
+        this.onJiraIssueInput.emit(jiraIssue);
       }
     })
   }
