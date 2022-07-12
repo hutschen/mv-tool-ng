@@ -5,11 +5,13 @@ import { ProjectTableComponent } from './project-table.component';
 import { SharedModule } from '../shared/shared.module';
 import { ProjectDialogComponent } from './project-dialog.component';
 import { JiraProjectModule } from '../jira-project/jira-project.module';
+import { ProjectCardComponent } from './project-card.component';
 
 @NgModule({
   declarations: [
     ProjectTableComponent,
-    ProjectDialogComponent
+    ProjectDialogComponent,
+    ProjectCardComponent
   ],
   imports: [
     CommonModule,

@@ -6,6 +6,7 @@ import { MaterialModule } from '../material/material.module';
 import { RequirementDialogComponent } from './requirement-dialog.component';
 import { TargetObjectInputComponent } from './target-object-input.component';
 import { ComplianceDialogComponent } from './compliance-dialog.component';
+import { RequirementCardComponent } from './requirement-card.component';
 
 
 
@@ -14,7 +15,8 @@ import { ComplianceDialogComponent } from './compliance-dialog.component';
     RequirementTableComponent,
     RequirementDialogComponent,
     TargetObjectInputComponent,
-    ComplianceDialogComponent
+    ComplianceDialogComponent,
+    RequirementCardComponent
   ],
   imports: [
     CommonModule,
