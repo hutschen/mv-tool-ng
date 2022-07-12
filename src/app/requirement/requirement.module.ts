@@ -26,7 +26,8 @@ import { RequirementCardComponent } from './requirement-card.component';
   exports: [
     RequirementTableComponent,
     RequirementDialogComponent,
-    TargetObjectInputComponent
+    TargetObjectInputComponent,
+    RequirementCardComponent,
   ]
 })
 export class RequirementModule { }

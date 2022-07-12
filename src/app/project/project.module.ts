@@ -20,7 +20,8 @@ import { ProjectCardComponent } from './project-card.component';
     JiraProjectModule,
   ],
   exports: [
-    ProjectTableComponent
+    ProjectTableComponent,
+    ProjectCardComponent,
   ]
 })
 export class ProjectModule { }
