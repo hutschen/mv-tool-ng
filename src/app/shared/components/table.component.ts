@@ -6,8 +6,8 @@ import { MatColumnDef, MatHeaderRowDef, MatNoDataRow, MatRowDef, MatTable, MatTa
 @Component({
   selector: 'mvtool-table',
   template: `
-    <div fxLayout="column">        
-      <table mat-table [dataSource]="_dataSource" class="mat-elevation-z8">
+    <div fxLayout="column" class="mat-elevation-z3">        
+      <table mat-table [dataSource]="_dataSource">
         <ng-content></ng-content>
         <tr 
           mat-header-row 
