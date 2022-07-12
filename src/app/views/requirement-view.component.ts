@@ -1,26 +1,34 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Project, ProjectService } from '../shared/services/project.service';
 import { Requirement } from '../shared/services/requirement.service';
 
 @Component({
   selector: 'mvtool-requirement-view',
   template: `
-    <mvtool-requirement-table 
-      [projectId]="projectId"
-      (requirementClicked)="onRequirementClicked($event)">
-    </mvtool-requirement-table>
+    <div *ngIf="project" fxLayout="column">
+      <mvtool-project-card [project]="project"></mvtool-project-card>
+      <mat-divider></mat-divider>
+      <mvtool-requirement-table 
+        [projectId]="project.id"
+        (requirementClicked)="onRequirementClicked($event)">
+      </mvtool-requirement-table>
+    </div>
   `,
-  styles: []
+  styles: [
+  ]
 })
 export class RequirementViewComponent implements OnInit {
-  projectId: number | null = null
+  project: Project | null = null;
 
   constructor(
     protected _route: ActivatedRoute,
-    protected _router: Router) { }
+    protected _router: Router,
+    protected _projectService: ProjectService) { }
 
-  ngOnInit() {
-    this.projectId = Number(this._route.snapshot.paramMap.get('projectId'))
+  async ngOnInit(): Promise<void> {
+    const projectId = Number(this._route.snapshot.paramMap.get('projectId'))
+    this.project = await this._projectService.getProject(projectId);
   }
 
   onRequirementClicked(requirement: Requirement) {

@@ -1,22 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Project, ProjectService } from '../shared/services/project.service';
 
 @Component({
   selector: 'mvtool-document-view',
   template: `
-    <mvtool-document-table [projectId]="projectId">
-    </mvtool-document-table>
+    <div *ngIf="project" fxLayout="column">
+      <mvtool-project-card [project]="project"></mvtool-project-card>
+      <mat-divider></mat-divider>
+      <mvtool-document-table [projectId]="project.id">
+      </mvtool-document-table>
+    </div>
   `,
   styles: []
 })
 export class DocumentViewComponent implements OnInit {
-  projectId: number | null = null
+  project: Project | null = null
 
   constructor(
     protected _route: ActivatedRoute,
-    protected _router: Router) { }
+    protected _router: Router,
+    protected _projectService: ProjectService) { }
 
-  ngOnInit(): void {
-    this.projectId = Number(this._route.snapshot.paramMap.get('projectId'))
+  async ngOnInit(): Promise<void> {
+    const projectId = Number(this._route.snapshot.paramMap.get('projectId'))
+    this.project = await this._projectService.getProject(projectId)
   }
 }
