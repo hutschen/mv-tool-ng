@@ -13,6 +13,7 @@ import { ProjectDialogComponent } from './project-dialog.component';
 export class ProjectTableComponent implements OnInit {
   displayedColumns: string[] = ['name', 'description', 'jira_project_id', 'options'];
   data: Project[] = []
+  dataLoaded: boolean = false
   @Output() projectClicked = new EventEmitter<Project>();
 
   constructor(
@@ -21,6 +22,7 @@ export class ProjectTableComponent implements OnInit {
 
   async ngOnInit() {
     this.onReloadProjects()
+    this.dataLoaded = true
   }
 
   onCreateProject() {

@@ -13,9 +13,11 @@
   <mvtool-table
     [displayedColumns]="displayedColumns"
     [data]="data"
+    [dataLoaded]="dataLoaded"
     [filterValue]="tableToolbar.filterValue"
     (create)="onCreateProject()"
     noContentText="No projects found."
+    loadingText="Loading projects..."
     (rowClicked)="projectClicked.emit($event)"
     matSort #sort="matSort"
     [sort]="sort">
