@@ -12,6 +12,7 @@ import { DocumentDialogComponent } from './document-dialog.component';
 export class DocumentTableComponent implements OnInit {
   displayedColumns: string[] = ['reference', 'title', 'description', 'options'];
   data: Document[] = [];
+  dataLoaded: boolean = false
   @Input() projectId: number | null = null;
   @Output() documentClicked = new EventEmitter<Document>()
 
@@ -21,6 +22,7 @@ export class DocumentTableComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.onReloadDocuments()
+    this.dataLoaded = true
   }
 
   onCreateDocument(): void {
