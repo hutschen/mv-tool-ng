@@ -14,6 +14,9 @@ import { Requirement } from '../shared/services/requirement.service';
         (requirementClicked)="onRequirementClicked($event)">
       </mvtool-requirement-table>
     </div>
+    <div *ngIf="!project" fxLayout="column" style="height: 50%" fxLayoutAlign="center center">
+      <mat-spinner></mat-spinner>
+    </div>
   `,
   styles: [
   ]

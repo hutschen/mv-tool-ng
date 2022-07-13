@@ -12,9 +12,11 @@ import { Requirement, RequirementService } from '../shared/services/requirement.
         [requirementId]="requirement.id">
       </mvtool-measure-table>
     </div>
+    <div *ngIf="!requirement" fxLayout="column" style="height: 50%" fxLayoutAlign="center center">
+      <mat-spinner></mat-spinner>
+    </div>
   `,
-  styles: [
-  ]
+  styles: []
 })
 export class MeasureViewComponent implements OnInit {
   requirement: Requirement | null = null;

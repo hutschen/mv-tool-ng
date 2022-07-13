@@ -11,6 +11,9 @@ import { Project, ProjectService } from '../shared/services/project.service';
       <mvtool-document-table [projectId]="project.id">
       </mvtool-document-table>
     </div>
+    <div *ngIf="!project" fxLayout="column" style="height: 50%" fxLayoutAlign="center center">
+      <mat-spinner></mat-spinner>
+    </div>
   `,
   styles: []
 })
