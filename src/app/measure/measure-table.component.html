@@ -15,9 +15,11 @@
   <mvtool-table
     [displayedColumns]="displayedColumns"
     [data]="data"
+    [dataLoaded]="dataLoaded"
     [filterValue]="tableToolbar.filterValue"
     (create)="onCreateMeasure()"
     noContentText="No measures found."
+    loadingText="Loading measures..."
     matSort #sort="matSort"
     [sort]="sort">
 

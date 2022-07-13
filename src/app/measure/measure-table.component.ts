@@ -13,6 +13,7 @@ export class MeasureTableComponent implements OnInit {
   displayedColumns: string[] = [
     'summary', 'description', 'document', 'jira_issue', 'completed', 'options'];
   data: Measure[] = [];
+  dataLoaded: boolean = false
   @Input() requirementId: number | null = null;
 
   constructor(
@@ -21,6 +22,7 @@ export class MeasureTableComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.onReloadMeasures()
+    this.dataLoaded = true
   }
 
   onCreateMeasure(): void {
