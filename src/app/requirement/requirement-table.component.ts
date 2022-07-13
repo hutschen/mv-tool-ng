@@ -15,6 +15,7 @@ export class RequirementTableComponent implements OnInit {
     'reference', 'summary', 'description', 'target_object', 'compliance_status', 
     'compliance_comment', 'options'];
   data: Requirement[] = []
+  dataLoaded: boolean = false
   @Input() projectId: number | null = null;
   @Output() requirementClicked = new EventEmitter<Requirement>()
 
@@ -25,6 +26,7 @@ export class RequirementTableComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.onReloadRequirements()
+    this.dataLoaded = true
   }
   
   onCreateRequirement(): void {

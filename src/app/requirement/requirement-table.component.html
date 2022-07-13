@@ -15,9 +15,11 @@
   <mvtool-table
     [displayedColumns]="displayedColumns"
     [data]="data"
+    [dataLoaded]="dataLoaded"
     [filterValue]="tableToolbar.filterValue"
     (create)="onCreateRequirement()"
     noContentText="No requirements found."
+    loadingText="Loading requirements..."
     (rowClicked)="requirementClicked.emit($event)" 
     matSort #sort="matSort"
     [sort]="sort">
