@@ -32,7 +32,7 @@ import { MatColumnDef, MatHeaderRowDef, MatNoDataRow, MatRowDef, MatTable, MatTa
           <td 
             *ngIf="!filterValue" 
             class="mat-cell" colspan="100">
-            <div fxLayout="row" fxLayoutAlign="space-between center">
+            <div *ngIf="dataLoaded" fxLayout="row" fxLayoutAlign="space-between center">
               <div>{{ noContentText }}</div>
               <button
                 *ngIf="create.observed" 
@@ -41,6 +41,10 @@ import { MatColumnDef, MatHeaderRowDef, MatNoDataRow, MatRowDef, MatTable, MatTa
                 <mat-icon>add</mat-icon>
                 {{ createLabel }}
               </button>
+            </div>
+            <div *ngIf="!dataLoaded" fxLayout="row" fxLayoutGap="10px">
+              <mat-spinner diameter="20" color="accent"></mat-spinner>
+              <div>{{ loadingText }}</div>
             </div>
           </td>
         </tr>
@@ -64,7 +68,9 @@ export class TableComponent<T> implements AfterContentInit, AfterViewInit {
 
   @Input() displayedColumns: string[] = []
   @Input() pageSize: number = 25
+  @Input() dataLoaded: boolean = true
   @Input() noContentText: string = 'Nothing to display'
+  @Input() loadingText: string = 'Loading...'
   @Input() createLabel: string = 'Create One'
   @Output() rowClicked = new EventEmitter<T>()
   @Output() create = new EventEmitter<void>()
