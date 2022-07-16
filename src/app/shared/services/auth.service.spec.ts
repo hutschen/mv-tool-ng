@@ -10,7 +10,7 @@ describe('AuthService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     sut = TestBed.inject(AuthService);
-    credentials = environment.credentials
+    credentials = {username: 'username', password: 'password'};
     
     if (sut.isLoggedIn) {
       sut.logOut()
