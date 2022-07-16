@@ -14,7 +14,7 @@ export class DocumentTableComponent implements OnInit {
   data: Document[] = [];
   dataLoaded: boolean = false
   @Input() projectId: number | null = null;
-  @Output() documentClicked = new EventEmitter<Document>()
+  // @Output() documentClicked = new EventEmitter<Document>()
 
   constructor(
     protected _documentService: DocumentService, 

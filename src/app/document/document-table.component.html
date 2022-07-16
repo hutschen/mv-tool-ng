@@ -17,7 +17,6 @@
     [dataLoaded]="dataLoaded"
     [filterValue]="tableToolbar.filterValue"
     (create)="onCreateDocument()"
-    (rowClicked)="documentClicked.emit($event)"
     noContentText="No documents found."
     loadingText="Loading documents..."
     matSort #sort="matSort"
