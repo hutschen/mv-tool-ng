@@ -20,8 +20,8 @@ export class ProjectTableComponent implements OnInit {
     protected _projectService: ProjectService, 
     protected _dialog: MatDialog) {}
 
-  async ngOnInit() {
-    this.onReloadProjects()
+  async ngOnInit(): Promise<void> {
+    await this.onReloadProjects()
     this.dataLoaded = true
   }
 
