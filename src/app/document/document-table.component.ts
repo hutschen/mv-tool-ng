@@ -1,7 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { DocumentService, Document } from '../shared/services/document.service';
-import { DocumentDialogComponent } from './document-dialog.component';
+import { Project } from '../shared/services/project.service';
+import {
+  DocumentDialogComponent,
+  IDocumentDialogData,
+} from './document-dialog.component';
 
 @Component({
   selector: 'mvtool-document-table',
@@ -12,7 +16,7 @@ export class DocumentTableComponent implements OnInit {
   displayedColumns: string[] = ['reference', 'title', 'description', 'options'];
   data: Document[] = [];
   dataLoaded: boolean = false;
-  @Input() projectId: number | null = null;
+  @Input() project: Project | null = null;
   // @Output() documentClicked = new EventEmitter<Document>()
 
   constructor(
@@ -28,12 +32,12 @@ export class DocumentTableComponent implements OnInit {
   onCreateDocument(): void {
     let dialogRef = this._dialog.open(DocumentDialogComponent, {
       width: '500px',
-      data: { projectId: this.projectId, document: null },
+      data: { project: this.project, document: null } as IDocumentDialogData,
     });
     dialogRef.afterClosed().subscribe(async (documentInput) => {
-      if (documentInput && this.projectId !== null) {
+      if (documentInput && this.project) {
         await this._documentService.createDocument(
-          this.projectId,
+          this.project.id,
           documentInput
         );
         this.onReloadDocuments();
@@ -44,14 +48,14 @@ export class DocumentTableComponent implements OnInit {
   onEditDocument(document: Document): void {
     let dialogRef = this._dialog.open(DocumentDialogComponent, {
       width: '500px',
-      data: { projectId: this.projectId, document: document },
+      data: {
+        project: this.project,
+        document: document,
+      } as IDocumentDialogData,
     });
     dialogRef.afterClosed().subscribe(async (documentInput) => {
-      if (documentInput && this.projectId !== null) {
-        await this._documentService.updateDocument(
-          this.projectId,
-          documentInput
-        );
+      if (documentInput) {
+        await this._documentService.updateDocument(document.id, documentInput);
         this.onReloadDocuments();
       }
     });
@@ -66,8 +70,8 @@ export class DocumentTableComponent implements OnInit {
   onImportDocuments(): void {}
 
   async onReloadDocuments(): Promise<void> {
-    if (this.projectId !== null) {
-      this.data = await this._documentService.listDocuments(this.projectId);
+    if (this.project) {
+      this.data = await this._documentService.listDocuments(this.project.id);
     }
   }
 }

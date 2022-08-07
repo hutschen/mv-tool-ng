@@ -8,7 +8,7 @@ import { Project, ProjectService } from '../shared/services/project.service';
     <div *ngIf="project" fxLayout="column">
       <mvtool-project-card [project]="project"></mvtool-project-card>
       <mat-divider></mat-divider>
-      <mvtool-document-table [projectId]="project.id"> </mvtool-document-table>
+      <mvtool-document-table [project]="project"> </mvtool-document-table>
     </div>
     <div
       *ngIf="!project"

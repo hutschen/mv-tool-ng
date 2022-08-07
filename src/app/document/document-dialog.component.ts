@@ -2,9 +2,10 @@ import { Component, Inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IDocumentInput, Document } from '../shared/services/document.service';
+import { Project } from '../shared/services/project.service';
 
 export interface IDocumentDialogData {
-  projectId: number;
+  project: Project;
   document: Document | null;
 }
 
@@ -14,7 +15,7 @@ export interface IDocumentDialogData {
   styles: ['textarea { min-height: 100px; }'],
 })
 export class DocumentDialogComponent {
-  projectId: number;
+  project: Project;
   documentInput: IDocumentInput = {
     reference: null,
     title: '',
@@ -25,7 +26,7 @@ export class DocumentDialogComponent {
     protected _dialogRef: MatDialogRef<DocumentDialogComponent>,
     @Inject(MAT_DIALOG_DATA) protected _dialogData: IDocumentDialogData
   ) {
-    this.projectId = this._dialogData.projectId;
+    this.project = this._dialogData.project;
     if (this._dialogData.document) {
       this.documentInput = this._dialogData.document.toDocumentInput();
     }
