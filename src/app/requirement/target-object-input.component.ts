@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Project } from '../shared/services/project.service';
 import { RequirementService } from '../shared/services/requirement.service';
 
 @Component({
@@ -27,7 +28,7 @@ import { RequirementService } from '../shared/services/requirement.service';
   styles: [],
 })
 export class TargetObjectInputComponent implements OnInit {
-  @Input() projectId: number | null = null;
+  @Input() project: Project | null = null;
   @Input() targetObject: string | null = null;
   @Output() targetObjectChange = new EventEmitter<string | null>();
   targetObjects: string[] = [];
@@ -36,9 +37,9 @@ export class TargetObjectInputComponent implements OnInit {
   constructor(protected _requirementService: RequirementService) {}
 
   async ngOnInit(): Promise<void> {
-    if (this.projectId) {
+    if (this.project) {
       const requirements = await this._requirementService.listRequirements(
-        this.projectId
+        this.project.id
       );
       this.targetObjects = <string[]>requirements
         .map(
