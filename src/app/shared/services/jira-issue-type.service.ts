@@ -17,7 +17,7 @@ export class JiraIssueTypeService {
     protected _projects: JiraProjectService) {}
 
   getJiraIssueTypesUrl(jiraProjectId: string) : string {
-    return `${this._projects.getJiraProjectUrl(jiraProjectId)}/issuetypes`
+    return `${this._projects.getJiraProjectUrl(jiraProjectId)}/jira-issuetypes`
   }
 
   async getJiraIssueTypes(jiraProjectId: string): Promise<IJiraIssueType[]> {

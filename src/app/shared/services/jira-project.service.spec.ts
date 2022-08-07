@@ -38,12 +38,12 @@ describe('JiraProjectService', () => {
   });
 
   it('should return jira projects url', () => {
-    expect(sut.getJiraProjectsUrl()).toEqual('jira/projects')
+    expect(sut.getJiraProjectsUrl()).toEqual('jira-projects')
   })
 
   it('should return jira project url', () => {
     expect(sut.getJiraProjectUrl(outputMock.id)
-      ).toEqual(`jira/projects/${outputMock.id}`)
+      ).toEqual(`jira-projects/${outputMock.id}`)
   })
 
   it('should list jira projects', (done: DoneFn) => {
