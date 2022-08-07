@@ -7,16 +7,24 @@ import { RequirementService } from '../shared/services/requirement.service';
     <div fxLayout="column">
       <mat-form-field appearance="fill">
         <mat-label>Target object</mat-label>
-        <input type="text" matInput [(ngModel)]="filterValue" [matAutocomplete]="auto">
+        <input
+          type="text"
+          matInput
+          [(ngModel)]="filterValue"
+          [matAutocomplete]="auto"
+        />
         <mat-autocomplete #auto="matAutocomplete">
-          <mat-option *ngFor="let targetObject of filteredTargetObjects" [value]="targetObject">
-            {{targetObject}}
+          <mat-option
+            *ngFor="let targetObject of filteredTargetObjects"
+            [value]="targetObject"
+          >
+            {{ targetObject }}
           </mat-option>
         </mat-autocomplete>
       </mat-form-field>
     </div>
   `,
-  styles: []
+  styles: [],
 })
 export class TargetObjectInputComponent implements OnInit {
   @Input() projectId: number | null = null;
@@ -25,18 +33,23 @@ export class TargetObjectInputComponent implements OnInit {
   targetObjects: string[] = [];
   filteredTargetObjects: string[] = [];
 
-  constructor(protected _requirementService: RequirementService) { }
+  constructor(protected _requirementService: RequirementService) {}
 
   async ngOnInit(): Promise<void> {
     if (this.projectId) {
       const requirements = await this._requirementService.listRequirements(
-        this.projectId);
-      this.targetObjects = <string[]> requirements.map(
-          r => r.target_object // collect all target objects
-        ).filter(
-          to => to !== null // remove nulls
-        ).filter(
-          (to, index, self) => self.indexOf(to) === index); // remove duplicates
+        this.projectId
+      );
+      this.targetObjects = <string[]>requirements
+        .map(
+          (r) => r.target_object // collect all target objects
+        )
+        .filter(
+          (to) => to !== null // remove nulls
+        )
+        .filter(
+          (to, index, self) => self.indexOf(to) === index // remove duplicates
+        );
     }
   }
 
@@ -48,12 +61,13 @@ export class TargetObjectInputComponent implements OnInit {
     if (filterValue !== null) {
       this.filteredTargetObjects = this._filter(filterValue);
     }
-    this.targetObject = filterValue
-    this.targetObjectChange.emit(filterValue)
+    this.targetObject = filterValue;
+    this.targetObjectChange.emit(filterValue);
   }
 
   protected _filter(filterValue: string) {
-    return this.targetObjects.filter(
-      to => to.toLowerCase().includes(filterValue.toLowerCase()));
+    return this.targetObjects.filter((to) =>
+      to.toLowerCase().includes(filterValue.toLowerCase())
+    );
   }
 }
