@@ -51,7 +51,7 @@ describe('JiraIssueService', () => {
   it('should return jira issues url', () => {
     const jiraProjectId = outputMock.project_id
     expect(sut.getJiraIssuesUrl(
-      jiraProjectId)).toEqual(`jira-projects/${jiraProjectId}/issues`)
+      jiraProjectId)).toEqual(`jira-projects/${jiraProjectId}/jira-issues`)
   });
 
   it('should return jira issue url', () => {

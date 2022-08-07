@@ -32,7 +32,7 @@ export class JiraIssueService {
     protected _jiraProjects: JiraProjectService) {}
 
   getJiraIssuesUrl(jiraProjectId: string) : string {
-    return `${this._jiraProjects.getJiraProjectUrl(jiraProjectId)}/issues`
+    return `${this._jiraProjects.getJiraProjectUrl(jiraProjectId)}/jira-issues`
   }
 
   getJiraIssueUrl(jiraIssueId: string): string {
