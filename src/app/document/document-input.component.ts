@@ -10,18 +10,15 @@ import { RequirementService } from '../shared/services/requirement.service';
         <mat-label>Select document</mat-label>
         <mat-select name="document" [(ngModel)]="documentId_">
           <mat-option>None</mat-option>
-          <mat-option 
-            *ngFor="let document of documents" 
-            [value]="document.id">
-            {{document.reference | truncate }}
-            {{document.title | truncate }}
+          <mat-option *ngFor="let document of documents" [value]="document.id">
+            {{ document.reference | truncate }}
+            {{ document.title | truncate }}
           </mat-option>
         </mat-select>
       </mat-form-field>
     </div>
   `,
-  styles: [
-  ]
+  styles: [],
 })
 export class DocumentInputComponent implements OnInit {
   @Input() requirementId: number | null = null;
@@ -31,15 +28,18 @@ export class DocumentInputComponent implements OnInit {
 
   constructor(
     protected _requirementService: RequirementService,
-    protected _documentService: DocumentService) { }
+    protected _documentService: DocumentService
+  ) {}
 
   async ngOnInit(): Promise<void> {
-    console.log(this.requirementId)
+    console.log(this.requirementId);
     if (this.requirementId) {
       const requirement = await this._requirementService.getRequirement(
-        this.requirementId);
-        this.documents = await this._documentService.listDocuments(
-          requirement.project.id);
+        this.requirementId
+      );
+      this.documents = await this._documentService.listDocuments(
+        requirement.project.id
+      );
     }
   }
 
