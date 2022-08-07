@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Document, DocumentService } from '../shared/services/document.service';
-import { RequirementService } from '../shared/services/requirement.service';
+import { Project } from '../shared/services/project.service';
 
 @Component({
   selector: 'mvtool-document-input',
@@ -21,24 +21,17 @@ import { RequirementService } from '../shared/services/requirement.service';
   styles: [],
 })
 export class DocumentInputComponent implements OnInit {
-  @Input() requirementId: number | null = null;
+  @Input() project: Project | null = null;
   @Input() documentId: number | null = null;
   @Output() documentIdChange = new EventEmitter<number | null>();
   documents: Document[] = [];
 
-  constructor(
-    protected _requirementService: RequirementService,
-    protected _documentService: DocumentService
-  ) {}
+  constructor(protected _documentService: DocumentService) {}
 
   async ngOnInit(): Promise<void> {
-    console.log(this.requirementId);
-    if (this.requirementId) {
-      const requirement = await this._requirementService.getRequirement(
-        this.requirementId
-      );
+    if (this.project) {
       this.documents = await this._documentService.listDocuments(
-        requirement.project.id
+        this.project.id
       );
     }
   }
