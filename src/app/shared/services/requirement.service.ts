@@ -14,6 +14,7 @@ export interface IRequirementInput {
 export interface IRequirement extends IRequirementInput {
   id: number;
   project: IProject;
+  completion: number;
 }
 
 export class Requirement implements IRequirement {
@@ -25,6 +26,7 @@ export class Requirement implements IRequirement {
   compliance_status: string | null;
   compliance_comment: string | null;
   project: Project;
+  completion: number;
 
   constructor(requirement: IRequirement) {
     this.id = requirement.id;
@@ -35,6 +37,7 @@ export class Requirement implements IRequirement {
     this.compliance_status = requirement.compliance_status;
     this.compliance_comment = requirement.compliance_comment;
     this.project = new Project(requirement.project);
+    this.completion = requirement.completion;
   }
 
   toRequirementInput(): IRequirementInput {
