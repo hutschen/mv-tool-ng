@@ -11,9 +11,7 @@ export interface IMeasureDialogData {
 @Component({
   selector: 'mvtool-measure-dialog',
   templateUrl: './measure-dialog.component.html',
-  styles: [
-    'textarea { min-height: 100px; }'
-  ]
+  styles: ['textarea { min-height: 100px; }'],
 })
 export class MeasureDialogComponent {
   requirementId: number;
@@ -22,12 +20,13 @@ export class MeasureDialogComponent {
     description: null,
     completed: false,
     jira_issue_id: null,
-    document_id: null
-  }
-  
+    document_id: null,
+  };
+
   constructor(
-    protected _dialogRef: MatDialogRef<MeasureDialogComponent>, 
-    @Inject(MAT_DIALOG_DATA) protected _dialogData: IMeasureDialogData) { 
+    protected _dialogRef: MatDialogRef<MeasureDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) protected _dialogData: IMeasureDialogData
+  ) {
     this.requirementId = this._dialogData.requirementId;
     if (this._dialogData.measure) {
       this.measureInput = this._dialogData.measure.toMeasureInput();
