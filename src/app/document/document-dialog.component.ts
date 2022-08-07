@@ -11,9 +11,7 @@ export interface IDocumentDialogData {
 @Component({
   selector: 'mvtool-document-dialog',
   templateUrl: './document-dialog.component.html',
-  styles: [
-    'textarea { min-height: 100px; }'
-  ]
+  styles: ['textarea { min-height: 100px; }'],
 })
 export class DocumentDialogComponent {
   projectId: number;
@@ -21,11 +19,12 @@ export class DocumentDialogComponent {
     reference: null,
     title: '',
     description: null,
-  }
+  };
 
   constructor(
-    protected _dialogRef: MatDialogRef<DocumentDialogComponent>, 
-    @Inject(MAT_DIALOG_DATA) protected _dialogData: IDocumentDialogData) { 
+    protected _dialogRef: MatDialogRef<DocumentDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) protected _dialogData: IDocumentDialogData
+  ) {
     this.projectId = this._dialogData.projectId;
     if (this._dialogData.document) {
       this.documentInput = this._dialogData.document.toDocumentInput();
