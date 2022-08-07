@@ -34,7 +34,7 @@ describe('JiraIssueTypeService', () => {
   it('should return jira issue types url', () => {
     const jiraProjectId = '1000'
     expect(sut.getJiraIssueTypesUrl(
-      jiraProjectId)).toEqual(`jira-projects/${jiraProjectId}/issuetypes`)
+      jiraProjectId)).toEqual(`jira-projects/${jiraProjectId}/jira-issuetypes`)
   });
 
   it('should list jira issue types', (done: DoneFn) => {
