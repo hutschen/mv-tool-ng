@@ -3,54 +3,57 @@ import { CRUDService } from './crud.service';
 import { JiraProjectService } from './jira-project.service';
 
 export interface IJiraIssueStatus {
-  name: string,
-  color_name: string,
-  completed: boolean
+  name: string;
+  color_name: string;
+  completed: boolean;
 }
 
 export interface IJiraIssueInput {
-  summary: string,
-  description: string | null,
-  issuetype_id: string,
+  summary: string;
+  description: string | null;
+  issuetype_id: string;
 }
 
 export interface IJiraIssue extends IJiraIssueInput {
-  id: string,
-  key: string,
-  project_id: string,
-  status: IJiraIssueStatus,
-  url: string,
+  id: string;
+  key: string;
+  project_id: string;
+  status: IJiraIssueStatus;
+  url: string;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class JiraIssueService {
-
   constructor(
     protected _crud: CRUDService<IJiraIssueInput, IJiraIssue>,
-    protected _jiraProjects: JiraProjectService) {}
+    protected _jiraProjects: JiraProjectService
+  ) {}
 
-  getJiraIssuesUrl(jiraProjectId: string) : string {
-    return `${this._jiraProjects.getJiraProjectUrl(jiraProjectId)}/jira-issues`
+  getJiraIssuesUrl(jiraProjectId: string): string {
+    return `${this._jiraProjects.getJiraProjectUrl(jiraProjectId)}/jira-issues`;
   }
 
   getJiraIssueUrl(jiraIssueId: string): string {
-    return `jira/issues/${jiraIssueId}`
+    return `jira/issues/${jiraIssueId}`;
   }
 
   async getJiraIssues(jiraProjectId: string): Promise<IJiraIssue[]> {
-    return this._crud.list(this.getJiraIssuesUrl(jiraProjectId))
+    return this._crud.list(this.getJiraIssuesUrl(jiraProjectId));
   }
 
   async createJiraIssue(
-      jiraProjectId: string, 
-      jiraIssueInput: IJiraIssueInput): Promise<IJiraIssue> {
+    jiraProjectId: string,
+    jiraIssueInput: IJiraIssueInput
+  ): Promise<IJiraIssue> {
     return this._crud.create(
-      this.getJiraIssuesUrl(jiraProjectId), jiraIssueInput)
+      this.getJiraIssuesUrl(jiraProjectId),
+      jiraIssueInput
+    );
   }
 
   async getJiraIssue(jiraIssueId: string): Promise<IJiraIssue> {
-    return this._crud.read(this.getJiraIssueUrl(jiraIssueId))
+    return this._crud.read(this.getJiraIssueUrl(jiraIssueId));
   }
 }
