@@ -8,26 +8,32 @@
 </div>
 <!-- Content -->
 <div mat-dialog-content>
-  <form 
-    id="documentForm" #form="ngForm" (submit)="onSave(form)"
-    fxLayout="column">
+  <form
+    id="documentForm"
+    #form="ngForm"
+    (submit)="onSave(form)"
+    fxLayout="column"
+  >
     <!-- Document reference input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Document reference</mat-label>
-      <input name="reference" matInput [(ngModel)]="documentInput.reference">
+      <input name="reference" matInput [(ngModel)]="documentInput.reference" />
     </mat-form-field>
 
     <!-- Document title input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Document title</mat-label>
-      <input name="title" matInput [(ngModel)]="documentInput.title" required>
+      <input name="title" matInput [(ngModel)]="documentInput.title" required />
     </mat-form-field>
 
     <!-- Document description input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Document description</mat-label>
-      <textarea 
-        name="description" matInput [(ngModel)]="documentInput.description">
+      <textarea
+        name="description"
+        matInput
+        [(ngModel)]="documentInput.description"
+      >
       </textarea>
     </mat-form-field>
   </form>
@@ -38,9 +44,17 @@
     <mat-icon>cancel</mat-icon>
     Cancel
   </button>
-  <button mat-raised-button disabled="{{form.invalid}}" class="form-button" color="accent" type="submit" form="documentForm">
+  <button
+    mat-raised-button
+    disabled="{{ form.invalid }}"
+    class="form-button"
+    color="accent"
+    type="submit"
+    form="documentForm"
+  >
     <mat-icon>save</mat-icon>
     <span>&nbsp;</span>
     <span *ngIf="createMode">Create</span>
     <span *ngIf="!createMode">Save</span>
   </button>
+</div>

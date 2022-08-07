@@ -1,10 +1,15 @@
 import { TestBed } from '@angular/core/testing';
-import { 
-  HttpClientTestingModule, 
-  HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
-import { 
-  MeasureService, IMeasureInput, IMeasure, Measure } from './measure.service';
+import {
+  MeasureService,
+  IMeasureInput,
+  IMeasure,
+  Measure,
+} from './measure.service';
 import { AuthService } from './auth.service';
 import { IJiraIssue } from './jira-issue.service';
 
@@ -34,10 +39,12 @@ describe('Measure', () => {
           name: 'A test project',
           description: 'A test project description',
           jira_project_id: null,
-          jira_project: null
-        }
-      }
-    })
+          jira_project: null,
+          completion: 0,
+        },
+        completion: 0,
+      },
+    });
     jiraIssueMock = {
       id: '10000',
       summary: 'A test issue',
@@ -50,8 +57,8 @@ describe('Measure', () => {
         name: 'Backlog',
         color_name: 'blue',
         completed: false,
-      }
-    }
+      },
+    };
   });
 
   it('should be created', () => {
@@ -72,41 +79,41 @@ describe('Measure', () => {
 
   it('should check that user is permitted to view JIRA issue', () => {
     expect(sut.hasPermissionOnJiraIssue).toBeTrue();
-    sut.jira_issue_id = '10000'
-    sut.jira_issue = jiraIssueMock
+    sut.jira_issue_id = '10000';
+    sut.jira_issue = jiraIssueMock;
     expect(sut.hasPermissionOnJiraIssue).toBeTrue();
   });
 
   it('should check that user is not permitted to view JIRA issue', () => {
     expect(sut.hasPermissionOnJiraIssue).toBeTrue();
-    sut.jira_issue_id = '10000'
+    sut.jira_issue_id = '10000';
     expect(sut.hasPermissionOnJiraIssue).toBeFalse();
   });
-})
+});
 
 describe('MeasureService', () => {
   let sut: MeasureService;
-  let crud: CRUDService<IMeasureInput, IMeasure>
-  let httpMock: HttpTestingController
-  let inputMock: IMeasureInput
-  let outputMock: IMeasure
+  let crud: CRUDService<IMeasureInput, IMeasure>;
+  let httpMock: HttpTestingController;
+  let inputMock: IMeasureInput;
+  let outputMock: IMeasure;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule]
+      imports: [HttpClientTestingModule],
     });
-    TestBed.inject(AuthService).logIn({username: 'test', password: 'test'})
-    crud = TestBed.inject(CRUDService)
-    httpMock = TestBed.inject(HttpTestingController)
+    TestBed.inject(AuthService).logIn({ username: 'test', password: 'test' });
+    crud = TestBed.inject(CRUDService);
+    httpMock = TestBed.inject(HttpTestingController);
     sut = TestBed.inject(MeasureService);
-    
+
     inputMock = {
       summary: 'A test measure',
       description: 'A test measure description',
       completed: false,
       jira_issue_id: '10000',
-      document_id: null
-    }
+      document_id: null,
+    };
     outputMock = {
       id: 1,
       summary: inputMock.summary,
@@ -128,93 +135,98 @@ describe('MeasureService', () => {
           name: 'A test project',
           description: 'A test project description',
           jira_project_id: null,
-          jira_project: null
-        }
-      }
-    }
+          jira_project: null,
+          completion: 0,
+        },
+        completion: 0,
+      },
+    };
   });
 
   afterEach(() => {
-    httpMock.verify()
-  })
+    httpMock.verify();
+  });
 
   it('should be created', () => {
     expect(sut).toBeTruthy();
   });
 
   it('should return measures url', () => {
-    const requirementId = outputMock.requirement.id
-    expect(sut.getMeasuresUrl(requirementId)
-      ).toEqual(`requirements/${requirementId}/measures`)
-  })
+    const requirementId = outputMock.requirement.id;
+    expect(sut.getMeasuresUrl(requirementId)).toEqual(
+      `requirements/${requirementId}/measures`
+    );
+  });
 
   it('should return measure url', () => {
-    const measureId = outputMock.id
-    expect(sut.getMeasureUrl(measureId)).toEqual(`measures/${measureId}`)
-  })
+    const measureId = outputMock.id;
+    expect(sut.getMeasureUrl(measureId)).toEqual(`measures/${measureId}`);
+  });
 
   it('should list measures', (done: DoneFn) => {
-    const requirementId = outputMock.requirement.id
-    const measuresList = [outputMock]
+    const requirementId = outputMock.requirement.id;
+    const measuresList = [outputMock];
 
     sut.listMeasures(requirementId).then((value) => {
-      expect(value).toEqual(measuresList.map(measure => new Measure(measure)))
-      done()
-    })
+      expect(value).toEqual(
+        measuresList.map((measure) => new Measure(measure))
+      );
+      done();
+    });
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crud.toAbsoluteUrl(sut.getMeasuresUrl(requirementId))
-    })
-    mockResponse.flush(measuresList)
-  })
+      url: crud.toAbsoluteUrl(sut.getMeasuresUrl(requirementId)),
+    });
+    mockResponse.flush(measuresList);
+  });
 
   it('should create measure', (done: DoneFn) => {
-    const requirementId = outputMock.requirement.id
-    
+    const requirementId = outputMock.requirement.id;
+
     sut.createMeasure(requirementId, inputMock).then((value) => {
-      expect(value).toEqual(new Measure(outputMock))
-      done()
-    })
+      expect(value).toEqual(new Measure(outputMock));
+      done();
+    });
     const mockResponse = httpMock.expectOne({
       method: 'post',
-      url: crud.toAbsoluteUrl(sut.getMeasuresUrl(requirementId))
-    })
-    mockResponse.flush(outputMock)
-  })
+      url: crud.toAbsoluteUrl(sut.getMeasuresUrl(requirementId)),
+    });
+    mockResponse.flush(outputMock);
+  });
 
   it('should get measure', (done: DoneFn) => {
     sut.getMeasure(outputMock.id).then((value) => {
-      expect(value).toEqual(new Measure(outputMock))
-      done()
-    })
+      expect(value).toEqual(new Measure(outputMock));
+      done();
+    });
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crud.toAbsoluteUrl(sut.getMeasureUrl(outputMock.id))
-    })
-    mockResponse.flush(outputMock)
-  })
+      url: crud.toAbsoluteUrl(sut.getMeasureUrl(outputMock.id)),
+    });
+    mockResponse.flush(outputMock);
+  });
 
   it('should update measure', (done: DoneFn) => {
     sut.updateMeasure(outputMock.id, inputMock).then((value) => {
-      expect(value).toEqual(new Measure(outputMock))
-      done()
-    })
+      expect(value).toEqual(new Measure(outputMock));
+      done();
+    });
     const mockResponse = httpMock.expectOne({
       method: 'put',
-      url: crud.toAbsoluteUrl(sut.getMeasureUrl(outputMock.id))
-    })
-    mockResponse.flush(outputMock)
-  })
+      url: crud.toAbsoluteUrl(sut.getMeasureUrl(outputMock.id)),
+    });
+    mockResponse.flush(outputMock);
+  });
 
   it('should delete measure', (done: DoneFn) => {
     sut.deleteMeasure(outputMock.id).then((value) => {
-      expect(value).toBeNull()
-      done()
-    })
+      expect(value).toBeNull();
+      done();
+    });
     const mockResponse = httpMock.expectOne({
       method: 'delete',
-      url: crud.toAbsoluteUrl(sut.getMeasureUrl(outputMock.id))
-    })
-    mockResponse.flush(null)
-  })
+      url: crud.toAbsoluteUrl(sut.getMeasureUrl(outputMock.id)),
+    });
+    mockResponse.flush(null);
+  });
 });

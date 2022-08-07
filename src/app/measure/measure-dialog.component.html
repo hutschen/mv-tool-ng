@@ -8,26 +8,38 @@
 </div>
 <!-- Content -->
 <div mat-dialog-content>
-  <form 
-    id="measureForm" #form="ngForm" (submit)="onSave(form)"
-    fxLayout="column">
-
+  <form
+    id="measureForm"
+    #form="ngForm"
+    (submit)="onSave(form)"
+    fxLayout="column"
+  >
     <!-- Summary input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Measure summary</mat-label>
-      <input name="summary" matInput [(ngModel)]="measureInput.summary" required>
+      <input
+        name="summary"
+        matInput
+        [(ngModel)]="measureInput.summary"
+        required
+      />
     </mat-form-field>
 
     <!-- Description input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Measure description</mat-label>
-      <textarea name="description" matInput [(ngModel)]="measureInput.description"></textarea>
+      <textarea
+        name="description"
+        matInput
+        [(ngModel)]="measureInput.description"
+      ></textarea>
     </mat-form-field>
 
     <!-- Assign document -->
-    <mvtool-document-input 
-      [requirementId]="requirementId"
-      [(documentId)]="measureInput.document_id">
+    <mvtool-document-input
+      [project]="requirement.project"
+      [(documentId)]="measureInput.document_id"
+    >
     </mvtool-document-input>
 
     <!-- Completed checkbox -->
@@ -42,7 +54,14 @@
     <mat-icon>cancel</mat-icon>
     Cancel
   </button>
-  <button mat-raised-button disabled="{{form.invalid}}" class="form-button" color="accent" type="submit" form="measureForm">
+  <button
+    mat-raised-button
+    disabled="{{ form.invalid }}"
+    class="form-button"
+    color="accent"
+    type="submit"
+    form="measureForm"
+  >
     <mat-icon>save</mat-icon>
     <span>&nbsp;</span>
     <span *ngIf="createMode">Create</span>
