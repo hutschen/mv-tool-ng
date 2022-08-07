@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { Project } from '../shared/services/project.service';
 import { Requirement, RequirementService } from '../shared/services/requirement.service';
 import { ComplianceDialogComponent } from './compliance-dialog.component';
 import { RequirementDialogComponent } from './requirement-dialog.component';
@@ -12,32 +13,32 @@ import { RequirementDialogComponent } from './requirement-dialog.component';
 })
 export class RequirementTableComponent implements OnInit {
   displayedColumns: string[] = [
-    'reference', 'summary', 'description', 'target_object', 'compliance_status', 
+    'reference', 'summary', 'description', 'target_object', 'compliance_status',
     'compliance_comment', 'options'];
   data: Requirement[] = []
   dataLoaded: boolean = false
-  @Input() projectId: number | null = null;
+  @Input() project: Project | null = null;
   @Output() requirementClicked = new EventEmitter<Requirement>()
 
   constructor(
-    protected _requirementService: RequirementService, 
+    protected _requirementService: RequirementService,
     protected _route: ActivatedRoute,
-    protected _dialog: MatDialog) {}
+    protected _dialog: MatDialog) { }
 
   async ngOnInit(): Promise<void> {
     await this.onReloadRequirements()
     this.dataLoaded = true
   }
-  
+
   onCreateRequirement(): void {
     let dialogRef = this._dialog.open(RequirementDialogComponent, {
       width: '500px',
-      data: { projectId: this.projectId, requirement: null }
+      data: { projectId: this.project?.id, requirement: null }
     })
     dialogRef.afterClosed().subscribe(async requirementInput => {
-      if (requirementInput && this.projectId !== null) {
+      if (requirementInput && this.project) {
         await this._requirementService.createRequirement(
-          this.projectId, requirementInput)
+          this.project.id, requirementInput)
         this.onReloadRequirements()
       }
     })
@@ -45,7 +46,7 @@ export class RequirementTableComponent implements OnInit {
   onEditRequirement(requirement: Requirement): void {
     let dialogRef = this._dialog.open(RequirementDialogComponent, {
       width: '500px',
-      data: { projectId: this.projectId, requirement: requirement }
+      data: { projectId: this.project?.id, requirement: requirement }
     })
     dialogRef.afterClosed().subscribe(async requirementInput => {
       if (requirementInput) {
@@ -75,13 +76,13 @@ export class RequirementTableComponent implements OnInit {
     this.onReloadRequirements()
   }
 
-  onExportRequirements() {}
-  onImportRequirements() {}
+  onExportRequirements() { }
+  onImportRequirements() { }
 
   async onReloadRequirements() {
-    if(this.projectId !== null) {
+    if (this.project) {
       this.data = await this._requirementService.listRequirements(
-        this.projectId)
+        this.project.id)
     }
   }
 }
