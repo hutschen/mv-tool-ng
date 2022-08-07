@@ -10,7 +10,7 @@ export interface IProjectInput {
 
 export interface IProject extends IProjectInput {
   id: number;
-  jira_project: IJiraProject | null
+  jira_project: IJiraProject | null;
 }
 
 export class Project implements IProject {
@@ -21,11 +21,11 @@ export class Project implements IProject {
   jira_project: IJiraProject | null;
 
   constructor(project: IProject) {
-    this.id = project.id
-    this.name = project.name
-    this.description = project.description
-    this.jira_project_id = project.jira_project_id
-    this.jira_project = project.jira_project
+    this.id = project.id;
+    this.name = project.name;
+    this.description = project.description;
+    this.jira_project_id = project.jira_project_id;
+    this.jira_project = project.jira_project;
   }
 
   toProjectInput(): IProjectInput {
@@ -33,57 +33,65 @@ export class Project implements IProject {
       name: this.name,
       description: this.description,
       jira_project_id: this.jira_project_id,
-    }
+    };
   }
 
   get hasJiraProject(): boolean {
-    return (this.jira_project !== null || this.jira_project_id !== null)
+    return this.jira_project !== null || this.jira_project_id !== null;
   }
 
   get hasPermissionOnJiraProject(): boolean {
     return (
-      (this.jira_project === null && this.jira_project_id === null) || 
-      (this.jira_project !== null && this.jira_project_id !== null))
+      (this.jira_project === null && this.jira_project_id === null) ||
+      (this.jira_project !== null && this.jira_project_id !== null)
+    );
   }
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProjectService {
   constructor(protected _crud: CRUDService<IProjectInput, IProject>) {}
 
   getProjectsUrl(): string {
-    return 'projects'
+    return 'projects';
   }
 
   getProjectUrl(projectId: number): string {
-    return `${this.getProjectsUrl()}/${projectId}`
+    return `${this.getProjectsUrl()}/${projectId}`;
   }
 
   async listProjects(): Promise<Project[]> {
-    const projects = await this._crud.list(this.getProjectsUrl())
-    return projects.map(project => new Project(project))
+    const projects = await this._crud.list(this.getProjectsUrl());
+    return projects.map((project) => new Project(project));
   }
 
   async createProject(projectInput: IProjectInput): Promise<Project> {
-    const project = await this._crud.create(this.getProjectsUrl(), projectInput)
-    return new Project(project)
+    const project = await this._crud.create(
+      this.getProjectsUrl(),
+      projectInput
+    );
+    return new Project(project);
   }
 
   async getProject(projectId: number): Promise<Project> {
-    const project = await this._crud.read(this.getProjectUrl(projectId))
-    return new Project(project)
+    const project = await this._crud.read(this.getProjectUrl(projectId));
+    return new Project(project);
   }
 
   async updateProject(
-      projectId: number, projectInput: IProjectInput): Promise<Project> {
+    projectId: number,
+    projectInput: IProjectInput
+  ): Promise<Project> {
     const project = await this._crud.update(
-      this.getProjectUrl(projectId), projectInput)
-    return new Project(project)
+      this.getProjectUrl(projectId),
+      projectInput
+    );
+    return new Project(project);
   }
 
   async deleteProject(projectId: number): Promise<null> {
-    return this._crud.delete(this.getProjectUrl(projectId))
+    return this._crud.delete(this.getProjectUrl(projectId));
   }
 }
