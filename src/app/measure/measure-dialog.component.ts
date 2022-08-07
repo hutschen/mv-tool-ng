@@ -2,9 +2,10 @@ import { Component, Inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IMeasureInput, Measure } from '../shared/services/measure.service';
+import { Requirement } from '../shared/services/requirement.service';
 
 export interface IMeasureDialogData {
-  requirementId: number;
+  requirement: Requirement;
   measure: Measure | null;
 }
 
@@ -14,7 +15,7 @@ export interface IMeasureDialogData {
   styles: ['textarea { min-height: 100px; }'],
 })
 export class MeasureDialogComponent {
-  requirementId: number;
+  requirement: Requirement;
   measureInput: IMeasureInput = {
     summary: '',
     description: null,
@@ -27,7 +28,7 @@ export class MeasureDialogComponent {
     protected _dialogRef: MatDialogRef<MeasureDialogComponent>,
     @Inject(MAT_DIALOG_DATA) protected _dialogData: IMeasureDialogData
   ) {
-    this.requirementId = this._dialogData.requirementId;
+    this.requirement = this._dialogData.requirement;
     if (this._dialogData.measure) {
       this.measureInput = this._dialogData.measure.toMeasureInput();
     }

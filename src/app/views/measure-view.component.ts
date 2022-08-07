@@ -13,8 +13,7 @@ import {
         [requirement]="requirement"
       ></mvtool-requirement-card>
       <mat-divider></mat-divider>
-      <mvtool-measure-table [requirementId]="requirement.id">
-      </mvtool-measure-table>
+      <mvtool-measure-table [requirement]="requirement"> </mvtool-measure-table>
     </div>
     <div
       *ngIf="!requirement"

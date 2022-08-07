@@ -2,7 +2,11 @@ import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { IJiraIssue } from '../shared/services/jira-issue.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
-import { MeasureDialogComponent } from './measure-dialog.component';
+import { Requirement } from '../shared/services/requirement.service';
+import {
+  IMeasureDialogData,
+  MeasureDialogComponent,
+} from './measure-dialog.component';
 
 @Component({
   selector: 'mvtool-measure-table',
@@ -20,7 +24,7 @@ export class MeasureTableComponent implements OnInit {
   ];
   data: Measure[] = [];
   dataLoaded: boolean = false;
-  @Input() requirementId: number | null = null;
+  @Input() requirement: Requirement | null = null;
 
   constructor(
     protected _measureService: MeasureService,
@@ -35,12 +39,15 @@ export class MeasureTableComponent implements OnInit {
   onCreateMeasure(): void {
     let dialogRef = this._dialog.open(MeasureDialogComponent, {
       width: '500px',
-      data: { requirementId: this.requirementId, measure: null },
+      data: {
+        requirement: this.requirement,
+        measure: null,
+      } as IMeasureDialogData,
     });
     dialogRef.afterClosed().subscribe(async (measureInput) => {
-      if (measureInput && this.requirementId !== null) {
+      if (measureInput && this.requirement) {
         await this._measureService.createMeasure(
-          this.requirementId,
+          this.requirement.id,
           measureInput
         );
         this.onReloadMeasures();
@@ -51,10 +58,10 @@ export class MeasureTableComponent implements OnInit {
   onEditMeasure(measure: Measure): void {
     let dialogRef = this._dialog.open(MeasureDialogComponent, {
       width: '500px',
-      data: { requirementId: this.requirementId, measure },
+      data: { requirement: this.requirement, measure } as IMeasureDialogData,
     });
     dialogRef.afterClosed().subscribe(async (measureInput) => {
-      if (measureInput && this.requirementId !== null) {
+      if (measureInput) {
         await this._measureService.updateMeasure(measure.id, measureInput);
         this.onReloadMeasures();
       }
@@ -80,8 +87,8 @@ export class MeasureTableComponent implements OnInit {
   onImportMeasures() {}
 
   async onReloadMeasures() {
-    if (this.requirementId !== null) {
-      this.data = await this._measureService.listMeasures(this.requirementId);
+    if (this.requirement) {
+      this.data = await this._measureService.listMeasures(this.requirement.id);
     }
   }
 }
