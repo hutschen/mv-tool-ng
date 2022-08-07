@@ -11,6 +11,7 @@ export interface IProjectInput {
 export interface IProject extends IProjectInput {
   id: number;
   jira_project: IJiraProject | null;
+  completion: number;
 }
 
 export class Project implements IProject {
@@ -19,6 +20,7 @@ export class Project implements IProject {
   description: string | null;
   jira_project_id: string | null;
   jira_project: IJiraProject | null;
+  completion: number;
 
   constructor(project: IProject) {
     this.id = project.id;
@@ -26,6 +28,7 @@ export class Project implements IProject {
     this.description = project.description;
     this.jira_project_id = project.jira_project_id;
     this.jira_project = project.jira_project;
+    this.completion = project.completion;
   }
 
   toProjectInput(): IProjectInput {
