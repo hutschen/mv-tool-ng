@@ -40,24 +40,16 @@ import { JiraIssueDialogComponent } from './jira-issue-dialog.component';
   `,
   styles: [],
 })
-export class JiraIssueInputComponent implements OnInit {
-  @Input() projectId: number | null = null;
+export class JiraIssueInputComponent {
+  @Input() project: Project | null = null;
   @Input() measureInput: IMeasureInput | null = null;
   @Output() jiraIssueCreated = new EventEmitter<IJiraIssue>();
-  project: Project | null = null;
   loading: boolean = false;
 
   constructor(
-    protected _projectService: ProjectService,
     protected _jiraIssueService: JiraIssueService,
     protected _dialog: MatDialog
   ) {}
-
-  async ngOnInit(): Promise<void> {
-    if (this.projectId) {
-      this.project = await this._projectService.getProject(this.projectId);
-    }
-  }
 
   onCreateJiraIssue(): void {
     let dialogRef = this._dialog.open(JiraIssueDialogComponent, {

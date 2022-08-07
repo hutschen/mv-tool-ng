@@ -71,7 +71,7 @@
         </span>
         <span *ngIf="!measure.hasJiraIssue">
           <mvtool-jira-issue-input
-            [projectId]="measure.requirement.project.id"
+            [project]="measure.requirement.project"
             [measureInput]="measure.toMeasureInput()"
             (jiraIssueCreated)="onJiraIssueCreated($event, measure)"
             (click)="$event.stopPropagation()"
