@@ -36,7 +36,7 @@ export class JiraIssueService {
   }
 
   getJiraIssueUrl(jiraIssueId: string): string {
-    return `jira/issues/${jiraIssueId}`;
+    return `jira-issues/${jiraIssueId}`;
   }
 
   async getJiraIssues(jiraProjectId: string): Promise<IJiraIssue[]> {

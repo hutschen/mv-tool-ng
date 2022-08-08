@@ -1,10 +1,15 @@
 import { TestBed } from '@angular/core/testing';
-import { 
-  HttpClientTestingModule, 
-  HttpTestingController } from '@angular/common/http/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
 import { AuthService } from './auth.service';
-import { IJiraIssueInput, IJiraIssue, JiraIssueService } from './jira-issue.service';
+import {
+  IJiraIssueInput,
+  IJiraIssue,
+  JiraIssueService,
+} from './jira-issue.service';
 
 describe('JiraIssueService', () => {
   let sut: JiraIssueService;
@@ -15,9 +20,9 @@ describe('JiraIssueService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule]
+      imports: [HttpClientTestingModule],
     });
-    TestBed.inject(AuthService).logIn({username: 'test', password: 'test'});
+    TestBed.inject(AuthService).logIn({ username: 'test', password: 'test' });
     crud = TestBed.inject(CRUDService);
     httpMock = TestBed.inject(HttpTestingController);
     sut = TestBed.inject(JiraIssueService);
@@ -26,7 +31,7 @@ describe('JiraIssueService', () => {
       summary: 'A test JIRA issue',
       description: 'A test JIRA issue description',
       issuetype_id: '10000',
-    }
+    };
 
     outputMock = {
       id: '10000',
@@ -40,8 +45,8 @@ describe('JiraIssueService', () => {
         name: 'Backlog',
         color_name: 'blue',
         completed: false,
-      }
-    }
+      },
+    };
   });
 
   it('should be created', () => {
@@ -49,51 +54,53 @@ describe('JiraIssueService', () => {
   });
 
   it('should return jira issues url', () => {
-    const jiraProjectId = outputMock.project_id
-    expect(sut.getJiraIssuesUrl(
-      jiraProjectId)).toEqual(`jira-projects/${jiraProjectId}/jira-issues`)
+    const jiraProjectId = outputMock.project_id;
+    expect(sut.getJiraIssuesUrl(jiraProjectId)).toEqual(
+      `jira-projects/${jiraProjectId}/jira-issues`
+    );
   });
 
   it('should return jira issue url', () => {
-    const jiraIssueId = outputMock.id
-    expect(sut.getJiraIssueUrl(
-      jiraIssueId)).toEqual(`jira/issues/${jiraIssueId}`)
+    const jiraIssueId = outputMock.id;
+    expect(sut.getJiraIssueUrl(jiraIssueId)).toEqual(
+      `jira-issues/${jiraIssueId}`
+    );
   });
 
   it('should list jira issues', (done: DoneFn) => {
     sut.getJiraIssues(outputMock.project_id).then((value) => {
-      expect(value).toEqual([outputMock])
-      done()
-    })
+      expect(value).toEqual([outputMock]);
+      done();
+    });
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crud.toAbsoluteUrl(sut.getJiraIssuesUrl(outputMock.project_id))
-    })
-    mockResponse.flush([outputMock])
+      url: crud.toAbsoluteUrl(sut.getJiraIssuesUrl(outputMock.project_id)),
+    });
+    mockResponse.flush([outputMock]);
   });
 
   it('should create jira issue', (done: DoneFn) => {
-    const jiraProjectId = outputMock.project_id
+    const jiraProjectId = outputMock.project_id;
     sut.createJiraIssue(jiraProjectId, inputMock).then((value) => {
-      expect(value).toEqual(outputMock)
-      done()
-    })
+      expect(value).toEqual(outputMock);
+      done();
+    });
     const mockResponse = httpMock.expectOne({
       method: 'post',
       url: crud.toAbsoluteUrl(sut.getJiraIssuesUrl(jiraProjectId)),
-    })
-    mockResponse.flush(outputMock)
+    });
+    mockResponse.flush(outputMock);
   });
 
   it('should get jira issue', (done: DoneFn) => {
     sut.getJiraIssue(outputMock.id).then((value) => {
-      expect(value).toEqual(outputMock)
-      done()
-    })
+      expect(value).toEqual(outputMock);
+      done();
+    });
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crud.toAbsoluteUrl(sut.getJiraIssueUrl(outputMock.id))
-    })
-    mockResponse.flush(outputMock)
+      url: crud.toAbsoluteUrl(sut.getJiraIssueUrl(outputMock.id)),
+    });
+    mockResponse.flush(outputMock);
   });
 });
