@@ -20,7 +20,6 @@ export class MeasureDialogComponent {
     summary: '',
     description: null,
     completed: false,
-    jira_issue_id: null,
     document_id: null,
   };
 
