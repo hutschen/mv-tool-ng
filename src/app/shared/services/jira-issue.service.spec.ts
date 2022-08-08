@@ -61,9 +61,9 @@ describe('JiraIssueService', () => {
   });
 
   it('should return jira issue url', () => {
-    const jiraIssueId = outputMock.id;
-    expect(sut.getJiraIssueUrl(jiraIssueId)).toEqual(
-      `jira-issues/${jiraIssueId}`
+    const measureId = 1;
+    expect(sut.getJiraIssueUrl(measureId)).toEqual(
+      `measures/${measureId}/jira-issue`
     );
   });
 
@@ -80,26 +80,27 @@ describe('JiraIssueService', () => {
   });
 
   it('should create jira issue', (done: DoneFn) => {
-    const jiraProjectId = outputMock.project_id;
-    sut.createJiraIssue(jiraProjectId, inputMock).then((value) => {
+    const measureId = 1;
+    sut.createJiraIssue(measureId, inputMock).then((value) => {
       expect(value).toEqual(outputMock);
       done();
     });
     const mockResponse = httpMock.expectOne({
       method: 'post',
-      url: crud.toAbsoluteUrl(sut.getJiraIssuesUrl(jiraProjectId)),
+      url: crud.toAbsoluteUrl(sut.getJiraIssueUrl(measureId)),
     });
     mockResponse.flush(outputMock);
   });
 
   it('should get jira issue', (done: DoneFn) => {
-    sut.getJiraIssue(outputMock.id).then((value) => {
+    const measureId = 1;
+    sut.getJiraIssue(measureId).then((value) => {
       expect(value).toEqual(outputMock);
       done();
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crud.toAbsoluteUrl(sut.getJiraIssueUrl(outputMock.id)),
+      url: crud.toAbsoluteUrl(sut.getJiraIssueUrl(measureId)),
     });
     mockResponse.flush(outputMock);
   });

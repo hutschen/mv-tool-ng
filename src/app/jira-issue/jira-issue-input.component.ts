@@ -4,9 +4,12 @@ import {
   IJiraIssue,
   JiraIssueService,
 } from '../shared/services/jira-issue.service';
-import { IMeasureInput } from '../shared/services/measure.service';
+import { IMeasureInput, Measure } from '../shared/services/measure.service';
 import { Project, ProjectService } from '../shared/services/project.service';
-import { JiraIssueDialogComponent } from './jira-issue-dialog.component';
+import {
+  IJiraIssueDialogData,
+  JiraIssueDialogComponent,
+} from './jira-issue-dialog.component';
 
 @Component({
   selector: 'mvtool-jira-issue-input',
@@ -40,10 +43,10 @@ import { JiraIssueDialogComponent } from './jira-issue-dialog.component';
   `,
   styles: [],
 })
-export class JiraIssueInputComponent {
-  @Input() project: Project | null = null;
-  @Input() measureInput: IMeasureInput | null = null;
+export class JiraIssueInputComponent implements OnInit {
+  @Input() measure: Measure | null = null;
   @Output() jiraIssueCreated = new EventEmitter<IJiraIssue>();
+  project: Project | null = null;
   loading: boolean = false;
 
   constructor(
@@ -51,19 +54,25 @@ export class JiraIssueInputComponent {
     protected _dialog: MatDialog
   ) {}
 
+  ngOnInit(): void {
+    if (this.measure) {
+      this.project = this.measure.requirement.project;
+    }
+  }
+
   onCreateJiraIssue(): void {
     let dialogRef = this._dialog.open(JiraIssueDialogComponent, {
       width: '500px',
       data: {
-        jiraProjectId: this.project?.jira_project_id,
-        measureInput: this.measureInput,
-      },
+        jiraProject: this.project?.jira_project,
+        measure: this.measure,
+      } as IJiraIssueDialogData,
     });
     dialogRef.afterClosed().subscribe(async (jiraIssueInput) => {
-      if (jiraIssueInput && this.project?.jira_project_id) {
+      if (jiraIssueInput && this.measure) {
         this.loading = true;
         const jiraIssue = await this._jiraIssueService.createJiraIssue(
-          this.project.jira_project_id,
+          this.measure.id,
           jiraIssueInput
         );
         this.jiraIssueCreated.emit(jiraIssue);

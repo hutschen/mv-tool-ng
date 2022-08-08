@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CRUDService } from './crud.service';
 import { JiraProjectService } from './jira-project.service';
+import { MeasureService } from './measure.service';
 
 export interface IJiraIssueStatus {
   name: string;
@@ -28,15 +29,16 @@ export interface IJiraIssue extends IJiraIssueInput {
 export class JiraIssueService {
   constructor(
     protected _crud: CRUDService<IJiraIssueInput, IJiraIssue>,
-    protected _jiraProjects: JiraProjectService
+    protected _jiraProjects: JiraProjectService,
+    protected _measureService: MeasureService
   ) {}
 
   getJiraIssuesUrl(jiraProjectId: string): string {
     return `${this._jiraProjects.getJiraProjectUrl(jiraProjectId)}/jira-issues`;
   }
 
-  getJiraIssueUrl(jiraIssueId: string): string {
-    return `jira-issues/${jiraIssueId}`;
+  getJiraIssueUrl(measureId: number): string {
+    return `${this._measureService.getMeasureUrl(measureId)}/jira-issue`;
   }
 
   async getJiraIssues(jiraProjectId: string): Promise<IJiraIssue[]> {
@@ -44,16 +46,17 @@ export class JiraIssueService {
   }
 
   async createJiraIssue(
-    jiraProjectId: string,
+    measureId: number,
     jiraIssueInput: IJiraIssueInput
   ): Promise<IJiraIssue> {
-    return this._crud.create(
-      this.getJiraIssuesUrl(jiraProjectId),
-      jiraIssueInput
-    );
+    return this._crud.create(this.getJiraIssueUrl(measureId), jiraIssueInput);
   }
 
-  async getJiraIssue(jiraIssueId: string): Promise<IJiraIssue> {
-    return this._crud.read(this.getJiraIssueUrl(jiraIssueId));
+  async getJiraIssue(measureId: number): Promise<IJiraIssue> {
+    return this._crud.read(this.getJiraIssueUrl(measureId));
+  }
+
+  async deleteJiraIssue(measureId: number): Promise<null> {
+    return this._crud.delete(this.getJiraIssueUrl(measureId));
   }
 }
