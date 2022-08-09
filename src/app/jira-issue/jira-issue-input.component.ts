@@ -76,6 +76,7 @@ import {
         <div *ngIf="!measure.requirement.project.jira_project">
           <mat-icon
             matTooltip="To this project is no JIRA project assigned or you have not the permission to view it"
+            style="margin-left: 20px;"
           >
             info
           </mat-icon>
