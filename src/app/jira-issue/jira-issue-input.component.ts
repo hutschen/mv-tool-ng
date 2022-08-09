@@ -14,7 +14,7 @@ import {
 @Component({
   selector: 'mvtool-jira-issue-input',
   template: `
-    <div *ngIf="measure">
+    <div *ngIf="measure && !loading">
       <!-- A Jira issue is linked -->
       <div *ngIf="measure.hasLinkedJiraIssue">
         <!-- User has permission to view Jira issue -->
@@ -66,15 +66,10 @@ import {
       <div *ngIf="!measure.hasLinkedJiraIssue">
         <!-- A Jira project exists on which the user has permissions -->
         <div *ngIf="measure.requirement.project.jira_project">
-          <button *ngIf="!loading" mat-button (click)="onCreateJiraIssue()">
+          <button mat-button (click)="onCreateJiraIssue()">
             <mat-icon>add</mat-icon>
             Create issue
           </button>
-          <mat-spinner
-            *ngIf="loading"
-            diameter="20"
-            style="margin-left: 20px;"
-          ></mat-spinner>
         </div>
 
         <!-- No Jira project exists on which the user has permissions -->
@@ -87,6 +82,12 @@ import {
         </div>
       </div>
     </div>
+
+    <mat-spinner
+      *ngIf="loading"
+      diameter="20"
+      style="margin-left: 20px;"
+    ></mat-spinner>
   `,
   styles: [],
 })
