@@ -50,7 +50,7 @@ export class MeasureTableComponent implements OnInit {
           this.requirement.id,
           measureInput
         );
-        this.onReloadMeasures();
+        await this.onReloadMeasures();
       }
     });
   }
@@ -63,24 +63,21 @@ export class MeasureTableComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async (measureInput) => {
       if (measureInput) {
         await this._measureService.updateMeasure(measure.id, measureInput);
-        this.onReloadMeasures();
+        await this.onReloadMeasures();
       }
     });
   }
 
   async onDeleteMeasure(measure: Measure): Promise<void> {
     await this._measureService.deleteMeasure(measure.id);
-    this.onReloadMeasures();
+    await this.onReloadMeasures();
   }
 
   async onJiraIssueCreated(
     jiraIssue: IJiraIssue,
     measure: Measure
   ): Promise<void> {
-    const measureInput = measure.toMeasureInput();
-    measureInput.jira_issue_id = jiraIssue.id;
-    await this._measureService.updateMeasure(measure.id, measureInput);
-    this.onReloadMeasures();
+    await this.onReloadMeasures();
   }
 
   onExportMeasures() {}

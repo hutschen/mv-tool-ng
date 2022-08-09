@@ -66,15 +66,15 @@ describe('Measure', () => {
   });
 
   it('should check if JIRA issue is assigned', () => {
-    expect(sut.hasJiraIssue).toBeFalse();
+    expect(sut.hasLinkedJiraIssue).toBeFalse();
     sut.jira_issue = jiraIssueMock;
-    expect(sut.hasJiraIssue).toBeTrue();
+    expect(sut.hasLinkedJiraIssue).toBeTrue();
     sut.jira_issue_id = '10000';
-    expect(sut.hasJiraIssue).toBeTrue();
+    expect(sut.hasLinkedJiraIssue).toBeTrue();
     sut.jira_issue = null;
-    expect(sut.hasJiraIssue).toBeTrue();
+    expect(sut.hasLinkedJiraIssue).toBeTrue();
     sut.jira_issue_id = null;
-    expect(sut.hasJiraIssue).toBeFalse();
+    expect(sut.hasLinkedJiraIssue).toBeFalse();
   });
 
   it('should check that user is permitted to view JIRA issue', () => {

@@ -62,21 +62,12 @@
     <ng-container matColumnDef="jira_issue">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>JIRA Issue</th>
       <td mat-cell *matCellDef="let measure">
-        <span *ngIf="measure.hasJiraIssue">
-          <mvtool-jira-issue-label
-            [measure]="measure"
-            (click)="$event.stopPropagation()"
-          >
-          </mvtool-jira-issue-label>
-        </span>
-        <span *ngIf="!measure.hasJiraIssue">
-          <mvtool-jira-issue-input
-            [measure]="measure"
-            (jiraIssueCreated)="onJiraIssueCreated($event, measure)"
-            (click)="$event.stopPropagation()"
-          >
-          </mvtool-jira-issue-input>
-        </span>
+        <mvtool-jira-issue-input
+          [measure]="measure"
+          (jiraIssueCreated)="onJiraIssueCreated($event, measure)"
+          (click)="$event.stopPropagation()"
+        >
+        </mvtool-jira-issue-input>
       </td>
     </ng-container>
 

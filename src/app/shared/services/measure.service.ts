@@ -56,7 +56,7 @@ export class Measure implements IMeasure {
     };
   }
 
-  get hasJiraIssue(): boolean {
+  get hasLinkedJiraIssue(): boolean {
     return this.jira_issue !== null || this.jira_issue_id !== null;
   }
 

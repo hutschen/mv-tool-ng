@@ -14,31 +14,36 @@ import {
 @Component({
   selector: 'mvtool-jira-issue-input',
   template: `
-    <span *ngIf="project && !loading">
-      <span *ngIf="project.hasPermissionOnJiraProject">
-        <!-- Button to create jira issue -->
-        <span *ngIf="project.hasJiraProject">
-          <button mat-button (click)="onCreateJiraIssue()">
+    <div *ngIf="measure" fxLayout="row" fxLayoutAlign="center">
+      <!-- A Jira issue is linked -->
+      <div *ngIf="measure.hasLinkedJiraIssue">
+        <mvtool-jira-issue-label [measure]="measure"></mvtool-jira-issue-label>
+      </div>
+
+      <!-- No Jira issue is linked -->
+      <div *ngIf="!measure.hasLinkedJiraIssue">
+        <!-- A Jira project exists on which the user has permissions -->
+        <div *ngIf="measure.requirement.project.jira_project">
+          <button *ngIf="!loading" mat-button (click)="onCreateJiraIssue()">
             <mat-icon>add</mat-icon>
             Create JIRA Issue
           </button>
-        </span>
-        <span *ngIf="!project.hasJiraProject">
-          <mat-icon matTooltip="To this project is no JIRA project assigned">
+          <mat-spinner
+            *ngIf="loading"
+            color="accent"
+            diameter="20"
+          ></mat-spinner>
+        </div>
+
+        <!-- No Jira project exists on which the user has permissions -->
+        <div *ngIf="!measure.requirement.project.jira_project">
+          <mat-icon
+            matTooltip="To this project is no JIRA project assigned or you have not the permission to view it"
+          >
             info
           </mat-icon>
-        </span>
-      </span>
-      <span *ngIf="!project.hasPermissionOnJiraProject">
-        <mat-icon
-          matTooltip="You have not the permission to create issues on the JIRA project"
-        >
-          block
-        </mat-icon>
-      </span>
-    </span>
-    <div fxLayout="column" fxLayoutAlign="center center">
-      <mat-spinner color="accent" diameter="20" *ngIf="loading"></mat-spinner>
+        </div>
+      </div>
     </div>
   `,
   styles: [],
