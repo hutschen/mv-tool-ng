@@ -6,27 +6,30 @@ import { Project } from '../shared/services/project.service';
   template: `
     <span *ngIf="project">
       <span *ngIf="project.hasPermissionOnJiraProject && project.jira_project">
-        <a mat-button
-          href="{{project.jira_project.url}}" 
-          target="_blank" rel="noopener noreferrer">
+        <a
+          mat-button
+          href="{{ project.jira_project.url }}"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           <mat-icon>open_in_new</mat-icon>
-          {{project.jira_project.key | truncate }} /
-          {{project.jira_project.name | truncate }}
+          {{ project.jira_project.key | truncate }} /
+          {{ project.jira_project.name | truncate }}
         </a>
       </span>
       <span *ngIf="!project.hasPermissionOnJiraProject">
-        <mat-icon 
-          matTooltip="You have not the permission to view the JIRA project">
+        <mat-icon
+          matTooltip="You have not the permission to view the JIRA project"
+        >
           block
         </mat-icon>
       </span>
     </span>
   `,
-  styles: [
-  ]
+  styles: [],
 })
 export class JiraProjectLabelComponent {
-  @Input() project : Project | null = null;
+  @Input() project: Project | null = null;
 
-  constructor() { }
+  constructor() {}
 }

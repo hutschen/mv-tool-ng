@@ -6,7 +6,8 @@
     [showFilter]="true"
     filterLabel="Filter Projects"
     createLabel="Create Project"
-    #tableToolbar>
+    #tableToolbar
+  >
   </mvtool-table-toolbar>
 
   <!-- Projects table -->
@@ -19,45 +20,51 @@
     noContentText="No projects found."
     loadingText="Loading projects..."
     (rowClicked)="projectClicked.emit($event)"
-    matSort #sort="matSort"
-    [sort]="sort">
-    
+    matSort
+    #sort="matSort"
+    [sort]="sort"
+  >
     <!-- ID Column -->
     <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-        <td mat-cell *matCellDef="let project"> {{project.id}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+      <td mat-cell *matCellDef="let project">{{ project.id }}</td>
     </ng-container>
-  
+
     <!-- Name column -->
     <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
-        <td mat-cell *matCellDef="let project"> {{project.name}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+      <td mat-cell *matCellDef="let project">{{ project.name }}</td>
     </ng-container>
-  
+
     <!-- Description column -->
     <ng-container matColumnDef="description">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
-        <td mat-cell *matCellDef="let project"> {{project.description | truncate}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+      <td mat-cell *matCellDef="let project">
+        {{ project.description | truncate }}
+      </td>
     </ng-container>
-  
+
     <!-- JIRA project column -->
     <ng-container matColumnDef="jira_project_id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> JIRA Project </th>
-        <td mat-cell *matCellDef="let project">
-          <mvtool-jira-project-label 
-            [project]="project" (click)="$event.stopPropagation()">
-          </mvtool-jira-project-label>
-        </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>JIRA Project</th>
+      <td mat-cell *matCellDef="let project">
+        <mvtool-jira-project-label
+          [project]="project"
+          (click)="$event.stopPropagation()"
+        >
+        </mvtool-jira-project-label>
+      </td>
     </ng-container>
-  
+
     <ng-container matColumnDef="options">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let project">
-          <mvtool-table-options
-            (edit)="onEditProject(project)"
-            (delete)="onDeleteProject(project)">
-          </mvtool-table-options>
-        </td>
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let project">
+        <mvtool-table-options
+          (edit)="onEditProject(project)"
+          (delete)="onDeleteProject(project)"
+        >
+        </mvtool-table-options>
+      </td>
     </ng-container>
   </mvtool-table>
 </div>

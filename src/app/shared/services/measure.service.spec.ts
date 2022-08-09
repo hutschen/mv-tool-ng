@@ -66,15 +66,15 @@ describe('Measure', () => {
   });
 
   it('should check if JIRA issue is assigned', () => {
-    expect(sut.hasJiraIssue).toBeFalse();
+    expect(sut.hasLinkedJiraIssue).toBeFalse();
     sut.jira_issue = jiraIssueMock;
-    expect(sut.hasJiraIssue).toBeTrue();
+    expect(sut.hasLinkedJiraIssue).toBeTrue();
     sut.jira_issue_id = '10000';
-    expect(sut.hasJiraIssue).toBeTrue();
+    expect(sut.hasLinkedJiraIssue).toBeTrue();
     sut.jira_issue = null;
-    expect(sut.hasJiraIssue).toBeTrue();
+    expect(sut.hasLinkedJiraIssue).toBeTrue();
     sut.jira_issue_id = null;
-    expect(sut.hasJiraIssue).toBeFalse();
+    expect(sut.hasLinkedJiraIssue).toBeFalse();
   });
 
   it('should check that user is permitted to view JIRA issue', () => {
@@ -111,7 +111,6 @@ describe('MeasureService', () => {
       summary: 'A test measure',
       description: 'A test measure description',
       completed: false,
-      jira_issue_id: '10000',
       document_id: null,
     };
     outputMock = {
@@ -119,7 +118,7 @@ describe('MeasureService', () => {
       summary: inputMock.summary,
       description: inputMock.description,
       completed: inputMock.completed,
-      jira_issue_id: inputMock.jira_issue_id,
+      jira_issue_id: '10000',
       jira_issue: null,
       document: null,
       requirement: {
