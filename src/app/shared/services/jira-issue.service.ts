@@ -56,7 +56,7 @@ export class JiraIssueService {
     return this._crud.read(this.getJiraIssueUrl(measureId));
   }
 
-  async deleteJiraIssue(measureId: number): Promise<null> {
+  async unlinkJiraIssue(measureId: number): Promise<null> {
     return this._crud.delete(this.getJiraIssueUrl(measureId));
   }
 }

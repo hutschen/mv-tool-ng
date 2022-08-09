@@ -17,7 +17,49 @@ import {
     <div *ngIf="measure">
       <!-- A Jira issue is linked -->
       <div *ngIf="measure.hasLinkedJiraIssue">
-        <mvtool-jira-issue-label [measure]="measure"></mvtool-jira-issue-label>
+        <!-- User has permission to view Jira issue -->
+        <div *ngIf="measure.jira_issue">
+          <button mat-button [matMenuTriggerFor]="jiraIssueMenu">
+            <mat-icon *ngIf="measure.jira_issue.status.completed"
+              >check
+            </mat-icon>
+            <mat-icon *ngIf="!measure.jira_issue.status.completed"
+              >close
+            </mat-icon>
+            {{ measure.jira_issue.key | truncate }}
+          </button>
+        </div>
+        <!-- User has not permission to view Jira issue -->
+        <div *ngIf="!measure.jira_issue">
+          <button
+            mat-button
+            [matMenuTriggerFor]="jiraIssueMenu"
+            matTooltip="You do not have the permission to view the JIRA issue"
+          >
+            <mat-icon>block</mat-icon>
+            No permission
+          </button>
+        </div>
+
+        <!-- Menu for Jira issue -->
+        <mat-menu #jiraIssueMenu="matMenu">
+          <!-- item to open issue -->
+          <a
+            *ngIf="measure.jira_issue"
+            mat-menu-item
+            href="{{ measure.jira_issue.url }}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <mat-icon>open_in_new</mat-icon>
+            Open issue
+          </a>
+          <!-- item to unlink issue -->
+          <button mat-menu-item (click)="onUnlinkJiraIssue()">
+            <mat-icon>link_off</mat-icon>
+            Unlink issue
+          </button>
+        </mat-menu>
       </div>
 
       <!-- No Jira issue is linked -->
@@ -26,7 +68,7 @@ import {
         <div *ngIf="measure.requirement.project.jira_project">
           <button *ngIf="!loading" mat-button (click)="onCreateJiraIssue()">
             <mat-icon>add</mat-icon>
-            Create JIRA Issue
+            Create issue
           </button>
           <mat-spinner
             *ngIf="loading"
@@ -50,7 +92,7 @@ import {
 })
 export class JiraIssueInputComponent implements OnInit {
   @Input() measure: Measure | null = null;
-  @Output() jiraIssueCreated = new EventEmitter<IJiraIssue>();
+  @Output() jiraIssueChange = new EventEmitter<IJiraIssue | null>();
   project: Project | null = null;
   loading: boolean = false;
 
@@ -80,8 +122,18 @@ export class JiraIssueInputComponent implements OnInit {
           this.measure.id,
           jiraIssueInput
         );
-        this.jiraIssueCreated.emit(jiraIssue);
+        this.jiraIssueChange.emit(jiraIssue);
       }
     });
+  }
+
+  async onUnlinkJiraIssue(): Promise<void> {
+    if (this.measure) {
+      this.measure.jira_issue = null;
+      this.measure.jira_issue_id = null;
+      this.loading = true;
+      await this._jiraIssueService.unlinkJiraIssue(this.measure.id);
+      this.jiraIssueChange.emit(null);
+    }
   }
 }

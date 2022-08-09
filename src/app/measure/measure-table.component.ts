@@ -73,13 +73,6 @@ export class MeasureTableComponent implements OnInit {
     await this.onReloadMeasures();
   }
 
-  async onJiraIssueCreated(
-    jiraIssue: IJiraIssue,
-    measure: Measure
-  ): Promise<void> {
-    await this.onReloadMeasures();
-  }
-
   onExportMeasures() {}
   onImportMeasures() {}
 
