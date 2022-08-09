@@ -14,7 +14,7 @@ import {
 @Component({
   selector: 'mvtool-jira-issue-input',
   template: `
-    <div *ngIf="measure" fxLayout="row" fxLayoutAlign="center">
+    <div *ngIf="measure">
       <!-- A Jira issue is linked -->
       <div *ngIf="measure.hasLinkedJiraIssue">
         <mvtool-jira-issue-label [measure]="measure"></mvtool-jira-issue-label>
@@ -30,8 +30,8 @@ import {
           </button>
           <mat-spinner
             *ngIf="loading"
-            color="accent"
             diameter="20"
+            style="margin-left: 20px;"
           ></mat-spinner>
         </div>
 
