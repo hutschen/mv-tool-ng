@@ -95,6 +95,25 @@
       </td>
     </ng-container>
 
+    <!-- Completion column -->
+    <ng-container matColumnDef="completion">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Completion</th>
+      <td
+        mat-cell
+        *matCellDef="let requirement"
+        matTooltip="{{
+          requirement.completion * 100 | number: '1.0-0'
+        }} % complete"
+      >
+        <mat-progress-bar
+          class="example-margin"
+          mode="determinate"
+          [value]="requirement.completion * 100"
+        >
+        </mat-progress-bar>
+      </td>
+    </ng-container>
+
     <!-- Options column -->
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef></th>

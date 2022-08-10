@@ -25,6 +25,7 @@ export class RequirementTableComponent implements OnInit {
     'target_object',
     'compliance_status',
     'compliance_comment',
+    'completion',
     'options',
   ];
   data: Requirement[] = [];
