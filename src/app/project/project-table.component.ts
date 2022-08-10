@@ -13,6 +13,7 @@ export class ProjectTableComponent implements OnInit {
     'name',
     'description',
     'jira_project_id',
+    'completion',
     'options',
   ];
   data: Project[] = [];
