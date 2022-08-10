@@ -6,6 +6,7 @@ import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
 import { DocumentModule } from '../document/document.module';
 import { JiraIssueModule } from '../jira-issue/jira-issue.module';
+import { MeasureCompleteButtonComponent } from './measure-complete-button.component';
 
 
 
@@ -13,6 +14,7 @@ import { JiraIssueModule } from '../jira-issue/jira-issue.module';
   declarations: [
     MeasureTableComponent,
     MeasureDialogComponent,
+    MeasureCompleteButtonComponent,
   ],
   imports: [
     CommonModule,
