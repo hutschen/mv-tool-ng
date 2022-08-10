@@ -94,7 +94,7 @@ import {
 })
 export class JiraIssueInputComponent implements OnInit {
   @Input() measure: Measure | null = null;
-  @Output() jiraIssueChange = new EventEmitter<IJiraIssue | null>();
+  @Output() measureChange = new EventEmitter<Measure>();
   project: Project | null = null;
   loading: boolean = false;
 
@@ -124,7 +124,10 @@ export class JiraIssueInputComponent implements OnInit {
           this.measure.id,
           jiraIssueInput
         );
-        this.jiraIssueChange.emit(jiraIssue);
+        this.measure.jira_issue = jiraIssue;
+        this.measure.jira_issue_id = jiraIssue.id;
+        this.measureChange.emit(this.measure);
+        this.loading = false;
       }
     });
   }
@@ -135,7 +138,8 @@ export class JiraIssueInputComponent implements OnInit {
       this.measure.jira_issue_id = null;
       this.loading = true;
       await this._jiraIssueService.unlinkJiraIssue(this.measure.id);
-      this.jiraIssueChange.emit(null);
+      this.measureChange.emit(this.measure);
+      this.loading = false;
     }
   }
 }
