@@ -75,14 +75,11 @@
     <ng-container matColumnDef="completed">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Completed</th>
       <td mat-cell *matCellDef="let measure">
-        <!-- material button -->
-        <button
-          mat-button
-          (click)="onToggleCompleteMeasure(measure); $event.stopPropagation()"
+        <mvtool-measure-complete-button
+          [measure]="measure"
+          (measureChange)="onReloadMeasures()"
         >
-          <mat-icon *ngIf="measure.completed">check</mat-icon>
-          <mat-icon *ngIf="!measure.completed">close</mat-icon>
-        </button>
+        </mvtool-measure-complete-button>
       </td>
     </ng-container>
 
