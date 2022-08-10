@@ -76,6 +76,13 @@ export class MeasureTableComponent implements OnInit {
   onExportMeasures() {}
   onImportMeasures() {}
 
+  async onToggleCompleteMeasure(measure: Measure): Promise<void> {
+    const measureInput = measure.toMeasureInput();
+    measureInput.completed = !measureInput.completed;
+    await this._measureService.updateMeasure(measure.id, measureInput);
+    await this.onReloadMeasures();
+  }
+
   async onReloadMeasures() {
     if (this.requirement) {
       this.data = await this._measureService.listMeasures(this.requirement.id);
