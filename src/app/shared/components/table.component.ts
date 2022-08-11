@@ -19,6 +19,11 @@ import {
   MatTableDataSource,
 } from '@angular/material/table';
 
+export interface ITableColumn {
+  name: string;
+  optional: boolean;
+}
+
 @Component({
   selector: 'mvtool-table',
   template: `

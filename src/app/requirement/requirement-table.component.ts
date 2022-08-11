@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { stringToKeyValue } from '@angular/flex-layout/extended/style/style-transforms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { ITableColumn } from '../shared/components/table.component';
 import { Project } from '../shared/services/project.service';
 import {
   Requirement,
@@ -19,6 +20,16 @@ import {
   styles: [],
 })
 export class RequirementTableComponent implements OnInit {
+  columns: ITableColumn[] = [
+    { name: 'reference', optional: true },
+    { name: 'summary', optional: false },
+    { name: 'description', optional: true },
+    { name: 'target_object', optional: true },
+    { name: 'compliance_status', optional: false },
+    { name: 'compliance_comment', optional: true },
+    { name: 'completion', optional: false },
+    { name: 'options', optional: false },
+  ];
   data: Requirement[] = [];
   dataLoaded: boolean = false;
   @Input() project: Project | null = null;
@@ -36,16 +47,10 @@ export class RequirementTableComponent implements OnInit {
   }
 
   get displayedColumns(): string[] {
-    let displayFlags = new Map<string, boolean>([
-      ['reference', false],
-      ['summary', false],
-      ['description', false],
-      ['target_object', false],
-      ['compliance_status', false],
-      ['compliance_comment', false],
-      ['completion', true],
-      ['options', true],
-    ]);
+    let displayFlags = new Map<string, boolean>();
+    for (let column of this.columns) {
+      displayFlags.set(column.name, !column.optional);
+    }
 
     for (let requirement of this.data) {
       for (let [key, value] of Object.entries(requirement)) {
@@ -55,6 +60,7 @@ export class RequirementTableComponent implements OnInit {
       }
     }
     let displayedColumns: string[] = [];
+
     for (let columnName of displayFlags.keys()) {
       if (displayFlags.get(columnName)) {
         displayedColumns.push(columnName);
