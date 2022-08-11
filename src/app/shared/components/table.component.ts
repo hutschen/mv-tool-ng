@@ -19,6 +19,11 @@ import {
   MatTableDataSource,
 } from '@angular/material/table';
 
+export interface ITableColumn {
+  name: string;
+  optional: boolean;
+}
+
 @Component({
   selector: 'mvtool-table',
   template: `
@@ -85,7 +90,7 @@ import {
 export class TableComponent<T> implements AfterContentInit, AfterViewInit {
   // see https://github.com/angular/components/tree/main/src/components-examples/material/table/table-wrapped
 
-  @Input() displayedColumns: string[] = [];
+  @Input() columns: ITableColumn[] = [];
   @Input() pageSize: number = 25;
   @Input() dataLoaded: boolean = true;
   @Input() noContentText: string = 'Nothing to display';
@@ -127,6 +132,29 @@ export class TableComponent<T> implements AfterContentInit, AfterViewInit {
   @Input()
   set data(data: T[]) {
     this._dataSource.data = data;
+  }
+
+  get displayedColumns(): string[] {
+    let displayFlags = new Map<string, boolean>();
+    for (let column of this.columns) {
+      displayFlags.set(column.name, !column.optional);
+    }
+
+    for (let row of this._dataSource.data) {
+      for (let [key, value] of Object.entries(row)) {
+        if (value && displayFlags.has(key)) {
+          displayFlags.set(key, true);
+        }
+      }
+    }
+    let displayedColumns: string[] = [];
+
+    for (let columnName of displayFlags.keys()) {
+      if (displayFlags.get(columnName)) {
+        displayedColumns.push(columnName);
+      }
+    }
+    return displayedColumns;
   }
 
   @Input()

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { ITableColumn } from '../shared/components/table.component';
 import { Project, ProjectService } from '../shared/services/project.service';
 import { ProjectDialogComponent } from './project-dialog.component';
 
@@ -9,12 +10,12 @@ import { ProjectDialogComponent } from './project-dialog.component';
   styles: ['.data-row:hover { cursor: pointer; background-color: #f5f5f5; }'],
 })
 export class ProjectTableComponent implements OnInit {
-  displayedColumns: string[] = [
-    'name',
-    'description',
-    'jira_project_id',
-    'completion',
-    'options',
+  columns: ITableColumn[] = [
+    { name: 'name', optional: false },
+    { name: 'description', optional: true },
+    { name: 'jira_project_id', optional: false },
+    { name: 'completion', optional: false },
+    { name: 'options', optional: false },
   ];
   data: Project[] = [];
   dataLoaded: boolean = false;

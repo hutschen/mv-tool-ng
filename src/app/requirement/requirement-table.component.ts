@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { stringToKeyValue } from '@angular/flex-layout/extended/style/style-transforms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { ITableColumn } from '../shared/components/table.component';
 import { Project } from '../shared/services/project.service';
 import {
   Requirement,
@@ -18,15 +20,15 @@ import {
   styles: [],
 })
 export class RequirementTableComponent implements OnInit {
-  displayedColumns: string[] = [
-    'reference',
-    'summary',
-    'description',
-    'target_object',
-    'compliance_status',
-    'compliance_comment',
-    'completion',
-    'options',
+  columns: ITableColumn[] = [
+    { name: 'reference', optional: true },
+    { name: 'summary', optional: false },
+    { name: 'description', optional: true },
+    { name: 'target_object', optional: true },
+    { name: 'compliance_status', optional: false },
+    { name: 'compliance_comment', optional: true },
+    { name: 'completion', optional: false },
+    { name: 'options', optional: false },
   ];
   data: Requirement[] = [];
   dataLoaded: boolean = false;

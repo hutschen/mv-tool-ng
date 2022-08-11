@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { ITableColumn } from '../shared/components/table.component';
 import { IJiraIssue } from '../shared/services/jira-issue.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Requirement } from '../shared/services/requirement.service';
@@ -14,13 +15,13 @@ import {
   styles: [],
 })
 export class MeasureTableComponent implements OnInit {
-  displayedColumns: string[] = [
-    'summary',
-    'description',
-    'document',
-    'jira_issue',
-    'completed',
-    'options',
+  columns: ITableColumn[] = [
+    { name: 'summary', optional: false },
+    { name: 'description', optional: true },
+    { name: 'document', optional: true },
+    { name: 'jira_issue', optional: false },
+    { name: 'completed', optional: false },
+    { name: 'options', optional: false },
   ];
   data: Measure[] = [];
   dataLoaded: boolean = false;
