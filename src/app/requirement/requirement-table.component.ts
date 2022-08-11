@@ -46,29 +46,6 @@ export class RequirementTableComponent implements OnInit {
     this.dataLoaded = true;
   }
 
-  get displayedColumns(): string[] {
-    let displayFlags = new Map<string, boolean>();
-    for (let column of this.columns) {
-      displayFlags.set(column.name, !column.optional);
-    }
-
-    for (let requirement of this.data) {
-      for (let [key, value] of Object.entries(requirement)) {
-        if (value && displayFlags.has(key)) {
-          displayFlags.set(key, true);
-        }
-      }
-    }
-    let displayedColumns: string[] = [];
-
-    for (let columnName of displayFlags.keys()) {
-      if (displayFlags.get(columnName)) {
-        displayedColumns.push(columnName);
-      }
-    }
-    return displayedColumns;
-  }
-
   onCreateRequirement(): void {
     let dialogRef = this._dialog.open(RequirementDialogComponent, {
       width: '500px',

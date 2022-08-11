@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { ITableColumn } from '../shared/components/table.component';
 import { DocumentService, Document } from '../shared/services/document.service';
 import { Project } from '../shared/services/project.service';
 import {
@@ -13,7 +14,12 @@ import {
   styles: [],
 })
 export class DocumentTableComponent implements OnInit {
-  displayedColumns: string[] = ['reference', 'title', 'description', 'options'];
+  columns: ITableColumn[] = [
+    { name: 'reference', optional: true },
+    { name: 'title', optional: false },
+    { name: 'description', optional: true },
+    { name: 'options', optional: false },
+  ];
   data: Document[] = [];
   dataLoaded: boolean = false;
   @Input() project: Project | null = null;
