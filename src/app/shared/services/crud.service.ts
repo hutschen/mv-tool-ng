@@ -4,6 +4,11 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
 
+interface IHttpOptions {
+  headers: HttpHeaders;
+  responseType: 'json' | 'blob';
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -25,6 +30,7 @@ export class CRUDService<InputType, OutputType> {
         'Content-Type': 'application/json',
         Authorization: 'Basic ' + btoa(credentials_str),
       }),
+      responseType: 'json',
     };
   }
 
