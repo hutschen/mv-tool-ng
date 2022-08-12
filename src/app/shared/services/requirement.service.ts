@@ -108,4 +108,10 @@ export class RequirementService {
   async deleteRequirement(requirementId: number): Promise<null> {
     return this._crud.delete(this.getRequirementUrl(requirementId));
   }
+
+  async downloadRequirementsExcel(projectId: number): Promise<Blob> {
+    const url = `${this.getRequirementsUrl(projectId)}/excel`;
+    const response = await this._crud.download(url);
+    return response;
+  }
 }

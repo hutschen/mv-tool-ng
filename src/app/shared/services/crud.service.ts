@@ -4,11 +4,6 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
 
-interface IHttpOptions {
-  headers: HttpHeaders;
-  responseType: 'json' | 'blob';
-}
-
 @Injectable({
   providedIn: 'root',
 })
@@ -30,7 +25,6 @@ export class CRUDService<InputType, OutputType> {
         'Content-Type': 'application/json',
         Authorization: 'Basic ' + btoa(credentials_str),
       }),
-      responseType: 'json',
     };
   }
 
@@ -73,6 +67,14 @@ export class CRUDService<InputType, OutputType> {
       this.toAbsoluteUrl(relativeUrl),
       this._httpOptions
     );
+    return firstValueFrom(request$);
+  }
+
+  async download(relativeUrl: string): Promise<Blob> {
+    const request$ = this._httpClient.get(this.toAbsoluteUrl(relativeUrl), {
+      ...this._httpOptions,
+      responseType: 'blob',
+    });
     return firstValueFrom(request$);
   }
 }
