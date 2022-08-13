@@ -11,11 +11,12 @@ import {
   Requirement,
 } from './requirement.service';
 import { AuthService } from './auth.service';
+import { DownloadService } from './download.service';
 
-// FIXME: initialize SUT with download service and then reenable the tests
 describe('RequirementService', () => {
   let sut: RequirementService;
   let crud: CRUDService<IRequirementInput, IRequirement>;
+  let download: DownloadService;
   let httpMock: HttpTestingController;
   let inputMock: IRequirementInput;
   let outputMock: IRequirement;
@@ -26,6 +27,7 @@ describe('RequirementService', () => {
     });
     TestBed.inject(AuthService).logIn({ username: 'test', password: 'test' });
     crud = TestBed.inject(CRUDService);
+    download = TestBed.inject(DownloadService);
     httpMock = TestBed.inject(HttpTestingController);
     sut = TestBed.inject(RequirementService);
 
@@ -61,25 +63,25 @@ describe('RequirementService', () => {
     httpMock.verify();
   });
 
-  xit('should be created', () => {
+  it('should be created', () => {
     expect(sut).toBeTruthy();
   });
 
-  xit('should return requirements url', () => {
+  it('should return requirements url', () => {
     const projectId = outputMock.project.id;
     expect(sut.getRequirementsUrl(projectId)).toEqual(
       `projects/${projectId}/requirements`
     );
   });
 
-  xit('should return requirement url', () => {
+  it('should return requirement url', () => {
     const requirementId = outputMock.id;
     expect(sut.getRequirementUrl(requirementId)).toEqual(
       `requirements/${requirementId}`
     );
   });
 
-  xit('should list requirements', (done: DoneFn) => {
+  it('should list requirements', (done: DoneFn) => {
     const projectId = outputMock.project.id;
     const requirementsList = [outputMock];
 
@@ -96,7 +98,7 @@ describe('RequirementService', () => {
     mockResponse.flush(requirementsList);
   });
 
-  xit('should create requirement', (done: DoneFn) => {
+  it('should create requirement', (done: DoneFn) => {
     const projectId = outputMock.project.id;
 
     sut.createRequirement(projectId, inputMock).then((value) => {
@@ -110,7 +112,7 @@ describe('RequirementService', () => {
     mockResponse.flush(outputMock);
   });
 
-  xit('should get a requirement', (done: DoneFn) => {
+  it('should get a requirement', (done: DoneFn) => {
     sut.getRequirement(outputMock.id).then((value) => {
       expect(value).toEqual(new Requirement(outputMock));
       done();
@@ -122,7 +124,7 @@ describe('RequirementService', () => {
     mockResponse.flush(outputMock);
   });
 
-  xit('should update a requirement', (done: DoneFn) => {
+  it('should update a requirement', (done: DoneFn) => {
     sut.updateRequirement(outputMock.id, inputMock).then((value) => {
       expect(value).toEqual(new Requirement(outputMock));
       done();
@@ -134,7 +136,7 @@ describe('RequirementService', () => {
     mockResponse.flush(outputMock);
   });
 
-  xit('should delete a requirement', (done: DoneFn) => {
+  it('should delete a requirement', (done: DoneFn) => {
     sut.deleteRequirement(outputMock.id).then((value) => {
       expect(value).toBeNull();
       done();
