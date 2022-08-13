@@ -61,21 +61,6 @@ export class DownloadService {
     return `${environment.baseUrl}/${relativeUrl}`;
   }
 
-  // FIXME: this method is currently unused
-  protected _isHttpResponse<T>(event: HttpEvent<T>): event is HttpResponse<T> {
-    return event.type === HttpEventType.Response;
-  }
-
-  // FIXME: this method is currently unused
-  protected _isHttpProgressEvent(
-    event: HttpEvent<unknown>
-  ): event is HttpProgressEvent {
-    return (
-      event.type === HttpEventType.DownloadProgress ||
-      event.type === HttpEventType.UploadProgress
-    );
-  }
-
   download(relativeUrl: string): Observable<IDownloadState> {
     const credentials = this._auth.credentials;
     const credentials_str = `${credentials.username}:${credentials.password}`;
