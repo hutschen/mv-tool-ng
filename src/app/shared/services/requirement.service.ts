@@ -52,6 +52,10 @@ export class Requirement implements IRequirement {
       compliance_comment: this.compliance_comment,
     };
   }
+
+  get percentComplete(): number {
+    return Math.round(this.completion * 100);
+  }
 }
 
 @Injectable({
