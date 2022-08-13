@@ -49,6 +49,10 @@ export class Project implements IProject {
       (this.jira_project !== null && this.jira_project_id !== null)
     );
   }
+
+  get percentComplete(): number {
+    return Math.round(this.completion * 100);
+  }
 }
 
 @Injectable({
