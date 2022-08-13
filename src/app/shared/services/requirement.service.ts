@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
+import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
 
 export interface IRequirementInput {
@@ -58,6 +60,7 @@ export class Requirement implements IRequirement {
 export class RequirementService {
   constructor(
     protected _crud: CRUDService<IRequirementInput, IRequirement>,
+    protected _download: DownloadService,
     protected _projects: ProjectService
   ) {}
 
@@ -107,5 +110,10 @@ export class RequirementService {
 
   async deleteRequirement(requirementId: number): Promise<null> {
     return this._crud.delete(this.getRequirementUrl(requirementId));
+  }
+
+  downloadRequirementsExcel(projectId: number): Observable<IDownloadState> {
+    const url = `${this.getRequirementsUrl(projectId)}/excel`;
+    return this._download.download(url);
   }
 }

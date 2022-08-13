@@ -1,7 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { stringToKeyValue } from '@angular/flex-layout/extended/style/style-transforms';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import {
+  DownloadDialogComponent,
+  IDownloadDialogData,
+} from '../shared/components/download-dialog.component';
 import { ITableColumn } from '../shared/components/table.component';
 import { Project } from '../shared/services/project.service';
 import {
@@ -104,7 +107,19 @@ export class RequirementTableComponent implements OnInit {
     this.onReloadRequirements();
   }
 
-  onExportRequirements() {}
+  onExportRequirements() {
+    if (this.project) {
+      this._dialog.open(DownloadDialogComponent, {
+        width: '500px',
+        data: {
+          download$: this._requirementService.downloadRequirementsExcel(
+            this.project.id
+          ),
+          filename: 'requirements.xlsx',
+        } as IDownloadDialogData,
+      });
+    }
+  }
   onImportRequirements() {}
 
   async onReloadRequirements() {
