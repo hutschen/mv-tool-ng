@@ -69,12 +69,4 @@ export class CRUDService<InputType, OutputType> {
     );
     return firstValueFrom(request$);
   }
-
-  async download(relativeUrl: string): Promise<Blob> {
-    const request$ = this._httpClient.get(this.toAbsoluteUrl(relativeUrl), {
-      ...this._httpOptions,
-      responseType: 'blob',
-    });
-    return firstValueFrom(request$);
-  }
 }
