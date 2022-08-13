@@ -3,8 +3,6 @@ import {
   HttpEvent,
   HttpEventType,
   HttpHeaders,
-  HttpProgressEvent,
-  HttpResponse,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, scan } from 'rxjs';
