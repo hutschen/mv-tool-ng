@@ -66,7 +66,7 @@ export interface ITableColumn {
               </button>
             </div>
             <div *ngIf="!dataLoaded" fxLayout="row" fxLayoutGap="10px">
-              <mat-spinner diameter="20" color="accent"></mat-spinner>
+              <mat-spinner diameter="20"></mat-spinner>
               <div>{{ loadingText }}</div>
             </div>
           </td>
