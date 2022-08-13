@@ -13,6 +13,7 @@ import {
   IRequirementDialogData,
   RequirementDialogComponent,
 } from './requirement-dialog.component';
+import { RequirementsExportDialogComponent } from './requirements-export-dialog.component';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -104,7 +105,12 @@ export class RequirementTableComponent implements OnInit {
     this.onReloadRequirements();
   }
 
-  onExportRequirements() {}
+  onExportRequirements() {
+    this._dialog.open(RequirementsExportDialogComponent, {
+      width: '500px',
+      data: this.project,
+    });
+  }
   onImportRequirements() {}
 
   async onReloadRequirements() {
