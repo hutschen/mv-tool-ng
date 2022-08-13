@@ -7,6 +7,7 @@ import { RequirementDialogComponent } from './requirement-dialog.component';
 import { TargetObjectInputComponent } from './target-object-input.component';
 import { ComplianceDialogComponent } from './compliance-dialog.component';
 import { RequirementCardComponent } from './requirement-card.component';
+import { RequirementsExportDialogComponent } from './requirements-export-dialog.component';
 
 
 
@@ -16,7 +17,8 @@ import { RequirementCardComponent } from './requirement-card.component';
     RequirementDialogComponent,
     TargetObjectInputComponent,
     ComplianceDialogComponent,
-    RequirementCardComponent
+    RequirementCardComponent,
+    RequirementsExportDialogComponent
   ],
   imports: [
     CommonModule,
