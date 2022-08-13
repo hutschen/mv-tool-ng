@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 import { IDocument, Document } from './document.service';
+import { DownloadService, IDownloadState } from './download.service';
 import { IJiraIssue } from './jira-issue.service';
 import {
   IRequirement,
@@ -74,6 +76,7 @@ export class Measure implements IMeasure {
 export class MeasureService {
   constructor(
     protected _crud: CRUDService<IMeasureInput, IMeasure>,
+    protected _download: DownloadService,
     protected _requirements: RequirementService
   ) {}
 
@@ -119,5 +122,10 @@ export class MeasureService {
 
   async deleteMeasure(measureId: number): Promise<null> {
     return this._crud.delete(this.getMeasureUrl(measureId));
+  }
+
+  downloadMeasureExcel(requirementId: number): Observable<IDownloadState> {
+    const url = `${this.getMeasuresUrl(requirementId)}/excel`;
+    return this._download.download(url);
   }
 }

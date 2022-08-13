@@ -1,5 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import {
+  DownloadDialogComponent,
+  IDownloadDialogData,
+} from '../shared/components/download-dialog.component';
 import { ITableColumn } from '../shared/components/table.component';
 import { IJiraIssue } from '../shared/services/jira-issue.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
@@ -74,7 +78,20 @@ export class MeasureTableComponent implements OnInit {
     await this.onReloadMeasures();
   }
 
-  onExportMeasures() {}
+  onExportMeasures() {
+    if (this.requirement) {
+      this._dialog.open(DownloadDialogComponent, {
+        width: '500px',
+        data: {
+          download$: this._measureService.downloadMeasureExcel(
+            this.requirement.id
+          ),
+          filename: `measures.xlsx`,
+        } as IDownloadDialogData,
+      });
+    }
+  }
+
   onImportMeasures() {}
 
   async onReloadMeasures() {
