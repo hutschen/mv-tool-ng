@@ -135,6 +135,7 @@ export class RequirementTableComponent implements OnInit {
         },
       });
       dialogRef.afterClosed().subscribe(() => {
+        // FIXME: only reload if upload was successful
         this.onReloadRequirements();
       });
     }

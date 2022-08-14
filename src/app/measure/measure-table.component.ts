@@ -5,6 +5,7 @@ import {
   IDownloadDialogData,
 } from '../shared/components/download-dialog.component';
 import { ITableColumn } from '../shared/components/table.component';
+import { UploadDialogComponent } from '../shared/components/upload-dialog.component';
 import { IJiraIssue } from '../shared/services/jira-issue.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Requirement } from '../shared/services/requirement.service';
@@ -92,7 +93,21 @@ export class MeasureTableComponent implements OnInit {
     }
   }
 
-  onImportMeasures() {}
+  onImportMeasures() {
+    if (this.requirement) {
+      const requirementId = this.requirement.id;
+      const dialogRef = this._dialog.open(UploadDialogComponent, {
+        width: '500px',
+        data: (file: File) => {
+          return this._measureService.uploadMeasureExcel(requirementId, file);
+        },
+      });
+      dialogRef.afterClosed().subscribe(() => {
+        // FIXME: only reload if upload was successful
+        this.onReloadMeasures();
+      });
+    }
+  }
 
   async onReloadMeasures() {
     if (this.requirement) {
