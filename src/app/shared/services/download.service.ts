@@ -9,7 +9,7 @@ import { Observable, scan } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
 
-export interface IDownload {
+export interface IDownloadState {
   state: 'pending' | 'in_progress' | 'done';
   progress: number;
   content: Blob | null;
@@ -30,9 +30,9 @@ export class DownloadService {
   }
 
   protected _caculateState(
-    previousState: IDownload,
+    previousState: IDownloadState,
     event: HttpEvent<Blob>
-  ): IDownload {
+  ): IDownloadState {
     switch (event.type) {
       case HttpEventType.DownloadProgress:
         return {
@@ -53,10 +53,10 @@ export class DownloadService {
     }
   }
 
-  download(relativeUrl: string): Observable<IDownload> {
+  download(relativeUrl: string): Observable<IDownloadState> {
     const credentials = this._auth.credentials;
     const credentials_str = `${credentials.username}:${credentials.password}`;
-    const initialState: IDownload = {
+    const initialState: IDownloadState = {
       state: 'pending',
       progress: 0,
       content: null,

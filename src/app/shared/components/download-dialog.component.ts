@@ -2,10 +2,10 @@ import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
-import { IDownload } from '../services/download.service';
+import { IDownloadState } from '../services/download.service';
 
 export interface IDownloadDialogData {
-  download$: Observable<IDownload>;
+  download$: Observable<IDownloadState>;
   filename: string;
 }
 
@@ -44,7 +44,7 @@ export interface IDownloadDialogData {
 })
 export class DownloadDialogComponent {
   filename: string;
-  download: IDownload | null = null;
+  download: IDownloadState | null = null;
   downloadUrl: SafeResourceUrl | null = null;
   protected _downloadUrl: string | null = null;
 
