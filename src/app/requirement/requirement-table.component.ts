@@ -12,6 +12,7 @@ import {
   Requirement,
   RequirementService,
 } from '../shared/services/requirement.service';
+import { IUploadState } from '../shared/services/upload.service';
 import { ComplianceDialogComponent } from './compliance-dialog.component';
 import {
   IRequirementDialogData,
@@ -134,9 +135,10 @@ export class RequirementTableComponent implements OnInit {
           );
         },
       });
-      dialogRef.afterClosed().subscribe(() => {
-        // FIXME: only reload if upload was successful
-        this.onReloadRequirements();
+      dialogRef.afterClosed().subscribe((uploadState: IUploadState | null) => {
+        if (uploadState && uploadState.state == 'done') {
+          this.onReloadRequirements();
+        }
       });
     }
   }

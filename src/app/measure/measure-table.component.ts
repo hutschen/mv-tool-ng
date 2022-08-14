@@ -9,6 +9,7 @@ import { UploadDialogComponent } from '../shared/components/upload-dialog.compon
 import { IJiraIssue } from '../shared/services/jira-issue.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Requirement } from '../shared/services/requirement.service';
+import { IUploadState } from '../shared/services/upload.service';
 import {
   IMeasureDialogData,
   MeasureDialogComponent,
@@ -102,9 +103,10 @@ export class MeasureTableComponent implements OnInit {
           return this._measureService.uploadMeasureExcel(requirementId, file);
         },
       });
-      dialogRef.afterClosed().subscribe(() => {
-        // FIXME: only reload if upload was successful
-        this.onReloadMeasures();
+      dialogRef.afterClosed().subscribe((uploadState: IUploadState | null) => {
+        if (uploadState && uploadState.state == 'done') {
+          this.onReloadMeasures();
+        }
       });
     }
   }
