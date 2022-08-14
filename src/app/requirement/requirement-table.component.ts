@@ -125,7 +125,7 @@ export class RequirementTableComponent implements OnInit {
   onImportRequirements() {
     if (this.project) {
       const projectId = this.project.id;
-      this._dialog.open(UploadDialogComponent, {
+      const dialogRef = this._dialog.open(UploadDialogComponent, {
         width: '500px',
         data: (file: File) => {
           return this._requirementService.uploadRequirementsExcel(
@@ -133,6 +133,9 @@ export class RequirementTableComponent implements OnInit {
             file
           );
         },
+      });
+      dialogRef.afterClosed().subscribe(() => {
+        this.onReloadRequirements();
       });
     }
   }

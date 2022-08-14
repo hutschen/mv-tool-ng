@@ -6,26 +6,50 @@ import { IUploadState } from '../services/upload.service';
 @Component({
   selector: 'mvtool-upload-dialog',
   template: `
-    <mat-label>File</mat-label>
-    <button mat-raised-button (click)="fileInput.click()">
-      {{ file ? file.name : 'Choose file' }}
-    </button>
-    <input
-      hidden
-      type="file"
-      #fileInput
-      (change)="onFileInput(fileInput.files)"
-    />
+    <div mat-dialog-content>
+      <!-- File input -->
+      <div *ngIf="!uploadState">
+        <mat-label>File</mat-label>
+        <button mat-raised-button (click)="fileInput.click()">
+          {{ file ? file.name : 'Choose file' }}
+        </button>
+        <input
+          hidden
+          type="file"
+          #fileInput
+          (change)="onFileInput(fileInput.files)"
+        />
+      </div>
 
-    <button
-      [disabled]="!file"
-      type="submit"
-      mat-raised-button
-      color="primary"
-      (click)="onSubmit()"
-    >
-      Submit
-    </button>
+      <!-- Progress bar -->
+      <div *ngIf="uploadState">
+        <strong>
+          <p *ngIf="uploadState.state == 'pending'">Preparing upload</p>
+          <p *ngIf="uploadState.state != 'pending'">
+            {{ uploadState.progress }}% complete
+          </p>
+        </strong>
+        <mat-progress-bar
+          [mode]="uploadState.state == 'pending' ? 'buffer' : 'determinate'"
+          [value]="uploadState.progress"
+        >
+        </mat-progress-bar>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div mat-dialog-actions mat-dialog-actions align="end">
+      <button mat-button (click)="onClose()">Cancel</button>
+      <button
+        mat-raised-button
+        [disabled]="uploadState || !file"
+        color="accent"
+        (click)="onUpload()"
+      >
+        <mat-icon>file_upload</mat-icon>
+        Upload file
+      </button>
+    </div>
   `,
   styles: [],
 })
@@ -47,12 +71,15 @@ export class UploadDialogComponent {
     }
   }
 
-  onSubmit(): void {
+  onUpload(): void {
     if (this.file) {
       // handle upload
       const subscription = this._callback(this.file).subscribe(
         (uploadState) => {
           this.uploadState = uploadState;
+          if (uploadState.state === 'done') {
+            this.onClose();
+          }
         }
       );
 
@@ -61,5 +88,9 @@ export class UploadDialogComponent {
         subscription.unsubscribe();
       });
     }
+  }
+
+  onClose(): void {
+    this._dialogRef.close(null);
   }
 }
