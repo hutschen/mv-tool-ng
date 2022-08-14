@@ -60,7 +60,7 @@ export class UploadService {
     };
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('upload_file', file);
     return this._httpClient
       .post(this.toAbsoluteUrl(relativeUrl), formData, {
         headers: new HttpHeaders({
