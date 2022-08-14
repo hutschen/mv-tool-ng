@@ -3,18 +3,41 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'mvtool-upload-dialog',
   template: `
-    <p>
-      upload-dialog works!
-    </p>
+    <mat-label>File</mat-label>
+    <button mat-raised-button (click)="fileInput.click()">
+      {{ file ? file.name : 'Choose file' }}
+    </button>
+    <input
+      hidden
+      type="file"
+      #fileInput
+      (change)="onFileInput(fileInput.files)"
+    />
+
+    <button
+      [disabled]="!file"
+      type="submit"
+      mat-raised-button
+      color="primary"
+      (click)="onSubmit()"
+    >
+      Submit
+    </button>
   `,
-  styles: [
-  ]
+  styles: [],
 })
-export class UploadDialogComponent implements OnInit {
+export class UploadDialogComponent {
+  file: File | null = null;
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit(): void {
+  onFileInput(files: FileList | null): void {
+    if (files) {
+      this.file = files.item(0);
+    }
   }
 
+  onSubmit(): void {
+    console.log(this.file);
+  }
 }
