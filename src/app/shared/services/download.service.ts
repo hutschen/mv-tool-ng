@@ -15,32 +15,37 @@ export interface IDownload {
   content: Blob | null;
 }
 
-function download(source: Observable<HttpEvent<Blob>>): Observable<IDownload> {
-  return source.pipe(
-    scan(
-      (previousState: IDownload, event: HttpEvent<Blob>) => {
-        switch (event.type) {
-          case HttpEventType.DownloadProgress:
-            return {
-              ...previousState,
-              state: 'in_progress',
-              progress: event.total
-                ? Math.round((100 * event.loaded) / event.total)
-                : previousState.progress,
-            };
-          case HttpEventType.Response:
-            return {
-              ...previousState,
-              state: 'done',
-              content: event.body,
-            };
-          default:
-            return previousState;
-        }
-      },
-      { state: 'pending', progress: 0, content: null }
-    )
-  );
+// RxJS observable operator to handle download process
+function download(): (
+  source: Observable<HttpEvent<Blob>>
+) => Observable<IDownload> {
+  return (source: Observable<HttpEvent<Blob>>) => {
+    return source.pipe(
+      scan(
+        (previousState: IDownload, event: HttpEvent<Blob>) => {
+          switch (event.type) {
+            case HttpEventType.DownloadProgress:
+              return {
+                ...previousState,
+                state: 'in_progress',
+                progress: event.total
+                  ? Math.round((100 * event.loaded) / event.total)
+                  : previousState.progress,
+              };
+            case HttpEventType.Response:
+              return {
+                ...previousState,
+                state: 'done',
+                content: event.body,
+              };
+            default:
+              return previousState;
+          }
+        },
+        { state: 'pending', progress: 0, content: null }
+      )
+    );
+  };
 }
 
 @Injectable({
@@ -61,14 +66,15 @@ export class DownloadService {
     const credentials = this._auth.credentials;
     const credentials_str = `${credentials.username}:${credentials.password}`;
 
-    const request$ = this._httpClient.get(this.toAbsoluteUrl(relativeUrl), {
-      headers: new HttpHeaders({
-        Authorization: 'Basic ' + btoa(credentials_str),
-      }),
-      responseType: 'blob',
-      observe: 'events',
-      reportProgress: true,
-    });
-    return download(request$);
+    return this._httpClient
+      .get(this.toAbsoluteUrl(relativeUrl), {
+        headers: new HttpHeaders({
+          Authorization: 'Basic ' + btoa(credentials_str),
+        }),
+        responseType: 'blob',
+        observe: 'events',
+        reportProgress: true,
+      })
+      .pipe(download());
   }
 }
