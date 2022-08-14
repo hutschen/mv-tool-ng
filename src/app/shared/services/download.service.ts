@@ -15,39 +15,6 @@ export interface IDownload {
   content: Blob | null;
 }
 
-// RxJS observable operator to handle download process
-function download(): (
-  source: Observable<HttpEvent<Blob>>
-) => Observable<IDownload> {
-  return (source: Observable<HttpEvent<Blob>>) => {
-    return source.pipe(
-      scan(
-        (previousState: IDownload, event: HttpEvent<Blob>) => {
-          switch (event.type) {
-            case HttpEventType.DownloadProgress:
-              return {
-                ...previousState,
-                state: 'in_progress',
-                progress: event.total
-                  ? Math.round((100 * event.loaded) / event.total)
-                  : previousState.progress,
-              };
-            case HttpEventType.Response:
-              return {
-                ...previousState,
-                state: 'done',
-                content: event.body,
-              };
-            default:
-              return previousState;
-          }
-        },
-        { state: 'pending', progress: 0, content: null }
-      )
-    );
-  };
-}
-
 @Injectable({
   providedIn: 'root',
 })
@@ -62,9 +29,38 @@ export class DownloadService {
     return `${environment.baseUrl}/${relativeUrl}`;
   }
 
+  protected _caculateState(
+    previousState: IDownload,
+    event: HttpEvent<Blob>
+  ): IDownload {
+    switch (event.type) {
+      case HttpEventType.DownloadProgress:
+        return {
+          ...previousState,
+          state: 'in_progress',
+          progress: event.total
+            ? Math.round((100 * event.loaded) / event.total)
+            : previousState.progress,
+        };
+      case HttpEventType.Response:
+        return {
+          ...previousState,
+          state: 'done',
+          content: event.body,
+        };
+      default:
+        return previousState;
+    }
+  }
+
   download(relativeUrl: string): Observable<IDownload> {
     const credentials = this._auth.credentials;
     const credentials_str = `${credentials.username}:${credentials.password}`;
+    const initialState: IDownload = {
+      state: 'pending',
+      progress: 0,
+      content: null,
+    };
 
     return this._httpClient
       .get(this.toAbsoluteUrl(relativeUrl), {
@@ -75,6 +71,6 @@ export class DownloadService {
         observe: 'events',
         reportProgress: true,
       })
-      .pipe(download());
+      .pipe(scan(this._caculateState, initialState));
   }
 }
