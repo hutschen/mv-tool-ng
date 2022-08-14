@@ -6,6 +6,7 @@ import {
   IDownloadDialogData,
 } from '../shared/components/download-dialog.component';
 import { ITableColumn } from '../shared/components/table.component';
+import { UploadDialogComponent } from '../shared/components/upload-dialog.component';
 import { Project } from '../shared/services/project.service';
 import {
   Requirement,
@@ -120,7 +121,15 @@ export class RequirementTableComponent implements OnInit {
       });
     }
   }
-  onImportRequirements() {}
+
+  onImportRequirements() {
+    if (this.project) {
+      this._dialog.open(UploadDialogComponent, {
+        width: '500px',
+        data: {},
+      });
+    }
+  }
 
   async onReloadRequirements() {
     if (this.project) {
