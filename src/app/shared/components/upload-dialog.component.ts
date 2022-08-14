@@ -8,17 +8,27 @@ import { IUploadState } from '../services/upload.service';
   template: `
     <div mat-dialog-content>
       <!-- File input -->
-      <div *ngIf="!uploadState">
-        <mat-label>File</mat-label>
-        <button mat-raised-button (click)="fileInput.click()">
-          {{ file ? file.name : 'Choose file' }}
-        </button>
-        <input
-          hidden
-          type="file"
-          #fileInput
-          (change)="onFileInput(fileInput.files)"
-        />
+      <div
+        *ngIf="!uploadState"
+        fxLayout="row"
+        fxLayoutAlign="space-between center"
+      >
+        <mat-form-field appearance="fill" fxFlex="grow">
+          <mat-label>Filename</mat-label>
+          <input matInput readonly="true" [value]="file ? file.name : ''" />
+        </mat-form-field>
+        <div fxFlex="nogrow">
+          <button mat-button (click)="fileInput.click()">
+            <mat-icon>attach_file</mat-icon>
+            Choose file
+          </button>
+          <input
+            hidden
+            type="file"
+            #fileInput
+            (change)="onFileInput(fileInput.files)"
+          />
+        </div>
       </div>
 
       <!-- Progress bar -->
