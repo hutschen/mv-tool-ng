@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
-import { DownloadService, IDownloadState } from './download.service';
+import { DownloadService, IDownload } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
 
 export interface IRequirementInput {
@@ -116,7 +116,7 @@ export class RequirementService {
     return this._crud.delete(this.getRequirementUrl(requirementId));
   }
 
-  downloadRequirementsExcel(projectId: number): Observable<IDownloadState> {
+  downloadRequirementsExcel(projectId: number): Observable<IDownload> {
     const url = `${this.getRequirementsUrl(projectId)}/excel`;
     return this._download.download(url);
   }
