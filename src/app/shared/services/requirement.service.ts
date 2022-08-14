@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
+import { IUploadState, UploadService } from './upload.service';
 
 export interface IRequirementInput {
   reference: string | null;
@@ -65,6 +66,7 @@ export class RequirementService {
   constructor(
     protected _crud: CRUDService<IRequirementInput, IRequirement>,
     protected _download: DownloadService,
+    protected _upload: UploadService,
     protected _projects: ProjectService
   ) {}
 
@@ -119,5 +121,13 @@ export class RequirementService {
   downloadRequirementsExcel(projectId: number): Observable<IDownloadState> {
     const url = `${this.getRequirementsUrl(projectId)}/excel`;
     return this._download.download(url);
+  }
+
+  uploadRequirementsExcel(
+    projectId: number,
+    file: File
+  ): Observable<IUploadState> {
+    const url = `${this.getRequirementsUrl(projectId)}/excel`;
+    return this._upload.upload(url, file);
   }
 }
