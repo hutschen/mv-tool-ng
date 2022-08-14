@@ -101,6 +101,6 @@ export class UploadDialogComponent {
   }
 
   onClose(): void {
-    this._dialogRef.close(null);
+    this._dialogRef.close(this.uploadState);
   }
 }

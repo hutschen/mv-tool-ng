@@ -9,6 +9,7 @@ import {
   Requirement,
   RequirementService,
 } from './requirement.service';
+import { IUploadState, UploadService } from './upload.service';
 
 export interface IMeasureInput {
   summary: string;
@@ -77,6 +78,7 @@ export class MeasureService {
   constructor(
     protected _crud: CRUDService<IMeasureInput, IMeasure>,
     protected _download: DownloadService,
+    protected _upload: UploadService,
     protected _requirements: RequirementService
   ) {}
 
@@ -127,5 +129,13 @@ export class MeasureService {
   downloadMeasureExcel(requirementId: number): Observable<IDownloadState> {
     const url = `${this.getMeasuresUrl(requirementId)}/excel`;
     return this._download.download(url);
+  }
+
+  uploadMeasureExcel(
+    requirementId: number,
+    file: File
+  ): Observable<IUploadState> {
+    const url = `${this.getMeasuresUrl(requirementId)}/excel`;
+    return this._upload.upload(url, file);
   }
 }
