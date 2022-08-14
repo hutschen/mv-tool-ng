@@ -51,7 +51,7 @@ export class UploadService {
     }
   }
 
-  upload(relativeUrl: string, file: File): Observable<any> {
+  upload(relativeUrl: string, file: File): Observable<IUploadState> {
     const credentials = this._auth.credentials;
     const credentials_str = `${credentials.username}:${credentials.password}`;
     const initialState: IUploadState = {
