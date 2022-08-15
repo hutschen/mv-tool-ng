@@ -35,7 +35,23 @@ export class JiraIssueDialogComponent implements OnInit {
   ) {
     this.jiraProject = this._dialogData.jiraProject;
     this.jiraIssueInput.summary = this._dialogData.measure.summary;
-    this.jiraIssueInput.description = this._dialogData.measure.description;
+    this.jiraIssueInput.description = this._generateDescription(
+      this._dialogData.measure
+    );
+  }
+
+  protected _generateDescription(measure: Measure): string {
+    const requirement = measure.requirement;
+    let description = '';
+
+    if (requirement.reference) {
+      description += `Requirement reference: ${requirement.reference}\n`;
+    }
+    description += `Requirement summary: ${requirement.summary}\n`;
+    if (measure.description) {
+      description += `\nMeasure description: ${measure.description}\n`;
+    }
+    return description;
   }
 
   async ngOnInit(): Promise<void> {
