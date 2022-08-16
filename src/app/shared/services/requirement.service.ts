@@ -17,7 +17,7 @@ export interface IRequirementInput {
 export interface IRequirement extends IRequirementInput {
   id: number;
   project: IProject;
-  completion: number;
+  completion: number | null;
 }
 
 export class Requirement implements IRequirement {
@@ -29,7 +29,7 @@ export class Requirement implements IRequirement {
   compliance_status: string | null;
   compliance_comment: string | null;
   project: Project;
-  completion: number;
+  completion: number | null;
 
   constructor(requirement: IRequirement) {
     this.id = requirement.id;
@@ -54,8 +54,12 @@ export class Requirement implements IRequirement {
     };
   }
 
-  get percentComplete(): number {
-    return Math.round(this.completion * 100);
+  get percentComplete(): number | null {
+    if (this.completion === null) {
+      return null;
+    } else {
+      return Math.round(this.completion * 100);
+    }
   }
 }
 

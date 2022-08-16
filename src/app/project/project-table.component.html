@@ -62,9 +62,14 @@
       <td
         mat-cell
         *matCellDef="let project"
-        matTooltip="{{ project.percentComplete }} % complete"
+        [matTooltip]="
+          project.percentComplete !== null
+            ? project.percentComplete + '% complete'
+            : 'Nothing to be completed'
+        "
       >
         <mat-progress-bar
+          *ngIf="project.percentComplete !== null"
           class="example-margin"
           mode="determinate"
           [value]="project.percentComplete"

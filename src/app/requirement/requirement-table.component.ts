@@ -32,7 +32,7 @@ export class RequirementTableComponent implements OnInit {
     { name: 'target_object', optional: true },
     { name: 'compliance_status', optional: false },
     { name: 'compliance_comment', optional: true },
-    { name: 'completion', optional: false },
+    { name: 'completion', optional: true },
     { name: 'options', optional: false },
   ];
   data: Requirement[] = [];

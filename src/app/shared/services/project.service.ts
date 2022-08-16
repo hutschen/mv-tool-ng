@@ -11,7 +11,7 @@ export interface IProjectInput {
 export interface IProject extends IProjectInput {
   id: number;
   jira_project: IJiraProject | null;
-  completion: number;
+  completion: number | null;
 }
 
 export class Project implements IProject {
@@ -20,7 +20,7 @@ export class Project implements IProject {
   description: string | null;
   jira_project_id: string | null;
   jira_project: IJiraProject | null;
-  completion: number;
+  completion: number | null;
 
   constructor(project: IProject) {
     this.id = project.id;
@@ -50,8 +50,12 @@ export class Project implements IProject {
     );
   }
 
-  get percentComplete(): number {
-    return Math.round(this.completion * 100);
+  get percentComplete(): number | null {
+    if (this.completion === null) {
+      return null;
+    } else {
+      return Math.round(this.completion * 100);
+    }
   }
 }
 
