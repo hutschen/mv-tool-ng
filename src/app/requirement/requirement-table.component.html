@@ -1,6 +1,6 @@
 <div fxLayout="column">
   <!-- Toolbar -->
-  <mvtool-table-toolbar 
+  <mvtool-table-toolbar
     (refresh)="onReloadRequirements()"
     (create)="onCreateRequirement()"
     (upload)="onImportRequirements()"
@@ -8,80 +8,125 @@
     [showFilter]="true"
     filterLabel="Filter Requirements"
     createLabel="Create Requirement"
-    #tableToolbar>
+    #tableToolbar
+  >
   </mvtool-table-toolbar>
 
   <!-- Requirements table -->
   <mvtool-table
-    [displayedColumns]="displayedColumns"
+    [columns]="columns"
     [data]="data"
     [dataLoaded]="dataLoaded"
     [filterValue]="tableToolbar.filterValue"
     (create)="onCreateRequirement()"
     noContentText="No requirements found."
     loadingText="Loading requirements..."
-    (rowClicked)="requirementClicked.emit($event)" 
-    matSort #sort="matSort"
-    [sort]="sort">
-
+    (rowClicked)="requirementClicked.emit($event)"
+    matSort
+    #sort="matSort"
+    [sort]="sort"
+  >
     <!-- ID Column -->
     <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef> ID </th>
-        <td mat-cell *matCellDef="let requirement"> {{requirement.id}} </td>
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell *matCellDef="let requirement">{{ requirement.id }}</td>
     </ng-container>
 
     <!-- Reference column -->
     <ng-container matColumnDef="reference">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Reference </th>
-        <td mat-cell *matCellDef="let requirement"> {{requirement.reference | truncate}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference</th>
+      <td mat-cell *matCellDef="let requirement">
+        {{ requirement.reference | truncate }}
+      </td>
     </ng-container>
-  
+
     <!-- Summary column -->
     <ng-container matColumnDef="summary">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Summary </th>
-        <td mat-cell *matCellDef="let requirement"> {{requirement.summary | truncate}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Summary</th>
+      <td mat-cell *matCellDef="let requirement">
+        {{ requirement.summary | truncate }}
+      </td>
     </ng-container>
-  
+
     <!-- Description column -->
     <ng-container matColumnDef="description">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
-        <td mat-cell *matCellDef="let requirement"> {{requirement.description | truncate}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+      <td mat-cell *matCellDef="let requirement">
+        {{ requirement.description | truncate }}
+      </td>
     </ng-container>
 
     <!-- Target object column -->
     <ng-container matColumnDef="target_object">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Target Object </th>
-        <td mat-cell *matCellDef="let requirement"> {{requirement.target_object | truncate}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Target Object</th>
+      <td mat-cell *matCellDef="let requirement">
+        {{ requirement.target_object | truncate }}
+      </td>
     </ng-container>
 
     <!-- Compliance status column -->
     <ng-container matColumnDef="compliance_status">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Compliance Status </th>
-        <td mat-cell *matCellDef="let requirement">
-          <button 
-          mat-button matTooltip="Click to set compliance status"
-          (click)="onEditCompliance(requirement); $event.stopImmediatePropagation()">
-            <span *ngIf="!requirement.compliance_status">Not set</span>
-            <span *ngIf="requirement.compliance_status">{{requirement.compliance_status}}</span>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        Compliance Status
+      </th>
+      <td mat-cell *matCellDef="let requirement">
+        <button
+          mat-button
+          matTooltip="Click to set compliance status"
+          (click)="
+            onEditCompliance(requirement); $event.stopImmediatePropagation()
+          "
+        >
+          <span *ngIf="!requirement.compliance_status">Not set</span>
+          <span *ngIf="requirement.compliance_status">{{
+            requirement.compliance_status
+          }}</span>
         </button>
-        </td>
+      </td>
     </ng-container>
 
     <!-- Compliance comment column -->
     <ng-container matColumnDef="compliance_comment">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Compliance Comment </th>
-        <td mat-cell *matCellDef="let requirement"> {{requirement.compliance_comment | truncate}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        Compliance Comment
+      </th>
+      <td mat-cell *matCellDef="let requirement">
+        {{ requirement.compliance_comment | truncate }}
+      </td>
     </ng-container>
-  
+
+    <!-- Completion column -->
+    <ng-container matColumnDef="completion">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Completion</th>
+      <td
+        mat-cell
+        *matCellDef="let requirement"
+        [matTooltip]="
+          requirement.percentComplete !== null
+            ? requirement.percentComplete + '% complete'
+            : 'Nothing to be completed'
+        "
+      >
+        <mat-progress-bar
+          *ngIf="requirement.percentComplete !== null"
+          class="example-margin"
+          mode="determinate"
+          [value]="requirement.percentComplete"
+        >
+        </mat-progress-bar>
+      </td>
+    </ng-container>
+
     <!-- Options column -->
     <ng-container matColumnDef="options">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let requirement">
-          <mvtool-table-options
-            (edit)="onEditRequirement(requirement)"
-            (delete)="onDeleteRequirement(requirement)">
-          </mvtool-table-options>
-        </td>
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let requirement">
+        <mvtool-table-options
+          (edit)="onEditRequirement(requirement)"
+          (delete)="onDeleteRequirement(requirement)"
+        >
+        </mvtool-table-options>
+      </td>
     </ng-container>
   </mvtool-table>
 </div>

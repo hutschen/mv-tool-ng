@@ -1,10 +1,11 @@
 import { Component, Inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Project } from '../shared/services/project.service';
 import { IRequirementInput, Requirement } from '../shared/services/requirement.service';
 
 export interface IRequirementDialogData {
-  projectId: number;
+  project: Project;
   requirement: Requirement | null;
 }
 
@@ -16,7 +17,7 @@ export interface IRequirementDialogData {
   ]
 })
 export class RequirementDialogComponent {
-  projectId: number;
+  project: Project;
   requirementInput: IRequirementInput = {
     reference: null,
     summary: '',
@@ -27,13 +28,13 @@ export class RequirementDialogComponent {
   }
 
   constructor(
-    protected _dialogRef: MatDialogRef<RequirementDialogComponent>, 
-    @Inject(MAT_DIALOG_DATA) protected _dialogData: IRequirementDialogData) { 
-      this.projectId = this._dialogData.projectId;
-      if (this._dialogData.requirement) {
-        this.requirementInput = this._dialogData.requirement.toRequirementInput();
-      }
+    protected _dialogRef: MatDialogRef<RequirementDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) protected _dialogData: IRequirementDialogData) {
+    this.project = this._dialogData.project;
+    if (this._dialogData.requirement) {
+      this.requirementInput = this._dialogData.requirement.toRequirementInput();
     }
+  }
 
   get createMode(): boolean {
     return this._dialogData.requirement === null;

@@ -8,45 +8,51 @@
     [showFilter]="true"
     filterLabel="Filter Measures"
     createLabel="Create Measure"
-    #tableToolbar>
+    #tableToolbar
+  >
   </mvtool-table-toolbar>
 
   <!-- Measures table -->
   <mvtool-table
-    [displayedColumns]="displayedColumns"
+    [columns]="columns"
     [data]="data"
     [dataLoaded]="dataLoaded"
     [filterValue]="tableToolbar.filterValue"
     (create)="onCreateMeasure()"
     noContentText="No measures found."
     loadingText="Loading measures..."
-    matSort #sort="matSort"
-    [sort]="sort">
-
+    matSort
+    #sort="matSort"
+    [sort]="sort"
+  >
     <!-- ID Column -->
     <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-        <td mat-cell *matCellDef="let measure"> {{measure.id}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+      <td mat-cell *matCellDef="let measure">{{ measure.id }}</td>
     </ng-container>
 
     <!-- Summary column -->
     <ng-container matColumnDef="summary">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Summary </th>
-        <td mat-cell *matCellDef="let measure"> {{measure.summary | truncate}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Summary</th>
+      <td mat-cell *matCellDef="let measure">
+        {{ measure.summary | truncate }}
+      </td>
     </ng-container>
 
     <!-- Description column -->
     <ng-container matColumnDef="description">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
-        <td mat-cell *matCellDef="let measure"> {{measure.description | truncate}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+      <td mat-cell *matCellDef="let measure">
+        {{ measure.description | truncate }}
+      </td>
     </ng-container>
 
     <!-- Document column -->
     <ng-container matColumnDef="document">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Document </th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Document</th>
       <td mat-cell *matCellDef="let measure">
         <span *ngIf="measure.document">
-          {{ measure.document.reference | truncate }} 
+          {{ measure.document.reference | truncate }}
           {{ measure.document.title | truncate }}
         </span>
       </td>
@@ -54,43 +60,40 @@
 
     <!-- JIRA issue column -->
     <ng-container matColumnDef="jira_issue">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> JIRA Issue </th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>JIRA Issue</th>
       <td mat-cell *matCellDef="let measure">
-        <span *ngIf="measure.hasJiraIssue">
-          <mvtool-jira-issue-label
-            [measure]="measure"
-            (click)="$event.stopPropagation()">
-          </mvtool-jira-issue-label>
-        </span>
-        <span *ngIf="!measure.hasJiraIssue">
-          <mvtool-jira-issue-input
-            [projectId]="measure.requirement.project.id"
-            [measureInput]="measure.toMeasureInput()"
-            (jiraIssueCreated)="onJiraIssueCreated($event, measure)"
-            (click)="$event.stopPropagation()">
-          </mvtool-jira-issue-input>
-        </span>
+        <mvtool-jira-issue-input
+          [measure]="measure"
+          (measureChange)="onReloadMeasures()"
+          (click)="$event.stopPropagation()"
+        >
+        </mvtool-jira-issue-input>
       </td>
     </ng-container>
 
     <!-- Completed column -->
     <ng-container matColumnDef="completed">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header> Completed </th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Completed</th>
       <td mat-cell *matCellDef="let measure">
-        <mat-icon *ngIf="measure.completed">check</mat-icon>
-        <mat-icon *ngIf="!measure.completed">close</mat-icon>
+        <mvtool-measure-complete-button
+          [measure]="measure"
+          (measureChange)="onReloadMeasures()"
+          (click)="$event.stopPropagation()"
+        >
+        </mvtool-measure-complete-button>
       </td>
     </ng-container>
 
     <!-- Options column -->
     <ng-container matColumnDef="options">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let measure">
-          <mvtool-table-options
-            (edit)="onEditMeasure(measure)"
-            (delete)="onDeleteMeasure(measure)">
-          </mvtool-table-options>
-        </td>
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let measure">
+        <mvtool-table-options
+          (edit)="onEditMeasure(measure)"
+          (delete)="onDeleteMeasure(measure)"
+        >
+        </mvtool-table-options>
+      </td>
     </ng-container>
   </mvtool-table>
 </div>

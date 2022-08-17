@@ -3,28 +3,34 @@
 </div>
 <!-- Content -->
 <div mat-dialog-content>
-  <form 
-    id="complianceForm" #form="ngForm" (submit)="onSave(form)"
-    fxLayout="column">
+  <form
+    id="complianceForm"
+    #form="ngForm"
+    (submit)="onSave(form)"
+    fxLayout="column"
+  >
     <!-- Compliance Status Input -->
     <mat-form-field appearance="fill">
       <mat-label>Select compliance status</mat-label>
       <mat-select name="complianceStatus" [(ngModel)]="complianceStatus">
         <mat-option [value]="null">None</mat-option>
-        <mat-option 
-          *ngFor="let complianceStatus of complianceStates" 
-          [value]="complianceStatus">
-          {{complianceStatus}}
+        <mat-option
+          *ngFor="let complianceStatus of complianceStates"
+          [value]="complianceStatus"
+        >
+          {{ complianceStatus }}
         </mat-option>
       </mat-select>
     </mat-form-field>
     <!-- Compliance Comment Input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Compliance Comment</mat-label>
-      <textarea 
-        name="complianceComment" matInput 
-        [(ngModel)]="requirementInput.compliance_comment" 
-        [disabled]="complianceCommentDisabled"></textarea>
+      <textarea
+        name="complianceComment"
+        matInput
+        [(ngModel)]="requirementInput.compliance_comment"
+        [disabled]="complianceCommentDisabled"
+      ></textarea>
     </mat-form-field>
   </form>
 </div>
@@ -33,7 +39,14 @@
     <mat-icon>cancel</mat-icon>
     Cancel
   </button>
-  <button mat-raised-button disabled="{{form.invalid}}" class="form-button" color="accent" type="submit" form="complianceForm">
+  <button
+    mat-raised-button
+    disabled="{{ form.invalid }}"
+    class="form-button"
+    color="accent"
+    type="submit"
+    form="complianceForm"
+  >
     <mat-icon>save</mat-icon>
     Save
   </button>

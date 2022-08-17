@@ -8,29 +8,48 @@
 </div>
 <!-- Content -->
 <div mat-dialog-content>
-  <form 
-    id="requirementForm" #form="ngForm" (submit)="onSave(form)"
-    fxLayout="column">
+  <form
+    id="requirementForm"
+    #form="ngForm"
+    (submit)="onSave(form)"
+    fxLayout="column"
+  >
     <!-- Requirement reference input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Requirement reference</mat-label>
-      <input name="reference" matInput [(ngModel)]="requirementInput.reference">
+      <input
+        name="reference"
+        matInput
+        [(ngModel)]="requirementInput.reference"
+      />
     </mat-form-field>
 
     <!-- Requirement summary input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Requirement summary</mat-label>
-      <input name="summary" matInput [(ngModel)]="requirementInput.summary" required>
+      <input
+        name="summary"
+        matInput
+        [(ngModel)]="requirementInput.summary"
+        required
+      />
     </mat-form-field>
 
     <!-- Requirement description input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Requirement description</mat-label>
-      <textarea name="description" matInput [(ngModel)]="requirementInput.description"></textarea>
+      <textarea
+        name="description"
+        matInput
+        [(ngModel)]="requirementInput.description"
+      ></textarea>
     </mat-form-field>
 
     <!-- Target object input -->
-    <mvtool-target-object-input [projectId]="projectId" [(targetObject)]="requirementInput.target_object"></mvtool-target-object-input>
+    <mvtool-target-object-input
+      [project]="project"
+      [(targetObject)]="requirementInput.target_object"
+    ></mvtool-target-object-input>
   </form>
 </div>
 <div mat-dialog-actions align="end">
@@ -38,11 +57,17 @@
     <mat-icon>cancel</mat-icon>
     Cancel
   </button>
-  <button mat-raised-button disabled="{{form.invalid}}" class="form-button" color="accent" type="submit" form="requirementForm">
+  <button
+    mat-raised-button
+    disabled="{{ form.invalid }}"
+    class="form-button"
+    color="accent"
+    type="submit"
+    form="requirementForm"
+  >
     <mat-icon>save</mat-icon>
     <span>&nbsp;</span>
     <span *ngIf="createMode">Create</span>
     <span *ngIf="!createMode">Save</span>
   </button>
 </div>
-

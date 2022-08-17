@@ -6,6 +6,8 @@ import { TableOptionsComponent } from './components/table-options.component';
 import { MaterialModule } from '../material/material.module';
 import { TableToolbarComponent } from './components/table-toolbar.component';
 import { TableComponent } from './components/table.component';
+import { DownloadDialogComponent } from './components/download-dialog.component';
+import { UploadDialogComponent } from './components/upload-dialog.component';
 
 
 
@@ -15,6 +17,8 @@ import { TableComponent } from './components/table.component';
     TableOptionsComponent,
     TableToolbarComponent,
     TableComponent,
+    DownloadDialogComponent,
+    UploadDialogComponent,
   ],
   imports: [
     CommonModule,

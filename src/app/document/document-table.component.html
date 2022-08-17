@@ -2,58 +2,66 @@
   <mvtool-table-toolbar
     (refresh)="onReloadDocuments()"
     (create)="onCreateDocument()"
-    (upload)="onImportDocuments()"
-    (download)="onExportDocuments()"
     [showFilter]="true"
     filterLabel="Filter Documents"
     createLabel="Create Document"
-    #tableToolbar>
+    #tableToolbar
+  >
   </mvtool-table-toolbar>
 
   <!-- Documents table -->
   <mvtool-table
-    [displayedColumns]="displayedColumns"
+    [columns]="columns"
     [data]="data"
     [dataLoaded]="dataLoaded"
     [filterValue]="tableToolbar.filterValue"
     (create)="onCreateDocument()"
     noContentText="No documents found."
     loadingText="Loading documents..."
-    matSort #sort="matSort"
-    [sort]="sort">
+    matSort
+    #sort="matSort"
+    [sort]="sort"
+  >
     <!-- ID Column -->
     <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
-        <td mat-cell *matCellDef="let document"> {{document.id}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+      <td mat-cell *matCellDef="let document">{{ document.id }}</td>
     </ng-container>
 
     <!-- Reference column -->
     <ng-container matColumnDef="reference">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Reference </th>
-        <td mat-cell *matCellDef="let document"> {{document.reference | truncate}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference</th>
+      <td mat-cell *matCellDef="let document">
+        {{ document.reference | truncate }}
+      </td>
     </ng-container>
 
     <!-- Title column -->
     <ng-container matColumnDef="title">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Title </th>
-        <td mat-cell *matCellDef="let document"> {{document.title | truncate}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+      <td mat-cell *matCellDef="let document">
+        {{ document.title | truncate }}
+      </td>
     </ng-container>
 
     <!-- Description column -->
     <ng-container matColumnDef="description">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
-        <td mat-cell *matCellDef="let document"> {{document.description | truncate}} </td>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+      <td mat-cell *matCellDef="let document">
+        {{ document.description | truncate }}
+      </td>
     </ng-container>
 
     <!-- Options column -->
     <ng-container matColumnDef="options">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let document">
-          <mvtool-table-options
-            (edit)="onEditDocument(document)"
-            (delete)="onDeleteDocument(document)">
-          </mvtool-table-options>
-        </td>
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let document">
+        <mvtool-table-options
+          (edit)="onEditDocument(document)"
+          (delete)="onDeleteDocument(document)"
+        >
+        </mvtool-table-options>
+      </td>
     </ng-container>
   </mvtool-table>
 </div>

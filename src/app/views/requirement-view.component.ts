@@ -10,7 +10,7 @@ import { Requirement } from '../shared/services/requirement.service';
       <mvtool-project-card [project]="project"></mvtool-project-card>
       <mat-divider></mat-divider>
       <mvtool-requirement-table 
-        [projectId]="project.id"
+        [project]="project"
         (requirementClicked)="onRequirementClicked($event)">
       </mvtool-requirement-table>
     </div>

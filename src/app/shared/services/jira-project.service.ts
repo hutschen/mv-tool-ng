@@ -16,7 +16,7 @@ export class JiraProjectService {
   constructor(protected _crud: CRUDService<IJiraProject, IJiraProject>) {}
 
   getJiraProjectsUrl() : string {
-    return 'jira/projects'
+    return 'jira-projects'
   }
 
   getJiraProjectUrl(jiraProjectId: string) {

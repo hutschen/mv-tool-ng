@@ -14,7 +14,7 @@ export class UserService {
   constructor(protected _crud: CRUDService<IUser, IUser>) {}
 
   getUserUrl() : string {
-    return 'jira/user'
+    return 'jira-user'
   }
 
   async getUser(): Promise<IUser> {

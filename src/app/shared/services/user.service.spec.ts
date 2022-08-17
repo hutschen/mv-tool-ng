@@ -37,7 +37,7 @@ describe('UserService', () => {
   });
 
   it('should return user url', () => {
-    expect(sut.getUserUrl()).toEqual('jira/user')
+    expect(sut.getUserUrl()).toEqual('jira-user')
   })
 
   it('should get user', (done: DoneFn) => {
