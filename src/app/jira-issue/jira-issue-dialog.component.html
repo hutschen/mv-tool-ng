@@ -1,3 +1,20 @@
+<!--
+ Copyright (C) 2022 Helmar Hutschenreuter
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+ 
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
 <div mat-dialog-title>
   <h1>
     <span>Create JIRA Issue</span>
@@ -5,15 +22,25 @@
 </div>
 <!-- Content -->
 <div mat-dialog-content>
-  <form 
-    id="jiraIssueForm" #form="ngForm" (submit)="onSave(form)" fxLayout="column">
-
+  <form
+    id="jiraIssueForm"
+    #form="ngForm"
+    (submit)="onSave(form)"
+    fxLayout="column"
+  >
     <!-- Select issue type -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Issue type</mat-label>
-      <mat-select name="jiraIssueType" [(ngModel)]="jiraIssueInput.issuetype_id" required>
-        <mat-option *ngFor="let jiraIssueType of jiraIssueTypes" [value]="jiraIssueType.id">
-          {{jiraIssueType.name | truncate }}
+      <mat-select
+        name="jiraIssueType"
+        [(ngModel)]="jiraIssueInput.issuetype_id"
+        required
+      >
+        <mat-option
+          *ngFor="let jiraIssueType of jiraIssueTypes"
+          [value]="jiraIssueType.id"
+        >
+          {{ jiraIssueType.name | truncate }}
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -21,13 +48,22 @@
     <!-- Summary input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Summary</mat-label>
-      <input name="summary" matInput [(ngModel)]="jiraIssueInput.summary" required>
+      <input
+        name="summary"
+        matInput
+        [(ngModel)]="jiraIssueInput.summary"
+        required
+      />
     </mat-form-field>
 
     <!-- Description input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Description</mat-label>
-      <textarea name="description" matInput [(ngModel)]="jiraIssueInput.description"></textarea>
+      <textarea
+        name="description"
+        matInput
+        [(ngModel)]="jiraIssueInput.description"
+      ></textarea>
     </mat-form-field>
   </form>
 </div>
@@ -37,7 +73,14 @@
     <mat-icon>cancel</mat-icon>
     Cancel
   </button>
-  <button mat-raised-button disabled="{{form.invalid}}" class="form-button" color="accent" type="submit" form="jiraIssueForm">
+  <button
+    mat-raised-button
+    disabled="{{ form.invalid }}"
+    class="form-button"
+    color="accent"
+    type="submit"
+    form="jiraIssueForm"
+  >
     <mat-icon>save</mat-icon>
     Create
   </button>
