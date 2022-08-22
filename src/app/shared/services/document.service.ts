@@ -14,8 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
+import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
+import { IUploadState, UploadService } from './upload.service';
 
 export interface IDocumentInput {
   reference: string | null;
@@ -58,6 +61,8 @@ export class Document implements IDocument {
 export class DocumentService {
   constructor(
     protected _crud: CRUDService<IDocumentInput, IDocument>,
+    protected _download: DownloadService,
+    protected _upload: UploadService,
     protected _projects: ProjectService
   ) {}
 
@@ -103,5 +108,18 @@ export class DocumentService {
 
   async deleteDocument(documentId: number): Promise<null> {
     return this._crud.delete(this.getDocumentUrl(documentId));
+  }
+
+  downloadDocumentExcel(project_id: number): Observable<IDownloadState> {
+    const url = `${this.getDocumentsUrl(project_id)}/excel`;
+    return this._download.download(url);
+  }
+
+  uploadDocumentExcel(
+    project_id: number,
+    file: File
+  ): Observable<IUploadState> {
+    const url = `${this.getDocumentsUrl(project_id)}/excel`;
+    return this._upload.upload(url, file);
   }
 }
