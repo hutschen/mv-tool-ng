@@ -95,7 +95,7 @@ export class MeasureTableComponent implements OnInit {
     await this.onReloadMeasures();
   }
 
-  onExportMeasures() {
+  onExportMeasures(): void {
     if (this.requirement) {
       this._dialog.open(DownloadDialogComponent, {
         width: '500px',
@@ -103,13 +103,13 @@ export class MeasureTableComponent implements OnInit {
           download$: this._measureService.downloadMeasureExcel(
             this.requirement.id
           ),
-          filename: `measures.xlsx`,
+          filename: 'measures.xlsx',
         } as IDownloadDialogData,
       });
     }
   }
 
-  onImportMeasures() {
+  onImportMeasures(): void {
     if (this.requirement) {
       const requirementId = this.requirement.id;
       const dialogRef = this._dialog.open(UploadDialogComponent, {
