@@ -30,17 +30,18 @@
       Import
     </button>
     <mat-menu #importMenu="matMenu">
-      <button mat-menu-item (click)="onImportRequirements()">
+      <button mat-menu-item (click)="onImportRequirementsExcel()">
         Import Excel
       </button>
       <button
         mat-menu-item
+        (click)="onImportGSBaustein()"
         matTooltip="Import an official Baustein Word document of the German BSI"
       >
         Import GS Baustein
       </button>
     </mat-menu>
-    <button mat-button (click)="onExportRequirements()">
+    <button mat-button (click)="onExportRequirementsExcel()">
       <mat-icon>file_upload</mat-icon>
       Export Excel
     </button>
