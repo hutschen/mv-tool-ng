@@ -18,7 +18,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 @Component({
   selector: 'mvtool-table-options',
   template: `
-    <div align="end">
+    <div fxLayout="row" fxLayoutAlign="end center">
       <button
         mat-button
         [matMenuTriggerFor]="menu"
