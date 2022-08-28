@@ -37,7 +37,7 @@ import {
 @Component({
   selector: 'mvtool-requirement-table',
   templateUrl: './requirement-table.component.html',
-  styles: [],
+  styleUrls: ['./requirement-table.component.css'],
 })
 export class RequirementTableComponent implements OnInit {
   columns: ITableColumn[] = [
@@ -48,10 +48,10 @@ export class RequirementTableComponent implements OnInit {
     { name: 'description', optional: true },
     { name: 'gs_absicherung', optional: true },
     { name: 'gs_verantwortliche', optional: true },
-    { name: 'completion', optional: true },
     { name: 'target_object', optional: true },
     { name: 'compliance_status', optional: false },
     { name: 'compliance_comment', optional: true },
+    { name: 'completion', optional: true },
     { name: 'options', optional: false },
   ];
   data: Requirement[] = [];
