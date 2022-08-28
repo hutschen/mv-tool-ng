@@ -20,13 +20,30 @@
   <mvtool-table-toolbar
     (refresh)="onReloadRequirements()"
     (create)="onCreateRequirement()"
-    (upload)="onImportRequirements()"
-    (download)="onExportRequirements()"
     [showFilter]="true"
     filterLabel="Filter Requirements"
     createLabel="Create Requirement"
     #tableToolbar
   >
+    <button mat-button [matMenuTriggerFor]="importMenu">
+      <mat-icon>file_upload</mat-icon>
+      Import
+    </button>
+    <mat-menu #importMenu="matMenu">
+      <button mat-menu-item (click)="onImportRequirements()">
+        Import Excel
+      </button>
+      <button
+        mat-menu-item
+        matTooltip="Import an official Baustein Word document of the German BSI"
+      >
+        Import GS Baustein
+      </button>
+    </mat-menu>
+    <button mat-button (click)="onExportRequirements()">
+      <mat-icon>file_upload</mat-icon>
+      Export Excel
+    </button>
   </mvtool-table-toolbar>
 
   <!-- Requirements table -->
