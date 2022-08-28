@@ -37,7 +37,8 @@ import {
 @Component({
   selector: 'mvtool-requirement-table',
   templateUrl: './requirement-table.component.html',
-  styleUrls: ['./requirement-table.component.css'],
+  styleUrls: ['../shared/styles/mat-table.css'],
+  styles: ['.mat-column-gs_absicherung {text-align: center;}'],
 })
 export class RequirementTableComponent implements OnInit {
   columns: ITableColumn[] = [

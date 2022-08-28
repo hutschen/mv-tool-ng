@@ -89,7 +89,7 @@
     <ng-container matColumnDef="gs_baustein">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>GS Baustein</th>
       <td mat-cell *matCellDef="let requirement">
-        <span *ngIf="requirement.gs_baustein">
+        <span *ngIf="requirement.gs_baustein" class="truncate-lines">
           {{ requirement.gs_baustein.title }}
         </span>
       </td>
@@ -99,7 +99,7 @@
     <ng-container matColumnDef="summary">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Summary</th>
       <td mat-cell *matCellDef="let requirement">
-        {{ requirement.summary }}
+        <span class="truncate-lines">{{ requirement.summary }}</span>
       </td>
     </ng-container>
 
@@ -107,7 +107,7 @@
     <ng-container matColumnDef="description">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
       <td mat-cell *matCellDef="let requirement">
-        {{ requirement.description }}
+        <span class="truncate-lines">{{ requirement.description }}</span>
       </td>
     </ng-container>
 
@@ -121,9 +121,11 @@
     </ng-container>
 
     <ng-container matColumnDef="gs_verantwortliche">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>GS Absicherung</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        GS Verantwortliche
+      </th>
       <td mat-cell *matCellDef="let requirement">
-        <span *ngIf="requirement.gs_verantwortliche">
+        <span *ngIf="requirement.gs_verantwortliche" class="truncate-lines">
           {{ requirement.gs_verantwortliche }}
         </span>
       </td>
@@ -139,9 +141,7 @@
 
     <!-- Compliance status column -->
     <ng-container matColumnDef="compliance_status">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        Compliance Status
-      </th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Compliance</th>
       <td mat-cell *matCellDef="let requirement">
         <button
           mat-button
