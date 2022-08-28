@@ -124,7 +124,7 @@ export class RequirementTableComponent implements OnInit {
     this.onReloadRequirements();
   }
 
-  onExportRequirements() {
+  onExportRequirementsExcel() {
     if (this.project) {
       this._dialog.open(DownloadDialogComponent, {
         width: '500px',
@@ -138,7 +138,7 @@ export class RequirementTableComponent implements OnInit {
     }
   }
 
-  onImportRequirements() {
+  onImportRequirementsExcel() {
     if (this.project) {
       const projectId = this.project.id;
       const dialogRef = this._dialog.open(UploadDialogComponent, {
@@ -148,6 +148,23 @@ export class RequirementTableComponent implements OnInit {
             projectId,
             file
           );
+        },
+      });
+      dialogRef.afterClosed().subscribe((uploadState: IUploadState | null) => {
+        if (uploadState && uploadState.state == 'done') {
+          this.onReloadRequirements();
+        }
+      });
+    }
+  }
+
+  onImportGSBaustein() {
+    if (this.project) {
+      const projectId = this.project.id;
+      const dialogRef = this._dialog.open(UploadDialogComponent, {
+        width: '500px',
+        data: (file: File) => {
+          return this._requirementService.uploadGSBaustein(projectId, file);
         },
       });
       dialogRef.afterClosed().subscribe((uploadState: IUploadState | null) => {

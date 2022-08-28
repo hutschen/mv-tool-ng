@@ -149,4 +149,9 @@ export class RequirementService {
     const url = `${this.getRequirementsUrl(projectId)}/excel`;
     return this._upload.upload(url, file);
   }
+
+  uploadGSBaustein(projectId: number, file: File): Observable<IUploadState> {
+    const url = `${this.getRequirementsUrl(projectId)}/gs-baustein`;
+    return this._upload.upload(url, file);
+  }
 }

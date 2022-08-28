@@ -43,6 +43,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
           <mat-icon>file_download</mat-icon>
           {{ downloadLabel }}
         </button>
+
+        <ng-content></ng-content>
       </div>
 
       <!-- Filter -->
@@ -65,8 +67,8 @@ export class TableToolbarComponent {
   @Output() filter = new EventEmitter<string>();
   @Input() refeshLabel: string = 'Refresh Table';
   @Input() createLabel: string = 'Create';
-  @Input() uploadLabel: string = 'Upload Excel';
-  @Input() downloadLabel: string = 'Download Excel';
+  @Input() uploadLabel: string = 'Import Excel';
+  @Input() downloadLabel: string = 'Export Excel';
   @Input() filterLabel: string = 'Filter';
   @Input() showFilter: boolean = false;
   filterValue: string = '';
