@@ -75,6 +75,26 @@
       </td>
     </ng-container>
 
+    <!-- GS Anforderungs-Referenz -->
+    <ng-container matColumnDef="gs_anforderung_reference">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>GS ID</th>
+      <td mat-cell *matCellDef="let requirement">
+        <span *ngIf="requirement.gs_anforderung_reference">
+          {{ requirement.gs_anforderung_reference }}
+        </span>
+      </td>
+    </ng-container>
+
+    <!-- GS Baustein column -->
+    <ng-container matColumnDef="gs_baustein">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>GS Baustein</th>
+      <td mat-cell *matCellDef="let requirement">
+        <span *ngIf="requirement.gs_baustein">
+          {{ requirement.gs_baustein.title | truncate }}
+        </span>
+      </td>
+    </ng-container>
+
     <!-- Summary column -->
     <ng-container matColumnDef="summary">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Summary</th>
@@ -88,6 +108,24 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
       <td mat-cell *matCellDef="let requirement">
         {{ requirement.description | truncate }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="gs_absicherung">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>GS Absicherung</th>
+      <td mat-cell *matCellDef="let requirement">
+        <span *ngIf="requirement.gs_absicherung">
+          {{ requirement.gs_absicherung }}
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="gs_verantwortliche">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>GS Absicherung</th>
+      <td mat-cell *matCellDef="let requirement">
+        <span *ngIf="requirement.gs_verantwortliche">
+          {{ requirement.gs_verantwortliche }}
+        </span>
       </td>
     </ng-container>
 
