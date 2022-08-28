@@ -32,6 +32,7 @@ import {
 @Component({
   selector: 'mvtool-document-table',
   templateUrl: './document-table.component.html',
+  styleUrls: ['../shared/styles/mat-table.css'],
   styles: [],
 })
 export class DocumentTableComponent implements OnInit {

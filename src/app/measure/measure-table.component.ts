@@ -21,7 +21,6 @@ import {
 } from '../shared/components/download-dialog.component';
 import { ITableColumn } from '../shared/components/table.component';
 import { UploadDialogComponent } from '../shared/components/upload-dialog.component';
-import { IJiraIssue } from '../shared/services/jira-issue.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Requirement } from '../shared/services/requirement.service';
 import { IUploadState } from '../shared/services/upload.service';
@@ -33,6 +32,7 @@ import {
 @Component({
   selector: 'mvtool-measure-table',
   templateUrl: './measure-table.component.html',
+  styleUrls: ['../shared/styles/mat-table.css'],
   styles: [],
 })
 export class MeasureTableComponent implements OnInit {

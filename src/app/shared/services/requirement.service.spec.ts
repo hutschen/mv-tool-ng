@@ -71,6 +71,10 @@ describe('RequirementService', () => {
         completion: 0,
       },
       completion: 0,
+      gs_anforderung_reference: null,
+      gs_absicherung: null,
+      gs_verantwortliche: null,
+      gs_baustein: null,
     };
   });
 

@@ -58,6 +58,10 @@ describe('Measure', () => {
           jira_project: null,
           completion: 0,
         },
+        gs_anforderung_reference: null,
+        gs_absicherung: null,
+        gs_verantwortliche: null,
+        gs_baustein: null,
         completion: 0,
       },
     });
@@ -155,6 +159,10 @@ describe('MeasureService', () => {
           jira_project: null,
           completion: 0,
         },
+        gs_anforderung_reference: null,
+        gs_absicherung: null,
+        gs_verantwortliche: null,
+        gs_baustein: null,
         completion: 0,
       },
     };

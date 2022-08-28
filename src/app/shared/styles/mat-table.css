@@ -15,26 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "@angular/material/prebuilt-themes/indigo-pink.css";
-
-html,
-body {
-  height: 100%;
-}
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+.mat-row {
+  height: auto;
 }
 
-/* TODO: Replace this workaround when line-clamp is finally part of CSS standard */
-.truncate-lines {
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
+.mat-header-cell {
+  white-space: nowrap;
+  padding: 5px 10px 5px 0px;
 }
 
-.truncate-lines:hover {
-  -webkit-line-clamp: unset;
+.mat-cell {
+  padding: 5px 10px 5px 0px;
 }

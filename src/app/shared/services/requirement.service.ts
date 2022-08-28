@@ -29,10 +29,22 @@ export interface IRequirementInput {
   compliance_comment: string | null;
 }
 
+export interface IGSBaustein {
+  id: number;
+  reference: string;
+  title: string;
+}
+
 export interface IRequirement extends IRequirementInput {
   id: number;
   project: IProject;
   completion: number | null;
+
+  // Special attributes for IT Grundschutz Kompendium
+  gs_anforderung_reference: string | null;
+  gs_absicherung: string | null;
+  gs_verantwortliche: string | null;
+  gs_baustein: IGSBaustein | null;
 }
 
 export class Requirement implements IRequirement {
@@ -46,6 +58,12 @@ export class Requirement implements IRequirement {
   project: Project;
   completion: number | null;
 
+  // Special attributes for IT Grundschutz Kompendium
+  gs_anforderung_reference: string | null;
+  gs_absicherung: string | null;
+  gs_verantwortliche: string | null;
+  gs_baustein: IGSBaustein | null;
+
   constructor(requirement: IRequirement) {
     this.id = requirement.id;
     this.reference = requirement.reference;
@@ -56,6 +74,12 @@ export class Requirement implements IRequirement {
     this.compliance_comment = requirement.compliance_comment;
     this.project = new Project(requirement.project);
     this.completion = requirement.completion;
+
+    // Special attributes for IT Grundschutz Kompendium
+    this.gs_anforderung_reference = requirement.gs_anforderung_reference;
+    this.gs_absicherung = requirement.gs_absicherung;
+    this.gs_verantwortliche = requirement.gs_verantwortliche;
+    this.gs_baustein = requirement.gs_baustein;
   }
 
   toRequirementInput(): IRequirementInput {
