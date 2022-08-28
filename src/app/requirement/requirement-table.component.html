@@ -71,7 +71,7 @@
     <ng-container matColumnDef="reference">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference</th>
       <td mat-cell *matCellDef="let requirement">
-        {{ requirement.reference | truncate }}
+        {{ requirement.reference }}
       </td>
     </ng-container>
 
@@ -90,7 +90,7 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header>GS Baustein</th>
       <td mat-cell *matCellDef="let requirement">
         <span *ngIf="requirement.gs_baustein">
-          {{ requirement.gs_baustein.title | truncate }}
+          {{ requirement.gs_baustein.title }}
         </span>
       </td>
     </ng-container>
@@ -99,7 +99,7 @@
     <ng-container matColumnDef="summary">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Summary</th>
       <td mat-cell *matCellDef="let requirement">
-        {{ requirement.summary | truncate }}
+        {{ requirement.summary }}
       </td>
     </ng-container>
 
@@ -107,7 +107,7 @@
     <ng-container matColumnDef="description">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
       <td mat-cell *matCellDef="let requirement">
-        {{ requirement.description | truncate }}
+        {{ requirement.description }}
       </td>
     </ng-container>
 
@@ -133,7 +133,7 @@
     <ng-container matColumnDef="target_object">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Target Object</th>
       <td mat-cell *matCellDef="let requirement">
-        {{ requirement.target_object | truncate }}
+        {{ requirement.target_object }}
       </td>
     </ng-container>
 
@@ -164,7 +164,7 @@
         Compliance Comment
       </th>
       <td mat-cell *matCellDef="let requirement">
-        {{ requirement.compliance_comment | truncate }}
+        {{ requirement.compliance_comment }}
       </td>
     </ng-container>
 
