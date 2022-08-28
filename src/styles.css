@@ -26,7 +26,8 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-/* TODO: Replace this workaround when line-clamp is finally part of CSS standard */
+/* TODO: Replace this workaround when line-clamp is finally part of CSS standard. 
+See also https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-line-clamp */
 .truncate-lines {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
