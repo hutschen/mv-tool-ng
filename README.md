@@ -18,6 +18,4 @@ This project is just started. Later there will be more possibilities to contribu
 
 ## License and dependencies
 
-The MV tool itself or the source code in this repository is licensed under AGPLv3. You find the license in the [license file](LICENSE).
-
-In addition, MV-Tool uses a lot of libraries to make it work. These libraries have been released by their respective authors under their own licenses. The following is a list of direct dependencies of MV-Tool. The source code of all these dependencies is not included in this repository but will be installed when MV-Tool is installed.
+The MV tool itself or the source code in this repository is licensed under AGPLv3. You find the license in the [license file](LICENSE). In addition, MV-Tool uses a number of libraries to make it work. These libraries have been released by their respective authors under their own licenses. These libraries or their source code is not part of this repository.
