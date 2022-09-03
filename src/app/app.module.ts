@@ -1,3 +1,18 @@
+// Copyright (C) 2022 Helmar Hutschenreuter
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -23,29 +38,29 @@ import { DocumentModule } from './document/document.module';
 import { MeasureModule } from './measure/measure.module';
 
 const routes = [
-  { 
+  {
     path: 'projects',
     canActivate: [AuthGuard],
-    component: ProjectsViewComponent 
+    component: ProjectsViewComponent,
   },
-  { 
-    path: 'projects/:projectId/requirements', 
+  {
+    path: 'projects/:projectId/requirements',
     canActivate: [AuthGuard, ProjectIdGuard],
-    component: RequirementViewComponent 
+    component: RequirementViewComponent,
   },
   {
     path: 'projects/:projectId/documents',
     canActivate: [AuthGuard, ProjectIdGuard],
-    component: DocumentViewComponent
+    component: DocumentViewComponent,
   },
   {
     path: 'requirements/:requirementId/measures',
     canActivate: [AuthGuard, RequirementIdGuard],
-    component: MeasureViewComponent
+    component: MeasureViewComponent,
   },
-  { path: 'login', component: LoginViewComponent},
+  { path: 'login', component: LoginViewComponent },
   { path: '**', redirectTo: 'projects' },
-]
+];
 
 @NgModule({
   declarations: [
@@ -56,7 +71,7 @@ const routes = [
     RequirementViewComponent,
     DocumentViewComponent,
     MeasureViewComponent,
-    AppBreadcrumbTrailComponent
+    AppBreadcrumbTrailComponent,
   ],
   imports: [
     BrowserModule,
@@ -70,9 +85,7 @@ const routes = [
     DocumentModule,
     MeasureModule,
   ],
-  providers: [
-    { provide: ErrorHandler, useClass: GlobalErrorHandler }
-  ],
-  bootstrap: [AppComponent]
+  providers: [{ provide: ErrorHandler, useClass: GlobalErrorHandler }],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

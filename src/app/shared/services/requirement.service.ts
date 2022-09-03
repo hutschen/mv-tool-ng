@@ -1,3 +1,18 @@
+// Copyright (C) 2022 Helmar Hutschenreuter
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
@@ -14,10 +29,22 @@ export interface IRequirementInput {
   compliance_comment: string | null;
 }
 
+export interface IGSBaustein {
+  id: number;
+  reference: string;
+  title: string;
+}
+
 export interface IRequirement extends IRequirementInput {
   id: number;
   project: IProject;
   completion: number | null;
+
+  // Special attributes for IT Grundschutz Kompendium
+  gs_anforderung_reference: string | null;
+  gs_absicherung: string | null;
+  gs_verantwortliche: string | null;
+  gs_baustein: IGSBaustein | null;
 }
 
 export class Requirement implements IRequirement {
@@ -31,6 +58,12 @@ export class Requirement implements IRequirement {
   project: Project;
   completion: number | null;
 
+  // Special attributes for IT Grundschutz Kompendium
+  gs_anforderung_reference: string | null;
+  gs_absicherung: string | null;
+  gs_verantwortliche: string | null;
+  gs_baustein: IGSBaustein | null;
+
   constructor(requirement: IRequirement) {
     this.id = requirement.id;
     this.reference = requirement.reference;
@@ -41,6 +74,12 @@ export class Requirement implements IRequirement {
     this.compliance_comment = requirement.compliance_comment;
     this.project = new Project(requirement.project);
     this.completion = requirement.completion;
+
+    // Special attributes for IT Grundschutz Kompendium
+    this.gs_anforderung_reference = requirement.gs_anforderung_reference;
+    this.gs_absicherung = requirement.gs_absicherung;
+    this.gs_verantwortliche = requirement.gs_verantwortliche;
+    this.gs_baustein = requirement.gs_baustein;
   }
 
   toRequirementInput(): IRequirementInput {
@@ -132,6 +171,11 @@ export class RequirementService {
     file: File
   ): Observable<IUploadState> {
     const url = `${this.getRequirementsUrl(projectId)}/excel`;
+    return this._upload.upload(url, file);
+  }
+
+  uploadGSBaustein(projectId: number, file: File): Observable<IUploadState> {
+    const url = `${this.getRequirementsUrl(projectId)}/gs-baustein`;
     return this._upload.upload(url, file);
   }
 }

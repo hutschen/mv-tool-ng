@@ -1,3 +1,18 @@
+// Copyright (C) 2022 Helmar Hutschenreuter
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
@@ -6,51 +21,43 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
     <div fxLayout="row" fxLayoutAlign="space-between center">
       <div fxLayout="row" fxLayoutAlign="start center">
         <!-- Button to refresh table -->
-        <button 
-          *ngIf="refresh.observed"
-          mat-button (click)="refresh.emit()">
+        <button *ngIf="refresh.observed" mat-button (click)="refresh.emit()">
           <mat-icon>refresh</mat-icon>
           {{ refeshLabel }}
         </button>
 
         <!-- Button to create item -->
-        <button
-          *ngIf="create.observed"
-          mat-button (click)="create.emit()">
+        <button *ngIf="create.observed" mat-button (click)="create.emit()">
           <mat-icon>add</mat-icon>
           {{ createLabel }}
         </button>
-          
+
         <!-- Button to upload / import -->
-        <button 
-          *ngIf="upload.observed"
-          mat-button (click)="upload.emit()">
+        <button *ngIf="upload.observed" mat-button (click)="upload.emit()">
           <mat-icon>file_upload</mat-icon>
           {{ uploadLabel }}
         </button>
-    
+
         <!-- Button to download / export -->
-        <button
-          *ngIf="download.observed" 
-          mat-button (click)="download.emit()">
+        <button *ngIf="download.observed" mat-button (click)="download.emit()">
           <mat-icon>file_download</mat-icon>
           {{ downloadLabel }}
         </button>
+
+        <ng-content></ng-content>
       </div>
 
       <!-- Filter -->
-      <div 
-        *ngIf="filter.observed || showFilter"
-        fxFlex="30" fxLayout="column">
+      <div *ngIf="filter.observed || showFilter" fxFlex="30" fxLayout="column">
         <mat-form-field appearance="fill">
           <mat-label>{{ filterLabel }}</mat-label>
           <mat-icon matPrefix>search</mat-icon>
-          <input matInput (keyup)="onFilter($event)">
+          <input matInput (keyup)="onFilter($event)" />
         </mat-form-field>
       </div>
     </div>
   `,
-  styles: []
+  styles: [],
 })
 export class TableToolbarComponent {
   @Output() refresh = new EventEmitter();
@@ -60,13 +67,13 @@ export class TableToolbarComponent {
   @Output() filter = new EventEmitter<string>();
   @Input() refeshLabel: string = 'Refresh Table';
   @Input() createLabel: string = 'Create';
-  @Input() uploadLabel: string = 'Upload Excel';
-  @Input() downloadLabel: string = 'Download Excel';
+  @Input() uploadLabel: string = 'Import Excel';
+  @Input() downloadLabel: string = 'Export Excel';
   @Input() filterLabel: string = 'Filter';
   @Input() showFilter: boolean = false;
   filterValue: string = '';
 
-  constructor() { }
+  constructor() {}
 
   onFilter(event: Event) {
     this.filterValue = (event.target as HTMLInputElement).value;

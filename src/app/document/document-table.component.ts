@@ -1,8 +1,29 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+// Copyright (C) 2022 Helmar Hutschenreuter
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import {
+  DownloadDialogComponent,
+  IDownloadDialogData,
+} from '../shared/components/download-dialog.component';
 import { ITableColumn } from '../shared/components/table.component';
+import { UploadDialogComponent } from '../shared/components/upload-dialog.component';
 import { DocumentService, Document } from '../shared/services/document.service';
 import { Project } from '../shared/services/project.service';
+import { IUploadState } from '../shared/services/upload.service';
 import {
   DocumentDialogComponent,
   IDocumentDialogData,
@@ -11,6 +32,7 @@ import {
 @Component({
   selector: 'mvtool-document-table',
   templateUrl: './document-table.component.html',
+  styleUrls: ['../shared/styles/mat-table.css'],
   styles: [],
 })
 export class DocumentTableComponent implements OnInit {
@@ -72,8 +94,36 @@ export class DocumentTableComponent implements OnInit {
     this.onReloadDocuments();
   }
 
-  onExportDocuments(): void {}
-  onImportDocuments(): void {}
+  onExportDocuments(): void {
+    if (this.project) {
+      this._dialog.open(DownloadDialogComponent, {
+        width: '500px',
+        data: {
+          download$: this._documentService.downloadDocumentExcel(
+            this.project.id
+          ),
+          filename: 'documents.xlsx',
+        } as IDownloadDialogData,
+      });
+    }
+  }
+
+  onImportDocuments(): void {
+    if (this.project) {
+      const projectId = this.project.id;
+      const dialogRef = this._dialog.open(UploadDialogComponent, {
+        width: '500px',
+        data: (file: File) => {
+          return this._documentService.uploadDocumentExcel(projectId, file);
+        },
+      });
+      dialogRef.afterClosed().subscribe((uploadState: IUploadState | null) => {
+        if (uploadState && uploadState.state == 'done') {
+          this.onReloadDocuments();
+        }
+      });
+    }
+  }
 
   async onReloadDocuments(): Promise<void> {
     if (this.project) {

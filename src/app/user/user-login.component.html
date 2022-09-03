@@ -1,25 +1,80 @@
+<!--
+ Copyright (C) 2022 Helmar Hutschenreuter
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+ 
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
 <form #form="ngForm" (reset)="onReset()" (submit)="onSubmit(form)">
   <!-- Username input -->
   <mat-form-field class="form-field-width" appearance="fill">
     <mat-label>Enter your username</mat-label>
-    <input name="username" matInput [(ngModel)]="credentials.username" required>
+    <input
+      name="username"
+      matInput
+      [(ngModel)]="credentials.username"
+      required
+    />
   </mat-form-field>
 
   <!-- Password input -->
   <mat-form-field class="form-field-width" appearance="fill">
     <mat-label>Enter your password</mat-label>
-    <input matInput name="password" [(ngModel)]="credentials.password" [type]="hidePassword ? 'password' : 'text'" required>
-    <button mat-icon-button matSuffix (click)="hidePassword = !hidePassword" [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
-      <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+    <input
+      matInput
+      name="password"
+      [(ngModel)]="credentials.password"
+      [type]="hidePassword ? 'password' : 'text'"
+      required
+    />
+    <button
+      mat-icon-button
+      matSuffix
+      (click)="hidePassword = !hidePassword"
+      [attr.aria-label]="'Hide password'"
+      [attr.aria-pressed]="hidePassword"
+    >
+      <mat-icon>{{ hidePassword ? "visibility_off" : "visibility" }}</mat-icon>
     </button>
   </mat-form-field>
 
   <!-- Checkbox to keep logged in -->
-  <mat-checkbox name="keepLoggedIn" [(ngModel)]="keepLoggedIn" matTooltip="When you check this box, your login information will be saved locally in your browser until you log out." ngModel>Keep me logged in</mat-checkbox>
+  <mat-checkbox
+    name="keepLoggedIn"
+    [(ngModel)]="keepLoggedIn"
+    matTooltip="When you check this box, your login information will be saved locally in your browser until you log out."
+    ngModel
+    >Keep me logged in</mat-checkbox
+  >
 
-  <!-- Buttons --> 
-  <div align="end">
-    <button mat-button disabled="{{form.pristine}}" class="form-button" type="reset">Reset</button>
-    <button mat-raised-button disabled="{{form.invalid}}" class="form-button" color="accent" type="submit">Log in</button>
+  <!-- Buttons -->
+  <div fxLayout="row" fxLayoutAlign="end center">
+    <button
+      mat-button
+      disabled="{{ form.pristine }}"
+      class="form-button"
+      type="reset"
+    >
+      Reset
+    </button>
+    <button
+      mat-raised-button
+      disabled="{{ form.invalid }}"
+      class="form-button"
+      color="accent"
+      type="submit"
+    >
+      Log in
+    </button>
   </div>
 </form>

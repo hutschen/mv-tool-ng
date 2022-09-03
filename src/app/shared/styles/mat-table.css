@@ -15,12 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.form-field-width {
-  width: 100%;
+.mat-row {
+  height: auto;
 }
-.form-button {
-  margin-left: 10px;
+
+.mat-header-cell {
+  white-space: nowrap;
+  padding: 5px 10px 5px 0px;
 }
-textarea {
-  height: 50px;
+
+.mat-cell {
+  padding: 5px 10px 5px 0px;
 }

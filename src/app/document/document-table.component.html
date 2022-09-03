@@ -1,7 +1,26 @@
+<!--
+ Copyright (C) 2022 Helmar Hutschenreuter
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+ 
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
 <div fxLayout="column">
   <mvtool-table-toolbar
     (refresh)="onReloadDocuments()"
     (create)="onCreateDocument()"
+    (upload)="onImportDocuments()"
+    (download)="onExportDocuments()"
     [showFilter]="true"
     filterLabel="Filter Documents"
     createLabel="Create Document"
@@ -32,7 +51,7 @@
     <ng-container matColumnDef="reference">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference</th>
       <td mat-cell *matCellDef="let document">
-        {{ document.reference | truncate }}
+        <span class="truncate-lines">{{ document.reference }}</span>
       </td>
     </ng-container>
 
@@ -40,7 +59,7 @@
     <ng-container matColumnDef="title">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
       <td mat-cell *matCellDef="let document">
-        {{ document.title | truncate }}
+        <span class="truncate-lines">{{ document.title }}</span>
       </td>
     </ng-container>
 
@@ -48,7 +67,7 @@
     <ng-container matColumnDef="description">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
       <td mat-cell *matCellDef="let document">
-        {{ document.description | truncate }}
+        <span class="truncate-lines">{{ document.description }}</span>
       </td>
     </ng-container>
 

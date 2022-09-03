@@ -1,3 +1,18 @@
+// Copyright (C) 2022 Helmar Hutschenreuter
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
@@ -22,13 +37,18 @@ import {
 @Component({
   selector: 'mvtool-requirement-table',
   templateUrl: './requirement-table.component.html',
-  styles: [],
+  styleUrls: ['../shared/styles/mat-table.css'],
+  styles: ['.mat-column-gs_absicherung {text-align: center;}'],
 })
 export class RequirementTableComponent implements OnInit {
   columns: ITableColumn[] = [
     { name: 'reference', optional: true },
+    { name: 'gs_anforderung_reference', optional: true },
+    { name: 'gs_baustein', optional: true },
     { name: 'summary', optional: false },
     { name: 'description', optional: true },
+    { name: 'gs_absicherung', optional: true },
+    { name: 'gs_verantwortliche', optional: true },
     { name: 'target_object', optional: true },
     { name: 'compliance_status', optional: false },
     { name: 'compliance_comment', optional: true },
@@ -109,7 +129,7 @@ export class RequirementTableComponent implements OnInit {
     this.onReloadRequirements();
   }
 
-  onExportRequirements() {
+  onExportRequirementsExcel() {
     if (this.project) {
       this._dialog.open(DownloadDialogComponent, {
         width: '500px',
@@ -123,7 +143,7 @@ export class RequirementTableComponent implements OnInit {
     }
   }
 
-  onImportRequirements() {
+  onImportRequirementsExcel() {
     if (this.project) {
       const projectId = this.project.id;
       const dialogRef = this._dialog.open(UploadDialogComponent, {
@@ -133,6 +153,23 @@ export class RequirementTableComponent implements OnInit {
             projectId,
             file
           );
+        },
+      });
+      dialogRef.afterClosed().subscribe((uploadState: IUploadState | null) => {
+        if (uploadState && uploadState.state == 'done') {
+          this.onReloadRequirements();
+        }
+      });
+    }
+  }
+
+  onImportGSBaustein() {
+    if (this.project) {
+      const projectId = this.project.id;
+      const dialogRef = this._dialog.open(UploadDialogComponent, {
+        width: '500px',
+        data: (file: File) => {
+          return this._requirementService.uploadGSBaustein(projectId, file);
         },
       });
       dialogRef.afterClosed().subscribe((uploadState: IUploadState | null) => {
