@@ -22,6 +22,7 @@ import {
   IJiraIssueDialogData,
   JiraIssueDialogComponent,
 } from './jira-issue-dialog.component';
+import { JiraIssueSelectDialogComponent } from './jira-issue-select-dialog.component';
 
 @Component({
   selector: 'mvtool-jira-issue-input',
@@ -31,7 +32,7 @@ import {
       <div *ngIf="measure.hasLinkedJiraIssue">
         <!-- User has permission to view Jira issue -->
         <div *ngIf="measure.jira_issue">
-          <button mat-button [matMenuTriggerFor]="jiraIssueMenu">
+          <button mat-button [matMenuTriggerFor]="editJiraIssueMenu">
             <mat-icon *ngIf="measure.jira_issue.status.completed"
               >check
             </mat-icon>
@@ -45,7 +46,7 @@ import {
         <div *ngIf="!measure.jira_issue">
           <button
             mat-button
-            [matMenuTriggerFor]="jiraIssueMenu"
+            [matMenuTriggerFor]="editJiraIssueMenu"
             matTooltip="You do not have the permission to view the JIRA issue"
           >
             <mat-icon>block</mat-icon>
@@ -53,8 +54,8 @@ import {
           </button>
         </div>
 
-        <!-- Menu for Jira issue -->
-        <mat-menu #jiraIssueMenu="matMenu">
+        <!-- Menu to edit Jira issue -->
+        <mat-menu #editJiraIssueMenu="matMenu">
           <!-- item to open issue -->
           <a
             *ngIf="measure.jira_issue"
@@ -78,10 +79,18 @@ import {
       <div *ngIf="!measure.hasLinkedJiraIssue">
         <!-- A Jira project exists on which the user has permissions -->
         <div *ngIf="measure.requirement.project.jira_project">
-          <button mat-button (click)="onCreateJiraIssue()">
+          <button mat-button [matMenuTriggerFor]="addJiraIssueMenu">
             <mat-icon>add</mat-icon>
-            Create issue
+            Add issue
           </button>
+          <mat-menu #addJiraIssueMenu="matMenu">
+            <button mat-menu-item (click)="onCreateJiraIssue()">
+              Create issue
+            </button>
+            <button mat-menu-item (click)="onSelectJiraIssue()">
+              Select issue
+            </button>
+          </mat-menu>
         </div>
 
         <!-- No Jira project exists on which the user has permissions -->
@@ -141,6 +150,13 @@ export class JiraIssueInputComponent implements OnInit {
         this.measureChange.emit(this.measure);
         this.loading = false;
       }
+    });
+  }
+
+  onSelectJiraIssue(): void {
+    let dialogRef = this._dialog.open(JiraIssueSelectDialogComponent, {
+      width: '500px',
+      data: {},
     });
   }
 
