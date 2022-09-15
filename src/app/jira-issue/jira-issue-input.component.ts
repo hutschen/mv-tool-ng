@@ -22,7 +22,10 @@ import {
   IJiraIssueDialogData,
   JiraIssueDialogComponent,
 } from './jira-issue-dialog.component';
-import { JiraIssueSelectDialogComponent } from './jira-issue-select-dialog.component';
+import {
+  IJiraIssueSelectDialogData,
+  JiraIssueSelectDialogComponent,
+} from './jira-issue-select-dialog.component';
 
 @Component({
   selector: 'mvtool-jira-issue-input',
@@ -156,7 +159,9 @@ export class JiraIssueInputComponent implements OnInit {
   onSelectJiraIssue(): void {
     let dialogRef = this._dialog.open(JiraIssueSelectDialogComponent, {
       width: '500px',
-      data: {},
+      data: {
+        jiraProject: this.project?.jira_project,
+      } as IJiraIssueSelectDialogData,
     });
   }
 
