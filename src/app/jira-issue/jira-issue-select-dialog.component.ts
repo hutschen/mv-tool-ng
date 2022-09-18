@@ -1,4 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
   IJiraIssue,
@@ -34,6 +35,7 @@ export interface IJiraIssueSelectDialogData {
             matInput
             [(ngModel)]="filterValue"
             [matAutocomplete]="issueAutocomplete"
+            required
           />
           <mat-autocomplete #issueAutocomplete="matAutocomplete">
             <mat-option
@@ -75,7 +77,6 @@ export interface IJiraIssueSelectDialogData {
 })
 export class JiraIssueSelectDialogComponent implements OnInit {
   jiraProject: IJiraProject;
-  jiraIssue: IJiraIssue | null = null;
   jiraIssues: IJiraIssue[] = [];
   filterValue: string | null = null;
   jiraIssuesLoaded: boolean = false;
@@ -106,6 +107,24 @@ export class JiraIssueSelectDialogComponent implements OnInit {
     );
   }
 
-  onCancel(): void {}
-  onSubmit(form: any): void {}
+  get jiraIssue(): IJiraIssue | undefined {
+    if (!this.filterValue) {
+      return undefined;
+    }
+    return this.jiraIssues.find((issue) => issue.key === this.filterValue);
+  }
+
+  onSubmit(form: NgForm): void {
+    if (form.valid) {
+      if (this.jiraIssue) {
+        this._dialogRef.close(this.jiraIssue);
+      } else {
+        form.controls['jiraIssueKey'].setErrors({ invalid: true });
+      }
+    }
+  }
+
+  onCancel(): void {
+    this._dialogRef.close();
+  }
 }
