@@ -13,30 +13,67 @@ export interface IJiraIssueSelectDialogData {
 @Component({
   selector: 'mvtool-jira-issue-select-dialog',
   template: `
-    <div fxLayout="column">
-      <mat-form-field appearance="fill">
-        <mat-label>Issue</mat-label>
-        <input
-          type="text"
-          matInput
-          [(ngModel)]="filterValue"
-          [matAutocomplete]="issueAutocomplete"
-        />
-        <mat-autocomplete #issueAutocomplete="matAutocomplete">
-          <mat-option
-            *ngFor="let issue of filteredJiraIssues"
-            [value]="issue.key"
-          >
-            {{ issue.key }}: {{ issue.summary }}
-          </mat-option>
-          <mat-option *ngIf="!jiraIssuesLoaded">
-            <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
-              <mat-spinner diameter="20"></mat-spinner>
-              <div>Loading issues...</div>
-            </div>
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
+    <!-- Title -->
+    <div mat-dialog-title>
+      <h1><span>Select JIRA Issue</span></h1>
+    </div>
+
+    <!-- Content -->
+    <div mat-dialog-content>
+      <form
+        id="jiraIssueSelectForm"
+        #jiraIssueSelectForm="ngForm"
+        (submit)="onSubmit(jiraIssueSelectForm)"
+        fxLayout="column"
+      >
+        <mat-form-field appearance="fill">
+          <mat-label>Issue</mat-label>
+          <input
+            name="jiraIssueKey"
+            type="text"
+            matInput
+            [(ngModel)]="filterValue"
+            [matAutocomplete]="issueAutocomplete"
+          />
+          <mat-autocomplete #issueAutocomplete="matAutocomplete">
+            <mat-option
+              *ngFor="let issue of filteredJiraIssues"
+              [value]="issue.key"
+            >
+              {{ issue.key }}: {{ issue.summary }}
+            </mat-option>
+            <mat-option *ngIf="!jiraIssuesLoaded">
+              <div
+                fxLayout="row"
+                fxLayoutGap="10px"
+                fxLayoutAlign="start center"
+              >
+                <mat-spinner diameter="20"></mat-spinner>
+                <div>Loading issues...</div>
+              </div>
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </form>
+    </div>
+
+    <!-- Actions -->
+    <div mat-dialog-actions align="end">
+      <button mat-button class="form-button" (click)="onCancel()">
+        <mat-icon>cancel</mat-icon>
+        Cancel
+      </button>
+      <button
+        [disabled]="jiraIssueSelectForm.invalid"
+        mat-raised-button
+        class="form-button"
+        color="accent"
+        type="submit"
+        form="jiraIssueSelectForm"
+      >
+        <mat-icon>save</mat-icon>
+        Create
+      </button>
     </div>
   `,
   styles: [],
@@ -73,4 +110,7 @@ export class JiraIssueSelectDialogComponent implements OnInit {
       `${issue.key}: ${issue.summary}`.toLowerCase().includes(filterValue)
     );
   }
+
+  onCancel(): void {}
+  onSubmit(form: any): void {}
 }
