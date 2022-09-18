@@ -29,6 +29,12 @@ export interface IJiraIssueSelectDialogData {
           >
             {{ issue.key }}: {{ issue.summary }}
           </mat-option>
+          <mat-option *ngIf="!jiraIssuesLoaded">
+            <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="start center">
+              <mat-spinner diameter="20"></mat-spinner>
+              <div>Loading issues...</div>
+            </div>
+          </mat-option>
         </mat-autocomplete>
       </mat-form-field>
     </div>
@@ -40,6 +46,7 @@ export class JiraIssueSelectDialogComponent implements OnInit {
   jiraIssue: IJiraIssue | null = null;
   jiraIssues: IJiraIssue[] = [];
   filterValue: string | null = null;
+  jiraIssuesLoaded: boolean = false;
 
   constructor(
     protected _jiraIssueService: JiraIssueService,
@@ -53,6 +60,7 @@ export class JiraIssueSelectDialogComponent implements OnInit {
     this.jiraIssues = await this._jiraIssueService.getJiraIssues(
       this.jiraProject.id
     );
+    this.jiraIssuesLoaded = true;
   }
 
   get filteredJiraIssues(): IJiraIssue[] {
