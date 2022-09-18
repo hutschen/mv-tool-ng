@@ -42,17 +42,12 @@ export interface IJiraIssueSelectDialogData {
             >
               {{ issue.key }}: {{ issue.summary }}
             </mat-option>
-            <mat-option *ngIf="!jiraIssuesLoaded">
-              <div
-                fxLayout="row"
-                fxLayoutGap="10px"
-                fxLayoutAlign="start center"
-              >
-                <mat-spinner diameter="20"></mat-spinner>
-                <div>Loading issues...</div>
-              </div>
-            </mat-option>
           </mat-autocomplete>
+          <mat-spinner
+            *ngIf="!jiraIssuesLoaded"
+            matSuffix
+            diameter="20"
+          ></mat-spinner>
         </mat-form-field>
       </form>
     </div>
