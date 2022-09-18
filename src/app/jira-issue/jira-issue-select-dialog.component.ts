@@ -12,12 +12,34 @@ export interface IJiraIssueSelectDialogData {
 
 @Component({
   selector: 'mvtool-jira-issue-select-dialog',
-  template: ` <p>jira-issue-select-dialog works!</p> `,
+  template: `
+    <div fxLayout="column">
+      <mat-form-field appearance="fill">
+        <mat-label>Issue</mat-label>
+        <input
+          type="text"
+          matInput
+          [(ngModel)]="filterValue"
+          [matAutocomplete]="issueAutocomplete"
+        />
+        <mat-autocomplete #issueAutocomplete="matAutocomplete">
+          <mat-option
+            *ngFor="let issue of filteredJiraIssues"
+            [value]="issue.key"
+          >
+            {{ issue.key }}: {{ issue.summary }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+  `,
   styles: [],
 })
 export class JiraIssueSelectDialogComponent implements OnInit {
   jiraProject: IJiraProject;
+  jiraIssue: IJiraIssue | null = null;
   jiraIssues: IJiraIssue[] = [];
+  filterValue: string | null = null;
 
   constructor(
     protected _jiraIssueService: JiraIssueService,
@@ -30,6 +52,17 @@ export class JiraIssueSelectDialogComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.jiraIssues = await this._jiraIssueService.getJiraIssues(
       this.jiraProject.id
+    );
+  }
+
+  get filteredJiraIssues(): IJiraIssue[] {
+    if (!this.filterValue) {
+      return [];
+    }
+
+    const filterValue = this.filterValue.toLowerCase();
+    return this.jiraIssues.filter((issue) =>
+      `${issue.key}: ${issue.summary}`.toLowerCase().includes(filterValue)
     );
   }
 }
