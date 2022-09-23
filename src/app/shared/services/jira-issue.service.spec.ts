@@ -96,7 +96,7 @@ describe('JiraIssueService', () => {
 
   it('should create jira issue', (done: DoneFn) => {
     const measureId = 1;
-    sut.createJiraIssue(measureId, inputMock).then((value) => {
+    sut.createAndLinkJiraIssue(measureId, inputMock).then((value) => {
       expect(value).toEqual(outputMock);
       done();
     });

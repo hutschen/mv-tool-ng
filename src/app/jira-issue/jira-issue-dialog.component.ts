@@ -46,12 +46,12 @@ export class JiraIssueDialogComponent implements OnInit {
   constructor(
     protected _jiraIssueTypeService: JiraIssueTypeService,
     protected _dialogRef: MatDialogRef<JiraIssueDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) protected _dialogData: IJiraIssueDialogData
+    @Inject(MAT_DIALOG_DATA) dialogData: IJiraIssueDialogData
   ) {
-    this.jiraProject = this._dialogData.jiraProject;
-    this.jiraIssueInput.summary = this._dialogData.measure.summary;
+    this.jiraProject = dialogData.jiraProject;
+    this.jiraIssueInput.summary = dialogData.measure.summary;
     this.jiraIssueInput.description = this._generateDescription(
-      this._dialogData.measure
+      dialogData.measure
     );
   }
 

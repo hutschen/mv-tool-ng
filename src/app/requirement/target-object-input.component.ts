@@ -27,9 +27,9 @@ import { RequirementService } from '../shared/services/requirement.service';
           type="text"
           matInput
           [(ngModel)]="filterValue"
-          [matAutocomplete]="auto"
+          [matAutocomplete]="targetObjectAutocomplete"
         />
-        <mat-autocomplete #auto="matAutocomplete">
+        <mat-autocomplete #targetObjectAutocomplete="matAutocomplete">
           <mat-option
             *ngFor="let targetObject of filteredTargetObjects"
             [value]="targetObject"
@@ -73,17 +73,18 @@ export class TargetObjectInputComponent implements OnInit {
     return this.targetObject;
   }
 
-  set filterValue(filterValue: string | null) {
-    if (filterValue !== null) {
-      this.filteredTargetObjects = this._filter(filterValue);
+  set filterValue(value: string | null) {
+    if (value !== null) {
+      this.filteredTargetObjects = this._filterTargetObjects(value);
     }
-    this.targetObject = filterValue;
-    this.targetObjectChange.emit(filterValue);
+    this.targetObject = value;
+    this.targetObjectChange.emit(value);
   }
 
-  protected _filter(filterValue: string) {
-    return this.targetObjects.filter((to) =>
-      to.toLowerCase().includes(filterValue.toLowerCase())
+  protected _filterTargetObjects(filterValue: string): string[] {
+    filterValue = filterValue.toLowerCase();
+    return this.targetObjects.filter((targetObject) =>
+      targetObject.toLowerCase().includes(filterValue)
     );
   }
 }
