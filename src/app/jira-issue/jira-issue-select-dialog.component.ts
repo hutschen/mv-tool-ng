@@ -69,7 +69,7 @@ export interface IJiraIssueSelectDialogData {
         form="jiraIssueSelectForm"
       >
         <mat-icon>save</mat-icon>
-        Create
+        Save
       </button>
     </div>
   `,
