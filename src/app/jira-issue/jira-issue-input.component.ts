@@ -164,6 +164,19 @@ export class JiraIssueInputComponent implements OnInit {
         jiraProject: this.project?.jira_project,
       } as IJiraIssueSelectDialogData,
     });
+    dialogRef.afterClosed().subscribe(async (jiraIssue) => {
+      if (jiraIssue && this.measure) {
+        const measureInput = this.measure.toMeasureInput();
+        measureInput.jira_issue_id = jiraIssue.id;
+        this.loading = true;
+        this.measure = await this._measureService.updateMeasure(
+          this.measure.id,
+          measureInput
+        );
+        this.measureChange.emit(this.measure);
+        this.loading = false;
+      }
+    });
   }
 
   async onUnlinkJiraIssue(): Promise<void> {
