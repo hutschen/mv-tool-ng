@@ -60,7 +60,7 @@ export class JiraIssueService {
     return this._crud.list(this.getJiraIssuesUrl(jiraProjectId));
   }
 
-  async createJiraIssue(
+  async createAndLinkJiraIssue(
     measureId: number,
     jiraIssueInput: IJiraIssueInput
   ): Promise<IJiraIssue> {

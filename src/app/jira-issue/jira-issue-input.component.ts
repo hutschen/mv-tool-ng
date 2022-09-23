@@ -145,7 +145,7 @@ export class JiraIssueInputComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async (jiraIssueInput) => {
       if (jiraIssueInput && this.measure) {
         this.loading = true;
-        const jiraIssue = await this._jiraIssueService.createJiraIssue(
+        const jiraIssue = await this._jiraIssueService.createAndLinkJiraIssue(
           this.measure.id,
           jiraIssueInput
         );
