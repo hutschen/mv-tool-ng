@@ -16,7 +16,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { JiraIssueService } from '../shared/services/jira-issue.service';
-import { Measure } from '../shared/services/measure.service';
+import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
 import {
   IJiraIssueDialogData,
@@ -124,6 +124,7 @@ export class JiraIssueInputComponent implements OnInit {
 
   constructor(
     protected _jiraIssueService: JiraIssueService,
+    protected _measureService: MeasureService,
     protected _dialog: MatDialog
   ) {}
 
@@ -167,10 +168,13 @@ export class JiraIssueInputComponent implements OnInit {
 
   async onUnlinkJiraIssue(): Promise<void> {
     if (this.measure) {
-      this.measure.jira_issue = null;
-      this.measure.jira_issue_id = null;
+      const measureInput = this.measure.toMeasureInput();
+      measureInput.jira_issue_id = null;
       this.loading = true;
-      await this._jiraIssueService.unlinkJiraIssue(this.measure.id);
+      this.measure = await this._measureService.updateMeasure(
+        this.measure.id,
+        measureInput
+      );
       this.measureChange.emit(this.measure);
       this.loading = false;
     }
