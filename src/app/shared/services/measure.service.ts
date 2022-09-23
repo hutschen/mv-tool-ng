@@ -30,6 +30,7 @@ export interface IMeasureInput {
   summary: string;
   description: string | null;
   completed: boolean;
+  jira_issue_id: string | null;
   document_id: number | null;
 }
 
@@ -70,6 +71,7 @@ export class Measure implements IMeasure {
       summary: this.summary,
       description: this.description,
       completed: this.completed,
+      jira_issue_id: this.jira_issue_id,
       document_id: this.document ? this.document.id : null,
     };
   }
