@@ -19,7 +19,20 @@ import { IUser, UserService } from '../shared/services/user.service';
 
 @Component({
   selector: 'mvtool-user-menu',
-  templateUrl: './user-menu.component.html',
+  template: `<!-- Display username and options when user is logged in -->
+    <span *ngIf="isLoggedIn">
+      <button mat-button [matMenuTriggerFor]="menu">
+        <mat-icon>account_circle</mat-icon>
+        {{ displayName }}
+      </button>
+      <mat-menu #menu="matMenu">
+        <!-- button to log out -->
+        <button mat-menu-item (click)="onLogOut()">
+          <mat-icon>exit_to_app</mat-icon>
+          Log out
+        </button>
+      </mat-menu>
+    </span>`,
   styles: [],
 })
 export class UserMenuComponent implements OnInit {
