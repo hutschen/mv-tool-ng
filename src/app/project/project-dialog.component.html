@@ -25,15 +25,20 @@
 </div>
 <!-- content -->
 <div mat-dialog-content>
-  <form id="projectForm" #form="ngForm" (submit)="onSave(form)">
+  <form
+    id="projectForm"
+    #form="ngForm"
+    (submit)="onSave(form)"
+    fxLayout="column"
+  >
     <!-- Project name input -->
-    <mat-form-field class="form-field-width" appearance="fill">
+    <mat-form-field appearance="fill">
       <mat-label>Project name</mat-label>
       <input name="name" matInput [(ngModel)]="projectInput.name" required />
     </mat-form-field>
 
     <!-- Project description input -->
-    <mat-form-field class="form-field-width" appearance="fill">
+    <mat-form-field appearance="fill">
       <mat-label>Project description</mat-label>
       <textarea
         name="description"
@@ -51,14 +56,13 @@
   </form>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-button class="form-button" (click)="onCancel()">
+  <button mat-button (click)="onCancel()">
     <mat-icon>cancel</mat-icon>
     Cancel
   </button>
   <button
     mat-raised-button
     disabled="{{ form.invalid }}"
-    class="form-button"
     color="accent"
     type="submit"
     form="projectForm"

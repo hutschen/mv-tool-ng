@@ -21,7 +21,7 @@ import { UserService } from '../shared/services/user.service';
 @Component({
   selector: 'mvtool-user-login',
   templateUrl: './user-login.component.html',
-  styleUrls: ['./user-login.component.css'],
+  styles: [],
 })
 export class UserLoginComponent {
   @Output() loggedIn = new EventEmitter<void>();
