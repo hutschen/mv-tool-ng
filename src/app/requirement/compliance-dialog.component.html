@@ -40,7 +40,7 @@
       </mat-select>
     </mat-form-field>
     <!-- Compliance Comment Input -->
-    <mat-form-field class="form-field-width" appearance="fill">
+    <mat-form-field appearance="fill">
       <mat-label>Compliance Comment</mat-label>
       <textarea
         name="complianceComment"
@@ -52,14 +52,13 @@
   </form>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-button class="form-button" (click)="onCancel()">
+  <button mat-button (click)="onCancel()">
     <mat-icon>cancel</mat-icon>
     Cancel
   </button>
   <button
     mat-raised-button
     disabled="{{ form.invalid }}"
-    class="form-button"
     color="accent"
     type="submit"
     form="complianceForm"
