@@ -15,9 +15,14 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<form #form="ngForm" (reset)="onReset()" (submit)="onSubmit(form)">
+<form
+  #form="ngForm"
+  (reset)="onReset()"
+  (submit)="onSubmit(form)"
+  fxLayout="column"
+>
   <!-- Username input -->
-  <mat-form-field class="form-field-width" appearance="fill">
+  <mat-form-field appearance="fill">
     <mat-label>Enter your username</mat-label>
     <input
       name="username"
@@ -28,7 +33,7 @@
   </mat-form-field>
 
   <!-- Password input -->
-  <mat-form-field class="form-field-width" appearance="fill">
+  <mat-form-field appearance="fill">
     <mat-label>Enter your password</mat-label>
     <input
       matInput
@@ -60,18 +65,12 @@
 
   <!-- Buttons -->
   <div fxLayout="row" fxLayoutAlign="end center">
-    <button
-      mat-button
-      disabled="{{ form.pristine }}"
-      class="form-button"
-      type="reset"
-    >
+    <button mat-button disabled="{{ form.pristine }}" type="reset">
       Reset
     </button>
     <button
       mat-raised-button
       disabled="{{ form.invalid }}"
-      class="form-button"
       color="accent"
       type="submit"
     >
