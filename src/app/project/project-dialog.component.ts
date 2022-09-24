@@ -21,7 +21,7 @@ import { Project, IProjectInput } from '../shared/services/project.service';
 @Component({
   selector: 'mvtool-project-dialog',
   templateUrl: './project-dialog.component.html',
-  styleUrls: ['./project-dialog.component.css'],
+  styles: ['textarea { min-height: 100px; }'],
 })
 export class ProjectDialogComponent {
   projectInput: IProjectInput = {
