@@ -20,7 +20,7 @@ import { IUser, UserService } from '../shared/services/user.service';
 @Component({
   selector: 'mvtool-user-menu',
   templateUrl: './user-menu.component.html',
-  styleUrls: ['./user-menu.component.css'],
+  styles: [],
 })
 export class UserMenuComponent implements OnInit {
   protected _user: UserService;
