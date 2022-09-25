@@ -106,7 +106,7 @@ export class RequirementTableComponent implements OnInit {
   }
 
   onEditCompliance(requirement: Requirement): void {
-    let dialogRef = this._dialog.open(ComplianceDialogComponent, {
+    const dialogRef = this._dialog.open(ComplianceDialogComponent, {
       width: '500px',
       data: requirement,
     });
