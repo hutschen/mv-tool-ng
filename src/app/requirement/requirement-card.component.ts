@@ -25,7 +25,12 @@ import {
 @Component({
   selector: 'mvtool-requirement-card',
   template: `
-    <div *ngIf="requirement" fxLayout="column" fxLayoutGap="5px">
+    <div
+      class="requirement-card"
+      *ngIf="requirement"
+      fxLayout="column"
+      fxLayoutGap="15px"
+    >
       <!-- Title -->
       <div
         fxLayout="row"
@@ -47,68 +52,74 @@ import {
         </button>
       </div>
 
-      <!-- Reference -->
-      <mvtool-detail *ngIf="requirement.reference" label="Reference">
-        <div class="truncate">{{ requirement.reference }}</div>
-      </mvtool-detail>
+      <!-- Content -->
+      <div fxLayout="column" fxLayoutGap="5px">
+        <!-- Reference -->
+        <mvtool-detail *ngIf="requirement.reference" label="Reference">
+          <div class="truncate">{{ requirement.reference }}</div>
+        </mvtool-detail>
 
-      <!-- GS Anforderung Reference -->
-      <mvtool-detail
-        *ngIf="requirement.gs_anforderung_reference"
-        label="GS Anforderung Reference"
-      >
-        <div class="truncate">{{ requirement.gs_anforderung_reference }}</div>
-      </mvtool-detail>
+        <!-- GS Anforderung Reference -->
+        <mvtool-detail
+          *ngIf="requirement.gs_anforderung_reference"
+          label="GS Anforderung Reference"
+        >
+          <div class="truncate">{{ requirement.gs_anforderung_reference }}</div>
+        </mvtool-detail>
 
-      <!-- GS Baustein -->
-      <mvtool-detail *ngIf="requirement.gs_baustein" label="GS Baustein">
-        <div class="truncate">
-          {{ requirement.gs_baustein.reference }}
-          {{ requirement.gs_baustein.title }}
-        </div>
-      </mvtool-detail>
+        <!-- GS Baustein -->
+        <mvtool-detail *ngIf="requirement.gs_baustein" label="GS Baustein">
+          <div class="truncate">
+            {{ requirement.gs_baustein.reference }}
+            {{ requirement.gs_baustein.title }}
+          </div>
+        </mvtool-detail>
 
-      <!-- Description -->
-      <mvtool-detail *ngIf="requirement.description" label="Description">
-        <div>{{ requirement.description }}</div>
-      </mvtool-detail>
+        <!-- Description -->
+        <mvtool-detail *ngIf="requirement.description" label="Description">
+          <div>{{ requirement.description }}</div>
+        </mvtool-detail>
 
-      <!-- GS Absicherung -->
-      <mvtool-detail *ngIf="requirement.gs_absicherung" label="GS Absicherung">
-        <div class="truncate">{{ requirement.gs_absicherung }}</div>
-      </mvtool-detail>
+        <!-- GS Absicherung -->
+        <mvtool-detail
+          *ngIf="requirement.gs_absicherung"
+          label="GS Absicherung"
+        >
+          <div class="truncate">{{ requirement.gs_absicherung }}</div>
+        </mvtool-detail>
 
-      <!-- GS Verantwortliche -->
-      <mvtool-detail
-        *ngIf="requirement.gs_verantwortliche"
-        label="GS Verantwortliche"
-      >
-        <div class="truncate">{{ requirement.gs_verantwortliche }}</div>
-      </mvtool-detail>
+        <!-- GS Verantwortliche -->
+        <mvtool-detail
+          *ngIf="requirement.gs_verantwortliche"
+          label="GS Verantwortliche"
+        >
+          <div class="truncate">{{ requirement.gs_verantwortliche }}</div>
+        </mvtool-detail>
 
-      <!-- Target object -->
-      <mvtool-detail *ngIf="requirement.target_object" label="Target Object">
-        <div class="truncate">{{ requirement.target_object }}</div>
-      </mvtool-detail>
+        <!-- Target object -->
+        <mvtool-detail *ngIf="requirement.target_object" label="Target Object">
+          <div class="truncate">{{ requirement.target_object }}</div>
+        </mvtool-detail>
 
-      <!-- Compliance status -->
-      <mvtool-detail
-        *ngIf="requirement.compliance_status"
-        label="Compliance status"
-      >
-        <div class="truncate">{{ requirement.compliance_status }}</div>
-      </mvtool-detail>
+        <!-- Compliance status -->
+        <mvtool-detail
+          *ngIf="requirement.compliance_status"
+          label="Compliance status"
+        >
+          <div class="truncate">{{ requirement.compliance_status }}</div>
+        </mvtool-detail>
 
-      <!-- Compliance comment -->
-      <mvtool-detail
-        *ngIf="requirement.compliance_comment"
-        label="Compliance Comment"
-      >
-        <div>{{ requirement.compliance_comment }}</div>
-      </mvtool-detail>
+        <!-- Compliance comment -->
+        <mvtool-detail
+          *ngIf="requirement.compliance_comment"
+          label="Compliance Comment"
+        >
+          <div>{{ requirement.compliance_comment }}</div>
+        </mvtool-detail>
+      </div>
     </div>
   `,
-  styles: [],
+  styles: ['h1 { margin: 0; }', '.requirement-card { margin: 20px; }'],
 })
 export class RequirementCardComponent {
   @Input() requirement: Requirement | null = null;
