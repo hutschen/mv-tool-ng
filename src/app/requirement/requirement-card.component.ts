@@ -27,9 +27,17 @@ import { Requirement } from '../shared/services/requirement.service';
         fxLayoutGap="5px"
       >
         <h1 class="truncate">{{ requirement.summary }}</h1>
-        <button mat-stroked-button>
-          <mat-icon>edit</mat-icon>
-          Edit Requirement
+        <button mat-stroked-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item>
+              <mat-icon>edit_note</mat-icon>
+              Edit Requirement
+            </button>
+            <button mat-menu-item>
+              <mat-icon>edit_note</mat-icon>Set Compliance
+            </button>
+          </mat-menu>
         </button>
       </div>
 
