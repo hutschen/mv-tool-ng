@@ -14,7 +14,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Requirement } from '../shared/services/requirement.service';
+import { ComplianceDialogComponent } from './compliance-dialog.component';
+import {
+  IRequirementDialogData,
+  RequirementDialogComponent,
+} from './requirement-dialog.component';
 
 @Component({
   selector: 'mvtool-requirement-card',
@@ -30,11 +36,11 @@ import { Requirement } from '../shared/services/requirement.service';
         <button mat-stroked-button [matMenuTriggerFor]="menu">
           <mat-icon>more_vert</mat-icon>
           <mat-menu #menu="matMenu">
-            <button mat-menu-item>
+            <button mat-menu-item (click)="onEditRequirement()">
               <mat-icon>edit_note</mat-icon>
               Edit Requirement
             </button>
-            <button mat-menu-item>
+            <button mat-menu-item (click)="onEditCompliance()">
               <mat-icon>edit_note</mat-icon>Set Compliance
             </button>
           </mat-menu>
@@ -107,5 +113,36 @@ import { Requirement } from '../shared/services/requirement.service';
 export class RequirementCardComponent {
   @Input() requirement: Requirement | null = null;
 
-  constructor() {}
+  constructor(protected _dialog: MatDialog) {}
+
+  onEditRequirement(): void {
+    const dialogRef = this._dialog.open(RequirementDialogComponent, {
+      width: '500px',
+      data: {
+        project: this.requirement?.project,
+        requirement: this.requirement,
+      } as IRequirementDialogData,
+    });
+    dialogRef
+      .afterClosed()
+      .subscribe(async (requirement: Requirement | null) => {
+        if (requirement) {
+          this.requirement = requirement;
+        }
+      });
+  }
+
+  onEditCompliance(): void {
+    const dialogRef = this._dialog.open(ComplianceDialogComponent, {
+      width: '500px',
+      data: this.requirement as Requirement,
+    });
+    dialogRef
+      .afterClosed()
+      .subscribe(async (requirement: Requirement | null) => {
+        if (requirement) {
+          this.requirement = requirement;
+        }
+      });
+  }
 }
