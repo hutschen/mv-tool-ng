@@ -28,7 +28,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
       </button>
       <mat-menu #menu="matMenu">
         <button *ngIf="edit.observed" mat-menu-item (click)="edit.emit()">
-          <mat-icon>edit</mat-icon>
+          <mat-icon>edit_note</mat-icon>
           Edit
         </button>
         <button
