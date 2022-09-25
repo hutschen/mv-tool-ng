@@ -110,15 +110,13 @@ export class RequirementTableComponent implements OnInit {
       width: '500px',
       data: requirement,
     });
-    dialogRef.afterClosed().subscribe(async (requirementInput) => {
-      if (requirementInput) {
-        await this._requirementService.updateRequirement(
-          requirement.id,
-          requirementInput
-        );
-        this.onReloadRequirements();
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .subscribe(async (requirement: Requirement | null) => {
+        if (requirement) {
+          this.onReloadRequirements();
+        }
+      });
   }
 
   async onDeleteRequirement(requirement: Requirement): Promise<void> {
