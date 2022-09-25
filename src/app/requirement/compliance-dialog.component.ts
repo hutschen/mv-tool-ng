@@ -54,9 +54,13 @@ export class ComplianceDialogComponent {
     return this.requirementInput.compliance_status;
   }
 
-  onSave(form: NgForm): void {
+  async onSave(form: NgForm): Promise<void> {
     if (form.valid) {
-      this._dialogRef.close(this.requirementInput);
+      const requirement = await this._requirementService.updateRequirement(
+        this._requirement.id,
+        this.requirementInput
+      );
+      this._dialogRef.close(requirement);
     }
   }
 

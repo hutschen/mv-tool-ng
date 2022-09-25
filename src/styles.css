@@ -43,3 +43,15 @@ See also https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-line-clamp */
 .truncate-lines:hover {
   -webkit-line-clamp: unset;
 }
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.truncate:hover {
+  overflow: unset;
+  text-overflow: unset;
+  white-space: unset;
+}

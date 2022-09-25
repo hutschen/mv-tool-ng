@@ -14,33 +14,98 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Requirement } from '../shared/services/requirement.service';
+import { ComplianceDialogComponent } from './compliance-dialog.component';
+import {
+  IRequirementDialogData,
+  RequirementDialogComponent,
+} from './requirement-dialog.component';
 
 @Component({
   selector: 'mvtool-requirement-card',
   template: `
-    <div fxLayout="column" *ngIf="requirement">
-      <mat-card class="mat-elevation-z0">
-        <mat-card-title>
-          {{ requirement.reference | truncate: 30 }}
-          {{ requirement.summary | truncate }}
-        </mat-card-title>
-        <mat-card-content *ngIf="hasContent">
-          <p>{{ requirement.description }}</p>
-          <p *ngIf="requirement.target_object">
-            <strong>Target object:</strong>
-            {{ requirement.target_object }}
-          </p>
-          <p *ngIf="requirement.compliance_status">
-            <strong>Compliance status:</strong>
-            {{ requirement.compliance_status }}
-          </p>
-          <p *ngIf="requirement.compliance_comment">
-            <strong>Compliance comment:</strong>
-            {{ requirement.compliance_comment }}
-          </p>
-        </mat-card-content>
-      </mat-card>
+    <div *ngIf="requirement" fxLayout="column" fxLayoutGap="5px">
+      <!-- Title -->
+      <div
+        fxLayout="row"
+        fxLayoutAlign="space-between center"
+        fxLayoutGap="5px"
+      >
+        <h1 class="truncate">{{ requirement.summary }}</h1>
+        <button mat-stroked-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item (click)="onEditRequirement()">
+              <mat-icon>edit_note</mat-icon>
+              Edit Requirement
+            </button>
+            <button mat-menu-item (click)="onEditCompliance()">
+              <mat-icon>edit_note</mat-icon>Set Compliance
+            </button>
+          </mat-menu>
+        </button>
+      </div>
+
+      <!-- Reference -->
+      <mvtool-detail *ngIf="requirement.reference" label="Reference">
+        <div class="truncate">{{ requirement.reference }}</div>
+      </mvtool-detail>
+
+      <!-- GS Anforderung Reference -->
+      <mvtool-detail
+        *ngIf="requirement.gs_anforderung_reference"
+        label="GS Anforderung Reference"
+      >
+        <div class="truncate">{{ requirement.gs_anforderung_reference }}</div>
+      </mvtool-detail>
+
+      <!-- GS Baustein -->
+      <mvtool-detail *ngIf="requirement.gs_baustein" label="GS Baustein">
+        <div class="truncate">
+          {{ requirement.gs_baustein.reference }}
+          {{ requirement.gs_baustein.title }}
+        </div>
+      </mvtool-detail>
+
+      <!-- Description -->
+      <mvtool-detail *ngIf="requirement.description" label="Description">
+        <div>{{ requirement.description }}</div>
+      </mvtool-detail>
+
+      <!-- GS Absicherung -->
+      <mvtool-detail *ngIf="requirement.gs_absicherung" label="GS Absicherung">
+        <div class="truncate">{{ requirement.gs_absicherung }}</div>
+      </mvtool-detail>
+
+      <!-- GS Verantwortliche -->
+      <mvtool-detail
+        *ngIf="requirement.gs_verantwortliche"
+        label="GS Verantwortliche"
+      >
+        <div class="truncate">{{ requirement.gs_verantwortliche }}</div>
+      </mvtool-detail>
+
+      <!-- Target object -->
+      <mvtool-detail *ngIf="requirement.target_object" label="Target Object">
+        <div class="truncate">{{ requirement.target_object }}</div>
+      </mvtool-detail>
+
+      <!-- Compliance status -->
+      <mvtool-detail
+        *ngIf="requirement.compliance_status"
+        label="Compliance status"
+      >
+        <div class="truncate">{{ requirement.compliance_status }}</div>
+      </mvtool-detail>
+
+      <!-- Compliance comment -->
+      <mvtool-detail
+        *ngIf="requirement.compliance_comment"
+        label="Compliance Comment"
+      >
+        <div>{{ requirement.compliance_comment }}</div>
+      </mvtool-detail>
     </div>
   `,
   styles: [],
@@ -48,16 +113,36 @@ import { Requirement } from '../shared/services/requirement.service';
 export class RequirementCardComponent {
   @Input() requirement: Requirement | null = null;
 
-  constructor() {}
+  constructor(protected _dialog: MatDialog) {}
 
-  get hasContent(): boolean {
-    if (this.requirement) {
-      return (
-        Boolean(this.requirement.description) ||
-        Boolean(this.requirement.target_object)
-      );
-    } else {
-      return false;
-    }
+  onEditRequirement(): void {
+    const dialogRef = this._dialog.open(RequirementDialogComponent, {
+      width: '500px',
+      data: {
+        project: this.requirement?.project,
+        requirement: this.requirement,
+      } as IRequirementDialogData,
+    });
+    dialogRef
+      .afterClosed()
+      .subscribe(async (requirement: Requirement | null) => {
+        if (requirement) {
+          this.requirement = requirement;
+        }
+      });
+  }
+
+  onEditCompliance(): void {
+    const dialogRef = this._dialog.open(ComplianceDialogComponent, {
+      width: '500px',
+      data: this.requirement as Requirement,
+    });
+    dialogRef
+      .afterClosed()
+      .subscribe(async (requirement: Requirement | null) => {
+        if (requirement) {
+          this.requirement = requirement;
+        }
+      });
   }
 }
