@@ -72,40 +72,37 @@ export class RequirementTableComponent implements OnInit {
   }
 
   onCreateRequirement(): void {
-    let dialogRef = this._dialog.open(RequirementDialogComponent, {
+    const dialogRef = this._dialog.open(RequirementDialogComponent, {
       width: '500px',
       data: {
         project: this.project,
         requirement: null,
       } as IRequirementDialogData,
     });
-    dialogRef.afterClosed().subscribe(async (requirementInput) => {
-      if (requirementInput && this.project) {
-        await this._requirementService.createRequirement(
-          this.project.id,
-          requirementInput
-        );
-        this.onReloadRequirements();
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .subscribe(async (requirement: Requirement | null) => {
+        if (requirement) {
+          this.onReloadRequirements();
+        }
+      });
   }
+
   onEditRequirement(requirement: Requirement): void {
-    let dialogRef = this._dialog.open(RequirementDialogComponent, {
+    const dialogRef = this._dialog.open(RequirementDialogComponent, {
       width: '500px',
       data: {
         project: this.project,
         requirement: requirement,
       } as IRequirementDialogData,
     });
-    dialogRef.afterClosed().subscribe(async (requirementInput) => {
-      if (requirementInput) {
-        await this._requirementService.updateRequirement(
-          requirement.id,
-          requirementInput
-        );
-        this.onReloadRequirements();
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .subscribe(async (requirement: Requirement | null) => {
+        if (requirement) {
+          this.onReloadRequirements();
+        }
+      });
   }
 
   onEditCompliance(requirement: Requirement): void {
