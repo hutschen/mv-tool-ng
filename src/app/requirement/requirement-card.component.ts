@@ -108,15 +108,4 @@ export class RequirementCardComponent {
   @Input() requirement: Requirement | null = null;
 
   constructor() {}
-
-  get hasContent(): boolean {
-    if (this.requirement) {
-      return (
-        Boolean(this.requirement.description) ||
-        Boolean(this.requirement.target_object)
-      );
-    } else {
-      return false;
-    }
-  }
 }
