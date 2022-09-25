@@ -19,16 +19,33 @@ import { Project } from '../shared/services/project.service';
 @Component({
   selector: 'mvtool-project-card',
   template: `
-    <div fxLayout="column" *ngIf="project">
-      <mat-card class="mat-elevation-z0">
-        <mat-card-title>{{ project.name }} </mat-card-title>
-        <mat-card-content *ngIf="project.description">
-          <p>{{ project.description }}</p>
-        </mat-card-content>
-      </mat-card>
+    <div
+      class="project-card"
+      *ngIf="project"
+      fxLayout="column"
+      fxLayoutGap="15px"
+    >
+      <!-- Title -->
+      <div
+        fxLayout="row"
+        fxLayoutAlign="space-between center"
+        fxLayoutGap="5px"
+      >
+        <h1 class="truncate">{{ project.name }}</h1>
+        <div fxLayout="row" fxLayoutGap="5px">
+          <mvtool-jira-project-label
+            *ngIf="project.jira_project"
+            [project]="project"
+          ></mvtool-jira-project-label>
+          <button mat-stroked-button>
+            <mat-icon>edit_note</mat-icon>
+            Edit Project
+          </button>
+        </div>
+      </div>
     </div>
   `,
-  styles: [],
+  styles: ['h1 { margin: 0; }', '.project-card { margin: 20px; }'],
 })
 export class ProjectCardComponent {
   @Input() project: Project | null = null;
