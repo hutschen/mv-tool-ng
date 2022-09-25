@@ -14,7 +14,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { Project } from '../shared/services/project.service';
+import { ProjectDialogComponent } from './project-dialog.component';
 
 @Component({
   selector: 'mvtool-project-card',
@@ -37,7 +39,7 @@ import { Project } from '../shared/services/project.service';
             *ngIf="project.jira_project"
             [project]="project"
           ></mvtool-jira-project-label>
-          <button mat-stroked-button>
+          <button mat-stroked-button (click)="onEditProject()">
             <mat-icon>edit_note</mat-icon>
             Edit Project
           </button>
@@ -50,5 +52,17 @@ import { Project } from '../shared/services/project.service';
 export class ProjectCardComponent {
   @Input() project: Project | null = null;
 
-  constructor() {}
+  constructor(protected _dialog: MatDialog) {}
+
+  onEditProject() {
+    const dialogRef = this._dialog.open(ProjectDialogComponent, {
+      width: '500px',
+      data: this.project,
+    });
+    dialogRef.afterClosed().subscribe(async (project: Project | null) => {
+      if (project) {
+        this.project = project;
+      }
+    });
+  }
 }
