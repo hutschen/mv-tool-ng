@@ -25,7 +25,6 @@ import {
   template: `
     <div *ngIf="requirement" fxLayout="column">
       <mvtool-requirement-card
-        class="requirement-card"
         [requirement]="requirement"
       ></mvtool-requirement-card>
       <mat-divider></mat-divider>
@@ -40,7 +39,7 @@ import {
       <mat-spinner></mat-spinner>
     </div>
   `,
-  styles: ['.requirement-card { padding: 20px; }'],
+  styles: [],
 })
 export class MeasureViewComponent implements OnInit {
   requirement: Requirement | null = null;
