@@ -32,7 +32,7 @@
     fxLayout="column"
   >
     <!-- Summary input -->
-    <mat-form-field class="form-field-width" appearance="fill">
+    <mat-form-field appearance="fill">
       <mat-label>Measure summary</mat-label>
       <input
         name="summary"
@@ -43,7 +43,7 @@
     </mat-form-field>
 
     <!-- Description input -->
-    <mat-form-field class="form-field-width" appearance="fill">
+    <mat-form-field appearance="fill">
       <mat-label>Measure description</mat-label>
       <textarea
         name="description"
@@ -67,14 +67,13 @@
 </div>
 <!-- Actions -->
 <div mat-dialog-actions align="end">
-  <button mat-button class="form-button" (click)="onCancel()">
+  <button mat-button (click)="onCancel()">
     <mat-icon>cancel</mat-icon>
     Cancel
   </button>
   <button
     mat-raised-button
     disabled="{{ form.invalid }}"
-    class="form-button"
     color="accent"
     type="submit"
     form="measureForm"

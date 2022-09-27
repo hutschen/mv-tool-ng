@@ -15,8 +15,10 @@
 
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { ErrorDialogComponent } from './shared/components/error-dialog.component';
 import { AuthService } from './shared/services/auth.service';
 
 @Injectable()
@@ -24,6 +26,7 @@ export class GlobalErrorHandler {
   constructor(
     protected _zone: NgZone,
     protected _snackBar: MatSnackBar,
+    protected _dialog: MatDialog,
     protected _auth: AuthService,
     protected _router: Router
   ) {}
@@ -37,11 +40,10 @@ export class GlobalErrorHandler {
   }
 
   handleUnexpectedError(error: any): void {
-    this._snackBar.open(
-      error?.message || 'Unexpected error occurred. Please try again later.',
-      'Close',
-      { duration: 10 * 1000 }
-    );
+    this._dialog.open(ErrorDialogComponent, {
+      width: '500px',
+      data: error,
+    });
   }
 
   handleError(error: any): void {
@@ -50,6 +52,7 @@ export class GlobalErrorHandler {
       error = error.rejection;
     }
     this._zone.run(() => {
+      // FIXME: Only http errors have a status code; other errors are not handled
       switch (error.status) {
         case 401:
           this.handleUnauthorized(error);

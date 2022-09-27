@@ -133,6 +133,7 @@ describe('MeasureService', () => {
       summary: 'A test measure',
       description: 'A test measure description',
       completed: false,
+      jira_issue_id: null,
       document_id: null,
     };
     outputMock = {

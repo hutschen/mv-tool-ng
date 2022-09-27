@@ -47,25 +47,23 @@ export class ProjectTableComponent implements OnInit {
   }
 
   onCreateProject() {
-    let dialogRef = this._dialog.open(ProjectDialogComponent, {
+    const dialogRef = this._dialog.open(ProjectDialogComponent, {
       width: '500px',
     });
-    dialogRef.afterClosed().subscribe(async (projectInput) => {
-      if (projectInput) {
-        await this._projectService.createProject(projectInput);
+    dialogRef.afterClosed().subscribe(async (project: Project | null) => {
+      if (project) {
         this.onReloadProjects();
       }
     });
   }
 
   onEditProject(project: Project) {
-    let dialogRef = this._dialog.open(ProjectDialogComponent, {
+    const dialogRef = this._dialog.open(ProjectDialogComponent, {
       width: '500px',
       data: project,
     });
-    dialogRef.afterClosed().subscribe(async (projectInput) => {
-      if (projectInput) {
-        await this._projectService.updateProject(project.id, projectInput);
+    dialogRef.afterClosed().subscribe(async (project: Project | null) => {
+      if (project) {
         this.onReloadProjects();
       }
     });

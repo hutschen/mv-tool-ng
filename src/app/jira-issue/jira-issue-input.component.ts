@@ -16,12 +16,16 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { JiraIssueService } from '../shared/services/jira-issue.service';
-import { Measure } from '../shared/services/measure.service';
+import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
 import {
   IJiraIssueDialogData,
   JiraIssueDialogComponent,
 } from './jira-issue-dialog.component';
+import {
+  IJiraIssueSelectDialogData,
+  JiraIssueSelectDialogComponent,
+} from './jira-issue-select-dialog.component';
 
 @Component({
   selector: 'mvtool-jira-issue-input',
@@ -31,7 +35,7 @@ import {
       <div *ngIf="measure.hasLinkedJiraIssue">
         <!-- User has permission to view Jira issue -->
         <div *ngIf="measure.jira_issue">
-          <button mat-button [matMenuTriggerFor]="jiraIssueMenu">
+          <button mat-button [matMenuTriggerFor]="editJiraIssueMenu">
             <mat-icon *ngIf="measure.jira_issue.status.completed"
               >check
             </mat-icon>
@@ -45,7 +49,7 @@ import {
         <div *ngIf="!measure.jira_issue">
           <button
             mat-button
-            [matMenuTriggerFor]="jiraIssueMenu"
+            [matMenuTriggerFor]="editJiraIssueMenu"
             matTooltip="You do not have the permission to view the JIRA issue"
           >
             <mat-icon>block</mat-icon>
@@ -53,8 +57,8 @@ import {
           </button>
         </div>
 
-        <!-- Menu for Jira issue -->
-        <mat-menu #jiraIssueMenu="matMenu">
+        <!-- Menu to edit Jira issue -->
+        <mat-menu #editJiraIssueMenu="matMenu">
           <!-- item to open issue -->
           <a
             *ngIf="measure.jira_issue"
@@ -78,10 +82,18 @@ import {
       <div *ngIf="!measure.hasLinkedJiraIssue">
         <!-- A Jira project exists on which the user has permissions -->
         <div *ngIf="measure.requirement.project.jira_project">
-          <button mat-button (click)="onCreateJiraIssue()">
+          <button mat-button [matMenuTriggerFor]="addJiraIssueMenu">
             <mat-icon>add</mat-icon>
-            Create issue
+            Add issue
           </button>
+          <mat-menu #addJiraIssueMenu="matMenu">
+            <button mat-menu-item (click)="onCreateJiraIssue()">
+              Create issue
+            </button>
+            <button mat-menu-item (click)="onSelectJiraIssue()">
+              Select issue
+            </button>
+          </mat-menu>
         </div>
 
         <!-- No Jira project exists on which the user has permissions -->
@@ -112,6 +124,7 @@ export class JiraIssueInputComponent implements OnInit {
 
   constructor(
     protected _jiraIssueService: JiraIssueService,
+    protected _measureService: MeasureService,
     protected _dialog: MatDialog
   ) {}
 
@@ -132,7 +145,7 @@ export class JiraIssueInputComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async (jiraIssueInput) => {
       if (jiraIssueInput && this.measure) {
         this.loading = true;
-        const jiraIssue = await this._jiraIssueService.createJiraIssue(
+        const jiraIssue = await this._jiraIssueService.createAndLinkJiraIssue(
           this.measure.id,
           jiraIssueInput
         );
@@ -144,12 +157,37 @@ export class JiraIssueInputComponent implements OnInit {
     });
   }
 
+  onSelectJiraIssue(): void {
+    let dialogRef = this._dialog.open(JiraIssueSelectDialogComponent, {
+      width: '500px',
+      data: {
+        jiraProject: this.project?.jira_project,
+      } as IJiraIssueSelectDialogData,
+    });
+    dialogRef.afterClosed().subscribe(async (jiraIssue) => {
+      if (jiraIssue && this.measure) {
+        const measureInput = this.measure.toMeasureInput();
+        measureInput.jira_issue_id = jiraIssue.id;
+        this.loading = true;
+        this.measure = await this._measureService.updateMeasure(
+          this.measure.id,
+          measureInput
+        );
+        this.measureChange.emit(this.measure);
+        this.loading = false;
+      }
+    });
+  }
+
   async onUnlinkJiraIssue(): Promise<void> {
     if (this.measure) {
-      this.measure.jira_issue = null;
-      this.measure.jira_issue_id = null;
+      const measureInput = this.measure.toMeasureInput();
+      measureInput.jira_issue_id = null;
       this.loading = true;
-      await this._jiraIssueService.unlinkJiraIssue(this.measure.id);
+      this.measure = await this._measureService.updateMeasure(
+        this.measure.id,
+        measureInput
+      );
       this.measureChange.emit(this.measure);
       this.loading = false;
     }

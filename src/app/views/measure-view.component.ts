@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -54,8 +55,16 @@ export class MeasureViewComponent implements OnInit {
     const requirementId = Number(
       this._route.snapshot.paramMap.get('requirementId')
     );
-    this.requirement = await this._requirementService.getRequirement(
-      requirementId
-    );
+    try {
+      this.requirement = await this._requirementService.getRequirement(
+        requirementId
+      );
+    } catch (error: any) {
+      if (error instanceof HttpErrorResponse && error.status === 404) {
+        this._router.navigate(['/']);
+      } else {
+        throw error;
+      }
+    }
   }
 }

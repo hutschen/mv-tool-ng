@@ -16,12 +16,16 @@
 import { Component, Inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Project, IProjectInput } from '../shared/services/project.service';
+import {
+  Project,
+  IProjectInput,
+  ProjectService,
+} from '../shared/services/project.service';
 
 @Component({
   selector: 'mvtool-project-dialog',
   templateUrl: './project-dialog.component.html',
-  styleUrls: ['./project-dialog.component.css'],
+  styles: ['textarea { min-height: 100px; }'],
 })
 export class ProjectDialogComponent {
   projectInput: IProjectInput = {
@@ -32,6 +36,7 @@ export class ProjectDialogComponent {
 
   constructor(
     protected _dialogRef: MatDialogRef<ProjectDialogComponent>,
+    protected _projectService: ProjectService,
     @Inject(MAT_DIALOG_DATA) protected _project: Project | null
   ) {
     if (this._project) {
@@ -40,7 +45,7 @@ export class ProjectDialogComponent {
   }
 
   get createMode(): boolean {
-    return this._project === null;
+    return !this._project;
   }
 
   get jiraProjectLocked(): boolean {
@@ -51,9 +56,18 @@ export class ProjectDialogComponent {
     }
   }
 
-  onSave(form: NgForm): void {
+  async onSave(form: NgForm): Promise<void> {
     if (form.valid) {
-      this._dialogRef.close(this.projectInput);
+      let project: Project;
+      if (!this._project) {
+        project = await this._projectService.createProject(this.projectInput);
+      } else {
+        project = await this._projectService.updateProject(
+          this._project.id,
+          this.projectInput
+        );
+      }
+      this._dialogRef.close(project);
     }
   }
   onCancel(): void {

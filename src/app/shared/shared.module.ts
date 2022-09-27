@@ -23,6 +23,8 @@ import { TableToolbarComponent } from './components/table-toolbar.component';
 import { TableComponent } from './components/table.component';
 import { DownloadDialogComponent } from './components/download-dialog.component';
 import { UploadDialogComponent } from './components/upload-dialog.component';
+import { DetailComponent } from './components/detail.component';
+import { ErrorDialogComponent } from './components/error-dialog.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +34,8 @@ import { UploadDialogComponent } from './components/upload-dialog.component';
     TableComponent,
     DownloadDialogComponent,
     UploadDialogComponent,
+    DetailComponent,
+    ErrorDialogComponent,
   ],
   imports: [CommonModule, MaterialModule],
   exports: [
@@ -40,6 +44,8 @@ import { UploadDialogComponent } from './components/upload-dialog.component';
     TableOptionsComponent,
     TableToolbarComponent,
     TableComponent,
+    DetailComponent,
+    ErrorDialogComponent,
   ],
 })
 export class SharedModule {}

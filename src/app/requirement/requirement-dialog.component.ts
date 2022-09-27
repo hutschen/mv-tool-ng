@@ -20,6 +20,7 @@ import { Project } from '../shared/services/project.service';
 import {
   IRequirementInput,
   Requirement,
+  RequirementService,
 } from '../shared/services/requirement.service';
 
 export interface IRequirementDialogData {
@@ -45,6 +46,7 @@ export class RequirementDialogComponent {
 
   constructor(
     protected _dialogRef: MatDialogRef<RequirementDialogComponent>,
+    protected _requirementService: RequirementService,
     @Inject(MAT_DIALOG_DATA) protected _dialogData: IRequirementDialogData
   ) {
     this.project = this._dialogData.project;
@@ -54,12 +56,24 @@ export class RequirementDialogComponent {
   }
 
   get createMode(): boolean {
-    return this._dialogData.requirement === null;
+    return !this._dialogData.requirement;
   }
 
-  onSave(form: NgForm): void {
+  async onSave(form: NgForm): Promise<void> {
     if (form.valid) {
-      this._dialogRef.close(this.requirementInput);
+      let requirement: Requirement;
+      if (!this._dialogData.requirement) {
+        requirement = await this._requirementService.createRequirement(
+          this.project.id,
+          this.requirementInput
+        );
+      } else {
+        requirement = await this._requirementService.updateRequirement(
+          this._dialogData.requirement.id,
+          this.requirementInput
+        );
+      }
+      this._dialogRef.close(requirement);
     }
   }
 
