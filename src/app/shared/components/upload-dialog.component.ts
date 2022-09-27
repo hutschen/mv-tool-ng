@@ -15,7 +15,7 @@
 
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { IUploadState } from '../services/upload.service';
 
 @Component({
@@ -105,6 +105,10 @@ export class UploadDialogComponent {
           if (uploadState.state === 'done') {
             this.onClose();
           }
+        },
+        (error: any) => {
+          this.onClose();
+          throw error;
         }
       );
 
