@@ -27,7 +27,6 @@ import {
 } from './measure.service';
 import { AuthService } from './auth.service';
 import { IJiraIssue } from './jira-issue.service';
-import { DownloadService } from './download.service';
 
 describe('Measure', () => {
   let sut: Measure;
@@ -114,7 +113,6 @@ describe('Measure', () => {
 describe('MeasureService', () => {
   let sut: MeasureService;
   let crud: CRUDService<IMeasureInput, IMeasure>;
-  let download: DownloadService;
   let httpMock: HttpTestingController;
   let inputMock: IMeasureInput;
   let outputMock: IMeasure;
@@ -128,7 +126,6 @@ describe('MeasureService', () => {
       token_type: 'bearer',
     });
     crud = TestBed.inject(CRUDService);
-    download = TestBed.inject(DownloadService);
     httpMock = TestBed.inject(HttpTestingController);
     sut = TestBed.inject(MeasureService);
 

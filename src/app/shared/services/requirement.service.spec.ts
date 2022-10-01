@@ -26,12 +26,10 @@ import {
   Requirement,
 } from './requirement.service';
 import { AuthService } from './auth.service';
-import { DownloadService } from './download.service';
 
 describe('RequirementService', () => {
   let sut: RequirementService;
   let crud: CRUDService<IRequirementInput, IRequirement>;
-  let download: DownloadService;
   let httpMock: HttpTestingController;
   let inputMock: IRequirementInput;
   let outputMock: IRequirement;
@@ -45,7 +43,6 @@ describe('RequirementService', () => {
       token_type: 'bearer',
     });
     crud = TestBed.inject(CRUDService);
-    download = TestBed.inject(DownloadService);
     httpMock = TestBed.inject(HttpTestingController);
     sut = TestBed.inject(RequirementService);
 
