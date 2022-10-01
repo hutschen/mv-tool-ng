@@ -33,12 +33,10 @@ export class CRUDService<InputType, OutputType> {
   }
 
   protected get _httpOptions(): object {
-    const credentials = this._auth.credentials;
-    const credentials_str = `${credentials.username}:${credentials.password}`;
     return {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        Authorization: 'Basic ' + btoa(credentials_str),
+        Authorization: `Bearer ${this._auth.accessToken.access_token}`,
       }),
     };
   }
