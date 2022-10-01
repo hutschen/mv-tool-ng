@@ -69,8 +69,6 @@ export class DownloadService {
   }
 
   download(relativeUrl: string): Observable<IDownloadState> {
-    const credentials = this._auth.credentials;
-    const credentials_str = `${credentials.username}:${credentials.password}`;
     const initialState: IDownloadState = {
       state: 'pending',
       progress: 0,
@@ -80,7 +78,7 @@ export class DownloadService {
     return this._httpClient
       .get(this.toAbsoluteUrl(relativeUrl), {
         headers: new HttpHeaders({
-          Authorization: 'Basic ' + btoa(credentials_str),
+          Authorization: `Bearer ${this._auth.accessToken.access_token}`,
         }),
         responseType: 'blob',
         observe: 'events',
