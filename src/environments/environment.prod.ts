@@ -16,4 +16,5 @@
 export const environment = {
   production: true,
   baseUrl: '/api',
+  authUrl: '/auth/token',
 };
