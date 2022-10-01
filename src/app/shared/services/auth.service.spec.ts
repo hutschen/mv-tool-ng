@@ -14,17 +14,30 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TestBed } from '@angular/core/testing';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
+import { environment } from 'src/environments/environment';
 import { UnauthorizedError } from '../errors';
-import { AuthService, ICredentials } from './auth.service';
+import { AuthService, IAccessToken, ICredentials } from './auth.service';
 
 describe('AuthService', () => {
   let sut: AuthService;
+  let httpMock: HttpTestingController;
+  let authUrl: string;
   let credentials: ICredentials;
+  let accessToken: IAccessToken;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+    });
     sut = TestBed.inject(AuthService);
+    httpMock = TestBed.inject(HttpTestingController);
     credentials = { username: 'username', password: 'password' };
+    accessToken = { access_token: 'token', token_type: 'bearer' };
+    authUrl = environment.authUrl;
 
     if (sut.isLoggedIn) {
       sut.logOut();
@@ -36,23 +49,28 @@ describe('AuthService', () => {
     expect(sut).toBeTruthy();
   });
 
-  it('should log in', () => {
-    sut.logIn(credentials);
-    expect(sut.isLoggedIn).toBeTrue();
-    expect(sut.credentials).toEqual(credentials);
+  it('should log in', (done: DoneFn) => {
+    sut.logIn(credentials).then(() => {
+      expect(sut.isLoggedIn).toBeTrue();
+      expect(sut.accessToken).toEqual(accessToken);
+      done();
+    });
+    const mockResponse = httpMock.expectOne({ method: 'post', url: authUrl });
+    mockResponse.flush(accessToken);
   });
 
-  it('should return credentials', () => {
-    sut.logIn(credentials);
-    expect(sut.credentials).toEqual(credentials);
+  it('should return access token', () => {
+    sut.setAccessToken(accessToken);
+    expect(sut.accessToken).toEqual(accessToken);
   });
 
   it('should log out', () => {
-    sut.logIn(credentials);
+    sut.setAccessToken(accessToken);
+    expect(sut.isLoggedIn).toBeTrue();
     sut.logOut();
     expect(sut.isLoggedIn).toBeFalse();
     expect(() => {
-      sut.credentials;
+      sut.accessToken;
     }).toThrowError(UnauthorizedError);
   });
 });
