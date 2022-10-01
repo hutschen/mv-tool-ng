@@ -13,7 +13,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { UnauthorizedError } from '../errors';
 
 export interface ICredentials {
@@ -21,19 +24,45 @@ export interface ICredentials {
   password: string;
 }
 
+export interface IAccessToken {
+  access_token: string;
+  token_type: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  static STORAGE_KEY = 'credentials';
+  static STORAGE_KEY = 'auth';
   loggedIn = new EventEmitter<void>();
   loggedOut = new EventEmitter<void>();
 
-  constructor() {}
+  constructor(protected _httpClient: HttpClient) {}
 
-  logIn(credentials: ICredentials, keepLoggedIn = false) {
-    let storage: Storage = keepLoggedIn ? localStorage : sessionStorage;
-    storage.setItem(AuthService.STORAGE_KEY, JSON.stringify(credentials));
+  async logIn(credentials: ICredentials, keepLoggedIn = false): Promise<void> {
+    // Prepare request form
+    const formData = new FormData();
+    formData.append('username', credentials.username);
+    formData.append('password', credentials.password);
+    formData.append('grant_type', 'password');
+
+    // Send request
+    let accessToken: IAccessToken;
+    try {
+      accessToken = await firstValueFrom(
+        this._httpClient.post<IAccessToken>(environment.authUrl, formData)
+      );
+    } catch (error) {
+      throw error;
+    }
+
+    // Store access token
+    this.setAccessToken(accessToken, keepLoggedIn);
+  }
+
+  public setAccessToken(accessToken: IAccessToken, keepLoggedIn = false) {
+    const storage: Storage = keepLoggedIn ? localStorage : sessionStorage;
+    storage.setItem(AuthService.STORAGE_KEY, JSON.stringify(accessToken));
     this.loggedIn.emit();
   }
 
@@ -42,6 +71,15 @@ export class AuthService {
       return localStorage;
     } else {
       return sessionStorage;
+    }
+  }
+
+  public get accessToken(): IAccessToken {
+    let accessToken = this._storage.getItem(AuthService.STORAGE_KEY);
+    if (accessToken) {
+      return <IAccessToken>JSON.parse(accessToken);
+    } else {
+      throw new UnauthorizedError('User is not logged in.');
     }
   }
 
@@ -54,14 +92,5 @@ export class AuthService {
       this._storage.removeItem(AuthService.STORAGE_KEY);
     }
     this.loggedOut.emit();
-  }
-
-  public get credentials(): ICredentials {
-    let credentials = this._storage.getItem(AuthService.STORAGE_KEY);
-    if (credentials) {
-      return <ICredentials>JSON.parse(credentials);
-    } else {
-      throw new UnauthorizedError('User is not logged in.');
-    }
   }
 }

@@ -40,7 +40,10 @@ describe('DocumentService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
     });
-    TestBed.inject(AuthService).logIn({ username: 'test', password: 'test' });
+    TestBed.inject(AuthService).setAccessToken({
+      access_token: 'token',
+      token_type: 'bearer',
+    });
     crud = TestBed.inject(CRUDService);
     projects = TestBed.inject(ProjectService);
     httpMock = TestBed.inject(HttpTestingController);
