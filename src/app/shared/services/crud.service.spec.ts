@@ -43,8 +43,10 @@ describe('CRUDService', () => {
     });
     sut = TestBed.inject(CRUDService);
     httpMock = TestBed.inject(HttpTestingController);
-    const auth = TestBed.inject(AuthService);
-    auth.logIn({ username: 'test', password: 'test' });
+    TestBed.inject(AuthService).setAccessToken({
+      access_token: 'token',
+      token_type: 'bearer',
+    });
     baseUrl = environment.baseUrl;
     inputMock = {
       name: 'A test item',

@@ -123,7 +123,10 @@ describe('MeasureService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
     });
-    TestBed.inject(AuthService).logIn({ username: 'test', password: 'test' });
+    TestBed.inject(AuthService).setAccessToken({
+      access_token: 'token',
+      token_type: 'bearer',
+    });
     crud = TestBed.inject(CRUDService);
     download = TestBed.inject(DownloadService);
     httpMock = TestBed.inject(HttpTestingController);
