@@ -91,7 +91,7 @@ export class CatalogService {
     return new Catalog(catalog);
   }
 
-  async deleteCatalog(catalogId: number): Promise<void> {
-    await this._crud.delete(this.getCatalogUrl(catalogId));
+  async deleteCatalog(catalogId: number): Promise<null> {
+    return this._crud.delete(this.getCatalogUrl(catalogId));
   }
 }
