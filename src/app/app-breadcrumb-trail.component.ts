@@ -32,7 +32,7 @@ interface IBreadcrumbTrailState {
 @Component({
   selector: 'mvtool-app-breadcrumb-trail',
   templateUrl: './app-breadcrumb-trail.component.html',
-  styles: [],
+  styles: ['.breadcrumb-trail { padding: 5px 2px; }'],
 })
 export class AppBreadcrumbTrailComponent implements OnInit {
   project: Project | null = null;
