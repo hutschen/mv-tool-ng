@@ -22,7 +22,7 @@ import { ProjectDialogComponent } from './project-dialog.component';
 @Component({
   selector: 'mvtool-project-table',
   templateUrl: './project-table.component.html',
-  styles: ['.data-row:hover { cursor: pointer; background-color: #f5f5f5; }'],
+  styles: [],
 })
 export class ProjectTableComponent implements OnInit {
   columns: ITableColumn[] = [

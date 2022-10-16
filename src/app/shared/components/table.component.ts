@@ -99,7 +99,7 @@ export interface ITableColumn {
   `,
   styles: [
     '.clickable-row { cursor: pointer; }',
-    '.clickable-row:hover { background-color: #f5f5f5; }',
+    '.clickable-row:hover { background: rgba(0,0,0,0.04); }',
   ],
 })
 export class TableComponent<T> implements AfterContentInit, AfterViewInit {
