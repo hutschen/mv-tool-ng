@@ -19,8 +19,9 @@ import { Component } from '@angular/core';
   selector: 'mvtool-root',
   template: `
     <mvtool-app-toolbar>
-      <mvtool-app-breadcrumb-trail></mvtool-app-breadcrumb-trail>
+      <mvtool-app-navbar></mvtool-app-navbar>
     </mvtool-app-toolbar>
+    <mvtool-app-breadcrumb-trail></mvtool-app-breadcrumb-trail>
     <router-outlet></router-outlet>
   `,
   styles: [],
