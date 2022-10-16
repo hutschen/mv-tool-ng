@@ -18,12 +18,17 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'mvtool-app-navbar',
   template: `
-    <!-- Button Catalog -->
-    <button mat-button routerLink="/catalogs">Catalogs</button>
-    <!-- Button Projects -->
-    <button mat-button class="selected" routerLink="/projects">Projects</button>
+    <div class="navbar">
+      <!-- Button Catalog -->
+      <button mat-button routerLink="/catalogs">Catalogs</button>
+      <!-- Button Projects -->
+      <button mat-button class="selected" routerLink="/projects">
+        Projects
+      </button>
+    </div>
   `,
   styles: [
+    '.navbar { padding-left: 10px; }',
     '.selected { background: rgba(0,0,0,.2); }',
     'button:hover { background: rgba(0,0,0,.4); }',
   ],
