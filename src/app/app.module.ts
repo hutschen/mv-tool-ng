@@ -36,6 +36,7 @@ import { SharedModule } from './shared/shared.module';
 import { ProjectIdGuard, RequirementIdGuard } from './shared/id.guard';
 import { DocumentModule } from './document/document.module';
 import { MeasureModule } from './measure/measure.module';
+import { CatalogViewComponent } from './views/catalog-view.component';
 
 const routes = [
   {
@@ -72,6 +73,7 @@ const routes = [
     DocumentViewComponent,
     MeasureViewComponent,
     AppBreadcrumbTrailComponent,
+    CatalogViewComponent,
   ],
   imports: [
     BrowserModule,
