@@ -35,7 +35,10 @@ describe('JiraIssueTypeService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
     });
-    TestBed.inject(AuthService).logIn({ username: 'test', password: 'test' });
+    TestBed.inject(AuthService).setAccessToken({
+      access_token: 'token',
+      token_type: 'bearer',
+    });
     crud = TestBed.inject(CRUDService);
     httpMock = TestBed.inject(HttpTestingController);
     sut = TestBed.inject(JiraIssueTypeService);
