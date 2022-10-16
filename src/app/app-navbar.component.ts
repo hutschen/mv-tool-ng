@@ -14,15 +14,31 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+
+enum NavbarSelection {
+  Projects,
+  Catalogs,
+}
 
 @Component({
   selector: 'mvtool-app-navbar',
   template: `
-    <div class="navbar">
+    <div *ngIf="!hide" class="navbar">
       <!-- Button Catalog -->
-      <button mat-button routerLink="/catalogs">Catalogs</button>
+      <button
+        mat-button
+        routerLink="/catalogs"
+        [class.selected]="catalogsSelected"
+      >
+        Catalogs
+      </button>
       <!-- Button Projects -->
-      <button mat-button class="selected" routerLink="/projects">
+      <button
+        mat-button
+        routerLink="/projects"
+        [class.selected]="projectsSelected"
+      >
         Projects
       </button>
     </div>
@@ -34,8 +50,47 @@ import { Component, OnInit } from '@angular/core';
   ],
 })
 export class AppNavbarComponent implements OnInit {
-  // TODO: Check current route and set selected class accordingly
-  constructor() {}
+  protected _selected: NavbarSelection | null = null;
 
-  ngOnInit(): void {}
+  constructor(protected _router: Router) {}
+
+  ngOnInit(): void {
+    this._router.events.subscribe((event) => {
+      const url = this._router.url.split('/').filter((s) => s.length > 0);
+      this._handleUrl(url);
+    });
+  }
+
+  get projectsSelected(): boolean {
+    return this._selected === NavbarSelection.Projects;
+  }
+
+  get catalogsSelected(): boolean {
+    return this._selected === NavbarSelection.Catalogs;
+  }
+
+  get hide(): boolean {
+    return this._selected === null;
+  }
+
+  protected _handleUrl(url: string[]) {
+    const entitySegment = url.length >= 1 ? url[0] : null;
+    switch (entitySegment) {
+      case 'catalogs':
+        this._selected = NavbarSelection.Catalogs;
+        break;
+      case 'catalog-modules':
+        this._selected = NavbarSelection.Catalogs;
+        break;
+      case 'projects':
+        this._selected = NavbarSelection.Projects;
+        break;
+      case 'requirements':
+        this._selected = NavbarSelection.Projects;
+        break;
+      default:
+        this._selected = null;
+        break;
+    }
+  }
 }
