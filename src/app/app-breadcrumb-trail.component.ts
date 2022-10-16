@@ -51,7 +51,6 @@ export class AppBreadcrumbTrailComponent implements OnInit {
     this._router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         const url = this._router.url.split('/').filter((s) => s.length > 0);
-        // console.log(url);
         this._handleUrl(url);
       }
     });
