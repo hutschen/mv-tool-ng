@@ -14,7 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { Catalog, ICatalog } from './catalog.service';
+import { Catalog, CatalogService, ICatalog } from './catalog.service';
+import { CRUDService } from './crud.service';
 
 export interface ICatalogModuleInput {
   reference: string | null;
@@ -59,5 +60,58 @@ export class CatalogModule implements ICatalogModule {
   providedIn: 'root',
 })
 export class CatalogModuleService {
-  constructor() {}
+  constructor(
+    protected _crud: CRUDService<ICatalogModuleInput, ICatalogModule>,
+    protected _catalogs: CatalogService
+  ) {}
+
+  getCatalogModulesUrl(catalogId: number): string {
+    return `${this._catalogs.getCatalogsUrl()}/${catalogId}/catalog-modules`;
+  }
+
+  getCatalogModuleUrl(catalogModuleId: number): string {
+    return `catalog-modules/${catalogModuleId}`;
+  }
+
+  async listCatalogModules(catalogId: number): Promise<CatalogModule[]> {
+    const catalogModules = await this._crud.list(
+      this.getCatalogModulesUrl(catalogId)
+    );
+    return catalogModules.map(
+      (catalogModule) => new CatalogModule(catalogModule)
+    );
+  }
+
+  async createCatalogModule(
+    catalogId: number,
+    catalogModuleInput: ICatalogModuleInput
+  ): Promise<CatalogModule> {
+    const catalogModule = await this._crud.create(
+      this.getCatalogModulesUrl(catalogId),
+      catalogModuleInput
+    );
+    return new CatalogModule(catalogModule);
+  }
+
+  async getCatalogModule(catalogModuleId: number): Promise<CatalogModule> {
+    const catalogModule = await this._crud.read(
+      this.getCatalogModuleUrl(catalogModuleId)
+    );
+    return new CatalogModule(catalogModule);
+  }
+
+  async updateCatalogModule(
+    catalogModuleId: number,
+    catalogModuleInput: ICatalogModuleInput
+  ): Promise<CatalogModule> {
+    const catalogModule = await this._crud.update(
+      this.getCatalogModuleUrl(catalogModuleId),
+      catalogModuleInput
+    );
+    return new CatalogModule(catalogModule);
+  }
+
+  async deleteCatalogModule(catalogModuleId: number): Promise<null> {
+    return await this._crud.delete(this.getCatalogModuleUrl(catalogModuleId));
+  }
 }
