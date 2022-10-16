@@ -14,18 +14,156 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TestBed } from '@angular/core/testing';
-
-import { CatalogModuleService } from './catalog-module.service';
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
+import { CRUDService } from './crud.service';
+import {
+  CatalogModuleService,
+  ICatalogModuleInput,
+  ICatalogModule,
+  CatalogModule,
+} from './catalog-module.service';
+import { AuthService } from './auth.service';
 
 describe('CatalogModuleService', () => {
-  let service: CatalogModuleService;
+  let sut: CatalogModuleService;
+  let crud: CRUDService<ICatalogModuleInput, ICatalogModule>;
+  let httpMock: HttpTestingController;
+  let inputMock: ICatalogModuleInput;
+  let outputMock: ICatalogModule;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(CatalogModuleService);
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+    });
+    TestBed.inject(AuthService).setAccessToken({
+      access_token: 'token',
+      token_type: 'bearer',
+    });
+    crud = TestBed.inject(CRUDService);
+    httpMock = TestBed.inject(HttpTestingController);
+    sut = TestBed.inject(CatalogModuleService);
+
+    inputMock = {
+      reference: null,
+      title: 'A test catalog module',
+      description: 'A test catalog module description',
+      gs_reference: null,
+    };
+    outputMock = {
+      id: 1,
+      reference: inputMock.reference,
+      title: inputMock.title,
+      description: inputMock.description,
+      gs_reference: inputMock.gs_reference,
+      catalog: {
+        id: 1,
+        reference: null,
+        title: 'A test catalog',
+        description: 'A test catalog description',
+      },
+    };
   });
 
-  xit('should be created', () => {
-    expect(service).toBeTruthy();
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  it('should be created', () => {
+    expect(sut).toBeTruthy();
+  });
+
+  it('should return catalog modules url', () => {
+    const catalogId = outputMock.catalog.id;
+    expect(sut.getCatalogModulesUrl(catalogId)).toEqual(
+      `catalogs/${catalogId}/catalog-modules`
+    );
+  });
+
+  it('should return catalog module url', () => {
+    const catalogModuleId = outputMock.id;
+    expect(sut.getCatalogModuleUrl(catalogModuleId)).toEqual(
+      `catalog-modules/${catalogModuleId}`
+    );
+  });
+
+  it('should list catalog modules', (done: DoneFn) => {
+    const catalogId = outputMock.catalog.id;
+    const catalogModulesList = [outputMock];
+
+    sut.listCatalogModules(catalogId).then((value) => {
+      expect(value).toEqual(
+        catalogModulesList.map((cm) => new CatalogModule(cm))
+      );
+      done();
+    });
+
+    const mockResponse = httpMock.expectOne({
+      method: 'get',
+      url: crud.toAbsoluteUrl(sut.getCatalogModulesUrl(catalogId)),
+    });
+    mockResponse.flush(catalogModulesList);
+  });
+
+  it('should create catalog module', (done: DoneFn) => {
+    const catalogId = outputMock.catalog.id;
+
+    sut.createCatalogModule(catalogId, inputMock).then((value) => {
+      expect(value).toEqual(new CatalogModule(outputMock));
+      done();
+    });
+
+    const mockResponse = httpMock.expectOne({
+      method: 'post',
+      url: crud.toAbsoluteUrl(sut.getCatalogModulesUrl(catalogId)),
+    });
+    mockResponse.flush(outputMock);
+  });
+
+  it('should get catalog module', (done: DoneFn) => {
+    const catalogModuleId = outputMock.id;
+
+    sut.getCatalogModule(catalogModuleId).then((value) => {
+      expect(value).toEqual(new CatalogModule(outputMock));
+      done();
+    });
+
+    const mockResponse = httpMock.expectOne({
+      method: 'get',
+      url: crud.toAbsoluteUrl(sut.getCatalogModuleUrl(catalogModuleId)),
+    });
+    mockResponse.flush(outputMock);
+  });
+
+  it('should update catalog module', (done: DoneFn) => {
+    const catalogModuleId = outputMock.id;
+
+    sut.updateCatalogModule(catalogModuleId, inputMock).then((value) => {
+      expect(value).toEqual(new CatalogModule(outputMock));
+      done();
+    });
+
+    const mockResponse = httpMock.expectOne({
+      method: 'put',
+      url: crud.toAbsoluteUrl(sut.getCatalogModuleUrl(catalogModuleId)),
+    });
+    mockResponse.flush(outputMock);
+  });
+
+  it('should delete catalog module', (done: DoneFn) => {
+    const catalogModuleId = outputMock.id;
+
+    sut.deleteCatalogModule(catalogModuleId).then((value) => {
+      expect(value).toBeNull();
+      done();
+    });
+
+    const mockResponse = httpMock.expectOne({
+      method: 'delete',
+      url: crud.toAbsoluteUrl(sut.getCatalogModuleUrl(catalogModuleId)),
+    });
+    mockResponse.flush(null);
   });
 });
