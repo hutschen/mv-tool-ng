@@ -14,6 +14,46 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
+import { Catalog, ICatalog } from './catalog.service';
+
+export interface ICatalogModuleInput {
+  reference: string | null;
+  title: string;
+  description: string | null;
+  gs_reference: string | null;
+}
+
+export interface ICatalogModule extends ICatalogModuleInput {
+  id: number;
+  catalog: ICatalog;
+}
+
+export class CatalogModule implements ICatalogModule {
+  id: number;
+  reference: string | null;
+  title: string;
+  description: string | null;
+  gs_reference: string | null;
+  catalog: Catalog;
+
+  constructor(catalogModule: ICatalogModule) {
+    this.id = catalogModule.id;
+    this.reference = catalogModule.reference;
+    this.title = catalogModule.title;
+    this.description = catalogModule.description;
+    this.gs_reference = catalogModule.gs_reference;
+    this.catalog = new Catalog(catalogModule.catalog);
+  }
+
+  toCatalogModuleInput(): ICatalogModuleInput {
+    return {
+      reference: this.reference,
+      title: this.title,
+      description: this.description,
+      gs_reference: this.gs_reference,
+    };
+  }
+}
 
 @Injectable({
   providedIn: 'root',
