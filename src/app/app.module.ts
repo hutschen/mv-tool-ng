@@ -41,6 +41,11 @@ import { AppNavbarComponent } from './app-navbar.component';
 
 const routes = [
   {
+    path: 'catalogs',
+    canActivate: [AuthGuard],
+    component: CatalogViewComponent,
+  },
+  {
     path: 'projects',
     canActivate: [AuthGuard],
     component: ProjectsViewComponent,
