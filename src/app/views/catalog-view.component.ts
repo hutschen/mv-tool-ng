@@ -17,7 +17,7 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'mvtool-catalog-view',
-  template: ` <p>catalog-view works!</p> `,
+  template: `<mvtool-catalog-table></mvtool-catalog-table>`,
   styles: [],
 })
 export class CatalogViewComponent implements OnInit {
