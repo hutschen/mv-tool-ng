@@ -16,9 +16,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CatalogTableComponent } from './catalog-table.component';
+import { SharedModule } from '../shared/shared.module';
+import { MaterialModule } from '../material/material.module';
 
 @NgModule({
   declarations: [CatalogTableComponent],
-  imports: [CommonModule],
+  imports: [CommonModule, SharedModule, MaterialModule],
+  exports: [CatalogTableComponent],
 })
 export class CatalogModule {}
