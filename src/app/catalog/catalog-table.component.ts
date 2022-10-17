@@ -48,8 +48,9 @@ export class CatalogTableComponent implements OnInit {
     // TODO: implement
   }
 
-  onDeleteCatalog(catalog: Catalog) {
-    // TODO: implement
+  async onDeleteCatalog(catalog: Catalog) {
+    await this._catalogService.deleteCatalog(catalog.id);
+    await this.onReloadCatalogs();
   }
 
   async onReloadCatalogs() {
