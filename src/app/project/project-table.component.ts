@@ -71,7 +71,7 @@ export class ProjectTableComponent implements OnInit {
 
   async onDeleteProject(project: Project) {
     await this._projectService.deleteProject(project.id);
-    this.onReloadProjects();
+    await this.onReloadProjects();
   }
 
   async onReloadProjects() {
