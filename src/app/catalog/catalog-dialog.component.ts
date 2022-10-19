@@ -25,7 +25,7 @@ import {
 @Component({
   selector: 'mvtool-catalog-dialog',
   templateUrl: './catalog-dialog.component.html',
-  styles: [],
+  styles: ['textarea { min-height: 100px; }'],
 })
 export class CatalogDialogComponent {
   catalogInput: ICatalogInput = {
