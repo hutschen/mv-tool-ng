@@ -46,18 +46,7 @@ export class ProjectTableComponent implements OnInit {
     this.dataLoaded = true;
   }
 
-  onCreateProject() {
-    const dialogRef = this._dialog.open(ProjectDialogComponent, {
-      width: '500px',
-    });
-    dialogRef.afterClosed().subscribe(async (project: Project | null) => {
-      if (project) {
-        this.onReloadProjects();
-      }
-    });
-  }
-
-  onEditProject(project: Project) {
+  protected _openProjectDialog(project: Project | null = null): void {
     const dialogRef = this._dialog.open(ProjectDialogComponent, {
       width: '500px',
       data: project,
@@ -67,6 +56,14 @@ export class ProjectTableComponent implements OnInit {
         this.onReloadProjects();
       }
     });
+  }
+
+  onCreateProject(): void {
+    this._openProjectDialog();
+  }
+
+  onEditProject(project: Project): void {
+    this._openProjectDialog(project);
   }
 
   async onDeleteProject(project: Project) {
