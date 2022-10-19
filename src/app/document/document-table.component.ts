@@ -57,23 +57,7 @@ export class DocumentTableComponent implements OnInit {
     this.dataLoaded = true;
   }
 
-  onCreateDocument(): void {
-    let dialogRef = this._dialog.open(DocumentDialogComponent, {
-      width: '500px',
-      data: { project: this.project, document: null } as IDocumentDialogData,
-    });
-    dialogRef.afterClosed().subscribe(async (documentInput) => {
-      if (documentInput && this.project) {
-        await this._documentService.createDocument(
-          this.project.id,
-          documentInput
-        );
-        this.onReloadDocuments();
-      }
-    });
-  }
-
-  onEditDocument(document: Document): void {
+  protected _openDocumentDialog(document: Document | null = null): void {
     let dialogRef = this._dialog.open(DocumentDialogComponent, {
       width: '500px',
       data: {
@@ -81,12 +65,19 @@ export class DocumentTableComponent implements OnInit {
         document: document,
       } as IDocumentDialogData,
     });
-    dialogRef.afterClosed().subscribe(async (documentInput) => {
-      if (documentInput) {
-        await this._documentService.updateDocument(document.id, documentInput);
+    dialogRef.afterClosed().subscribe((document: Document | null) => {
+      if (document) {
         this.onReloadDocuments();
       }
     });
+  }
+
+  onCreateDocument(): void {
+    this._openDocumentDialog();
+  }
+
+  onEditDocument(document: Document): void {
+    this._openDocumentDialog(document);
   }
 
   async onDeleteDocument(document: Document): Promise<void> {

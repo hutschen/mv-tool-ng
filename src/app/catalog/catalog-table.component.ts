@@ -45,7 +45,7 @@ export class CatalogTableComponent implements OnInit {
     this.dataLoaded = true;
   }
 
-  protected _openCatalogDialog(catalog: Catalog | null = null) {
+  protected _openCatalogDialog(catalog: Catalog | null = null): void {
     const dialogRef = this._dialog.open(CatalogDialogComponent, {
       width: '500px',
       data: catalog,
@@ -57,11 +57,11 @@ export class CatalogTableComponent implements OnInit {
     });
   }
 
-  onCreateCatalog() {
+  onCreateCatalog(): void {
     return this._openCatalogDialog();
   }
 
-  onEditCatalog(catalog: Catalog) {
+  onEditCatalog(catalog: Catalog): void {
     return this._openCatalogDialog(catalog);
   }
 
