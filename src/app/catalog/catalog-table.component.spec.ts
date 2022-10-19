@@ -13,17 +13,25 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-@Component({
-  selector: 'mvtool-root',
-  template: `
-    <mvtool-app-toolbar>
-      <mvtool-app-navbar></mvtool-app-navbar>
-    </mvtool-app-toolbar>
-    <mvtool-app-breadcrumb-trail></mvtool-app-breadcrumb-trail>
-    <router-outlet></router-outlet>
-  `,
-  styles: [],
-})
-export class AppComponent {}
+import { CatalogTableComponent } from './catalog-table.component';
+
+describe('CatalogTableComponent', () => {
+  let component: CatalogTableComponent;
+  let fixture: ComponentFixture<CatalogTableComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [CatalogTableComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(CatalogTableComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  xit('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

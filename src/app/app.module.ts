@@ -36,8 +36,16 @@ import { SharedModule } from './shared/shared.module';
 import { ProjectIdGuard, RequirementIdGuard } from './shared/id.guard';
 import { DocumentModule } from './document/document.module';
 import { MeasureModule } from './measure/measure.module';
+import { CatalogViewComponent } from './views/catalog-view.component';
+import { AppNavbarComponent } from './app-navbar.component';
+import { CatalogModule } from './catalog/catalog.module';
 
 const routes = [
+  {
+    path: 'catalogs',
+    canActivate: [AuthGuard],
+    component: CatalogViewComponent,
+  },
   {
     path: 'projects',
     canActivate: [AuthGuard],
@@ -72,6 +80,8 @@ const routes = [
     DocumentViewComponent,
     MeasureViewComponent,
     AppBreadcrumbTrailComponent,
+    CatalogViewComponent,
+    AppNavbarComponent,
   ],
   imports: [
     BrowserModule,
@@ -84,6 +94,7 @@ const routes = [
     RequirementModule,
     DocumentModule,
     MeasureModule,
+    CatalogModule,
   ],
   providers: [{ provide: ErrorHandler, useClass: GlobalErrorHandler }],
   bootstrap: [AppComponent],
