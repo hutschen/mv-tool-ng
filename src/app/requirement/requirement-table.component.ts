@@ -71,24 +71,9 @@ export class RequirementTableComponent implements OnInit {
     this.dataLoaded = true;
   }
 
-  onCreateRequirement(): void {
-    const dialogRef = this._dialog.open(RequirementDialogComponent, {
-      width: '500px',
-      data: {
-        project: this.project,
-        requirement: null,
-      } as IRequirementDialogData,
-    });
-    dialogRef
-      .afterClosed()
-      .subscribe(async (requirement: Requirement | null) => {
-        if (requirement) {
-          this.onReloadRequirements();
-        }
-      });
-  }
-
-  onEditRequirement(requirement: Requirement): void {
+  protected _openRequirementDialog(
+    requirement: Requirement | null = null
+  ): void {
     const dialogRef = this._dialog.open(RequirementDialogComponent, {
       width: '500px',
       data: {
@@ -103,6 +88,14 @@ export class RequirementTableComponent implements OnInit {
           this.onReloadRequirements();
         }
       });
+  }
+
+  onCreateRequirement(): void {
+    this._openRequirementDialog();
+  }
+
+  onEditRequirement(requirement: Requirement): void {
+    this._openRequirementDialog(requirement);
   }
 
   onEditCompliance(requirement: Requirement): void {
