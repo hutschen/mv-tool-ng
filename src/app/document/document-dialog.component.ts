@@ -16,7 +16,11 @@
 import { Component, Inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { IDocumentInput, Document } from '../shared/services/document.service';
+import {
+  IDocumentInput,
+  Document,
+  DocumentService,
+} from '../shared/services/document.service';
 import { Project } from '../shared/services/project.service';
 
 export interface IDocumentDialogData {
@@ -39,6 +43,7 @@ export class DocumentDialogComponent {
 
   constructor(
     protected _dialogRef: MatDialogRef<DocumentDialogComponent>,
+    protected _documentService: DocumentService,
     @Inject(MAT_DIALOG_DATA) protected _dialogData: IDocumentDialogData
   ) {
     this.project = this._dialogData.project;
@@ -51,9 +56,21 @@ export class DocumentDialogComponent {
     return this._dialogData.document === null;
   }
 
-  onSave(form: NgForm): void {
+  async onSave(form: NgForm): Promise<void> {
     if (form.valid) {
-      this._dialogRef.close(this.documentInput);
+      let document: Document;
+      if (!this._dialogData.document) {
+        document = await this._documentService.createDocument(
+          this.project.id,
+          this.documentInput
+        );
+      } else {
+        document = await this._documentService.updateDocument(
+          this._dialogData.document.id,
+          this.documentInput
+        );
+      }
+      this._dialogRef.close(document);
     }
   }
 
