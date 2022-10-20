@@ -39,6 +39,7 @@ import { MeasureModule } from './measure/measure.module';
 import { CatalogViewComponent } from './views/catalog-view.component';
 import { AppNavbarComponent } from './app-navbar.component';
 import { CatalogModule } from './catalog/catalog.module';
+import { BreadcrumbTrailModule } from './breadcrumb-trail/breadcrumb-trail.module';
 
 const routes = [
   {
@@ -88,6 +89,7 @@ const routes = [
     RouterModule.forRoot(routes),
     MaterialModule,
     SharedModule,
+    BreadcrumbTrailModule,
     UserModule,
     JiraProjectModule,
     ProjectModule,
