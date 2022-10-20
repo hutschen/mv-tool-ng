@@ -26,5 +26,6 @@ import { CatalogBreadcrumbsComponent } from './catalog-breadcrumbs.component';
     CatalogBreadcrumbsComponent,
   ],
   imports: [CommonModule],
+  exports: [BreadcrumbTrailComponent],
 })
 export class BreadcrumbTrailModule {}
