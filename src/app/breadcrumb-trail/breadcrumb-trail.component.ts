@@ -13,15 +13,65 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { filter, map, Observable, tap } from 'rxjs';
+import { CatalogService } from '../shared/services/catalog.service';
+import { ProjectService } from '../shared/services/project.service';
+
+interface IBreadcrumbTrailState {
+  isCatalogRelatedView: boolean;
+  isProjectRelatedView: boolean;
+}
 
 @Component({
   selector: 'mvtool-breadcrumb-trail',
-  template: ` <p>breadcrumb-trail works!</p> `,
+  template: `
+    <div *ngIf="state$ | async as state">
+      <p>breadcrumb-trail works! {{ state | json }}</p>
+      <mvtool-catalog-breadcrumbs
+        *ngIf="state.isCatalogRelatedView"
+      ></mvtool-catalog-breadcrumbs>
+      <mvtool-project-breadcrumbs
+        *ngIf="state.isProjectRelatedView"
+      ></mvtool-project-breadcrumbs>
+    </div>
+  `,
   styles: [],
 })
-export class BreadcrumbTrailComponent implements OnInit {
-  constructor() {}
+export class BreadcrumbTrailComponent {
+  state$: Observable<IBreadcrumbTrailState | null>;
 
-  ngOnInit(): void {}
+  constructor(
+    protected _router: Router,
+    protected _catalogService: CatalogService,
+    protected _projectService: ProjectService
+  ) {
+    this.state$ = this._router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      map((event) => event as NavigationEnd),
+      map((event) =>
+        event.urlAfterRedirects.split('/').filter((part) => part.length > 0)
+      ),
+      map((urlParts) => {
+        const firstUrlPart = urlParts[0];
+        const catalogRelatedParts = ['catalogs', 'catalog-modules'];
+        const projectRelatedParts = ['projects', 'requirements'];
+
+        if (catalogRelatedParts.includes(firstUrlPart)) {
+          return {
+            isCatalogRelatedView: true,
+            isProjectRelatedView: false,
+          };
+        } else if (projectRelatedParts.includes(firstUrlPart)) {
+          return {
+            isCatalogRelatedView: false,
+            isProjectRelatedView: true,
+          };
+        } else {
+          return null;
+        }
+      })
+    );
+  }
 }
