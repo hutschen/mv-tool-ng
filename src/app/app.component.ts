@@ -21,6 +21,7 @@ import { Component } from '@angular/core';
     <mvtool-app-toolbar>
       <mvtool-app-navbar></mvtool-app-navbar>
     </mvtool-app-toolbar>
+    <mvtool-breadcrumb-trail></mvtool-breadcrumb-trail>
     <mvtool-app-breadcrumb-trail></mvtool-app-breadcrumb-trail>
     <router-outlet></router-outlet>
   `,
