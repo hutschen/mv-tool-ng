@@ -22,20 +22,23 @@ import { ProjectService } from '../shared/services/project.service';
 interface IBreadcrumb {
   displayText: string;
   navigationCommands: any[];
+  alternativeBreadcrumbs?: IBreadcrumb[];
 }
 
 @Component({
   selector: 'mvtool-breadcrumb-trail',
   template: `
     <div *ngIf="breadcrumbs.length">
-      <div
-        class="breadcrumb-trail"
-        *ngFor="let breadcrumb of breadcrumbs; let i = index"
-      >
-        <button mat-button [routerLink]="breadcrumb.navigationCommands">
-          {{ breadcrumb.displayText }}
-        </button>
-        <span *ngIf="i < breadcrumbs.length - 1"> &gt; </span>
+      <div fxLayout="row">
+        <div
+          class="breadcrumb-trail"
+          *ngFor="let breadcrumb of breadcrumbs; let i = index"
+        >
+          <button mat-button [routerLink]="breadcrumb.navigationCommands">
+            {{ breadcrumb.displayText }}
+          </button>
+          <span *ngIf="i < breadcrumbs.length - 1">&sol;</span>
+        </div>
       </div>
       <mat-divider></mat-divider>
     </div>
@@ -67,6 +70,30 @@ export class BreadcrumbTrailComponent {
   }
 
   protected async _parseProjectUrl(urlParts: string[]): Promise<IBreadcrumb[]> {
+    const head = urlParts.length > 0 ? urlParts[0] : null;
+    const tail = urlParts.length > 1 ? urlParts.slice(1) : [];
+
+    if (head) {
+      const projectId = Number(head);
+      const project = await this._projectService.getProject(projectId);
+      return [
+        {
+          displayText: project.name,
+          navigationCommands: ['projects', projectId, 'requirements'],
+        },
+        {
+          displayText: 'Requirements',
+          navigationCommands: [],
+          alternativeBreadcrumbs: [
+            {
+              displayText: 'Documents',
+              navigationCommands: ['projects', projectId, 'documents'],
+            },
+          ],
+        },
+      ];
+    }
+
     return [];
   }
 
