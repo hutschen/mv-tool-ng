@@ -34,10 +34,27 @@ interface IBreadcrumb {
           class="breadcrumb-trail"
           *ngFor="let breadcrumb of breadcrumbs; let i = index"
         >
-          <button mat-button [routerLink]="breadcrumb.navigationCommands">
-            {{ breadcrumb.displayText }}
-          </button>
-          <span *ngIf="i < breadcrumbs.length - 1">&sol;</span>
+          <div *ngIf="!breadcrumb.alternativeBreadcrumbs?.length">
+            <button mat-button [routerLink]="breadcrumb.navigationCommands">
+              {{ breadcrumb.displayText }}
+            </button>
+            <span *ngIf="i < breadcrumbs.length - 1">&sol;</span>
+          </div>
+          <div *ngIf="breadcrumb.alternativeBreadcrumbs?.length">
+            <button mat-button [matMenuTriggerFor]="menu">
+              {{ breadcrumb.displayText }}
+              <mat-icon>expand_more</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button
+                mat-menu-item
+                *ngFor="let altBreadcrumb of breadcrumb.alternativeBreadcrumbs"
+                [routerLink]="altBreadcrumb.navigationCommands"
+              >
+                {{ altBreadcrumb.displayText }}
+              </button>
+            </mat-menu>
+          </div>
         </div>
       </div>
       <mat-divider></mat-divider>
@@ -70,31 +87,46 @@ export class BreadcrumbTrailComponent {
   }
 
   protected async _parseProjectUrl(urlParts: string[]): Promise<IBreadcrumb[]> {
-    const head = urlParts.length > 0 ? urlParts[0] : null;
-    const tail = urlParts.length > 1 ? urlParts.slice(1) : [];
-
-    if (head) {
-      const projectId = Number(head);
-      const project = await this._projectService.getProject(projectId);
-      return [
-        {
-          displayText: project.name,
-          navigationCommands: ['projects', projectId, 'requirements'],
-        },
-        {
-          displayText: 'Requirements',
-          navigationCommands: [],
-          alternativeBreadcrumbs: [
-            {
-              displayText: 'Documents',
-              navigationCommands: ['projects', projectId, 'documents'],
-            },
-          ],
-        },
-      ];
+    const first = urlParts.length > 0 ? urlParts[0] : null;
+    const second = urlParts.length > 1 ? urlParts[1] : null;
+    if (!first || !second) {
+      return [];
     }
 
-    return [];
+    const projectId = Number(first);
+    const projectBreadcrumb = {
+      displayText: (await this._projectService.getProject(projectId)).name,
+      navigationCommands: ['projects', projectId, 'requirements'],
+    };
+    const requirementsBreadcrumb = {
+      displayText: 'Requirements',
+      navigationCommands: ['projects', projectId, 'requirements'],
+    };
+    const documentsBreadcrumb = {
+      displayText: 'Documents',
+      navigationCommands: ['projects', projectId, 'documents'],
+    };
+
+    switch (second) {
+      case 'requirements':
+        return [
+          projectBreadcrumb,
+          {
+            ...requirementsBreadcrumb,
+            alternativeBreadcrumbs: [documentsBreadcrumb],
+          },
+        ];
+      case 'documents':
+        return [
+          projectBreadcrumb,
+          {
+            ...documentsBreadcrumb,
+            alternativeBreadcrumbs: [requirementsBreadcrumb],
+          },
+        ];
+      default:
+        return [];
+    }
   }
 
   protected async _parseRequirementUrl(
