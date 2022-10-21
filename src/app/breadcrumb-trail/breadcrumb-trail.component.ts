@@ -18,6 +18,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { filter, map, Observable, tap } from 'rxjs';
 import { CatalogService } from '../shared/services/catalog.service';
 import { ProjectService } from '../shared/services/project.service';
+import { RequirementService } from '../shared/services/requirement.service';
 
 interface IBreadcrumb {
   displayText: string;
@@ -36,13 +37,13 @@ interface IBreadcrumb {
         >
           <div *ngIf="!breadcrumb.alternativeBreadcrumbs?.length">
             <button mat-button [routerLink]="breadcrumb.navigationCommands">
-              {{ breadcrumb.displayText }}
+              {{ breadcrumb.displayText | truncate: 25 }}
             </button>
             <span *ngIf="i < breadcrumbs.length - 1">&sol;</span>
           </div>
           <div *ngIf="breadcrumb.alternativeBreadcrumbs?.length">
             <button mat-button [matMenuTriggerFor]="menu">
-              {{ breadcrumb.displayText }}
+              {{ breadcrumb.displayText | truncate: 25 }}
               <mat-icon>expand_more</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
@@ -51,7 +52,7 @@ interface IBreadcrumb {
                 *ngFor="let altBreadcrumb of breadcrumb.alternativeBreadcrumbs"
                 [routerLink]="altBreadcrumb.navigationCommands"
               >
-                {{ altBreadcrumb.displayText }}
+                {{ altBreadcrumb.displayText | truncate: 25 }}
               </button>
             </mat-menu>
           </div>
@@ -68,7 +69,8 @@ export class BreadcrumbTrailComponent {
   constructor(
     protected _router: Router,
     protected _catalogService: CatalogService,
-    protected _projectService: ProjectService
+    protected _projectService: ProjectService,
+    protected _requirementService: RequirementService
   ) {
     this._router.events
       .pipe(
@@ -132,7 +134,33 @@ export class BreadcrumbTrailComponent {
   protected async _parseRequirementUrl(
     urlParts: string[]
   ): Promise<IBreadcrumb[]> {
-    return [];
+    const first = urlParts.length > 0 ? urlParts[0] : null;
+    if (!first) {
+      return [];
+    }
+
+    const requirementId = Number(first);
+    const requirement = await this._requirementService.getRequirement(
+      requirementId
+    );
+    return [
+      {
+        displayText: requirement.project.name,
+        navigationCommands: [
+          'projects',
+          requirement.project.id,
+          'requirements',
+        ],
+      },
+      {
+        displayText: requirement.summary,
+        navigationCommands: ['requirements', requirement.id, 'measures'],
+      },
+      {
+        displayText: 'Measures',
+        navigationCommands: ['requirements', requirement.id, 'measures'],
+      },
+    ];
   }
 
   protected async _parseUrl(urlParts: string[]): Promise<IBreadcrumb[]> {
