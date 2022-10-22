@@ -22,7 +22,7 @@ import { Catalog, CatalogService } from '../shared/services/catalog.service';
 @Component({
   selector: 'mvtool-catalog-module-view',
   template: `
-    <p>placeholder for catalog details</p>
+    <mvtool-catalog-details></mvtool-catalog-details>
     <mat-divider></mat-divider>
     <mvtool-catalog-module-table></mvtool-catalog-module-table>
   `,
