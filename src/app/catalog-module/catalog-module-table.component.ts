@@ -13,7 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ITableColumn } from '../shared/components/table.component';
+import {
+  CatalogModule,
+  CatalogModuleService,
+} from '../shared/services/catalog-module.service';
+import { Catalog } from '../shared/services/catalog.service';
 
 @Component({
   selector: 'mvtool-catalog-module-table',
@@ -21,7 +27,30 @@ import { Component, OnInit } from '@angular/core';
   styles: [],
 })
 export class CatalogModuleTableComponent implements OnInit {
-  constructor() {}
+  columns: ITableColumn[] = [
+    { name: 'reference', optional: true },
+    { name: 'title', optional: false },
+    { name: 'description', optional: true },
+    { name: 'gs_reference', optional: true },
+    { name: 'options', optional: false },
+  ];
+  data: CatalogModule[] = [];
+  dataLoaded: boolean = false;
+  @Input() catalog: Catalog | null = null;
+  @Output() catalogModuleClicked = new EventEmitter<CatalogModule>();
 
-  ngOnInit(): void {}
+  constructor(protected _catalogModuleService: CatalogModuleService) {}
+
+  async ngOnInit(): Promise<void> {
+    await this.onReloadCatalogModules();
+    this.dataLoaded = true;
+  }
+
+  async onReloadCatalogModules(): Promise<void> {
+    if (this.catalog) {
+      this.data = await this._catalogModuleService.listCatalogModules(
+        this.catalog.id
+      );
+    }
+  }
 }

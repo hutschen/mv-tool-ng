@@ -24,7 +24,10 @@ import { Catalog, CatalogService } from '../shared/services/catalog.service';
   template: `
     <mvtool-catalog-details [catalog]="catalog"></mvtool-catalog-details>
     <mat-divider></mat-divider>
-    <mvtool-catalog-module-table></mvtool-catalog-module-table>
+    <mvtool-catalog-module-table
+      [catalog]="catalog"
+      (catalogModuleClicked)="onCatalogModuleClicked($event)"
+    ></mvtool-catalog-module-table>
   `,
   styles: [],
 })
@@ -50,7 +53,7 @@ export class CatalogModuleViewComponent implements OnInit {
     }
   }
 
-  onCatalogClicked(catalogModule: CatalogModule): void {
+  onCatalogModuleClicked(catalogModule: CatalogModule): void {
     this._router.navigate([
       '/catalog-modules',
       catalogModule.id,
