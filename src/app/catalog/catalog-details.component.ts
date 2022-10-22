@@ -13,17 +13,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { CatalogTableComponent } from './catalog-table.component';
-import { SharedModule } from '../shared/shared.module';
-import { MaterialModule } from '../material/material.module';
-import { CatalogDialogComponent } from './catalog-dialog.component';
-import { CatalogDetailsComponent } from './catalog-details.component';
+import { Component, OnInit } from '@angular/core';
 
-@NgModule({
-  declarations: [CatalogTableComponent, CatalogDialogComponent, CatalogDetailsComponent],
-  imports: [CommonModule, SharedModule, MaterialModule],
-  exports: [CatalogTableComponent],
+@Component({
+  selector: 'mvtool-catalog-details',
+  template: ` <p>catalog-details works!</p> `,
+  styles: [],
 })
-export class CatalogModule {}
+export class CatalogDetailsComponent implements OnInit {
+  constructor() {}
+
+  ngOnInit(): void {}
+}
