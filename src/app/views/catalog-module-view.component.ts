@@ -22,12 +22,14 @@ import { Catalog, CatalogService } from '../shared/services/catalog.service';
 @Component({
   selector: 'mvtool-catalog-module-view',
   template: `
-    <mvtool-catalog-details [catalog]="catalog"></mvtool-catalog-details>
-    <mat-divider></mat-divider>
-    <mvtool-catalog-module-table
-      [catalog]="catalog"
-      (catalogModuleClicked)="onCatalogModuleClicked($event)"
-    ></mvtool-catalog-module-table>
+    <div *ngIf="catalog" fxLayout="column">
+      <mvtool-catalog-details [catalog]="catalog"></mvtool-catalog-details>
+      <mat-divider></mat-divider>
+      <mvtool-catalog-module-table
+        [catalog]="catalog"
+        (catalogModuleClicked)="onCatalogModuleClicked($event)"
+      ></mvtool-catalog-module-table>
+    </div>
   `,
   styles: [],
 })

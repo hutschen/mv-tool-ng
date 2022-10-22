@@ -46,6 +46,18 @@ export class CatalogModuleTableComponent implements OnInit {
     this.dataLoaded = true;
   }
 
+  onCreateCatalogModule() {
+    throw new Error('Method not implemented.');
+  }
+
+  onDeleteCatalogModule(_t31: any) {
+    throw new Error('Method not implemented.');
+  }
+
+  onEditCatalogModule(_t31: any) {
+    throw new Error('Method not implemented.');
+  }
+
   async onReloadCatalogModules(): Promise<void> {
     if (this.catalog) {
       this.data = await this._catalogModuleService.listCatalogModules(
