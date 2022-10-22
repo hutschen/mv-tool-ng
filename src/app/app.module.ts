@@ -48,6 +48,11 @@ const routes = [
     component: CatalogViewComponent,
   },
   {
+    path: 'catalogs/:catalogId/catalog-modules',
+    canActivate: [AuthGuard],
+    component: CatalogModuleViewComponent,
+  },
+  {
     path: 'projects',
     canActivate: [AuthGuard],
     component: ProjectsViewComponent,
