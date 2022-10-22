@@ -38,7 +38,7 @@ import { MeasureModule } from './measure/measure.module';
 import { CatalogViewComponent } from './views/catalog-view.component';
 import { AppNavbarComponent } from './app-navbar.component';
 import { CatalogModule } from './catalog/catalog.module';
-import { BreadcrumbTrailModule } from './breadcrumb-trail/breadcrumb-trail.module';
+import { BreadcrumbTrailComponent } from './breadcrumb-trail.component';
 
 const routes = [
   {
@@ -81,13 +81,13 @@ const routes = [
     MeasureViewComponent,
     CatalogViewComponent,
     AppNavbarComponent,
+    BreadcrumbTrailComponent,
   ],
   imports: [
     BrowserModule,
     RouterModule.forRoot(routes),
     MaterialModule,
     SharedModule,
-    BreadcrumbTrailModule,
     UserModule,
     JiraProjectModule,
     ProjectModule,

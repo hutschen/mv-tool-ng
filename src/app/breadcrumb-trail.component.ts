@@ -15,10 +15,10 @@
 
 import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { filter, map, Observable, tap } from 'rxjs';
-import { CatalogService } from '../shared/services/catalog.service';
-import { ProjectService } from '../shared/services/project.service';
-import { RequirementService } from '../shared/services/requirement.service';
+import { filter, map } from 'rxjs';
+import { CatalogService } from './shared/services/catalog.service';
+import { ProjectService } from './shared/services/project.service';
+import { RequirementService } from './shared/services/requirement.service';
 
 interface IBreadcrumb {
   displayText: string;
