@@ -13,17 +13,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component } from '@angular/core';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { BreadcrumbTrailComponent } from './breadcrumb-trail.component';
+import { MaterialModule } from '../material/material.module';
+import { SharedModule } from '../shared/shared.module';
+import { RouterModule } from '@angular/router';
 
-@Component({
-  selector: 'mvtool-root',
-  template: `
-    <mvtool-app-toolbar>
-      <mvtool-app-navbar></mvtool-app-navbar>
-    </mvtool-app-toolbar>
-    <mvtool-breadcrumb-trail></mvtool-breadcrumb-trail>
-    <router-outlet></router-outlet>
-  `,
-  styles: [],
+@NgModule({
+  declarations: [BreadcrumbTrailComponent],
+  imports: [CommonModule, MaterialModule, SharedModule, RouterModule],
+  exports: [BreadcrumbTrailComponent],
 })
-export class AppComponent {}
+export class BreadcrumbTrailModule {}

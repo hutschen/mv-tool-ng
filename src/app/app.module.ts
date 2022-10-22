@@ -31,7 +31,6 @@ import { RequirementViewComponent } from './views/requirement-view.component';
 import { DocumentViewComponent } from './views/document-view.component';
 import { MeasureViewComponent } from './views/measure-view.component';
 import { RequirementModule } from './requirement/requirement.module';
-import { AppBreadcrumbTrailComponent } from './app-breadcrumb-trail.component';
 import { SharedModule } from './shared/shared.module';
 import { ProjectIdGuard, RequirementIdGuard } from './shared/id.guard';
 import { DocumentModule } from './document/document.module';
@@ -39,6 +38,7 @@ import { MeasureModule } from './measure/measure.module';
 import { CatalogViewComponent } from './views/catalog-view.component';
 import { AppNavbarComponent } from './app-navbar.component';
 import { CatalogModule } from './catalog/catalog.module';
+import { BreadcrumbTrailModule } from './breadcrumb-trail/breadcrumb-trail.module';
 
 const routes = [
   {
@@ -79,7 +79,6 @@ const routes = [
     RequirementViewComponent,
     DocumentViewComponent,
     MeasureViewComponent,
-    AppBreadcrumbTrailComponent,
     CatalogViewComponent,
     AppNavbarComponent,
   ],
@@ -88,6 +87,7 @@ const routes = [
     RouterModule.forRoot(routes),
     MaterialModule,
     SharedModule,
+    BreadcrumbTrailModule,
     UserModule,
     JiraProjectModule,
     ProjectModule,
