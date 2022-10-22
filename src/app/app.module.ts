@@ -31,7 +31,6 @@ import { RequirementViewComponent } from './views/requirement-view.component';
 import { DocumentViewComponent } from './views/document-view.component';
 import { MeasureViewComponent } from './views/measure-view.component';
 import { RequirementModule } from './requirement/requirement.module';
-import { AppBreadcrumbTrailComponent } from './app-breadcrumb-trail.component';
 import { SharedModule } from './shared/shared.module';
 import { ProjectIdGuard, RequirementIdGuard } from './shared/id.guard';
 import { DocumentModule } from './document/document.module';
@@ -80,7 +79,6 @@ const routes = [
     RequirementViewComponent,
     DocumentViewComponent,
     MeasureViewComponent,
-    AppBreadcrumbTrailComponent,
     CatalogViewComponent,
     AppNavbarComponent,
   ],
