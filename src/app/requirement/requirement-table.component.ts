@@ -112,7 +112,7 @@ export class RequirementTableComponent implements OnInit {
 
   async onDeleteRequirement(requirement: Requirement): Promise<void> {
     await this._requirementService.deleteRequirement(requirement.id);
-    this.onReloadRequirements();
+    await this.onReloadRequirements();
   }
 
   onExportRequirementsExcel() {
