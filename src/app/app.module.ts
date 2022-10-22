@@ -32,7 +32,11 @@ import { DocumentViewComponent } from './views/document-view.component';
 import { MeasureViewComponent } from './views/measure-view.component';
 import { RequirementModule } from './requirement/requirement.module';
 import { SharedModule } from './shared/shared.module';
-import { ProjectIdGuard, RequirementIdGuard } from './shared/id.guard';
+import {
+  CatalogIdGuard,
+  ProjectIdGuard,
+  RequirementIdGuard,
+} from './shared/id.guard';
 import { DocumentModule } from './document/document.module';
 import { MeasureModule } from './measure/measure.module';
 import { CatalogViewComponent } from './views/catalog-view.component';
@@ -49,7 +53,7 @@ const routes = [
   },
   {
     path: 'catalogs/:catalogId/catalog-modules',
-    canActivate: [AuthGuard],
+    canActivate: [AuthGuard, CatalogIdGuard],
     component: CatalogModuleViewComponent,
   },
   {

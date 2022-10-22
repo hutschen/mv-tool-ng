@@ -47,6 +47,15 @@ abstract class IdGuard implements CanActivate {
 @Injectable({
   providedIn: 'root',
 })
+export class CatalogIdGuard extends IdGuard {
+  constructor(router: Router) {
+    super(router, 'catalogId');
+  }
+}
+
+@Injectable({
+  providedIn: 'root',
+})
 export class ProjectIdGuard extends IdGuard {
   constructor(_router: Router) {
     super(_router, 'projectId');
