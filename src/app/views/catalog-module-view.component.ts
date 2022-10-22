@@ -21,7 +21,11 @@ import { Catalog, CatalogService } from '../shared/services/catalog.service';
 
 @Component({
   selector: 'mvtool-catalog-module-view',
-  template: ` <p>catalog-module-view works!</p> `,
+  template: `
+    <p>placeholder for catalog details</p>
+    <mat-divider></mat-divider>
+    <mvtool-catalog-module-table></mvtool-catalog-module-table>
+  `,
   styles: [],
 })
 export class CatalogModuleViewComponent implements OnInit {

@@ -44,6 +44,7 @@ import { AppNavbarComponent } from './app-navbar.component';
 import { CatalogModule } from './catalog/catalog.module';
 import { BreadcrumbTrailComponent } from './breadcrumb-trail.component';
 import { CatalogModuleViewComponent } from './views/catalog-module-view.component';
+import { CatalogModuleModule } from './catalog-module/catalog-module.module';
 
 const routes = [
   {
@@ -106,6 +107,7 @@ const routes = [
     DocumentModule,
     MeasureModule,
     CatalogModule,
+    CatalogModuleModule,
   ],
   providers: [{ provide: ErrorHandler, useClass: GlobalErrorHandler }],
   bootstrap: [AppComponent],

@@ -20,5 +20,6 @@ import { CatalogModuleTableComponent } from './catalog-module-table.component';
 @NgModule({
   declarations: [CatalogModuleTableComponent],
   imports: [CommonModule],
+  exports: [CatalogModuleTableComponent],
 })
 export class CatalogModuleModule {}
