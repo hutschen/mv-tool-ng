@@ -39,6 +39,7 @@ import { CatalogViewComponent } from './views/catalog-view.component';
 import { AppNavbarComponent } from './app-navbar.component';
 import { CatalogModule } from './catalog/catalog.module';
 import { BreadcrumbTrailComponent } from './breadcrumb-trail.component';
+import { CatalogModuleViewComponent } from './views/catalog-module-view.component';
 
 const routes = [
   {
@@ -82,6 +83,7 @@ const routes = [
     CatalogViewComponent,
     AppNavbarComponent,
     BreadcrumbTrailComponent,
+    CatalogModuleViewComponent,
   ],
   imports: [
     BrowserModule,
