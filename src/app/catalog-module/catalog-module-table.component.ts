@@ -29,9 +29,9 @@ import { Catalog } from '../shared/services/catalog.service';
 export class CatalogModuleTableComponent implements OnInit {
   columns: ITableColumn[] = [
     { name: 'reference', optional: true },
+    { name: 'gs_reference', optional: true },
     { name: 'title', optional: false },
     { name: 'description', optional: true },
-    { name: 'gs_reference', optional: true },
     { name: 'options', optional: false },
   ];
   data: CatalogModule[] = [];

@@ -48,7 +48,7 @@
 
     <!-- Reference column -->
     <ng-container matColumnDef="reference">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference</th>
       <td mat-cell *matCellDef="let catalogModule">
         <span class="truncate-lines">{{ catalogModule.reference }}</span>
       </td>
@@ -56,7 +56,7 @@
 
     <!-- GS Baustein-Referenz column -->
     <ng-container matColumnDef="gs_reference">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>GS Reference</th>
       <td mat-cell *matCellDef="let catalogModule">
         <span class="truncate-lines">{{ catalogModule.gs_reference }}</span>
       </td>
