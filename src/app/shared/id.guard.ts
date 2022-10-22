@@ -30,10 +30,7 @@ abstract class IdGuard implements CanActivate {
     this._idParamName = idParamName;
   }
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): boolean {
+  canActivate(route: ActivatedRouteSnapshot, _: RouterStateSnapshot): boolean {
     const id = route.paramMap.get(this._idParamName);
     if (isNaN(Number(id)) || Number(id) < 0) {
       this._router.navigate(['/']);
@@ -57,8 +54,8 @@ export class CatalogIdGuard extends IdGuard {
   providedIn: 'root',
 })
 export class ProjectIdGuard extends IdGuard {
-  constructor(_router: Router) {
-    super(_router, 'projectId');
+  constructor(router: Router) {
+    super(router, 'projectId');
   }
 }
 
@@ -66,8 +63,8 @@ export class ProjectIdGuard extends IdGuard {
   providedIn: 'root',
 })
 export class RequirementIdGuard extends IdGuard {
-  constructor(_router: Router) {
-    super(_router, 'requirementId');
+  constructor(router: Router) {
+    super(router, 'requirementId');
   }
 }
 
@@ -75,7 +72,7 @@ export class RequirementIdGuard extends IdGuard {
   providedIn: 'root',
 })
 export class MeasureIdGuard extends IdGuard {
-  constructor(_router: Router) {
-    super(_router, 'measureId');
+  constructor(router: Router) {
+    super(router, 'measureId');
   }
 }
