@@ -59,7 +59,7 @@ export class ProjectCardComponent {
       width: '500px',
       data: this.project,
     });
-    dialogRef.afterClosed().subscribe(async (project: Project | null) => {
+    dialogRef.afterClosed().subscribe((project: Project | null) => {
       if (project) {
         this.project = project;
       }
