@@ -13,16 +13,25 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { CatalogModuleTableComponent } from './catalog-module-table.component';
-import { SharedModule } from '../shared/shared.module';
-import { MaterialModule } from '../material/material.module';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
 import { CatalogModuleDialogComponent } from './catalog-module-dialog.component';
 
-@NgModule({
-  declarations: [CatalogModuleTableComponent, CatalogModuleDialogComponent],
-  imports: [CommonModule, SharedModule, MaterialModule],
-  exports: [CatalogModuleTableComponent],
-})
-export class CatalogModuleModule {}
+describe('CatalogModuleDialogComponent', () => {
+  let component: CatalogModuleDialogComponent;
+  let fixture: ComponentFixture<CatalogModuleDialogComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [CatalogModuleDialogComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(CatalogModuleDialogComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  xit('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
