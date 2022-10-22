@@ -14,12 +14,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ITableColumn } from '../shared/components/table.component';
 import {
   CatalogModule,
   CatalogModuleService,
 } from '../shared/services/catalog-module.service';
 import { Catalog } from '../shared/services/catalog.service';
+import {
+  CatalogModuleDialogComponent,
+  ICatalogModuleDialogData,
+} from './catalog-module-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-module-table',
@@ -39,23 +44,46 @@ export class CatalogModuleTableComponent implements OnInit {
   @Input() catalog: Catalog | null = null;
   @Output() catalogModuleClicked = new EventEmitter<CatalogModule>();
 
-  constructor(protected _catalogModuleService: CatalogModuleService) {}
+  constructor(
+    protected _catalogModuleService: CatalogModuleService,
+    protected _dialog: MatDialog
+  ) {}
 
   async ngOnInit(): Promise<void> {
     await this.onReloadCatalogModules();
     this.dataLoaded = true;
   }
 
-  onCreateCatalogModule() {
-    throw new Error('Method not implemented.');
+  protected _openCatalogModuleDialog(
+    catalogModule: CatalogModule | null
+  ): void {
+    const dialogRef = this._dialog.open(CatalogModuleDialogComponent, {
+      width: '500px',
+      data: {
+        catalog: this.catalog,
+        catalogModule: catalogModule,
+      } as ICatalogModuleDialogData,
+    });
+    dialogRef
+      .afterClosed()
+      .subscribe(async (catalogModule: CatalogModule | null) => {
+        if (catalogModule) {
+          await this.onReloadCatalogModules();
+        }
+      });
   }
 
-  onDeleteCatalogModule(_t31: any) {
-    throw new Error('Method not implemented.');
+  onCreateCatalogModule(): void {
+    this._openCatalogModuleDialog(null);
   }
 
-  onEditCatalogModule(_t31: any) {
-    throw new Error('Method not implemented.');
+  onEditCatalogModule(catalogModule: CatalogModule): void {
+    this._openCatalogModuleDialog(catalogModule);
+  }
+
+  async onDeleteCatalogModule(catalogModule: CatalogModule): Promise<void> {
+    await this._catalogModuleService.deleteCatalogModule(catalogModule.id);
+    await this.onReloadCatalogModules();
   }
 
   async onReloadCatalogModules(): Promise<void> {
