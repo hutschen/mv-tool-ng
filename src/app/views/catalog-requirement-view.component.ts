@@ -13,15 +13,47 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import {
+  CatalogModule,
+  CatalogModuleService,
+} from '../shared/services/catalog-module.service';
 
 @Component({
   selector: 'mvtool-catalog-requirement-view',
-  template: ` <p>catalog-requirement-view works!</p> `,
+  template: `
+    <div *ngIf="catalogModule" fxLayout="column">
+      <p>catalog-module-details</p>
+      <p>catalog-requirement-table</p>
+    </div>
+  `,
   styles: [],
 })
 export class CatalogRequirementViewComponent implements OnInit {
-  constructor() {}
+  catalogModule: CatalogModule | null = null;
 
-  ngOnInit(): void {}
+  constructor(
+    protected _route: ActivatedRoute,
+    protected _router: Router,
+    protected _catalogModuleService: CatalogModuleService
+  ) {}
+
+  async ngOnInit(): Promise<void> {
+    const catalogModuleId = Number(
+      this._route.snapshot.paramMap.get('catalogModuleId')
+    );
+    try {
+      this.catalogModule = await this._catalogModuleService.getCatalogModule(
+        catalogModuleId
+      );
+    } catch (error: any) {
+      if (error instanceof HttpErrorResponse && error.status === 404) {
+        this._router.navigate(['/']);
+      } else {
+        throw error;
+      }
+    }
+  }
 }
