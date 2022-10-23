@@ -25,7 +25,9 @@ import {
   selector: 'mvtool-catalog-requirement-view',
   template: `
     <div *ngIf="catalogModule" fxLayout="column">
-      <p>catalog-module-details</p>
+      <mvtool-catalog-module-details
+        [catalogModule]="catalogModule"
+      ></mvtool-catalog-module-details>
       <p>catalog-requirement-table</p>
     </div>
   `,

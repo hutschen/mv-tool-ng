@@ -22,8 +22,12 @@ import { CatalogModuleDialogComponent } from './catalog-module-dialog.component'
 import { CatalogModuleDetailsComponent } from './catalog-module-details.component';
 
 @NgModule({
-  declarations: [CatalogModuleTableComponent, CatalogModuleDialogComponent, CatalogModuleDetailsComponent],
+  declarations: [
+    CatalogModuleTableComponent,
+    CatalogModuleDialogComponent,
+    CatalogModuleDetailsComponent,
+  ],
   imports: [CommonModule, SharedModule, MaterialModule],
-  exports: [CatalogModuleTableComponent],
+  exports: [CatalogModuleTableComponent, CatalogModuleDetailsComponent],
 })
 export class CatalogModuleModule {}
