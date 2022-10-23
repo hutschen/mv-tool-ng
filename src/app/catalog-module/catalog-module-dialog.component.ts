@@ -31,7 +31,7 @@ export interface ICatalogModuleDialogData {
 @Component({
   selector: 'mvtool-catalog-module-dialog',
   templateUrl: './catalog-module-dialog.component.html',
-  styles: [],
+  styles: ['textarea { min-height: 100px; }'],
 })
 export class CatalogModuleDialogComponent {
   catalog: Catalog;

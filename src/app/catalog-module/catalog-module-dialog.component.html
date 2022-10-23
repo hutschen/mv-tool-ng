@@ -15,4 +15,42 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<p>catalog-module-dialog works!</p>
+<mvtool-create-edit-dialog
+  [createMode]="createMode"
+  objectName="Catalog Module"
+  (save)="onSave($event)"
+  (cancel)="onCancel()"
+>
+  <div fxLayout="column">
+    <!-- Reference -->
+    <mat-form-field appearance="fill">
+      <mat-label>Catalog module reference</mat-label>
+      <input
+        name="reference"
+        matInput
+        [(ngModel)]="catalogModuleInput.reference"
+      />
+    </mat-form-field>
+
+    <!-- Title -->
+    <mat-form-field appearance="fill">
+      <mat-label>Catalog module title</mat-label>
+      <input
+        name="title"
+        matInput
+        [(ngModel)]="catalogModuleInput.title"
+        required
+      />
+    </mat-form-field>
+
+    <!-- Description -->
+    <mat-form-field appearance="fill">
+      <mat-label>Catalog module description</mat-label>
+      <textarea
+        name="description"
+        matInput
+        [(ngModel)]="catalogModuleInput.description"
+      ></textarea>
+    </mat-form-field>
+  </div>
+</mvtool-create-edit-dialog>
