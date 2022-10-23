@@ -34,6 +34,7 @@ import { RequirementModule } from './requirement/requirement.module';
 import { SharedModule } from './shared/shared.module';
 import {
   CatalogIdGuard,
+  CatalogModuleIdGuard,
   ProjectIdGuard,
   RequirementIdGuard,
 } from './shared/id.guard';
@@ -57,6 +58,11 @@ const routes = [
     path: 'catalogs/:catalogId/catalog-modules',
     canActivate: [AuthGuard, CatalogIdGuard],
     component: CatalogModuleViewComponent,
+  },
+  {
+    path: 'catalog-modules/:catalogModuleId/catalog-requirements',
+    canActivate: [AuthGuard, CatalogModuleIdGuard],
+    component: CatalogRequirementViewComponent,
   },
   {
     path: 'projects',

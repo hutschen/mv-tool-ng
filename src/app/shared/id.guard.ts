@@ -53,6 +53,15 @@ export class CatalogIdGuard extends IdGuard {
 @Injectable({
   providedIn: 'root',
 })
+export class CatalogModuleIdGuard extends IdGuard {
+  constructor(router: Router) {
+    super(router, 'catalogModuleId');
+  }
+}
+
+@Injectable({
+  providedIn: 'root',
+})
 export class ProjectIdGuard extends IdGuard {
   constructor(router: Router) {
     super(router, 'projectId');
