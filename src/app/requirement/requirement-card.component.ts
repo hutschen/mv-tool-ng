@@ -138,13 +138,11 @@ export class RequirementCardComponent {
         requirement: this.requirement,
       } as IRequirementDialogData,
     });
-    dialogRef
-      .afterClosed()
-      .subscribe(async (requirement: Requirement | null) => {
-        if (requirement) {
-          this.requirement = requirement;
-        }
-      });
+    dialogRef.afterClosed().subscribe((requirement: Requirement | null) => {
+      if (requirement) {
+        this.requirement = requirement;
+      }
+    });
   }
 
   onEditCompliance(): void {
