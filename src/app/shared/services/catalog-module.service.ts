@@ -14,8 +14,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Catalog, CatalogService, ICatalog } from './catalog.service';
 import { CRUDService } from './crud.service';
+import { IUploadState, UploadService } from './upload.service';
 
 export interface ICatalogModuleInput {
   reference: string | null;
@@ -62,6 +64,7 @@ export class CatalogModule implements ICatalogModule {
 export class CatalogModuleService {
   constructor(
     protected _crud: CRUDService<ICatalogModuleInput, ICatalogModule>,
+    protected _upload: UploadService,
     protected _catalogs: CatalogService
   ) {}
 
@@ -113,5 +116,10 @@ export class CatalogModuleService {
 
   async deleteCatalogModule(catalogModuleId: number): Promise<null> {
     return await this._crud.delete(this.getCatalogModuleUrl(catalogModuleId));
+  }
+
+  uploadGSBaustein(catalogId: number, file: File): Observable<IUploadState> {
+    const url = `${this.getCatalogModulesUrl(catalogId)}/gs-baustein`;
+    return this._upload.upload(url, file);
   }
 }

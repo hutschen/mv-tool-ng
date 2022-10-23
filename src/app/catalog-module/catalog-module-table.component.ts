@@ -16,11 +16,13 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ITableColumn } from '../shared/components/table.component';
+import { UploadDialogComponent } from '../shared/components/upload-dialog.component';
 import {
   CatalogModule,
   CatalogModuleService,
 } from '../shared/services/catalog-module.service';
 import { Catalog } from '../shared/services/catalog.service';
+import { IUploadState } from '../shared/services/upload.service';
 import {
   CatalogModuleDialogComponent,
   ICatalogModuleDialogData,
@@ -71,6 +73,23 @@ export class CatalogModuleTableComponent implements OnInit {
           await this.onReloadCatalogModules();
         }
       });
+  }
+
+  onImportGSBaustein() {
+    if (this.catalog) {
+      const projectId = this.catalog.id;
+      const dialogRef = this._dialog.open(UploadDialogComponent, {
+        width: '500px',
+        data: (file: File) => {
+          return this._catalogModuleService.uploadGSBaustein(projectId, file);
+        },
+      });
+      dialogRef.afterClosed().subscribe((uploadState: IUploadState | null) => {
+        if (uploadState && uploadState.state == 'done') {
+          this.onReloadCatalogModules();
+        }
+      });
+    }
   }
 
   onCreateCatalogModule(): void {

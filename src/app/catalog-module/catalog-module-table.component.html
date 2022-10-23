@@ -24,7 +24,16 @@
     filterLabel="Filter Catalog Modules"
     createLabel="Create Catalog Module"
     #tableToolbar
-  ></mvtool-table-toolbar>
+  >
+    <button
+      mat-button
+      (click)="onImportGSBaustein()"
+      matTooltip="Import an official Baustein Word document of the German BSI"
+    >
+      <mat-icon>file_upload</mat-icon>
+      Import GS Baustein
+    </button>
+  </mvtool-table-toolbar>
 
   <!-- Catalog Modules table -->
   <mvtool-table
