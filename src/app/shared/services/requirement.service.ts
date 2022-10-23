@@ -15,6 +15,7 @@
 
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { CatalogModule, ICatalogModule } from './catalog-module.service';
 import { CRUDService } from './crud.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
@@ -29,22 +30,16 @@ export interface IRequirementInput {
   compliance_comment: string | null;
 }
 
-export interface IGSBaustein {
-  id: number;
-  reference: string;
-  title: string;
-}
-
 export interface IRequirement extends IRequirementInput {
   id: number;
   project: IProject;
+  catalog_module: ICatalogModule | null;
   completion: number | null;
 
   // Special attributes for IT Grundschutz Kompendium
   gs_anforderung_reference: string | null;
   gs_absicherung: string | null;
   gs_verantwortliche: string | null;
-  gs_baustein: IGSBaustein | null;
 }
 
 export class Requirement implements IRequirement {
@@ -56,13 +51,13 @@ export class Requirement implements IRequirement {
   compliance_status: string | null;
   compliance_comment: string | null;
   project: Project;
+  catalog_module: CatalogModule | null;
   completion: number | null;
 
   // Special attributes for IT Grundschutz Kompendium
   gs_anforderung_reference: string | null;
   gs_absicherung: string | null;
   gs_verantwortliche: string | null;
-  gs_baustein: IGSBaustein | null;
 
   constructor(requirement: IRequirement) {
     this.id = requirement.id;
@@ -73,13 +68,15 @@ export class Requirement implements IRequirement {
     this.compliance_status = requirement.compliance_status;
     this.compliance_comment = requirement.compliance_comment;
     this.project = new Project(requirement.project);
+    this.catalog_module = requirement.catalog_module
+      ? new CatalogModule(requirement.catalog_module)
+      : null;
     this.completion = requirement.completion;
 
     // Special attributes for IT Grundschutz Kompendium
     this.gs_anforderung_reference = requirement.gs_anforderung_reference;
     this.gs_absicherung = requirement.gs_absicherung;
     this.gs_verantwortliche = requirement.gs_verantwortliche;
-    this.gs_baustein = requirement.gs_baustein;
   }
 
   toRequirementInput(): IRequirementInput {

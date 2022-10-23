@@ -73,12 +73,12 @@
       </td>
     </ng-container>
 
-    <!-- GS Baustein column -->
-    <ng-container matColumnDef="gs_baustein">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>GS Baustein</th>
+    <!-- Catalog Module column -->
+    <ng-container matColumnDef="catalog_module">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Catalog Module</th>
       <td mat-cell *matCellDef="let requirement">
-        <span *ngIf="requirement.gs_baustein" class="truncate-lines">
-          {{ requirement.gs_baustein.title }}
+        <span *ngIf="requirement.catalog_module" class="truncate-lines">
+          {{ requirement.catalog_module.title }}
         </span>
       </td>
     </ng-container>

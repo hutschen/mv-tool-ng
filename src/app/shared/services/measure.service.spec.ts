@@ -60,7 +60,7 @@ describe('Measure', () => {
         gs_anforderung_reference: null,
         gs_absicherung: null,
         gs_verantwortliche: null,
-        gs_baustein: null,
+        catalog_module: null,
         completion: 0,
       },
     });
@@ -163,7 +163,7 @@ describe('MeasureService', () => {
         gs_anforderung_reference: null,
         gs_absicherung: null,
         gs_verantwortliche: null,
-        gs_baustein: null,
+        catalog_module: null,
         completion: 0,
       },
     };

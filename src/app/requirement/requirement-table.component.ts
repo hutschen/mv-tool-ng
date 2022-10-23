@@ -43,7 +43,7 @@ export class RequirementTableComponent implements OnInit {
   columns: ITableColumn[] = [
     { name: 'reference', optional: true },
     { name: 'gs_anforderung_reference', optional: true },
-    { name: 'gs_baustein', optional: true },
+    { name: 'catalog_module', optional: true },
     { name: 'summary', optional: false },
     { name: 'description', optional: true },
     { name: 'gs_absicherung', optional: true },
