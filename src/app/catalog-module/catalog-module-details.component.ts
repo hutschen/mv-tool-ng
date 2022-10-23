@@ -13,15 +13,36 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { CatalogModule } from '../shared/services/catalog-module.service';
+import {
+  CatalogModuleDialogComponent,
+  ICatalogModuleDialogData,
+} from './catalog-module-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-module-details',
   template: ` <p>catalog-module-details works!</p> `,
   styles: [],
 })
-export class CatalogModuleDetailsComponent implements OnInit {
-  constructor() {}
+export class CatalogModuleDetailsComponent {
+  @Input() catalogModule?: CatalogModule;
 
-  ngOnInit(): void {}
+  constructor(protected _dialog: MatDialog) {}
+
+  onEditCatalogModule(): void {
+    const dialogRef = this._dialog.open(CatalogModuleDialogComponent, {
+      width: '500px',
+      data: {
+        catalog: this.catalogModule?.catalog,
+        catalogModule: this.catalogModule,
+      } as ICatalogModuleDialogData,
+    });
+    dialogRef.afterClosed().subscribe((catalogModule: CatalogModule | null) => {
+      if (catalogModule) {
+        this.catalogModule = catalogModule;
+      }
+    });
+  }
 }
