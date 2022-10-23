@@ -149,23 +149,6 @@ export class RequirementTableComponent implements OnInit {
     }
   }
 
-  onImportGSBaustein() {
-    if (this.project) {
-      const projectId = this.project.id;
-      const dialogRef = this._dialog.open(UploadDialogComponent, {
-        width: '500px',
-        data: (file: File) => {
-          return this._requirementService.uploadGSBaustein(projectId, file);
-        },
-      });
-      dialogRef.afterClosed().subscribe((uploadState: IUploadState | null) => {
-        if (uploadState && uploadState.state == 'done') {
-          this.onReloadRequirements();
-        }
-      });
-    }
-  }
-
   async onReloadRequirements() {
     if (this.project) {
       this.data = await this._requirementService.listRequirements(
