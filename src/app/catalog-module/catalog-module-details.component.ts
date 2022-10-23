@@ -23,8 +23,30 @@ import {
 
 @Component({
   selector: 'mvtool-catalog-module-details',
-  template: ` <p>catalog-module-details works!</p> `,
-  styles: [],
+  template: `
+    <div
+      class="details"
+      *ngIf="catalogModule"
+      fxLayout="column"
+      fxLayoutGap="15px"
+    >
+      <!-- Title -->
+      <div
+        fxLayout="row"
+        fxLayoutAlign="space-between center"
+        fxLayoutGap="5px"
+      >
+        <h1 class="truncate">{{ catalogModule.title }}</h1>
+        <div fxLayout="row" fxLayoutGap="5px">
+          <button mat-stroked-button (click)="onEditCatalogModule()">
+            <mat-icon>edit_note</mat-icon>
+            Edit Catalog Module
+          </button>
+        </div>
+      </div>
+    </div>
+  `,
+  styles: ['h1 { margin: 0; }', '.details { margin: 20px; }'],
 })
 export class CatalogModuleDetailsComponent {
   @Input() catalogModule?: CatalogModule;
