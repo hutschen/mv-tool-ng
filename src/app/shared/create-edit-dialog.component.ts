@@ -13,15 +13,74 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ContentChildren,
+  EventEmitter,
+  Input,
+  Output,
+  QueryList,
+  ViewChild,
+} from '@angular/core';
+import { NgForm, NgModel } from '@angular/forms';
 
 @Component({
   selector: 'mvtool-create-edit-dialog',
-  template: ` <p>create-edit-dialog works!</p> `,
+  template: `
+    <!-- Title -->
+    <div mat-dialog-title>
+      <h1>
+        <span *ngIf="createMode">Create</span>
+        <span *ngIf="!createMode">Edit</span>
+        <span>&nbsp;</span>
+        <span>{{ objectName }}</span>
+      </h1>
+    </div>
+
+    <!-- Content -->
+    <div mat-dialog-content>
+      <form id="createEditForm" #form="ngForm" (submit)="save.emit(form)">
+        <ng-content></ng-content>
+      </form>
+    </div>
+
+    <!-- Actions -->
+    <div mat-dialog-actions align="end">
+      <button mat-button (click)="cancel.emit()">
+        <mat-icon>cancel</mat-icon>
+        Cancel
+      </button>
+      <button
+        mat-raised-button
+        color="accent"
+        [disabled]="form.invalid"
+        type="submit"
+        form="createEditForm"
+      >
+        <mat-icon>save</mat-icon>
+        <span>&nbsp;</span>
+        <span *ngIf="createMode">Create</span>
+        <span *ngIf="!createMode">Save</span>
+      </button>
+    </div>
+  `,
   styles: [],
 })
-export class CreateEditDialogComponent implements OnInit {
-  constructor() {}
+export class CreateEditDialogComponent implements AfterViewInit {
+  @Input() createMode: boolean = true;
+  @Input() objectName: string = 'Entity';
+  @Output() save = new EventEmitter<NgForm>();
+  @Output() cancel = new EventEmitter();
 
-  ngOnInit(): void {}
+  @ViewChild(NgForm) form?: NgForm;
+  @ContentChildren(NgModel, { descendants: true }) models?: QueryList<NgModel>;
+
+  constructor() {}
+  ngAfterViewInit(): void {
+    // add models to form, see https://stackoverflow.com/a/42145570
+    this.models?.forEach((model) => {
+      this.form?.addControl(model);
+    });
+  }
 }

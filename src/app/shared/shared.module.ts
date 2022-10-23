@@ -48,6 +48,7 @@ import { CreateEditDialogComponent } from './create-edit-dialog.component';
     TableComponent,
     DetailComponent,
     ErrorDialogComponent,
+    CreateEditDialogComponent,
   ],
 })
 export class SharedModule {}
