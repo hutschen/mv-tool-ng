@@ -15,53 +15,44 @@
 
 import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { Project } from '../shared/services/project.service';
-import { ProjectDialogComponent } from './project-dialog.component';
+import { Catalog } from '../shared/services/catalog.service';
+import { CatalogDialogComponent } from './catalog-dialog.component';
 
 @Component({
-  selector: 'mvtool-project-card',
+  selector: 'mvtool-catalog-details',
   template: `
-    <div
-      class="project-card"
-      *ngIf="project"
-      fxLayout="column"
-      fxLayoutGap="15px"
-    >
+    <div class="details" *ngIf="catalog" fxLayout="column" fxLayoutGap="15px">
       <!-- Title -->
       <div
         fxLayout="row"
         fxLayoutAlign="space-between center"
         fxLayoutGap="5px"
       >
-        <h1 class="truncate">{{ project.name }}</h1>
+        <h1 class="truncate">{{ catalog.title }}</h1>
         <div fxLayout="row" fxLayoutGap="5px">
-          <mvtool-jira-project-label
-            *ngIf="project.jira_project"
-            [project]="project"
-          ></mvtool-jira-project-label>
-          <button mat-stroked-button (click)="onEditProject()">
+          <button mat-stroked-button (click)="onEditCatalog()">
             <mat-icon>edit_note</mat-icon>
-            Edit Project
+            Edit Catalog
           </button>
         </div>
       </div>
     </div>
   `,
-  styles: ['h1 { margin: 0; }', '.project-card { margin: 20px; }'],
+  styles: ['h1 { margin: 0; }', '.details { margin: 20px; }'],
 })
-export class ProjectCardComponent {
-  @Input() project: Project | null = null;
+export class CatalogDetailsComponent {
+  @Input() catalog: Catalog | null = null;
 
   constructor(protected _dialog: MatDialog) {}
 
-  onEditProject() {
-    const dialogRef = this._dialog.open(ProjectDialogComponent, {
+  onEditCatalog() {
+    const dialogRef = this._dialog.open(CatalogDialogComponent, {
       width: '500px',
-      data: this.project,
+      data: this.catalog,
     });
-    dialogRef.afterClosed().subscribe((project: Project | null) => {
-      if (project) {
-        this.project = project;
+    dialogRef.afterClosed().subscribe((catalog: Catalog | null) => {
+      if (catalog) {
+        this.catalog = catalog;
       }
     });
   }

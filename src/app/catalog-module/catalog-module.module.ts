@@ -13,21 +13,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { Catalog } from '../shared/services/catalog.service';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { CatalogModuleTableComponent } from './catalog-module-table.component';
+import { SharedModule } from '../shared/shared.module';
+import { MaterialModule } from '../material/material.module';
+import { CatalogModuleDialogComponent } from './catalog-module-dialog.component';
 
-@Component({
-  selector: 'mvtool-catalog-view',
-  template: `<mvtool-catalog-table
-    (catalogClicked)="onCatalogClicked($event)"
-  ></mvtool-catalog-table>`,
-  styles: [],
+@NgModule({
+  declarations: [CatalogModuleTableComponent, CatalogModuleDialogComponent],
+  imports: [CommonModule, SharedModule, MaterialModule],
+  exports: [CatalogModuleTableComponent],
 })
-export class CatalogViewComponent {
-  constructor(protected _router: Router) {}
-
-  onCatalogClicked(catalog: Catalog) {
-    this._router.navigate(['/catalogs', catalog.id, 'catalog-modules']);
-  }
-}
+export class CatalogModuleModule {}

@@ -1,0 +1,93 @@
+<!--
+ Copyright (C) 2022 Helmar Hutschenreuter
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+ 
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<div fxLayout="column">
+  <!-- Toolbar -->
+  <mvtool-table-toolbar
+    (refresh)="onReloadCatalogModules()"
+    (create)="onCreateCatalogModule()"
+    [showFilter]="true"
+    filterLabel="Filter Catalog Modules"
+    createLabel="Create Catalog Module"
+    #tableToolbar
+  ></mvtool-table-toolbar>
+
+  <!-- Catalog Modules table -->
+  <mvtool-table
+    [columns]="columns"
+    [data]="data"
+    [dataLoaded]="dataLoaded"
+    [filterValue]="tableToolbar.filterValue"
+    (create)="onCreateCatalogModule()"
+    noContentText="No catalog modules found."
+    loadingText="Loading catalog modules..."
+    (rowClicked)="catalogModuleClicked.emit($event)"
+    matSort
+    #sort="matSort"
+    [sort]="sort"
+  >
+    <!-- ID Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>ID</th>
+      <td mat-cell *matCellDef="let catalogModule">{{ catalogModule.id }}</td>
+    </ng-container>
+
+    <!-- Reference column -->
+    <ng-container matColumnDef="reference">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference</th>
+      <td mat-cell *matCellDef="let catalogModule">
+        <span class="truncate-lines">{{ catalogModule.reference }}</span>
+      </td>
+    </ng-container>
+
+    <!-- GS Baustein-Referenz column -->
+    <ng-container matColumnDef="gs_reference">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>GS Reference</th>
+      <td mat-cell *matCellDef="let catalogModule">
+        <span class="truncate-lines">{{ catalogModule.gs_reference }}</span>
+      </td>
+    </ng-container>
+
+    <!-- Title column -->
+    <ng-container matColumnDef="title">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+      <td mat-cell *matCellDef="let catalogModule">
+        <span class="truncate-lines">{{ catalogModule.title }}</span>
+      </td>
+    </ng-container>
+
+    <!-- Description column -->
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+      <td mat-cell *matCellDef="let catalogModule">
+        <span class="truncate-lines">{{ catalogModule.description }}</span>
+      </td>
+    </ng-container>
+
+    <!-- Options column -->
+    <ng-container matColumnDef="options">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let catalogModule">
+        <mvtool-table-options
+          (edit)="onEditCatalogModule(catalogModule)"
+          (delete)="onDeleteCatalogModule(catalogModule)"
+        >
+        </mvtool-table-options>
+      </td>
+    </ng-container>
+  </mvtool-table>
+</div>

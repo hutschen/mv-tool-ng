@@ -15,7 +15,6 @@
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute } from '@angular/router';
 import {
   DownloadDialogComponent,
   IDownloadDialogData,
@@ -62,7 +61,6 @@ export class RequirementTableComponent implements OnInit {
 
   constructor(
     protected _requirementService: RequirementService,
-    protected _route: ActivatedRoute,
     protected _dialog: MatDialog
   ) {}
 
@@ -114,7 +112,7 @@ export class RequirementTableComponent implements OnInit {
 
   async onDeleteRequirement(requirement: Requirement): Promise<void> {
     await this._requirementService.deleteRequirement(requirement.id);
-    this.onReloadRequirements();
+    await this.onReloadRequirements();
   }
 
   onExportRequirementsExcel() {

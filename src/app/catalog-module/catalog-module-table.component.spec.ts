@@ -13,21 +13,25 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { Catalog } from '../shared/services/catalog.service';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-@Component({
-  selector: 'mvtool-catalog-view',
-  template: `<mvtool-catalog-table
-    (catalogClicked)="onCatalogClicked($event)"
-  ></mvtool-catalog-table>`,
-  styles: [],
-})
-export class CatalogViewComponent {
-  constructor(protected _router: Router) {}
+import { CatalogModuleTableComponent } from './catalog-module-table.component';
 
-  onCatalogClicked(catalog: Catalog) {
-    this._router.navigate(['/catalogs', catalog.id, 'catalog-modules']);
-  }
-}
+describe('CatalogModuleTableComponent', () => {
+  let component: CatalogModuleTableComponent;
+  let fixture: ComponentFixture<CatalogModuleTableComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      declarations: [CatalogModuleTableComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(CatalogModuleTableComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  xit('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
