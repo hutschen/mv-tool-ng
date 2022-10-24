@@ -47,6 +47,7 @@ import { BreadcrumbTrailComponent } from './breadcrumb-trail.component';
 import { CatalogModuleViewComponent } from './views/catalog-module-view.component';
 import { CatalogModuleModule } from './catalog-module/catalog-module.module';
 import { CatalogRequirementViewComponent } from './views/catalog-requirement-view.component';
+import { CatalogRequirementModule } from './catalog-requirement/catalog-requirement.module';
 
 const routes = [
   {
@@ -116,6 +117,7 @@ const routes = [
     MeasureModule,
     CatalogModule,
     CatalogModuleModule,
+    CatalogRequirementModule,
   ],
   providers: [{ provide: ErrorHandler, useClass: GlobalErrorHandler }],
   bootstrap: [AppComponent],

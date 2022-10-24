@@ -13,7 +13,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { CatalogModule } from '../shared/services/catalog-module.service';
 
 @Component({
   selector: 'mvtool-catalog-requirement-table',
@@ -21,6 +22,8 @@ import { Component, OnInit } from '@angular/core';
   styles: [],
 })
 export class CatalogRequirementTableComponent implements OnInit {
+  @Input() catalogModule?: CatalogModule;
+
   constructor() {}
 
   ngOnInit(): void {}

@@ -24,5 +24,6 @@ import { CatalogRequirementDialogComponent } from './catalog-requirement-dialog.
     CatalogRequirementDialogComponent,
   ],
   imports: [CommonModule],
+  exports: [CatalogRequirementTableComponent],
 })
 export class CatalogRequirementModule {}

@@ -28,7 +28,9 @@ import {
       <mvtool-catalog-module-details
         [catalogModule]="catalogModule"
       ></mvtool-catalog-module-details>
-      <p>catalog-requirement-table</p>
+      <mvtool-catalog-requirement-table
+        [catalogModule]="catalogModule"
+      ></mvtool-catalog-requirement-table>
     </div>
   `,
   styles: [],
