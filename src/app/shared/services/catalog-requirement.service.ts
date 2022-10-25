@@ -14,7 +14,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { CatalogModule, ICatalogModule } from './catalog-module.service';
+import {
+  CatalogModule,
+  CatalogModuleService,
+  ICatalogModule,
+} from './catalog-module.service';
+import { CRUDService } from './crud.service';
 import { IRequirementInput } from './requirement.service';
 
 export interface ICatalogRequirementInput extends IRequirementInput {}
@@ -76,5 +81,64 @@ export class CatalogRequirement implements ICatalogRequirement {
   providedIn: 'root',
 })
 export class CatalogRequirementService {
-  constructor() {}
+  constructor(
+    protected _crud: CRUDService<ICatalogRequirementInput, ICatalogRequirement>,
+    protected _catalogModules: CatalogModuleService
+  ) {}
+
+  getCatalogRequirementsUrl(catalogModuleId: number): string {
+    return `${this._catalogModules.getCatalogModuleUrl(
+      catalogModuleId
+    )}/requirements`;
+  }
+
+  getCatalogRequirementUrl(requirementId: number): string {
+    return `requirements/${requirementId}`;
+  }
+
+  async listCatalogRequirements(
+    catalogModuleId: number
+  ): Promise<CatalogRequirement[]> {
+    const requirements = await this._crud.list(
+      this.getCatalogRequirementsUrl(catalogModuleId)
+    );
+    return requirements.map((r) => new CatalogRequirement(r));
+  }
+
+  async createCatalogRequirement(
+    catalogModuleId: number,
+    catalogRequirementInput: ICatalogRequirementInput
+  ): Promise<CatalogRequirement> {
+    const catalogRequirement = await this._crud.create(
+      this.getCatalogRequirementsUrl(catalogModuleId),
+      catalogRequirementInput
+    );
+    return new CatalogRequirement(catalogRequirement);
+  }
+
+  async getCatalogRequirement(
+    catalogRequirementId: number
+  ): Promise<CatalogRequirement> {
+    const catalogRequirement = await this._crud.read(
+      this.getCatalogRequirementUrl(catalogRequirementId)
+    );
+    return new CatalogRequirement(catalogRequirement);
+  }
+
+  async updateCatalogRequirement(
+    catalogRequirementId: number,
+    catalogRequirementInput: ICatalogRequirementInput
+  ): Promise<CatalogRequirement> {
+    const catalogRequirement = await this._crud.update(
+      this.getCatalogRequirementUrl(catalogRequirementId),
+      catalogRequirementInput
+    );
+    return new CatalogRequirement(catalogRequirement);
+  }
+
+  async deleteCatalogRequirement(catalogRequirementId: number): Promise<null> {
+    return this._crud.delete(
+      this.getCatalogRequirementUrl(catalogRequirementId)
+    );
+  }
 }
