@@ -25,7 +25,8 @@ import {
 @Component({
   selector: 'mvtool-catalog-requirement-table',
   templateUrl: './catalog-requirement-table.component.html',
-  styles: [],
+  styleUrls: ['../shared/styles/mat-table.css'],
+  styles: ['.mat-column-gs_absicherung {text-align: center;}'],
 })
 export class CatalogRequirementTableComponent implements OnInit {
   columns: ITableColumn[] = [
