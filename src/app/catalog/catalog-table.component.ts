@@ -22,6 +22,7 @@ import { CatalogDialogComponent } from './catalog-dialog.component';
 @Component({
   selector: 'mvtool-catalog-table',
   templateUrl: './catalog-table.component.html',
+  styleUrls: ['../shared/styles/mat-table.css'],
   styles: [],
 })
 export class CatalogTableComponent implements OnInit {
