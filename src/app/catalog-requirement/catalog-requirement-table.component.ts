@@ -21,6 +21,10 @@ import {
   CatalogRequirement,
   CatalogRequirementService,
 } from '../shared/services/catalog-requirement.service';
+import {
+  CatalogRequirementDialogComponent,
+  ICatalogRequirementDialogData,
+} from './catalog-requirement-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-requirement-table',
@@ -56,12 +60,31 @@ export class CatalogRequirementTableComponent implements OnInit {
     this.dataLoaded = true;
   }
 
+  protected _openCatalogRequirementDialog(
+    catalogRequirement?: CatalogRequirement
+  ): void {
+    const dialogRef = this._dialog.open(CatalogRequirementDialogComponent, {
+      width: '500px',
+      data: {
+        catalogRequirement: catalogRequirement,
+        catalogModule: this.catalogModule,
+      } as ICatalogRequirementDialogData,
+    });
+    dialogRef
+      .afterClosed()
+      .subscribe(async (catalogRequirement?: CatalogRequirement) => {
+        if (catalogRequirement) {
+          await this.onReloadCatalogRequirements();
+        }
+      });
+  }
+
   onCreateCatalogRequirement(): void {
-    // this.catalogRequirementClicked.emit(catalogRequirement);
+    this._openCatalogRequirementDialog();
   }
 
   onEditCatalogRequirement(catalogRequirement: CatalogRequirement): void {
-    this.catalogRequirementClicked.emit(catalogRequirement);
+    this._openCatalogRequirementDialog(catalogRequirement);
   }
 
   async onDeleteCatalogRequirement(
