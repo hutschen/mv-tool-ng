@@ -13,8 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ITableColumn } from '../shared/components/table.component';
 import { CatalogModule } from '../shared/services/catalog-module.service';
+import {
+  CatalogRequirement,
+  CatalogRequirementService,
+} from '../shared/services/catalog-requirement.service';
 
 @Component({
   selector: 'mvtool-catalog-requirement-table',
@@ -22,9 +28,55 @@ import { CatalogModule } from '../shared/services/catalog-module.service';
   styles: [],
 })
 export class CatalogRequirementTableComponent implements OnInit {
+  columns: ITableColumn[] = [
+    { name: 'reference', optional: true },
+    { name: 'gs_anforderung_reference', optional: true },
+    { name: 'summary', optional: false },
+    { name: 'description', optional: true },
+    { name: 'gs_absicherung', optional: true },
+    { name: 'gs_verantwortliche', optional: true },
+    { name: 'target_object', optional: true },
+    { name: 'compliance_status', optional: false },
+    { name: 'compliance_comment', optional: true },
+    { name: 'options', optional: false },
+  ];
+  data: CatalogRequirement[] = [];
+  dataLoaded: boolean = false;
   @Input() catalogModule?: CatalogModule;
+  @Output() catalogRequirementClicked = new EventEmitter<CatalogRequirement>();
 
-  constructor() {}
+  constructor(
+    protected _catalogRequirementService: CatalogRequirementService,
+    protected _dialog: MatDialog
+  ) {}
 
-  ngOnInit(): void {}
+  async ngOnInit(): Promise<void> {
+    await this.onReloadCatalogRequirements();
+    this.dataLoaded = true;
+  }
+
+  onCreateCatalogRequirement(): void {
+    // this.catalogRequirementClicked.emit(catalogRequirement);
+  }
+
+  onEditCatalogRequirement(catalogRequirement: CatalogRequirement): void {
+    this.catalogRequirementClicked.emit(catalogRequirement);
+  }
+
+  async onDeleteCatalogRequirement(
+    catalogRequirement: CatalogRequirement
+  ): Promise<void> {
+    await this._catalogRequirementService.deleteCatalogRequirement(
+      catalogRequirement.id
+    );
+    await this.onReloadCatalogRequirements();
+  }
+
+  async onReloadCatalogRequirements(): Promise<void> {
+    if (this.catalogModule) {
+      this.data = await this._catalogRequirementService.listCatalogRequirements(
+        this.catalogModule.id
+      );
+    }
+  }
 }
