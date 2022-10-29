@@ -28,6 +28,7 @@ import {
       <mvtool-catalog-module-details
         [catalogModule]="catalogModule"
       ></mvtool-catalog-module-details>
+      <mat-divider></mat-divider>
       <mvtool-catalog-requirement-table
         [catalogModule]="catalogModule"
       ></mvtool-catalog-requirement-table>
