@@ -15,4 +15,42 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<p>catalog-requirement-dialog works!</p>
+<mvtool-create-edit-dialog
+  [createMode]="createMode"
+  objectName="Catalog Requirement"
+  (save)="onSave($event)"
+  (cancel)="onCancel()"
+>
+  <div fxLayout="column">
+    <!-- Requirement reference input -->
+    <mat-form-field appearance="fill">
+      <mat-label>Requirement reference</mat-label>
+      <input
+        name="reference"
+        matInput
+        [(ngModel)]="catalogRequirementInput.reference"
+      />
+    </mat-form-field>
+
+    <!-- Requirement summary input -->
+    <mat-form-field appearance="fill">
+      <mat-label>Requirement summary</mat-label>
+      <input
+        name="summary"
+        matInput
+        [(ngModel)]="catalogRequirementInput.summary"
+        required
+      />
+    </mat-form-field>
+
+    <!-- Requirement description input -->
+    <mat-form-field appearance="fill">
+      <mat-label>Requirement description</mat-label>
+      <textarea
+        name="description"
+        matInput
+        [(ngModel)]="catalogRequirementInput.description"
+      ></textarea>
+    </mat-form-field>
+  </div>
+</mvtool-create-edit-dialog>
