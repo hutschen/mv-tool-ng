@@ -92,14 +92,14 @@ describe('CatalogRequirementService', () => {
   it('should return catalog requirements url', () => {
     const catalogModuleId = outputMock.catalog_module.id;
     expect(sut.getCatalogRequirementsUrl(catalogModuleId)).toEqual(
-      `catalog-modules/${catalogModuleId}/requirements`
+      `catalog-modules/${catalogModuleId}/catalog-requirements`
     );
   });
 
   it('should return catalog requirement url', () => {
     const catalogRequirementId = outputMock.id;
     expect(sut.getCatalogRequirementUrl(catalogRequirementId)).toEqual(
-      `requirements/${catalogRequirementId}`
+      `catalog-requirements/${catalogRequirementId}`
     );
   });
 

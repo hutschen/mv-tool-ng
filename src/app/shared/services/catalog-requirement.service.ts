@@ -89,11 +89,11 @@ export class CatalogRequirementService {
   getCatalogRequirementsUrl(catalogModuleId: number): string {
     return `${this._catalogModules.getCatalogModuleUrl(
       catalogModuleId
-    )}/requirements`;
+    )}/catalog-requirements`;
   }
 
-  getCatalogRequirementUrl(requirementId: number): string {
-    return `requirements/${requirementId}`;
+  getCatalogRequirementUrl(catalogRequirementId: number): string {
+    return `catalog-requirements/${catalogRequirementId}`;
   }
 
   async listCatalogRequirements(
