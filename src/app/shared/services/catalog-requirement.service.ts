@@ -22,41 +22,39 @@ import {
 import { CRUDService } from './crud.service';
 import { IRequirementInput } from './requirement.service';
 
-export interface ICatalogRequirementInput extends IRequirementInput {}
+export interface ICatalogRequirementInput {
+  reference?: string;
+  summary: string;
+  description?: string;
+
+  // Special attributes for IT Grundschutz Kompendium
+  gs_anforderung_reference?: string;
+  gs_absicherung?: string;
+  gs_verantwortliche?: string;
+}
 
 export interface ICatalogRequirement extends ICatalogRequirementInput {
   id: number;
   catalog_module: ICatalogModule;
-
-  // Special attributes for IT Grundschutz Kompendium
-  gs_anforderung_reference: string | null;
-  gs_absicherung: string | null;
-  gs_verantwortliche: string | null;
 }
 
 export class CatalogRequirement implements ICatalogRequirement {
   id: number;
-  reference: string | null;
+  reference?: string;
   summary: string;
-  description: string | null;
-  target_object: string | null;
-  compliance_status: string | null;
-  compliance_comment: string | null;
+  description?: string;
   catalog_module: CatalogModule;
 
   // Special attributes for IT Grundschutz Kompendium
-  gs_anforderung_reference: string | null;
-  gs_absicherung: string | null;
-  gs_verantwortliche: string | null;
+  gs_anforderung_reference?: string;
+  gs_absicherung?: string;
+  gs_verantwortliche?: string;
 
   constructor(catalogRequirement: ICatalogRequirement) {
     this.id = catalogRequirement.id;
     this.reference = catalogRequirement.reference;
     this.summary = catalogRequirement.summary;
     this.description = catalogRequirement.description;
-    this.target_object = catalogRequirement.target_object;
-    this.compliance_status = catalogRequirement.compliance_status;
-    this.compliance_comment = catalogRequirement.compliance_comment;
     this.catalog_module = new CatalogModule(catalogRequirement.catalog_module);
 
     // Special attributes for IT Grundschutz Kompendium
@@ -70,9 +68,11 @@ export class CatalogRequirement implements ICatalogRequirement {
       reference: this.reference,
       summary: this.summary,
       description: this.description,
-      target_object: this.target_object,
-      compliance_status: this.compliance_status,
-      compliance_comment: this.compliance_comment,
+
+      // Special attributes for IT Grundschutz Kompendium
+      gs_anforderung_reference: this.gs_anforderung_reference,
+      gs_absicherung: this.gs_absicherung,
+      gs_verantwortliche: this.gs_verantwortliche,
     };
   }
 }

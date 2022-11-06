@@ -47,21 +47,11 @@ describe('CatalogRequirementService', () => {
     sut = TestBed.inject(CatalogRequirementService);
 
     inputMock = {
-      reference: null,
       summary: 'A test catalog requirement',
-      description: 'A test catalog requirement description',
-      target_object: null,
-      compliance_status: null,
-      compliance_comment: null,
     };
     outputMock = {
       id: 1,
-      reference: inputMock.reference,
       summary: inputMock.summary,
-      description: inputMock.description,
-      target_object: inputMock.target_object,
-      compliance_status: inputMock.compliance_status,
-      compliance_comment: inputMock.compliance_comment,
       catalog_module: {
         id: 1,
         reference: null,
@@ -75,9 +65,6 @@ describe('CatalogRequirementService', () => {
           description: null,
         },
       },
-      gs_anforderung_reference: null,
-      gs_absicherung: null,
-      gs_verantwortliche: null,
     };
   });
 

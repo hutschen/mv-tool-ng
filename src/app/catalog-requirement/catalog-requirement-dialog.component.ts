@@ -36,12 +36,7 @@ export interface ICatalogRequirementDialogData {
 export class CatalogRequirementDialogComponent {
   catalogModule: CatalogModule;
   catalogRequirementInput: ICatalogRequirementInput = {
-    reference: null,
     summary: '',
-    description: null,
-    target_object: null,
-    compliance_status: null,
-    compliance_comment: null,
   };
 
   constructor(
