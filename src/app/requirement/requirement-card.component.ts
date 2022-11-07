@@ -61,21 +61,23 @@ import {
 
         <!-- GS Anforderung Reference -->
         <mvtool-detail
-          *ngIf="requirement.gs_anforderung_reference"
+          *ngIf="requirement.catalog_requirement?.gs_anforderung_reference"
           label="GS Anforderung Reference"
         >
-          <div class="truncate">{{ requirement.gs_anforderung_reference }}</div>
+          <div class="truncate">
+            {{ requirement.catalog_requirement?.gs_anforderung_reference }}
+          </div>
         </mvtool-detail>
 
         <!-- Catalog Module -->
         <mvtool-detail
-          *ngIf="requirement.catalog_module"
+          *ngIf="requirement.catalog_requirement"
           label="Catalog Module"
         >
           <div class="truncate">
-            {{ requirement.catalog_module.reference }}
-            {{ requirement.catalog_module.gs_reference }}
-            {{ requirement.catalog_module.title }}
+            {{ requirement.catalog_requirement.catalog_module.reference }}
+            {{ requirement.catalog_requirement.catalog_module.gs_reference }}
+            {{ requirement.catalog_requirement.catalog_module.title }}
           </div>
         </mvtool-detail>
 
@@ -86,18 +88,22 @@ import {
 
         <!-- GS Absicherung -->
         <mvtool-detail
-          *ngIf="requirement.gs_absicherung"
+          *ngIf="requirement.catalog_requirement?.gs_absicherung"
           label="GS Absicherung"
         >
-          <div class="truncate">{{ requirement.gs_absicherung }}</div>
+          <div class="truncate">
+            {{ requirement.catalog_requirement?.gs_absicherung }}
+          </div>
         </mvtool-detail>
 
         <!-- GS Verantwortliche -->
         <mvtool-detail
-          *ngIf="requirement.gs_verantwortliche"
+          *ngIf="requirement.catalog_requirement?.gs_verantwortliche"
           label="GS Verantwortliche"
         >
-          <div class="truncate">{{ requirement.gs_verantwortliche }}</div>
+          <div class="truncate">
+            {{ requirement.catalog_requirement?.gs_verantwortliche }}
+          </div>
         </mvtool-detail>
 
         <!-- Target object -->
