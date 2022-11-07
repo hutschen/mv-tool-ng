@@ -47,21 +47,11 @@ describe('RequirementService', () => {
     sut = TestBed.inject(RequirementService);
 
     inputMock = {
-      reference: null,
       summary: 'A test requirement',
-      description: 'A test requirement description',
-      target_object: null,
-      compliance_status: null,
-      compliance_comment: null,
     };
     outputMock = {
       id: 1,
-      reference: inputMock.reference,
       summary: inputMock.summary,
-      description: inputMock.description,
-      target_object: inputMock.target_object,
-      compliance_status: inputMock.compliance_status,
-      compliance_comment: inputMock.compliance_comment,
       project: {
         id: 1,
         name: 'A test project',
@@ -70,11 +60,6 @@ describe('RequirementService', () => {
         jira_project: null,
         completion: 0,
       },
-      completion: 0,
-      gs_anforderung_reference: null,
-      gs_absicherung: null,
-      gs_verantwortliche: null,
-      catalog_module: null,
     };
   });
 

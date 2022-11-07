@@ -43,12 +43,7 @@ describe('Measure', () => {
       document: null,
       requirement: {
         id: 1,
-        reference: null,
         summary: 'A test requirement',
-        description: 'A test requirement description',
-        target_object: null,
-        compliance_status: null,
-        compliance_comment: null,
         project: {
           id: 1,
           name: 'A test project',
@@ -57,11 +52,6 @@ describe('Measure', () => {
           jira_project: null,
           completion: 0,
         },
-        gs_anforderung_reference: null,
-        gs_absicherung: null,
-        gs_verantwortliche: null,
-        catalog_module: null,
-        completion: 0,
       },
     });
     jiraIssueMock = {
@@ -146,12 +136,7 @@ describe('MeasureService', () => {
       document: null,
       requirement: {
         id: 1,
-        reference: null,
         summary: 'A test requirement',
-        description: 'A test requirement description',
-        target_object: null,
-        compliance_status: null,
-        compliance_comment: null,
         project: {
           id: 1,
           name: 'A test project',
@@ -160,11 +145,6 @@ describe('MeasureService', () => {
           jira_project: null,
           completion: 0,
         },
-        gs_anforderung_reference: null,
-        gs_absicherung: null,
-        gs_verantwortliche: null,
-        catalog_module: null,
-        completion: 0,
       },
     };
   });
