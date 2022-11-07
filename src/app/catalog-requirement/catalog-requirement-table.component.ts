@@ -40,9 +40,6 @@ export class CatalogRequirementTableComponent implements OnInit {
     { name: 'description', optional: true },
     { name: 'gs_absicherung', optional: true },
     { name: 'gs_verantwortliche', optional: true },
-    // { name: 'target_object', optional: true },
-    // { name: 'compliance_status', optional: true },
-    // { name: 'compliance_comment', optional: true },
     { name: 'options', optional: false },
   ];
   data: CatalogRequirement[] = [];
