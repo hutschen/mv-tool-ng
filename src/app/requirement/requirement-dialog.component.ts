@@ -36,12 +36,7 @@ export interface IRequirementDialogData {
 export class RequirementDialogComponent {
   project: Project;
   requirementInput: IRequirementInput = {
-    reference: null,
     summary: '',
-    description: null,
-    target_object: null,
-    compliance_status: null,
-    compliance_comment: null,
   };
 
   constructor(
