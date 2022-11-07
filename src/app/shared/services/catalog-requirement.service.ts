@@ -20,7 +20,6 @@ import {
   ICatalogModule,
 } from './catalog-module.service';
 import { CRUDService } from './crud.service';
-import { IRequirementInput } from './requirement.service';
 
 export interface ICatalogRequirementInput {
   reference?: string;
