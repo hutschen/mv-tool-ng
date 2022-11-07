@@ -157,7 +157,7 @@ export class TableComponent<T> implements AfterContentInit, AfterViewInit {
 
     for (let row of this._dataSource.data) {
       for (let [key, value] of Object.entries(row as any)) {
-        if (value !== null && displayFlags.has(key)) {
+        if (value && displayFlags.has(key)) {
           displayFlags.set(key, true);
         }
       }
