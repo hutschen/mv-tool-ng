@@ -61,11 +61,11 @@ import {
 
         <!-- GS Anforderung Reference -->
         <mvtool-detail
-          *ngIf="requirement.catalog_requirement?.gs_anforderung_reference"
+          *ngIf="requirement.gsAnforderungReference"
           label="GS Anforderung Reference"
         >
           <div class="truncate">
-            {{ requirement.catalog_requirement?.gs_anforderung_reference }}
+            {{ requirement.gsAnforderungReference }}
           </div>
         </mvtool-detail>
 
@@ -87,22 +87,19 @@ import {
         </mvtool-detail>
 
         <!-- GS Absicherung -->
-        <mvtool-detail
-          *ngIf="requirement.catalog_requirement?.gs_absicherung"
-          label="GS Absicherung"
-        >
+        <mvtool-detail *ngIf="requirement.gsAbsicherung" label="GS Absicherung">
           <div class="truncate">
-            {{ requirement.catalog_requirement?.gs_absicherung }}
+            {{ requirement.gsAbsicherung }}
           </div>
         </mvtool-detail>
 
         <!-- GS Verantwortliche -->
         <mvtool-detail
-          *ngIf="requirement.catalog_requirement?.gs_verantwortliche"
+          *ngIf="requirement.gsVerantwortliche"
           label="GS Verantwortliche"
         >
           <div class="truncate">
-            {{ requirement.catalog_requirement?.gs_verantwortliche }}
+            {{ requirement.gsVerantwortliche }}
           </div>
         </mvtool-detail>
 
