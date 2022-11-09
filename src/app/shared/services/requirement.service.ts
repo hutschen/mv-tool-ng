@@ -85,6 +85,18 @@ export class Requirement implements IRequirement {
       return Math.round(this.completion * 100);
     }
   }
+
+  get gsAnforderungReference(): string | null {
+    return this.catalog_requirement?.gs_anforderung_reference || null;
+  }
+
+  get gsAbsicherung(): string | null {
+    return this.catalog_requirement?.gs_absicherung || null;
+  }
+
+  get gsVerantwortliche(): string | null {
+    return this.catalog_requirement?.gs_verantwortliche || null;
+  }
 }
 
 @Injectable({
