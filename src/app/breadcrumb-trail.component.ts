@@ -16,6 +16,7 @@
 import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
+import { CatalogModuleService } from './shared/services/catalog-module.service';
 import { CatalogService } from './shared/services/catalog.service';
 import { ProjectService } from './shared/services/project.service';
 import { RequirementService } from './shared/services/requirement.service';
@@ -69,6 +70,7 @@ export class BreadcrumbTrailComponent {
   constructor(
     protected _router: Router,
     protected _catalogService: CatalogService,
+    protected _catalogModuleService: CatalogModuleService,
     protected _projectService: ProjectService,
     protected _requirementService: RequirementService
   ) {
@@ -99,6 +101,46 @@ export class BreadcrumbTrailComponent {
       {
         displayText: 'Catalog Modules',
         navigationCommands: ['catalogs', catalogId, 'catalog-modules'],
+      },
+    ];
+  }
+
+  protected async _parseCatalogModuleUrl(
+    urlParts: string[]
+  ): Promise<IBreadcrumb[]> {
+    const first = urlParts.length > 0 ? urlParts[0] : null;
+    if (!first) {
+      return [];
+    }
+
+    const catalogModuleId = Number(first);
+    const catalogModule = await this._catalogModuleService.getCatalogModule(
+      catalogModuleId
+    );
+    return [
+      {
+        displayText: catalogModule.catalog.title,
+        navigationCommands: [
+          'catalogs',
+          catalogModule.catalog.id,
+          'catalog-modules',
+        ],
+      },
+      {
+        displayText: catalogModule.title,
+        navigationCommands: [
+          'catalog-modules',
+          catalogModule.id,
+          'catalog-requirements',
+        ],
+      },
+      {
+        displayText: 'Catalog Requirements',
+        navigationCommands: [
+          'catalog-modules',
+          catalogModule.id,
+          'catalog-requirements',
+        ],
       },
     ];
   }
@@ -194,6 +236,11 @@ export class BreadcrumbTrailComponent {
     switch (head) {
       case 'catalogs':
         return [allCatalogsBreadcrumb, ...(await this._parseCatalogUrl(tail))];
+      case 'catalog-modules':
+        return [
+          allCatalogsBreadcrumb,
+          ...(await this._parseCatalogModuleUrl(tail)),
+        ];
       case 'projects':
         return [allProjectsBreadcrumb, ...(await this._parseProjectUrl(tail))];
       case 'requirements':
