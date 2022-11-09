@@ -85,7 +85,22 @@ export class BreadcrumbTrailComponent {
   }
 
   protected async _parseCatalogUrl(urlParts: string[]): Promise<IBreadcrumb[]> {
-    return [];
+    const first = urlParts.length > 0 ? urlParts[0] : null;
+    if (!first) {
+      return [];
+    }
+
+    const catalogId = Number(first);
+    return [
+      {
+        displayText: (await this._catalogService.getCatalog(catalogId)).title,
+        navigationCommands: ['catalogs', catalogId, 'catalog-modules'],
+      },
+      {
+        displayText: 'Catalog Modules',
+        navigationCommands: ['catalogs', catalogId, 'catalog-modules'],
+      },
+    ];
   }
 
   protected async _parseProjectUrl(urlParts: string[]): Promise<IBreadcrumb[]> {
