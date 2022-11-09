@@ -34,6 +34,7 @@ import { RequirementModule } from './requirement/requirement.module';
 import { SharedModule } from './shared/shared.module';
 import {
   CatalogIdGuard,
+  CatalogModuleIdGuard,
   ProjectIdGuard,
   RequirementIdGuard,
 } from './shared/id.guard';
@@ -45,6 +46,8 @@ import { CatalogModule } from './catalog/catalog.module';
 import { BreadcrumbTrailComponent } from './breadcrumb-trail.component';
 import { CatalogModuleViewComponent } from './views/catalog-module-view.component';
 import { CatalogModuleModule } from './catalog-module/catalog-module.module';
+import { CatalogRequirementViewComponent } from './views/catalog-requirement-view.component';
+import { CatalogRequirementModule } from './catalog-requirement/catalog-requirement.module';
 
 const routes = [
   {
@@ -56,6 +59,11 @@ const routes = [
     path: 'catalogs/:catalogId/catalog-modules',
     canActivate: [AuthGuard, CatalogIdGuard],
     component: CatalogModuleViewComponent,
+  },
+  {
+    path: 'catalog-modules/:catalogModuleId/catalog-requirements',
+    canActivate: [AuthGuard, CatalogModuleIdGuard],
+    component: CatalogRequirementViewComponent,
   },
   {
     path: 'projects',
@@ -94,6 +102,7 @@ const routes = [
     AppNavbarComponent,
     BreadcrumbTrailComponent,
     CatalogModuleViewComponent,
+    CatalogRequirementViewComponent,
   ],
   imports: [
     BrowserModule,
@@ -108,6 +117,7 @@ const routes = [
     MeasureModule,
     CatalogModule,
     CatalogModuleModule,
+    CatalogRequirementModule,
   ],
   providers: [{ provide: ErrorHandler, useClass: GlobalErrorHandler }],
   bootstrap: [AppComponent],

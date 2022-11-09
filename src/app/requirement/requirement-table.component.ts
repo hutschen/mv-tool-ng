@@ -37,17 +37,17 @@ import {
   selector: 'mvtool-requirement-table',
   templateUrl: './requirement-table.component.html',
   styleUrls: ['../shared/styles/mat-table.css'],
-  styles: ['.mat-column-gs_absicherung {text-align: center;}'],
+  styles: ['.mat-column-gsAbsicherung {text-align: center;}'],
 })
 export class RequirementTableComponent implements OnInit {
   columns: ITableColumn[] = [
     { name: 'reference', optional: true },
-    { name: 'gs_anforderung_reference', optional: true },
+    { name: 'gsAnforderungReference', optional: true },
     { name: 'catalog_module', optional: true },
     { name: 'summary', optional: false },
     { name: 'description', optional: true },
-    { name: 'gs_absicherung', optional: true },
-    { name: 'gs_verantwortliche', optional: true },
+    { name: 'gsAbsicherung', optional: true },
+    { name: 'gsVerantwortliche', optional: true },
     { name: 'target_object', optional: true },
     { name: 'compliance_status', optional: false },
     { name: 'compliance_comment', optional: true },

@@ -15,19 +15,17 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CatalogModuleTableComponent } from './catalog-module-table.component';
+import { CatalogRequirementTableComponent } from './catalog-requirement-table.component';
+import { CatalogRequirementDialogComponent } from './catalog-requirement-dialog.component';
 import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
-import { CatalogModuleDialogComponent } from './catalog-module-dialog.component';
-import { CatalogModuleDetailsComponent } from './catalog-module-details.component';
 
 @NgModule({
   declarations: [
-    CatalogModuleTableComponent,
-    CatalogModuleDialogComponent,
-    CatalogModuleDetailsComponent,
+    CatalogRequirementTableComponent,
+    CatalogRequirementDialogComponent,
   ],
   imports: [CommonModule, SharedModule, MaterialModule],
-  exports: [CatalogModuleTableComponent, CatalogModuleDetailsComponent],
+  exports: [CatalogRequirementTableComponent],
 })
-export class CatalogModuleModule {}
+export class CatalogRequirementModule {}

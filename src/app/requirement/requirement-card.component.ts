@@ -61,21 +61,23 @@ import {
 
         <!-- GS Anforderung Reference -->
         <mvtool-detail
-          *ngIf="requirement.gs_anforderung_reference"
+          *ngIf="requirement.gsAnforderungReference"
           label="GS Anforderung Reference"
         >
-          <div class="truncate">{{ requirement.gs_anforderung_reference }}</div>
+          <div class="truncate">
+            {{ requirement.gsAnforderungReference }}
+          </div>
         </mvtool-detail>
 
         <!-- Catalog Module -->
         <mvtool-detail
-          *ngIf="requirement.catalog_module"
+          *ngIf="requirement.catalog_requirement"
           label="Catalog Module"
         >
           <div class="truncate">
-            {{ requirement.catalog_module.reference }}
-            {{ requirement.catalog_module.gs_reference }}
-            {{ requirement.catalog_module.title }}
+            {{ requirement.catalog_requirement.catalog_module.reference }}
+            {{ requirement.catalog_requirement.catalog_module.gs_reference }}
+            {{ requirement.catalog_requirement.catalog_module.title }}
           </div>
         </mvtool-detail>
 
@@ -85,19 +87,20 @@ import {
         </mvtool-detail>
 
         <!-- GS Absicherung -->
-        <mvtool-detail
-          *ngIf="requirement.gs_absicherung"
-          label="GS Absicherung"
-        >
-          <div class="truncate">{{ requirement.gs_absicherung }}</div>
+        <mvtool-detail *ngIf="requirement.gsAbsicherung" label="GS Absicherung">
+          <div class="truncate">
+            {{ requirement.gsAbsicherung }}
+          </div>
         </mvtool-detail>
 
         <!-- GS Verantwortliche -->
         <mvtool-detail
-          *ngIf="requirement.gs_verantwortliche"
+          *ngIf="requirement.gsVerantwortliche"
           label="GS Verantwortliche"
         >
-          <div class="truncate">{{ requirement.gs_verantwortliche }}</div>
+          <div class="truncate">
+            {{ requirement.gsVerantwortliche }}
+          </div>
         </mvtool-detail>
 
         <!-- Target object -->
@@ -138,13 +141,11 @@ export class RequirementCardComponent {
         requirement: this.requirement,
       } as IRequirementDialogData,
     });
-    dialogRef
-      .afterClosed()
-      .subscribe(async (requirement: Requirement | null) => {
-        if (requirement) {
-          this.requirement = requirement;
-        }
-      });
+    dialogRef.afterClosed().subscribe((requirement: Requirement | null) => {
+      if (requirement) {
+        this.requirement = requirement;
+      }
+    });
   }
 
   onEditCompliance(): void {
