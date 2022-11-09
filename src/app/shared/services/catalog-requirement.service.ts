@@ -22,14 +22,14 @@ import {
 import { CRUDService } from './crud.service';
 
 export interface ICatalogRequirementInput {
-  reference?: string;
+  reference?: string | null;
   summary: string;
-  description?: string;
+  description?: string | null;
 
   // Special attributes for IT Grundschutz Kompendium
-  gs_anforderung_reference?: string;
-  gs_absicherung?: string;
-  gs_verantwortliche?: string;
+  gs_anforderung_reference?: string | null;
+  gs_absicherung?: string | null;
+  gs_verantwortliche?: string | null;
 }
 
 export interface ICatalogRequirement extends ICatalogRequirementInput {
@@ -39,15 +39,15 @@ export interface ICatalogRequirement extends ICatalogRequirementInput {
 
 export class CatalogRequirement implements ICatalogRequirement {
   id: number;
-  reference?: string;
+  reference?: string | null;
   summary: string;
-  description?: string;
+  description?: string | null;
   catalog_module: CatalogModule;
 
   // Special attributes for IT Grundschutz Kompendium
-  gs_anforderung_reference?: string;
-  gs_absicherung?: string;
-  gs_verantwortliche?: string;
+  gs_anforderung_reference?: string | null;
+  gs_absicherung?: string | null;
+  gs_verantwortliche?: string | null;
 
   constructor(catalogRequirement: ICatalogRequirement) {
     this.id = catalogRequirement.id;
