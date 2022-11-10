@@ -22,6 +22,7 @@ import { RequirementDialogComponent } from './requirement-dialog.component';
 import { TargetObjectInputComponent } from './target-object-input.component';
 import { ComplianceDialogComponent } from './compliance-dialog.component';
 import { RequirementCardComponent } from './requirement-card.component';
+import { RequirementImportDialogComponent } from './requirement-import-dialog.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { RequirementCardComponent } from './requirement-card.component';
     TargetObjectInputComponent,
     ComplianceDialogComponent,
     RequirementCardComponent,
+    RequirementImportDialogComponent,
   ],
   imports: [CommonModule, SharedModule, MaterialModule],
   exports: [
