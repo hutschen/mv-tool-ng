@@ -13,7 +13,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { CatalogModuleService } from '../shared/services/catalog-module.service';
+import { CatalogService } from '../shared/services/catalog.service';
+import { Project } from '../shared/services/project.service';
 
 @Component({
   selector: 'mvtool-requirement-import-dialog',
@@ -21,7 +25,17 @@ import { Component, OnInit } from '@angular/core';
   styles: [],
 })
 export class RequirementImportDialogComponent implements OnInit {
-  constructor() {}
+  constructor(
+    protected _dialogRef: MatDialogRef<RequirementImportDialogComponent>,
+    protected _catalogService: CatalogService,
+    protected _catalogModuleService: CatalogModuleService,
+    @Inject(MAT_DIALOG_DATA) protected _project: Project
+  ) {}
 
-  ngOnInit(): void {}
+  // load catalogs and catalog modules
+  async ngOnInit(): Promise<void> {}
+
+  onCancel(): void {
+    this._dialogRef.close();
+  }
 }
