@@ -13,11 +13,132 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import {
+  CollectionViewer,
+  DataSource,
+  SelectionChange,
+} from '@angular/cdk/collections';
+import { FlatTreeControl } from '@angular/cdk/tree';
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { CatalogModuleService } from '../shared/services/catalog-module.service';
-import { CatalogService } from '../shared/services/catalog.service';
+import { BehaviorSubject, map, merge, Observable } from 'rxjs';
+import {
+  CatalogModule,
+  CatalogModuleService,
+} from '../shared/services/catalog-module.service';
+import { Catalog, CatalogService } from '../shared/services/catalog.service';
 import { Project } from '../shared/services/project.service';
+
+interface INode {
+  name: string;
+  level: number;
+  expandable: boolean;
+  isLoaded: boolean;
+}
+
+class CatalogModuleNode implements INode {
+  name: string;
+  level = 2;
+  expandable = false;
+  isLoaded = true;
+
+  constructor(public catalogModule: CatalogModule) {
+    this.name = catalogModule.title;
+  }
+}
+
+class CatalogNode implements INode {
+  name: string;
+  level = 1;
+  expandable = true;
+  isLoaded = false;
+
+  constructor(
+    public catalog: Catalog,
+    protected _catalogModuleService: CatalogModuleService
+  ) {
+    this.name = catalog.title;
+  }
+
+  async loadChildren(): Promise<CatalogModuleNode[]> {
+    this.isLoaded = true;
+    const catalogModules = await this._catalogModuleService.listCatalogModules(
+      this.catalog.id
+    );
+    this.isLoaded = false;
+    return catalogModules.map(
+      (catalogModule) => new CatalogModuleNode(catalogModule)
+    );
+  }
+}
+
+// Implemented according to examples from https://material.angular.io/components/tree/examples
+class CatalogDataSource implements DataSource<INode> {
+  dataChange = new BehaviorSubject<INode[]>([]);
+
+  get data(): INode[] {
+    return this.dataChange.value;
+  }
+
+  set data(value: INode[]) {
+    this._treeControl.dataNodes = value;
+    this.dataChange.next(value);
+  }
+
+  constructor(
+    protected _treeControl: FlatTreeControl<INode>,
+    protected _catalogService: CatalogService,
+    protected _catalogModuleService: CatalogModuleService
+  ) {}
+
+  connect(collectionViewer: CollectionViewer): Observable<INode[]> {
+    this._treeControl.expansionModel.changed.subscribe((change) => {
+      if (change.added || change.removed) {
+        this.handleTreeControl(change);
+      }
+    });
+    return merge(collectionViewer.viewChange, this.dataChange).pipe(
+      map(() => this.data)
+    );
+  }
+
+  disconnect(collectionViewer: CollectionViewer): void {}
+
+  handleTreeControl(change: SelectionChange<INode>): void {
+    if (change.added) {
+      change.added.forEach((node) => this.toggleNode(node, true));
+    }
+    if (change.removed) {
+      change.removed
+        .slice()
+        .reverse()
+        .forEach((node) => this.toggleNode(node, false));
+    }
+  }
+
+  async toggleNode(node: INode, expand: boolean): Promise<void> {
+    const index = this.data.indexOf(node);
+    if (index < 0) {
+      // cannot find the node
+      return;
+    }
+    if (node.expandable) {
+      if (expand) {
+        const nodes = await (node as CatalogNode).loadChildren();
+        this.data.splice(index + 1, 0, ...nodes);
+      } else {
+        let count = 0;
+        for (
+          let i = index + 1;
+          i < this.data.length && this.data[i].level > node.level;
+          i++, count++
+        ) {}
+        this.data.splice(index + 1, count);
+      }
+      this.dataChange.next(this.data);
+    }
+  }
+}
 
 @Component({
   selector: 'mvtool-requirement-import-dialog',
