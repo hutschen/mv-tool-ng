@@ -143,8 +143,35 @@ class CatalogDataSource implements DataSource<INode> {
 // Implemented according to examples from https://material.angular.io/components/tree/examples
 @Component({
   selector: 'mvtool-requirement-import-dialog',
-  template: ` <p>requirement-import-dialog works!</p> `,
-  styles: [],
+  template: `
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+      <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+        <button mat-icon-button disabled></button>
+        {{ node.name }}
+      </mat-tree-node>
+      <mat-tree-node
+        *matTreeNodeDef="let node; when: hasChild"
+        matTreeNodePadding
+      >
+        <button
+          mat-icon-button
+          matTreeNodeToggle
+          [attr.aria-label]="'toggle ' + node.name"
+        >
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+          </mat-icon>
+        </button>
+        {{ node.name }}
+        <mat-progress-bar
+          *ngIf="node.isLoaded"
+          mode="indeterminate"
+          class="progress-bar"
+        ></mat-progress-bar>
+      </mat-tree-node>
+    </mat-tree>
+  `,
+  styles: ['.progress-bar { margin-left: 30px; }'],
 })
 export class RequirementImportDialogComponent implements OnInit {
   treeControl: FlatTreeControl<INode>;
