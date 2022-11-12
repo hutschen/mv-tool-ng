@@ -144,32 +144,43 @@ class CatalogDataSource implements DataSource<INode> {
 @Component({
   selector: 'mvtool-requirement-import-dialog',
   template: `
-    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-      <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
-        <button mat-icon-button disabled></button>
-        {{ node.name }}
-      </mat-tree-node>
-      <mat-tree-node
-        *matTreeNodeDef="let node; when: hasChild"
-        matTreeNodePadding
-      >
-        <button
-          mat-icon-button
-          matTreeNodeToggle
-          [attr.aria-label]="'toggle ' + node.name"
+    <div mat-dialog-title><h1>Import requirements from catalogs</h1></div>
+    <div mat-dialog-content>
+      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+        <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+          <button mat-icon-button disabled></button>
+          {{ node.name }}
+        </mat-tree-node>
+        <mat-tree-node
+          *matTreeNodeDef="let node; when: hasChild"
+          matTreeNodePadding
         >
-          <mat-icon class="mat-icon-rtl-mirror">
-            {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
-          </mat-icon>
-        </button>
-        {{ node.name }}
-        <mat-progress-bar
-          *ngIf="node.isLoaded"
-          mode="indeterminate"
-          class="progress-bar"
-        ></mat-progress-bar>
-      </mat-tree-node>
-    </mat-tree>
+          <button
+            mat-icon-button
+            matTreeNodeToggle
+            [attr.aria-label]="'toggle ' + node.name"
+          >
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{
+                treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'
+              }}
+            </mat-icon>
+          </button>
+          {{ node.name }}
+          <mat-progress-bar
+            *ngIf="node.isLoaded"
+            mode="indeterminate"
+            class="progress-bar"
+          ></mat-progress-bar>
+        </mat-tree-node>
+      </mat-tree>
+    </div>
+    <div mat-dialog-actions align="end">
+      <button mat-button (click)="onCancel()">Cancel</button>
+      <button mat-raised-button color="accent" (click)="onImport()">
+        Import
+      </button>
+    </div>
   `,
   styles: ['.progress-bar { margin-left: 30px; }'],
 })
@@ -201,6 +212,8 @@ export class RequirementImportDialogComponent implements OnInit {
       (catalog) => new CatalogNode(catalog, this._catalogModuleService)
     );
   }
+
+  onImport(): void {}
 
   onCancel(): void {
     this._dialogRef.close();
