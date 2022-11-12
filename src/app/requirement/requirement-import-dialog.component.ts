@@ -38,7 +38,7 @@ interface INode {
 
 class CatalogModuleNode implements INode {
   name: string;
-  level = 2;
+  level = 1;
   expandable = false;
   isLoaded = true;
 
@@ -49,7 +49,7 @@ class CatalogModuleNode implements INode {
 
 class CatalogNode implements INode {
   name: string;
-  level = 1;
+  level = 0;
   expandable = true;
   isLoaded = false;
 
@@ -140,23 +140,48 @@ class CatalogDataSource implements DataSource<INode> {
   }
 }
 
+// Implemented according to examples from https://material.angular.io/components/tree/examples
 @Component({
   selector: 'mvtool-requirement-import-dialog',
   template: ` <p>requirement-import-dialog works!</p> `,
   styles: [],
 })
 export class RequirementImportDialogComponent implements OnInit {
+  treeControl: FlatTreeControl<INode>;
+  dataSource: CatalogDataSource;
+
   constructor(
     protected _dialogRef: MatDialogRef<RequirementImportDialogComponent>,
     protected _catalogService: CatalogService,
     protected _catalogModuleService: CatalogModuleService,
     @Inject(MAT_DIALOG_DATA) protected _project: Project
-  ) {}
+  ) {
+    this.treeControl = new FlatTreeControl<INode>(
+      this.getLevel,
+      this.isExpandable
+    );
+    this.dataSource = new CatalogDataSource(
+      this.treeControl,
+      this._catalogService,
+      this._catalogModuleService
+    );
+  }
 
   // load catalogs and catalog modules
-  async ngOnInit(): Promise<void> {}
+  async ngOnInit(): Promise<void> {
+    const catalogs = await this._catalogService.listCatalogs();
+    this.dataSource.data = catalogs.map(
+      (catalog) => new CatalogNode(catalog, this._catalogModuleService)
+    );
+  }
 
   onCancel(): void {
     this._dialogRef.close();
   }
+
+  getLevel = (node: INode) => node.level;
+
+  isExpandable = (node: INode) => node.expandable;
+
+  hasChild = (_: number, _nodeData: INode) => _nodeData.expandable;
 }
