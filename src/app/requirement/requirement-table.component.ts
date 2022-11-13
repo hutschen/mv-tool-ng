@@ -32,6 +32,7 @@ import {
   IRequirementDialogData,
   RequirementDialogComponent,
 } from './requirement-dialog.component';
+import { RequirementImportDialogComponent } from './requirement-import-dialog.component';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -147,6 +148,18 @@ export class RequirementTableComponent implements OnInit {
         }
       });
     }
+  }
+
+  onImportFromCatalog() {
+    const dialogRef = this._dialog.open(RequirementImportDialogComponent, {
+      width: '500px',
+      data: this.project,
+    });
+    dialogRef.afterClosed().subscribe(async (result?: any) => {
+      if (result) {
+        await this.onReloadRequirements();
+      }
+    });
   }
 
   async onReloadRequirements() {

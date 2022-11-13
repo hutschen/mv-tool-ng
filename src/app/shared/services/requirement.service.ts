@@ -170,4 +170,13 @@ export class RequirementService {
     const url = `${this.getRequirementsUrl(projectId)}/excel`;
     return this._upload.upload(url, file);
   }
+
+  async importRequirements(
+    projectId: number,
+    catalogModuleIds: number[]
+  ): Promise<Requirement[]> {
+    const url = `${this.getRequirementsUrl(projectId)}/import`;
+    const requirements = await this._crud.import(url, catalogModuleIds);
+    return requirements.map((requirement) => new Requirement(requirement));
+  }
 }

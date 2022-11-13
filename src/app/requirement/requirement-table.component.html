@@ -25,10 +25,18 @@
     createLabel="Create Requirement"
     #tableToolbar
   >
-    <button mat-button (click)="onImportRequirementsExcel()">
+    <button mat-button [matMenuTriggerFor]="importMenu">
       <mat-icon>file_upload</mat-icon>
-      Import Excel
+      Import
     </button>
+    <mat-menu #importMenu="matMenu">
+      <button mat-menu-item (click)="onImportRequirementsExcel()">
+        Import Excel
+      </button>
+      <button mat-menu-item (click)="onImportFromCatalog()">
+        Import from Catalog
+      </button>
+    </mat-menu>
     <button mat-button (click)="onExportRequirementsExcel()">
       <mat-icon>file_download</mat-icon>
       Export Excel
