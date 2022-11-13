@@ -17,7 +17,6 @@ import {
   CollectionViewer,
   DataSource,
   SelectionChange,
-  SelectionModel,
 } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { Component, Inject, OnInit } from '@angular/core';
@@ -29,9 +28,10 @@ import {
 } from '../shared/services/catalog-module.service';
 import { Catalog, CatalogService } from '../shared/services/catalog.service';
 import { Project } from '../shared/services/project.service';
+import { RequirementService } from '../shared/services/requirement.service';
 
 interface INode {
-  name: string;
+  get name(): string;
   level: number;
   expandable: boolean;
   isLoaded: boolean;
@@ -40,14 +40,19 @@ interface INode {
 }
 
 class CatalogModuleNode implements INode {
-  name: string;
   level = 1;
   expandable = false;
   isLoaded = true;
   checked = false;
 
-  constructor(public catalogModule: CatalogModule) {
-    this.name = catalogModule.title;
+  constructor(public catalogModule: CatalogModule) {}
+
+  get name(): string {
+    return [
+      this.catalogModule.reference,
+      this.catalogModule.gs_reference,
+      this.catalogModule.title,
+    ].join(' ');
   }
 
   toggleChecked(): void {
@@ -56,7 +61,6 @@ class CatalogModuleNode implements INode {
 }
 
 class CatalogNode implements INode {
-  name: string;
   level = 0;
   expandable = true;
   isLoaded = false;
@@ -66,8 +70,10 @@ class CatalogNode implements INode {
   constructor(
     public catalog: Catalog,
     protected _catalogModuleService: CatalogModuleService
-  ) {
-    this.name = catalog.title;
+  ) {}
+
+  get name(): string {
+    return [this.catalog.reference, this.catalog.title].join(' ');
   }
 
   async loadChildren(): Promise<CatalogModuleNode[]> {
@@ -77,12 +83,11 @@ class CatalogNode implements INode {
       this._children = catalogModules.map(
         (catalogModule) => new CatalogModuleNode(catalogModule)
       );
-      this.isLoaded = true;
-
       // set checked state of children
       this._children.forEach((child) => {
         child.checked = this._checked;
       });
+      this.isLoaded = true;
     }
     return this._children;
   }
@@ -255,6 +260,7 @@ export class RequirementImportDialogComponent implements OnInit {
     protected _dialogRef: MatDialogRef<RequirementImportDialogComponent>,
     protected _catalogService: CatalogService,
     protected _catalogModuleService: CatalogModuleService,
+    protected _requirementService: RequirementService,
     @Inject(MAT_DIALOG_DATA) protected _project: Project
   ) {
     this.treeControl = new FlatTreeControl<INode>(
@@ -276,7 +282,28 @@ export class RequirementImportDialogComponent implements OnInit {
     );
   }
 
-  onImport(): void {}
+  async onImport(): Promise<void> {
+    // load all catalog modules of checked catalog nodes
+    const catalogModulesNodes = (
+      await Promise.all(
+        this.dataSource.data
+          .filter((node) => node instanceof CatalogNode)
+          .filter((node) => node.checked || (node as CatalogNode).indeterminate)
+          .map((node) => (node as CatalogNode).loadChildren())
+      )
+    ).flat();
+
+    // flatten the array and collect all catalog module ids
+    const catalogModuleIds = catalogModulesNodes
+      .filter((node) => node.checked)
+      .map((node) => (node as CatalogModuleNode).catalogModule.id);
+
+    const requirements = await this._requirementService.importRequirements(
+      this._project.id,
+      catalogModuleIds
+    );
+    this._dialogRef.close(requirements);
+  }
 
   onCancel(): void {
     this._dialogRef.close();

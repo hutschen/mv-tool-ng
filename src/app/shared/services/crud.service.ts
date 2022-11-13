@@ -82,4 +82,13 @@ export class CRUDService<InputType, OutputType> {
     );
     return firstValueFrom(request$);
   }
+
+  async import(relativeUrl: string, itemIds: number[]): Promise<OutputType[]> {
+    const request$ = this._httpClient.post<OutputType[]>(
+      this.toAbsoluteUrl(relativeUrl),
+      itemIds,
+      this._httpOptions
+    );
+    return firstValueFrom(request$);
+  }
 }
