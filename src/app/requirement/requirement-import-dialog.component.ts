@@ -36,6 +36,7 @@ interface INode {
   expandable: boolean;
   isLoaded: boolean;
   toggleChecked(): void;
+  get checked(): boolean;
 }
 
 class CatalogModuleNode implements INode {
@@ -185,6 +186,10 @@ class CatalogDataSource implements DataSource<INode> {
       this.dataChange.next(this.data);
     }
   }
+
+  get selection(): INode[] {
+    return this.data.filter((node) => node.checked);
+  }
 }
 
 // Implemented according to examples from https://material.angular.io/components/tree/examples
@@ -230,7 +235,12 @@ class CatalogDataSource implements DataSource<INode> {
     </div>
     <div mat-dialog-actions align="end">
       <button mat-button (click)="onCancel()">Cancel</button>
-      <button mat-raised-button color="accent" (click)="onImport()">
+      <button
+        mat-raised-button
+        color="accent"
+        (click)="onImport()"
+        [disabled]="importDisabled"
+      >
         Import
       </button>
     </div>
@@ -270,6 +280,10 @@ export class RequirementImportDialogComponent implements OnInit {
 
   onCancel(): void {
     this._dialogRef.close();
+  }
+
+  get importDisabled(): boolean {
+    return this.dataSource.selection.length === 0;
   }
 
   getLevel = (node: INode) => node.level;
