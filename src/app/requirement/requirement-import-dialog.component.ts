@@ -17,6 +17,7 @@ import {
   CollectionViewer,
   DataSource,
   SelectionChange,
+  SelectionModel,
 } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { Component, Inject, OnInit } from '@angular/core';
@@ -34,6 +35,7 @@ interface INode {
   level: number;
   expandable: boolean;
   isLoaded: boolean;
+  toggleChecked(): void;
 }
 
 class CatalogModuleNode implements INode {
@@ -41,9 +43,14 @@ class CatalogModuleNode implements INode {
   level = 1;
   expandable = false;
   isLoaded = true;
+  checked = false;
 
   constructor(public catalogModule: CatalogModule) {
     this.name = catalogModule.title;
+  }
+
+  toggleChecked(): void {
+    this.checked = !this.checked;
   }
 }
 
@@ -52,6 +59,8 @@ class CatalogNode implements INode {
   level = 0;
   expandable = true;
   isLoaded = false;
+  protected _children: CatalogModuleNode[] = [];
+  protected _checked = false;
 
   constructor(
     public catalog: Catalog,
@@ -61,14 +70,52 @@ class CatalogNode implements INode {
   }
 
   async loadChildren(): Promise<CatalogModuleNode[]> {
-    this.isLoaded = true;
-    const catalogModules = await this._catalogModuleService.listCatalogModules(
-      this.catalog.id
-    );
-    this.isLoaded = false;
-    return catalogModules.map(
-      (catalogModule) => new CatalogModuleNode(catalogModule)
-    );
+    if (!this.isLoaded) {
+      const catalogModules =
+        await this._catalogModuleService.listCatalogModules(this.catalog.id);
+      this._children = catalogModules.map(
+        (catalogModule) => new CatalogModuleNode(catalogModule)
+      );
+      this.isLoaded = true;
+
+      // set checked state of children
+      this._children.forEach((child) => {
+        child.checked = this._checked;
+      });
+    }
+    return this._children;
+  }
+
+  get checked(): boolean {
+    if (this._children.length === 0) {
+      return this._checked;
+    } else {
+      return this._children.every((child) => child.checked);
+    }
+  }
+
+  get unchecked(): boolean {
+    if (this._children.length === 0) {
+      return !this._checked;
+    } else {
+      return this._children.every((child) => !child.checked);
+    }
+  }
+
+  get indeterminate(): boolean {
+    return !this.checked && !this.unchecked;
+  }
+
+  toggleChecked(): void {
+    if (this.indeterminate) {
+      this._checked = true;
+    } else if (this.checked) {
+      this._checked = false;
+    } else {
+      // this.unchecked
+      this._checked = true;
+    }
+    this._children.forEach((child) => (child.checked = this._checked));
   }
 }
 
@@ -147,10 +194,16 @@ class CatalogDataSource implements DataSource<INode> {
     <div mat-dialog-title><h1>Import requirements from catalogs</h1></div>
     <div mat-dialog-content>
       <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+        <!-- leaf node -->
         <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
           <button mat-icon-button disabled></button>
-          {{ node.name }}
+          <mat-checkbox
+            [checked]="node.checked"
+            (change)="toggleChecked(node)"
+            >{{ node.name }}</mat-checkbox
+          >
         </mat-tree-node>
+        <!-- parent node -->
         <mat-tree-node
           *matTreeNodeDef="let node; when: hasChild"
           matTreeNodePadding
@@ -166,12 +219,12 @@ class CatalogDataSource implements DataSource<INode> {
               }}
             </mat-icon>
           </button>
-          {{ node.name }}
-          <mat-progress-bar
-            *ngIf="node.isLoaded"
-            mode="indeterminate"
-            class="progress-bar"
-          ></mat-progress-bar>
+          <mat-checkbox
+            [checked]="node.checked"
+            [indeterminate]="node.indeterminate"
+            (change)="toggleChecked(node)"
+            >{{ node.name }}</mat-checkbox
+          >
         </mat-tree-node>
       </mat-tree>
     </div>
@@ -224,4 +277,8 @@ export class RequirementImportDialogComponent implements OnInit {
   isExpandable = (node: INode) => node.expandable;
 
   hasChild = (_: number, _nodeData: INode) => _nodeData.expandable;
+
+  toggleChecked(node: INode): void {
+    node.toggleChecked();
+  }
 }
