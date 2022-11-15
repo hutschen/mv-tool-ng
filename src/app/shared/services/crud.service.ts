@@ -33,12 +33,10 @@ export class CRUDService<InputType, OutputType> {
   }
 
   protected get _httpOptions(): object {
-    const credentials = this._auth.credentials;
-    const credentials_str = `${credentials.username}:${credentials.password}`;
     return {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
-        Authorization: 'Basic ' + btoa(credentials_str),
+        Authorization: `Bearer ${this._auth.accessToken.access_token}`,
       }),
     };
   }
@@ -80,6 +78,15 @@ export class CRUDService<InputType, OutputType> {
   async delete(relativeUrl: string): Promise<null> {
     const request$ = this._httpClient.delete<null>(
       this.toAbsoluteUrl(relativeUrl),
+      this._httpOptions
+    );
+    return firstValueFrom(request$);
+  }
+
+  async import(relativeUrl: string, itemIds: number[]): Promise<OutputType[]> {
+    const request$ = this._httpClient.post<OutputType[]>(
+      this.toAbsoluteUrl(relativeUrl),
+      itemIds,
       this._httpOptions
     );
     return firstValueFrom(request$);

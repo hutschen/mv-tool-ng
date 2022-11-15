@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { HttpClient } from '@angular/common/http';
 import {
   ActivatedRouteSnapshot,
   Router,
@@ -20,22 +21,22 @@ import {
 } from '@angular/router';
 
 import { AuthGuard } from './auth.guard';
-import { AuthService, ICredentials } from './shared/services/auth.service';
+import { AuthService, IAccessToken } from './shared/services/auth.service';
 
 describe('AuthGuard', () => {
   let sut: AuthGuard;
   let auth: AuthService;
   let routerMock: jasmine.SpyObj<Router>;
-  let credentials: ICredentials;
+  let accessToken: IAccessToken;
   let routeMock: ActivatedRouteSnapshot;
   let stateMock: RouterStateSnapshot;
 
   beforeEach(() => {
-    auth = new AuthService();
+    auth = new AuthService({} as HttpClient);
     routerMock = jasmine.createSpyObj('Router', ['navigate']);
     sut = new AuthGuard(auth, routerMock);
 
-    credentials = { username: 'test', password: 'test' };
+    accessToken = { access_token: 'token', token_type: 'bearer' };
     routeMock = {} as ActivatedRouteSnapshot;
     stateMock = { url: 'test' } as RouterStateSnapshot;
 
@@ -50,7 +51,7 @@ describe('AuthGuard', () => {
   });
 
   it('should recognize logged in user', () => {
-    auth.logIn(credentials);
+    auth.setAccessToken(accessToken);
     const result = sut.canActivate(routeMock, stateMock);
     expect(result).toEqual(auth.isLoggedIn);
     expect(result).toBeTrue();

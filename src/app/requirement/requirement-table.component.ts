@@ -15,7 +15,6 @@
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute } from '@angular/router';
 import {
   DownloadDialogComponent,
   IDownloadDialogData,
@@ -33,22 +32,23 @@ import {
   IRequirementDialogData,
   RequirementDialogComponent,
 } from './requirement-dialog.component';
+import { RequirementImportDialogComponent } from './requirement-import-dialog.component';
 
 @Component({
   selector: 'mvtool-requirement-table',
   templateUrl: './requirement-table.component.html',
   styleUrls: ['../shared/styles/mat-table.css'],
-  styles: ['.mat-column-gs_absicherung {text-align: center;}'],
+  styles: ['.mat-column-gsAbsicherung {text-align: center;}'],
 })
 export class RequirementTableComponent implements OnInit {
   columns: ITableColumn[] = [
     { name: 'reference', optional: true },
-    { name: 'gs_anforderung_reference', optional: true },
-    { name: 'gs_baustein', optional: true },
+    { name: 'gsAnforderungReference', optional: true },
+    { name: 'catalog_module', optional: true },
     { name: 'summary', optional: false },
     { name: 'description', optional: true },
-    { name: 'gs_absicherung', optional: true },
-    { name: 'gs_verantwortliche', optional: true },
+    { name: 'gsAbsicherung', optional: true },
+    { name: 'gsVerantwortliche', optional: true },
     { name: 'target_object', optional: true },
     { name: 'compliance_status', optional: false },
     { name: 'compliance_comment', optional: true },
@@ -62,7 +62,6 @@ export class RequirementTableComponent implements OnInit {
 
   constructor(
     protected _requirementService: RequirementService,
-    protected _route: ActivatedRoute,
     protected _dialog: MatDialog
   ) {}
 
@@ -71,24 +70,9 @@ export class RequirementTableComponent implements OnInit {
     this.dataLoaded = true;
   }
 
-  onCreateRequirement(): void {
-    const dialogRef = this._dialog.open(RequirementDialogComponent, {
-      width: '500px',
-      data: {
-        project: this.project,
-        requirement: null,
-      } as IRequirementDialogData,
-    });
-    dialogRef
-      .afterClosed()
-      .subscribe(async (requirement: Requirement | null) => {
-        if (requirement) {
-          this.onReloadRequirements();
-        }
-      });
-  }
-
-  onEditRequirement(requirement: Requirement): void {
+  protected _openRequirementDialog(
+    requirement: Requirement | null = null
+  ): void {
     const dialogRef = this._dialog.open(RequirementDialogComponent, {
       width: '500px',
       data: {
@@ -103,6 +87,14 @@ export class RequirementTableComponent implements OnInit {
           this.onReloadRequirements();
         }
       });
+  }
+
+  onCreateRequirement(): void {
+    this._openRequirementDialog();
+  }
+
+  onEditRequirement(requirement: Requirement): void {
+    this._openRequirementDialog(requirement);
   }
 
   onEditCompliance(requirement: Requirement): void {
@@ -121,7 +113,7 @@ export class RequirementTableComponent implements OnInit {
 
   async onDeleteRequirement(requirement: Requirement): Promise<void> {
     await this._requirementService.deleteRequirement(requirement.id);
-    this.onReloadRequirements();
+    await this.onReloadRequirements();
   }
 
   onExportRequirementsExcel() {
@@ -158,21 +150,16 @@ export class RequirementTableComponent implements OnInit {
     }
   }
 
-  onImportGSBaustein() {
-    if (this.project) {
-      const projectId = this.project.id;
-      const dialogRef = this._dialog.open(UploadDialogComponent, {
-        width: '500px',
-        data: (file: File) => {
-          return this._requirementService.uploadGSBaustein(projectId, file);
-        },
-      });
-      dialogRef.afterClosed().subscribe((uploadState: IUploadState | null) => {
-        if (uploadState && uploadState.state == 'done') {
-          this.onReloadRequirements();
-        }
-      });
-    }
+  onImportFromCatalog() {
+    const dialogRef = this._dialog.open(RequirementImportDialogComponent, {
+      width: '500px',
+      data: this.project,
+    });
+    dialogRef.afterClosed().subscribe(async (result?: any) => {
+      if (result) {
+        await this.onReloadRequirements();
+      }
+    });
   }
 
   async onReloadRequirements() {

@@ -99,7 +99,7 @@ export interface ITableColumn {
   `,
   styles: [
     '.clickable-row { cursor: pointer; }',
-    '.clickable-row:hover { background-color: #f5f5f5; }',
+    '.clickable-row:hover { background: rgba(0,0,0,0.04); }',
   ],
 })
 export class TableComponent<T> implements AfterContentInit, AfterViewInit {
@@ -150,15 +150,21 @@ export class TableComponent<T> implements AfterContentInit, AfterViewInit {
   }
 
   get displayedColumns(): string[] {
+    // TODO: this should only be recomputed when data changes
     let displayFlags = new Map<string, boolean>();
     for (let column of this.columns) {
       displayFlags.set(column.name, !column.optional);
     }
 
     for (let row of this._dataSource.data) {
-      for (let [key, value] of Object.entries(row)) {
-        if (value !== null && displayFlags.has(key)) {
-          displayFlags.set(key, true);
+      for (let column of this.columns) {
+        // try to get value of property row.column.name
+        const key = column.name;
+        if (key in row) {
+          const value: any = row[key as keyof T];
+          if (value && displayFlags.has(key)) {
+            displayFlags.set(key, true);
+          }
         }
       }
     }

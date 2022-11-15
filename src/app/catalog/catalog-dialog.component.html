@@ -1,0 +1,47 @@
+<!--
+ Copyright (C) 2022 Helmar Hutschenreuter
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+ 
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<mvtool-create-edit-dialog
+  [createMode]="createMode"
+  objectName="Catalog"
+  (save)="onSave($event)"
+  (cancel)="onCancel()"
+>
+  <div fxLayout="column">
+    <!-- Reference input -->
+    <mat-form-field appearance="fill">
+      <mat-label>Catalog reference</mat-label>
+      <input name="reference" matInput [(ngModel)]="catalogInput.reference" />
+    </mat-form-field>
+
+    <!-- Title input -->
+    <mat-form-field appearance="fill">
+      <mat-label>Catalog title</mat-label>
+      <input name="title" matInput [(ngModel)]="catalogInput.title" required />
+    </mat-form-field>
+
+    <!-- Description input -->
+    <mat-form-field appearance="fill">
+      <mat-label>Catalog description</mat-label>
+      <textarea
+        name="description"
+        matInput
+        [(ngModel)]="catalogInput.description"
+      ></textarea>
+    </mat-form-field>
+  </div>
+</mvtool-create-edit-dialog>

@@ -26,12 +26,10 @@ import {
   Requirement,
 } from './requirement.service';
 import { AuthService } from './auth.service';
-import { DownloadService } from './download.service';
 
 describe('RequirementService', () => {
   let sut: RequirementService;
   let crud: CRUDService<IRequirementInput, IRequirement>;
-  let download: DownloadService;
   let httpMock: HttpTestingController;
   let inputMock: IRequirementInput;
   let outputMock: IRequirement;
@@ -40,28 +38,20 @@ describe('RequirementService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
     });
-    TestBed.inject(AuthService).logIn({ username: 'test', password: 'test' });
+    TestBed.inject(AuthService).setAccessToken({
+      access_token: 'token',
+      token_type: 'bearer',
+    });
     crud = TestBed.inject(CRUDService);
-    download = TestBed.inject(DownloadService);
     httpMock = TestBed.inject(HttpTestingController);
     sut = TestBed.inject(RequirementService);
 
     inputMock = {
-      reference: null,
       summary: 'A test requirement',
-      description: 'A test requirement description',
-      target_object: null,
-      compliance_status: null,
-      compliance_comment: null,
     };
     outputMock = {
       id: 1,
-      reference: inputMock.reference,
       summary: inputMock.summary,
-      description: inputMock.description,
-      target_object: inputMock.target_object,
-      compliance_status: inputMock.compliance_status,
-      compliance_comment: inputMock.compliance_comment,
       project: {
         id: 1,
         name: 'A test project',
@@ -70,11 +60,6 @@ describe('RequirementService', () => {
         jira_project: null,
         completion: 0,
       },
-      completion: 0,
-      gs_anforderung_reference: null,
-      gs_absicherung: null,
-      gs_verantwortliche: null,
-      gs_baustein: null,
     };
   });
 

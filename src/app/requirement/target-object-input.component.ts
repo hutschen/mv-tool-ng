@@ -43,9 +43,9 @@ import { RequirementService } from '../shared/services/requirement.service';
   styles: [],
 })
 export class TargetObjectInputComponent implements OnInit {
-  @Input() project: Project | null = null;
-  @Input() targetObject: string | null = null;
-  @Output() targetObjectChange = new EventEmitter<string | null>();
+  @Input() project?: Project;
+  @Input() targetObject?: string | null;
+  @Output() targetObjectChange = new EventEmitter<string | null | undefined>();
   targetObjects: string[] = [];
   filteredTargetObjects: string[] = [];
 
@@ -61,7 +61,7 @@ export class TargetObjectInputComponent implements OnInit {
           (r) => r.target_object // collect all target objects
         )
         .filter(
-          (to) => to !== null // remove nulls
+          (to) => to // remove undefined, null and empty strings
         )
         .filter(
           (to, index, self) => self.indexOf(to) === index // remove duplicates
@@ -69,12 +69,12 @@ export class TargetObjectInputComponent implements OnInit {
     }
   }
 
-  get filterValue(): string | null {
+  get filterValue(): string | null | undefined {
     return this.targetObject;
   }
 
-  set filterValue(value: string | null) {
-    if (value !== null) {
+  set filterValue(value: string | null | undefined) {
+    if (value) {
       this.filteredTargetObjects = this._filterTargetObjects(value);
     }
     this.targetObject = value;

@@ -25,6 +25,7 @@ import { DownloadDialogComponent } from './components/download-dialog.component'
 import { UploadDialogComponent } from './components/upload-dialog.component';
 import { DetailComponent } from './components/detail.component';
 import { ErrorDialogComponent } from './components/error-dialog.component';
+import { CreateEditDialogComponent } from './create-edit-dialog.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { ErrorDialogComponent } from './components/error-dialog.component';
     UploadDialogComponent,
     DetailComponent,
     ErrorDialogComponent,
+    CreateEditDialogComponent,
   ],
   imports: [CommonModule, MaterialModule],
   exports: [
@@ -46,6 +48,7 @@ import { ErrorDialogComponent } from './components/error-dialog.component';
     TableComponent,
     DetailComponent,
     ErrorDialogComponent,
+    CreateEditDialogComponent,
   ],
 })
 export class SharedModule {}

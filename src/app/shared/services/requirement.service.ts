@@ -15,54 +15,42 @@
 
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import {
+  CatalogRequirement,
+  ICatalogRequirement,
+} from './catalog-requirement.service';
 import { CRUDService } from './crud.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
 import { IUploadState, UploadService } from './upload.service';
 
 export interface IRequirementInput {
-  reference: string | null;
+  reference?: string | null;
   summary: string;
-  description: string | null;
-  target_object: string | null;
-  compliance_status: string | null;
-  compliance_comment: string | null;
-}
-
-export interface IGSBaustein {
-  id: number;
-  reference: string;
-  title: string;
+  description?: string | null;
+  target_object?: string | null;
+  compliance_status?: string | null;
+  compliance_comment?: string | null;
 }
 
 export interface IRequirement extends IRequirementInput {
   id: number;
   project: IProject;
-  completion: number | null;
-
-  // Special attributes for IT Grundschutz Kompendium
-  gs_anforderung_reference: string | null;
-  gs_absicherung: string | null;
-  gs_verantwortliche: string | null;
-  gs_baustein: IGSBaustein | null;
+  catalog_requirement?: ICatalogRequirement | null;
+  completion?: number | null;
 }
 
 export class Requirement implements IRequirement {
   id: number;
-  reference: string | null;
+  reference?: string | null;
   summary: string;
-  description: string | null;
-  target_object: string | null;
-  compliance_status: string | null;
-  compliance_comment: string | null;
+  description?: string | null;
+  target_object?: string | null;
+  compliance_status?: string | null;
+  compliance_comment?: string | null;
   project: Project;
-  completion: number | null;
-
-  // Special attributes for IT Grundschutz Kompendium
-  gs_anforderung_reference: string | null;
-  gs_absicherung: string | null;
-  gs_verantwortliche: string | null;
-  gs_baustein: IGSBaustein | null;
+  catalog_requirement?: CatalogRequirement | null;
+  completion?: number | null;
 
   constructor(requirement: IRequirement) {
     this.id = requirement.id;
@@ -73,13 +61,10 @@ export class Requirement implements IRequirement {
     this.compliance_status = requirement.compliance_status;
     this.compliance_comment = requirement.compliance_comment;
     this.project = new Project(requirement.project);
+    this.catalog_requirement = requirement.catalog_requirement
+      ? new CatalogRequirement(requirement.catalog_requirement)
+      : null;
     this.completion = requirement.completion;
-
-    // Special attributes for IT Grundschutz Kompendium
-    this.gs_anforderung_reference = requirement.gs_anforderung_reference;
-    this.gs_absicherung = requirement.gs_absicherung;
-    this.gs_verantwortliche = requirement.gs_verantwortliche;
-    this.gs_baustein = requirement.gs_baustein;
   }
 
   toRequirementInput(): IRequirementInput {
@@ -94,11 +79,23 @@ export class Requirement implements IRequirement {
   }
 
   get percentComplete(): number | null {
-    if (this.completion === null) {
+    if (this.completion === null || this.completion === undefined) {
       return null;
     } else {
       return Math.round(this.completion * 100);
     }
+  }
+
+  get gsAnforderungReference(): string | null {
+    return this.catalog_requirement?.gs_anforderung_reference || null;
+  }
+
+  get gsAbsicherung(): string | null {
+    return this.catalog_requirement?.gs_absicherung || null;
+  }
+
+  get gsVerantwortliche(): string | null {
+    return this.catalog_requirement?.gs_verantwortliche || null;
   }
 }
 
@@ -174,8 +171,12 @@ export class RequirementService {
     return this._upload.upload(url, file);
   }
 
-  uploadGSBaustein(projectId: number, file: File): Observable<IUploadState> {
-    const url = `${this.getRequirementsUrl(projectId)}/gs-baustein`;
-    return this._upload.upload(url, file);
+  async importRequirements(
+    projectId: number,
+    catalogModuleIds: number[]
+  ): Promise<Requirement[]> {
+    const url = `${this.getRequirementsUrl(projectId)}/import`;
+    const requirements = await this._crud.import(url, catalogModuleIds);
+    return requirements.map((requirement) => new Requirement(requirement));
   }
 }

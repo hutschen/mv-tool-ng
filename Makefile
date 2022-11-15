@@ -23,4 +23,5 @@ dependencies-install:
 	npm install
 
 dependencies-update:
-	npm update
+	npm outdated
+	npm update --save

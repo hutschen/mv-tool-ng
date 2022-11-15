@@ -22,7 +22,8 @@ import { ProjectDialogComponent } from './project-dialog.component';
 @Component({
   selector: 'mvtool-project-table',
   templateUrl: './project-table.component.html',
-  styles: ['.data-row:hover { cursor: pointer; background-color: #f5f5f5; }'],
+  styleUrls: ['../shared/styles/mat-table.css'],
+  styles: [],
 })
 export class ProjectTableComponent implements OnInit {
   columns: ITableColumn[] = [
@@ -46,18 +47,7 @@ export class ProjectTableComponent implements OnInit {
     this.dataLoaded = true;
   }
 
-  onCreateProject() {
-    const dialogRef = this._dialog.open(ProjectDialogComponent, {
-      width: '500px',
-    });
-    dialogRef.afterClosed().subscribe(async (project: Project | null) => {
-      if (project) {
-        this.onReloadProjects();
-      }
-    });
-  }
-
-  onEditProject(project: Project) {
+  protected _openProjectDialog(project: Project | null = null): void {
     const dialogRef = this._dialog.open(ProjectDialogComponent, {
       width: '500px',
       data: project,
@@ -69,9 +59,17 @@ export class ProjectTableComponent implements OnInit {
     });
   }
 
+  onCreateProject(): void {
+    this._openProjectDialog();
+  }
+
+  onEditProject(project: Project): void {
+    this._openProjectDialog(project);
+  }
+
   async onDeleteProject(project: Project) {
     await this._projectService.deleteProject(project.id);
-    this.onReloadProjects();
+    await this.onReloadProjects();
   }
 
   async onReloadProjects() {

@@ -67,8 +67,6 @@ export class UploadService {
   }
 
   upload(relativeUrl: string, file: File): Observable<IUploadState> {
-    const credentials = this._auth.credentials;
-    const credentials_str = `${credentials.username}:${credentials.password}`;
     const initialState: IUploadState = {
       state: 'pending',
       progress: 0,
@@ -79,7 +77,7 @@ export class UploadService {
     return this._httpClient
       .post(this.toAbsoluteUrl(relativeUrl), formData, {
         headers: new HttpHeaders({
-          Authorization: 'Basic ' + btoa(credentials_str),
+          Authorization: `Bearer ${this._auth.accessToken.access_token}`,
         }),
         observe: 'events',
         reportProgress: true,

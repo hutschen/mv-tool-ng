@@ -58,36 +58,27 @@ export class MeasureTableComponent implements OnInit {
     this.dataLoaded = true;
   }
 
-  onCreateMeasure(): void {
+  protected _openMeasureDialog(measure: Measure | null = null): void {
     let dialogRef = this._dialog.open(MeasureDialogComponent, {
       width: '500px',
       data: {
         requirement: this.requirement,
-        measure: null,
+        measure: measure,
       } as IMeasureDialogData,
     });
-    dialogRef.afterClosed().subscribe(async (measureInput) => {
-      if (measureInput && this.requirement) {
-        await this._measureService.createMeasure(
-          this.requirement.id,
-          measureInput
-        );
-        await this.onReloadMeasures();
+    dialogRef.afterClosed().subscribe((measure: Measure | null) => {
+      if (measure) {
+        this.onReloadMeasures();
       }
     });
   }
 
+  onCreateMeasure(): void {
+    this._openMeasureDialog();
+  }
+
   onEditMeasure(measure: Measure): void {
-    let dialogRef = this._dialog.open(MeasureDialogComponent, {
-      width: '500px',
-      data: { requirement: this.requirement, measure } as IMeasureDialogData,
-    });
-    dialogRef.afterClosed().subscribe(async (measureInput) => {
-      if (measureInput) {
-        await this._measureService.updateMeasure(measure.id, measureInput);
-        await this.onReloadMeasures();
-      }
-    });
+    this._openMeasureDialog(measure);
   }
 
   async onDeleteMeasure(measure: Measure): Promise<void> {

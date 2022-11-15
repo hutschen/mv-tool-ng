@@ -27,7 +27,6 @@ import {
 } from './measure.service';
 import { AuthService } from './auth.service';
 import { IJiraIssue } from './jira-issue.service';
-import { DownloadService } from './download.service';
 
 describe('Measure', () => {
   let sut: Measure;
@@ -44,12 +43,7 @@ describe('Measure', () => {
       document: null,
       requirement: {
         id: 1,
-        reference: null,
         summary: 'A test requirement',
-        description: 'A test requirement description',
-        target_object: null,
-        compliance_status: null,
-        compliance_comment: null,
         project: {
           id: 1,
           name: 'A test project',
@@ -58,11 +52,6 @@ describe('Measure', () => {
           jira_project: null,
           completion: 0,
         },
-        gs_anforderung_reference: null,
-        gs_absicherung: null,
-        gs_verantwortliche: null,
-        gs_baustein: null,
-        completion: 0,
       },
     });
     jiraIssueMock = {
@@ -114,7 +103,6 @@ describe('Measure', () => {
 describe('MeasureService', () => {
   let sut: MeasureService;
   let crud: CRUDService<IMeasureInput, IMeasure>;
-  let download: DownloadService;
   let httpMock: HttpTestingController;
   let inputMock: IMeasureInput;
   let outputMock: IMeasure;
@@ -123,9 +111,11 @@ describe('MeasureService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
     });
-    TestBed.inject(AuthService).logIn({ username: 'test', password: 'test' });
+    TestBed.inject(AuthService).setAccessToken({
+      access_token: 'token',
+      token_type: 'bearer',
+    });
     crud = TestBed.inject(CRUDService);
-    download = TestBed.inject(DownloadService);
     httpMock = TestBed.inject(HttpTestingController);
     sut = TestBed.inject(MeasureService);
 
@@ -146,12 +136,7 @@ describe('MeasureService', () => {
       document: null,
       requirement: {
         id: 1,
-        reference: null,
         summary: 'A test requirement',
-        description: 'A test requirement description',
-        target_object: null,
-        compliance_status: null,
-        compliance_comment: null,
         project: {
           id: 1,
           name: 'A test project',
@@ -160,11 +145,6 @@ describe('MeasureService', () => {
           jira_project: null,
           completion: 0,
         },
-        gs_anforderung_reference: null,
-        gs_absicherung: null,
-        gs_verantwortliche: null,
-        gs_baustein: null,
-        completion: 0,
       },
     };
   });

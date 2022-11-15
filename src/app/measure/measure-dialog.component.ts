@@ -16,7 +16,11 @@
 import { Component, Inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { IMeasureInput, Measure } from '../shared/services/measure.service';
+import {
+  IMeasureInput,
+  Measure,
+  MeasureService,
+} from '../shared/services/measure.service';
 import { Requirement } from '../shared/services/requirement.service';
 
 export interface IMeasureDialogData {
@@ -41,6 +45,7 @@ export class MeasureDialogComponent {
 
   constructor(
     protected _dialogRef: MatDialogRef<MeasureDialogComponent>,
+    protected _measureService: MeasureService,
     @Inject(MAT_DIALOG_DATA) protected _dialogData: IMeasureDialogData
   ) {
     this.requirement = this._dialogData.requirement;
@@ -53,9 +58,21 @@ export class MeasureDialogComponent {
     return this._dialogData.measure === null;
   }
 
-  onSave(form: NgForm): void {
+  async onSave(form: NgForm): Promise<void> {
     if (form.valid) {
-      this._dialogRef.close(this.measureInput);
+      let measure: Measure;
+      if (!this._dialogData.measure) {
+        measure = await this._measureService.createMeasure(
+          this.requirement.id,
+          this.measureInput
+        );
+      } else {
+        measure = await this._measureService.updateMeasure(
+          this._dialogData.measure.id,
+          this.measureInput
+        );
+      }
+      this._dialogRef.close(measure);
     }
   }
 

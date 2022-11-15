@@ -40,17 +40,17 @@ export class ComplianceDialogComponent {
   }
 
   get complianceCommentDisabled(): boolean {
-    return this.requirementInput.compliance_status === null;
+    return !this.requirementInput.compliance_status;
   }
 
-  set complianceStatus(value: string | null) {
+  set complianceStatus(value: string | null | undefined) {
     this.requirementInput.compliance_status = value;
     if (this.complianceCommentDisabled) {
       this.requirementInput.compliance_comment = null;
     }
   }
 
-  get complianceStatus(): string | null {
+  get complianceStatus(): string | null | undefined {
     return this.requirementInput.compliance_status;
   }
 
@@ -65,6 +65,6 @@ export class ComplianceDialogComponent {
   }
 
   onCancel(): void {
-    this._dialogRef.close(null);
+    this._dialogRef.close();
   }
 }

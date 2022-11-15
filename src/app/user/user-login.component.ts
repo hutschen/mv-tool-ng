@@ -16,7 +16,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AuthService } from '../shared/services/auth.service';
-import { UserService } from '../shared/services/user.service';
 
 @Component({
   selector: 'mvtool-user-login',
@@ -24,7 +23,7 @@ import { UserService } from '../shared/services/user.service';
   styles: [],
 })
 export class UserLoginComponent {
-  @Output() loggedIn = new EventEmitter<void>();
+  @Output() loggedIn: EventEmitter<void>;
   hidePassword: boolean = true;
   keepLoggedIn: boolean = false;
   credentials = {
@@ -32,7 +31,9 @@ export class UserLoginComponent {
     password: '',
   };
 
-  constructor(protected _auth: AuthService, protected _user: UserService) {}
+  constructor(protected _auth: AuthService) {
+    this.loggedIn = this._auth.loggedIn;
+  }
 
   onReset() {
     this.keepLoggedIn = false;
@@ -44,15 +45,12 @@ export class UserLoginComponent {
 
   async onSubmit(form: NgForm): Promise<void> {
     if (form.valid) {
-      this._auth.logIn(this.credentials, this.keepLoggedIn);
       try {
-        await this._user.getUser();
+        await this._auth.logIn(this.credentials, this.keepLoggedIn);
       } catch (error) {
-        this._auth.logOut();
         this.onReset();
         throw error;
       }
-      this.loggedIn.emit();
     }
   }
 }
