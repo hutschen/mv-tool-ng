@@ -20,7 +20,7 @@ dependencies-unlock:
 	mv npm-shrinkwrap.json package-lock.json
 
 dependencies-install:
-	npm install
+	npm clean-install
 
 dependencies-update:
 	npm outdated
