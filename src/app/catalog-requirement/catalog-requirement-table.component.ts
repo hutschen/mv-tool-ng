@@ -29,7 +29,7 @@ import {
 @Component({
   selector: 'mvtool-catalog-requirement-table',
   templateUrl: './catalog-requirement-table.component.html',
-  styleUrls: ['../shared/styles/mat-table.css'],
+  styleUrls: ['../shared/styles/mat-table.css', '../shared/styles/flex.css'],
   styles: ['.mat-column-gs_absicherung {text-align: center;}'],
 })
 export class CatalogRequirementTableComponent implements OnInit {

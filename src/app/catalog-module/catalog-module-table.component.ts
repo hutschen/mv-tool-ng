@@ -31,7 +31,7 @@ import {
 @Component({
   selector: 'mvtool-catalog-module-table',
   templateUrl: './catalog-module-table.component.html',
-  styleUrls: ['../shared/styles/mat-table.css'],
+  styleUrls: ['../shared/styles/mat-table.css', '../shared/styles/flex.css'],
   styles: [],
 })
 export class CatalogModuleTableComponent implements OnInit {
