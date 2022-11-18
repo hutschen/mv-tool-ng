@@ -32,6 +32,11 @@
   align-items: center;
 }
 
+.fx-end-center {
+  place-content: center flex-end;
+  align-items: center;
+}
+
 .fx-space-between-center {
   place-content: center space-between;
   align-items: center;
@@ -39,6 +44,10 @@
 
 .fx-gap-5 {
   gap: 5px;
+}
+
+.fx-gap-10 {
+  gap: 10px;
 }
 
 .fx-gap-15 {
