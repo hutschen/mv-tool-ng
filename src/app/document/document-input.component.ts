@@ -20,7 +20,7 @@ import { Project } from '../shared/services/project.service';
 @Component({
   selector: 'mvtool-document-input',
   template: `
-    <div fxLayout="column">
+    <div class="fx-column">
       <mat-form-field appearance="fill">
         <mat-label>Select document</mat-label>
         <mat-select name="document" [(ngModel)]="documentId_">

@@ -42,6 +42,11 @@
   align-items: center;
 }
 
+.fx-stretch {
+  place-content: stretch flex-start;
+  align-items: stretch;
+}
+
 .fx-gap-5 {
   gap: 5px;
 }

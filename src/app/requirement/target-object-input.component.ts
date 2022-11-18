@@ -20,7 +20,7 @@ import { RequirementService } from '../shared/services/requirement.service';
 @Component({
   selector: 'mvtool-target-object-input',
   template: `
-    <div fxLayout="column">
+    <div class="fx-column">
       <mat-form-field appearance="fill">
         <mat-label>Target object</mat-label>
         <input
@@ -40,6 +40,7 @@ import { RequirementService } from '../shared/services/requirement.service';
       </mat-form-field>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css'],
   styles: [],
 })
 export class TargetObjectInputComponent implements OnInit {
