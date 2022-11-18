@@ -21,20 +21,20 @@ import { Project, ProjectService } from '../shared/services/project.service';
 @Component({
   selector: 'mvtool-document-view',
   template: `
-    <div *ngIf="project" fxLayout="column">
+    <div *ngIf="project" class="fx-column">
       <mvtool-project-card [project]="project"></mvtool-project-card>
       <mat-divider></mat-divider>
       <mvtool-document-table [project]="project"> </mvtool-document-table>
     </div>
     <div
       *ngIf="!project"
-      fxLayout="column"
+      class="fx-column fx-center-center"
       style="height: 50%"
-      fxLayoutAlign="center center"
     >
       <mat-spinner></mat-spinner>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css'],
   styles: [],
 })
 export class DocumentViewComponent implements OnInit {

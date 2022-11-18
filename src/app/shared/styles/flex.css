@@ -27,6 +27,11 @@
   display: flex;
 }
 
+.fx-center-center {
+  place-content: center;
+  align-items: center;
+}
+
 .fx-space-between-center {
   place-content: center space-between;
   align-items: center;

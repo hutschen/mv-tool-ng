@@ -24,7 +24,7 @@ import {
 @Component({
   selector: 'mvtool-catalog-requirement-view',
   template: `
-    <div *ngIf="catalogModule" fxLayout="column">
+    <div *ngIf="catalogModule" class="fx-column">
       <mvtool-catalog-module-details
         [catalogModule]="catalogModule"
       ></mvtool-catalog-module-details>
@@ -34,6 +34,7 @@ import {
       ></mvtool-catalog-requirement-table>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css'],
   styles: [],
 })
 export class CatalogRequirementViewComponent implements OnInit {

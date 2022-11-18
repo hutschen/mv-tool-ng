@@ -22,7 +22,7 @@ import { Catalog, CatalogService } from '../shared/services/catalog.service';
 @Component({
   selector: 'mvtool-catalog-module-view',
   template: `
-    <div *ngIf="catalog" fxLayout="column">
+    <div *ngIf="catalog" class="fx-column">
       <mvtool-catalog-details [catalog]="catalog"></mvtool-catalog-details>
       <mat-divider></mat-divider>
       <mvtool-catalog-module-table
@@ -31,6 +31,7 @@ import { Catalog, CatalogService } from '../shared/services/catalog.service';
       ></mvtool-catalog-module-table>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css'],
   styles: [],
 })
 export class CatalogModuleViewComponent implements OnInit {

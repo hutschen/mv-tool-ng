@@ -24,7 +24,7 @@ import {
 @Component({
   selector: 'mvtool-measure-view',
   template: `
-    <div *ngIf="requirement" fxLayout="column">
+    <div *ngIf="requirement" class="fx-column">
       <mvtool-requirement-card
         [requirement]="requirement"
       ></mvtool-requirement-card>
@@ -33,13 +33,13 @@ import {
     </div>
     <div
       *ngIf="!requirement"
-      fxLayout="column"
+      class="fx-column fx-center-center"
       style="height: 50%"
-      fxLayoutAlign="center center"
     >
       <mat-spinner></mat-spinner>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css'],
   styles: [],
 })
 export class MeasureViewComponent implements OnInit {
