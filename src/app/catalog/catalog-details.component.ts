@@ -21,15 +21,11 @@ import { CatalogDialogComponent } from './catalog-dialog.component';
 @Component({
   selector: 'mvtool-catalog-details',
   template: `
-    <div class="details" *ngIf="catalog" fxLayout="column" fxLayoutGap="15px">
+    <div class="details fx-column fx-gap-15" *ngIf="catalog">
       <!-- Title -->
-      <div
-        fxLayout="row"
-        fxLayoutAlign="space-between center"
-        fxLayoutGap="5px"
-      >
+      <div class="fx-row fx-space-between-center fx-gap-5">
         <h1 class="truncate">{{ catalog.title }}</h1>
-        <div fxLayout="row" fxLayoutGap="5px">
+        <div class="fx-row fx-gap-5">
           <button mat-stroked-button (click)="onEditCatalog()">
             <mat-icon>edit_note</mat-icon>
             Edit Catalog
@@ -38,6 +34,7 @@ import { CatalogDialogComponent } from './catalog-dialog.component';
       </div>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css'],
   styles: ['h1 { margin: 0; }', '.details { margin: 20px; }'],
 })
 export class CatalogDetailsComponent {
