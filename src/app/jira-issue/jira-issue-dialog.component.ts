@@ -32,6 +32,7 @@ export interface IJiraIssueDialogData {
 @Component({
   selector: 'mvtool-jira-issue-dialog',
   templateUrl: './jira-issue-dialog.component.html',
+  styleUrls: ['../shared/styles/flex.css'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class JiraIssueDialogComponent implements OnInit {

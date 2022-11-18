@@ -31,6 +31,7 @@ export interface IMeasureDialogData {
 @Component({
   selector: 'mvtool-measure-dialog',
   templateUrl: './measure-dialog.component.html',
+  styleUrls: ['../shared/styles/flex.css'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class MeasureDialogComponent {

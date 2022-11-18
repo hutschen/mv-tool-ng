@@ -20,3 +20,33 @@
   flex-direction: row;
   box-sizing: border-box;
 }
+
+.fx-column {
+  flex-direction: column;
+  box-sizing: border-box;
+  display: flex;
+}
+
+.fx-space-between-center {
+  place-content: center space-between;
+  align-items: center;
+}
+
+.fx-gap-5 {
+  gap: 5px;
+}
+
+.fx-gap-15 {
+  gap: 15px;
+}
+
+.fx-grow {
+  flex: 1 1 100%;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.fx-no-grow {
+  flex: 0 1 auto;
+  box-sizing: border-box;
+}

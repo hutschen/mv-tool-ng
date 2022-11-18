@@ -23,16 +23,12 @@ import { IUploadState } from '../services/upload.service';
   template: `
     <div mat-dialog-content>
       <!-- File input -->
-      <div
-        *ngIf="!uploadState"
-        fxLayout="row"
-        fxLayoutAlign="space-between center"
-      >
-        <mat-form-field appearance="fill" fxFlex="grow">
+      <div *ngIf="!uploadState" class="fx-row fx-space-beetween-center">
+        <mat-form-field appearance="fill" class="fx-grow">
           <mat-label>Filename</mat-label>
           <input matInput readonly="true" [value]="file ? file.name : ''" />
         </mat-form-field>
-        <div fxFlex="nogrow">
+        <div class="fx-no-grow">
           <button mat-button (click)="fileInput.click()">
             <mat-icon>attach_file</mat-icon>
             Choose file
@@ -76,6 +72,7 @@ import { IUploadState } from '../services/upload.service';
       </button>
     </div>
   `,
+  styleUrls: ['../styles/flex.css'],
   styles: [],
 })
 export class UploadDialogComponent {

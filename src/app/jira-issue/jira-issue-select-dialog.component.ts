@@ -25,7 +25,7 @@ export interface IJiraIssueSelectDialogData {
         id="jiraIssueSelectForm"
         #jiraIssueSelectForm="ngForm"
         (submit)="onSubmit(jiraIssueSelectForm)"
-        fxLayout="column"
+        class="fx-column"
       >
         <mat-form-field appearance="fill">
           <mat-label>Issue</mat-label>
@@ -73,6 +73,7 @@ export interface IJiraIssueSelectDialogData {
       </button>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css'],
   styles: [],
 })
 export class JiraIssueSelectDialogComponent implements OnInit {
