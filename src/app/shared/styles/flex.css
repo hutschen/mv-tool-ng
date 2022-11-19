@@ -21,6 +21,12 @@
   box-sizing: border-box;
 }
 
+.fx-row-wrap {
+  flex-flow: row wrap;
+  box-sizing: border-box;
+  display: flex;
+}
+
 .fx-column {
   flex-direction: column;
   box-sizing: border-box;
