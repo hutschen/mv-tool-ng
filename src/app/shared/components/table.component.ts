@@ -42,7 +42,7 @@ export interface ITableColumn {
 @Component({
   selector: 'mvtool-table',
   template: `
-    <div fxLayout="column" class="mat-elevation-z3">
+    <div class="mat-elevation-z3 fx-column">
       <table mat-table [dataSource]="_dataSource">
         <ng-content></ng-content>
         <tr
@@ -64,11 +64,7 @@ export interface ITableColumn {
           </td>
           <!-- Shown when the table is empty -->
           <td *ngIf="!filterValue" class="mat-cell" colspan="100">
-            <div
-              *ngIf="dataLoaded"
-              fxLayout="row"
-              fxLayoutAlign="space-between center"
-            >
+            <div *ngIf="dataLoaded" class="fx-row fx-space-between-center">
               <div>{{ noContentText }}</div>
               <button
                 *ngIf="create.observed"
@@ -80,7 +76,7 @@ export interface ITableColumn {
                 {{ createLabel }}
               </button>
             </div>
-            <div *ngIf="!dataLoaded" fxLayout="row" fxLayoutGap="10px">
+            <div *ngIf="!dataLoaded" class="fx-row fx-gap-10">
               <mat-spinner diameter="20"></mat-spinner>
               <div>{{ loadingText }}</div>
             </div>
@@ -97,6 +93,7 @@ export interface ITableColumn {
       </mat-paginator>
     </div>
   `,
+  styleUrls: ['../styles/flex.css'],
   styles: [
     '.clickable-row { cursor: pointer; }',
     '.clickable-row:hover { background: rgba(0,0,0,0.04); }',

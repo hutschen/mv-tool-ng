@@ -42,6 +42,11 @@
   align-items: center;
 }
 
+.fx-start-center {
+  place-content: center flex-start;
+  align-items: center;
+}
+
 .fx-stretch {
   place-content: stretch flex-start;
   align-items: stretch;
@@ -68,4 +73,9 @@
 .fx-no-grow {
   flex: 0 1 auto;
   box-sizing: border-box;
+}
+
+.fx-flex-30 {
+  flex: 1 1 100%;
+  max-width: 30%;
 }

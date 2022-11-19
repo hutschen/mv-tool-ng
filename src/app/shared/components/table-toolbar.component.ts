@@ -18,8 +18,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 @Component({
   selector: 'mvtool-table-toolbar',
   template: `
-    <div fxLayout="row" fxLayoutAlign="space-between center">
-      <div fxLayout="row" fxLayoutAlign="start center">
+    <div class="fx-row fx-space-between-center">
+      <div class="fx-row fx-start-center">
         <!-- Button to refresh table -->
         <button *ngIf="refresh.observed" mat-button (click)="refresh.emit()">
           <mat-icon>refresh</mat-icon>
@@ -48,7 +48,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
       </div>
 
       <!-- Filter -->
-      <div *ngIf="filter.observed || showFilter" fxFlex="30" fxLayout="column">
+      <div *ngIf="filter.observed || showFilter" class="fx-column fx-flex-30">
         <mat-form-field appearance="fill">
           <mat-label>{{ filterLabel }}</mat-label>
           <mat-icon matPrefix>search</mat-icon>
@@ -57,6 +57,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
       </div>
     </div>
   `,
+  styleUrls: ['../styles/flex.css'],
   styles: [],
 })
 export class TableToolbarComponent {
