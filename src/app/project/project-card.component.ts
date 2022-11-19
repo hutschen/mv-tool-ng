@@ -21,20 +21,11 @@ import { ProjectDialogComponent } from './project-dialog.component';
 @Component({
   selector: 'mvtool-project-card',
   template: `
-    <div
-      class="project-card"
-      *ngIf="project"
-      fxLayout="column"
-      fxLayoutGap="15px"
-    >
+    <div class="project-card fx-column fx-gap-15" *ngIf="project">
       <!-- Title -->
-      <div
-        fxLayout="row"
-        fxLayoutAlign="space-between center"
-        fxLayoutGap="5px"
-      >
+      <div class="fx-row fx-space-between-center fx-gap-5">
         <h1 class="truncate">{{ project.name }}</h1>
-        <div fxLayout="row" fxLayoutGap="5px">
+        <div class="fx-row fx-gap-5">
           <mvtool-jira-project-label
             *ngIf="project.jira_project"
             [project]="project"
@@ -47,6 +38,7 @@ import { ProjectDialogComponent } from './project-dialog.component';
       </div>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css'],
   styles: ['h1 { margin: 0; }', '.project-card { margin: 20px; }'],
 })
 export class ProjectCardComponent {

@@ -25,6 +25,7 @@ import {
 @Component({
   selector: 'mvtool-project-dialog',
   templateUrl: './project-dialog.component.html',
+  styleUrls: ['../shared/styles/flex.css'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class ProjectDialogComponent {

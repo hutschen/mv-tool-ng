@@ -19,12 +19,13 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'mvtool-login-view',
   template: `
-    <div class="content" fxLayout="column" fxLayoutAlign="center center">
+    <div class="content fx-column fx-center-center">
       <mat-card class="user-login-card">
         <mvtool-user-login (loggedIn)="onLoggedIn()"></mvtool-user-login>
       </mat-card>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css'],
   styles: ['.user-login-card { width: 500px; margin: 20px; }'],
 })
 export class LoginViewComponent implements OnInit {

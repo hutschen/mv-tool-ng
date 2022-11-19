@@ -19,7 +19,7 @@
   #form="ngForm"
   (reset)="onReset()"
   (submit)="onSubmit(form)"
-  fxLayout="column"
+  class="fx-column"
 >
   <!-- Username input -->
   <mat-form-field appearance="fill">
@@ -64,7 +64,7 @@
   >
 
   <!-- Buttons -->
-  <div fxLayout="row" fxLayoutAlign="end center" fxLayoutGap="10px">
+  <div class="fx-row fx-end-center fx-gap-10">
     <button mat-button disabled="{{ form.pristine }}" type="reset">
       Reset
     </button>

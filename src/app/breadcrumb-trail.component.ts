@@ -31,7 +31,7 @@ interface IBreadcrumb {
   selector: 'mvtool-breadcrumb-trail',
   template: `
     <div *ngIf="breadcrumbs.length">
-      <div fxLayout="row">
+      <div class="fx-row">
         <div
           class="breadcrumb-trail"
           *ngFor="let breadcrumb of breadcrumbs; let i = index"
@@ -62,6 +62,7 @@ interface IBreadcrumb {
       <mat-divider></mat-divider>
     </div>
   `,
+  styleUrls: ['./shared/styles/flex.css'],
   styles: ['.breadcrumb-trail { padding: 5px 2px; }'],
 })
 export class BreadcrumbTrailComponent {

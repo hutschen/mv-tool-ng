@@ -32,7 +32,7 @@ import {
 @Component({
   selector: 'mvtool-measure-table',
   templateUrl: './measure-table.component.html',
-  styleUrls: ['../shared/styles/mat-table.css'],
+  styleUrls: ['../shared/styles/mat-table.css', '../shared/styles/flex.css'],
   styles: [],
 })
 export class MeasureTableComponent implements OnInit {

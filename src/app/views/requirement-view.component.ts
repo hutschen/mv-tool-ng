@@ -22,7 +22,7 @@ import { Requirement } from '../shared/services/requirement.service';
 @Component({
   selector: 'mvtool-requirement-view',
   template: `
-    <div *ngIf="project" fxLayout="column">
+    <div *ngIf="project" class="fx-column">
       <mvtool-project-card [project]="project"></mvtool-project-card>
       <mat-divider></mat-divider>
       <mvtool-requirement-table
@@ -33,13 +33,13 @@ import { Requirement } from '../shared/services/requirement.service';
     </div>
     <div
       *ngIf="!project"
-      fxLayout="column"
+      class="fx-column fx-center-center"
       style="height: 50%"
-      fxLayoutAlign="center center"
     >
       <mat-spinner></mat-spinner>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css'],
   styles: [],
 })
 export class RequirementViewComponent implements OnInit {

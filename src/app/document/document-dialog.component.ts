@@ -31,6 +31,7 @@ export interface IDocumentDialogData {
 @Component({
   selector: 'mvtool-document-dialog',
   templateUrl: './document-dialog.component.html',
+  styleUrls: ['../shared/styles/flex.css'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class DocumentDialogComponent {

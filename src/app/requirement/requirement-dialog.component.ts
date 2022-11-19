@@ -31,6 +31,7 @@ export interface IRequirementDialogData {
 @Component({
   selector: 'mvtool-requirement-dialog',
   templateUrl: './requirement-dialog.component.html',
+  styleUrls: ['../shared/styles/flex.css'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class RequirementDialogComponent {

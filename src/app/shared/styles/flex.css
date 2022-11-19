@@ -1,0 +1,87 @@
+/**
+ * Copyright (C) 2022 Helmar Hutschenreuter
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.fx-row {
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+}
+
+.fx-row-wrap {
+  flex-flow: row wrap;
+  box-sizing: border-box;
+  display: flex;
+}
+
+.fx-column {
+  flex-direction: column;
+  box-sizing: border-box;
+  display: flex;
+}
+
+.fx-center-center {
+  place-content: center;
+  align-items: center;
+}
+
+.fx-end-center {
+  place-content: center flex-end;
+  align-items: center;
+}
+
+.fx-space-between-center {
+  place-content: center space-between;
+  align-items: center;
+}
+
+.fx-start-center {
+  place-content: center flex-start;
+  align-items: center;
+}
+
+.fx-stretch {
+  place-content: stretch flex-start;
+  align-items: stretch;
+}
+
+.fx-gap-5 {
+  gap: 5px;
+}
+
+.fx-gap-10 {
+  gap: 10px;
+}
+
+.fx-gap-15 {
+  gap: 15px;
+}
+
+.fx-grow {
+  flex: 1 1 100%;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.fx-no-grow {
+  flex: 0 1 auto;
+  box-sizing: border-box;
+}
+
+.fx-flex-30 {
+  flex: 1 1 100%;
+  max-width: 30%;
+}
