@@ -16,7 +16,6 @@
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -61,7 +60,6 @@ import { MatTreeModule } from '@angular/material/tree';
   exports: [
     FormsModule,
     BrowserAnimationsModule,
-    FlexLayoutModule,
 
     MatAutocompleteModule,
     MatBadgeModule,
