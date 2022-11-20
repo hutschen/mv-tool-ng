@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
 import {
   CatalogRequirement,
   ICatalogRequirement,
@@ -119,43 +119,42 @@ export class RequirementService {
   }
 
   async listRequirements(projectId: number): Promise<Requirement[]> {
-    const requirements = await this._crud.list_legacy(
-      this.getRequirementsUrl(projectId)
-    );
-    return requirements.map((requirement) => new Requirement(requirement));
+    const requirements$ = this._crud
+      .list(this.getRequirementsUrl(projectId))
+      .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
+    return firstValueFrom(requirements$);
   }
 
   async createRequirement(
     projectId: number,
     requirementInput: IRequirementInput
   ): Promise<Requirement> {
-    const requirement = await this._crud.create_legacy(
-      this.getRequirementsUrl(projectId),
-      requirementInput
-    );
-    return new Requirement(requirement);
+    const requirement$ = this._crud
+      .create(this.getRequirementsUrl(projectId), requirementInput)
+      .pipe(map((requirement) => new Requirement(requirement)));
+    return firstValueFrom(requirement$);
   }
 
   async getRequirement(requirementId: number): Promise<Requirement> {
-    const requirement = await this._crud.read_legacy(
-      this.getRequirementUrl(requirementId)
-    );
-    return new Requirement(requirement);
+    const requirements$ = this._crud
+      .read(this.getRequirementUrl(requirementId))
+      .pipe(map((requirement) => new Requirement(requirement)));
+    return firstValueFrom(requirements$);
   }
 
   async updateRequirement(
     requirementId: number,
     requirementInput: IRequirementInput
   ): Promise<Requirement> {
-    const requirement = await this._crud.update_legacy(
-      this.getRequirementUrl(requirementId),
-      requirementInput
-    );
-    return new Requirement(requirement);
+    const requirement$ = this._crud
+      .update(this.getRequirementUrl(requirementId), requirementInput)
+      .pipe(map((requirement) => new Requirement(requirement)));
+    return firstValueFrom(requirement$);
   }
 
   async deleteRequirement(requirementId: number): Promise<null> {
-    return this._crud.delete_legacy(this.getRequirementUrl(requirementId));
+    const delete$ = this._crud.delete(this.getRequirementUrl(requirementId));
+    return firstValueFrom(delete$);
   }
 
   downloadRequirementsExcel(projectId: number): Observable<IDownloadState> {
@@ -176,7 +175,9 @@ export class RequirementService {
     catalogModuleIds: number[]
   ): Promise<Requirement[]> {
     const url = `${this.getRequirementsUrl(projectId)}/import`;
-    const requirements = await this._crud.import_legacy(url, catalogModuleIds);
-    return requirements.map((requirement) => new Requirement(requirement));
+    const requirements$ = this._crud
+      .import(url, catalogModuleIds)
+      .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
+    return firstValueFrom(requirements$);
   }
 }

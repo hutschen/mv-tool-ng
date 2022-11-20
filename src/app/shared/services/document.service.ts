@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
@@ -75,43 +75,42 @@ export class DocumentService {
   }
 
   async listDocuments(projectId: number): Promise<Document[]> {
-    const documents = await this._crud.list_legacy(
-      this.getDocumentsUrl(projectId)
-    );
-    return documents.map((document) => new Document(document));
+    const documents$ = this._crud
+      .list(this.getDocumentsUrl(projectId))
+      .pipe(map((documents) => documents.map((d) => new Document(d))));
+    return firstValueFrom(documents$);
   }
 
   async createDocument(
     projectId: number,
     documentInput: IDocumentInput
   ): Promise<Document> {
-    const document = await this._crud.create_legacy(
-      this.getDocumentsUrl(projectId),
-      documentInput
-    );
-    return new Document(document);
+    const document$ = this._crud
+      .create(this.getDocumentsUrl(projectId), documentInput)
+      .pipe(map((document) => new Document(document)));
+    return firstValueFrom(document$);
   }
 
   async getDocument(documentId: number): Promise<Document> {
-    const document = await this._crud.read_legacy(
-      this.getDocumentUrl(documentId)
-    );
-    return new Document(document);
+    const document$ = this._crud
+      .read(this.getDocumentUrl(documentId))
+      .pipe(map((document) => new Document(document)));
+    return firstValueFrom(document$);
   }
 
   async updateDocument(
     documentId: number,
     documentInput: IDocumentInput
   ): Promise<Document> {
-    const document = await this._crud.update_legacy(
-      this.getDocumentUrl(documentId),
-      documentInput
-    );
-    return new Document(document);
+    const document = this._crud
+      .update(this.getDocumentUrl(documentId), documentInput)
+      .pipe(map((document) => new Document(document)));
+    return firstValueFrom(document);
   }
 
   async deleteDocument(documentId: number): Promise<null> {
-    return this._crud.delete_legacy(this.getDocumentUrl(documentId));
+    const delete$ = this._crud.delete(this.getDocumentUrl(documentId));
+    return firstValueFrom(delete$);
   }
 
   downloadDocumentExcel(project_id: number): Observable<IDownloadState> {

@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { CRUDService } from './crud.service';
 import { JiraProjectService } from './jira-project.service';
 
@@ -36,6 +37,9 @@ export class JiraIssueTypeService {
   }
 
   async getJiraIssueTypes(jiraProjectId: string): Promise<IJiraIssueType[]> {
-    return this._crud.list_legacy(this.getJiraIssueTypesUrl(jiraProjectId));
+    const jiraIssueTypes$ = this._crud.list(
+      this.getJiraIssueTypesUrl(jiraProjectId)
+    );
+    return firstValueFrom(jiraIssueTypes$);
   }
 }

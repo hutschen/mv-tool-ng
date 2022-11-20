@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { CRUDService } from './crud.service';
 
 export interface IUser {
@@ -32,6 +33,7 @@ export class UserService {
   }
 
   async getUser(): Promise<IUser> {
-    return this._crud.read_legacy(this.getUserUrl());
+    const user$ = this._crud.read(this.getUserUrl());
+    return firstValueFrom(user$);
   }
 }

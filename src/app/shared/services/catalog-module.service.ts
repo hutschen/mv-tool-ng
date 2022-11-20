@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
 import { Catalog, CatalogService, ICatalog } from './catalog.service';
 import { CRUDService } from './crud.service';
 import { IUploadState, UploadService } from './upload.service';
@@ -77,47 +77,48 @@ export class CatalogModuleService {
   }
 
   async listCatalogModules(catalogId: number): Promise<CatalogModule[]> {
-    const catalogModules = await this._crud.list_legacy(
-      this.getCatalogModulesUrl(catalogId)
-    );
-    return catalogModules.map(
-      (catalogModule) => new CatalogModule(catalogModule)
-    );
+    const catalogModules$ = this._crud
+      .list(this.getCatalogModulesUrl(catalogId))
+      .pipe(
+        map((catalogModules) =>
+          catalogModules.map((cm) => new CatalogModule(cm))
+        )
+      );
+    return firstValueFrom(catalogModules$);
   }
 
   async createCatalogModule(
     catalogId: number,
     catalogModuleInput: ICatalogModuleInput
   ): Promise<CatalogModule> {
-    const catalogModule = await this._crud.create_legacy(
-      this.getCatalogModulesUrl(catalogId),
-      catalogModuleInput
-    );
-    return new CatalogModule(catalogModule);
+    const catalogModule$ = this._crud
+      .create(this.getCatalogModulesUrl(catalogId), catalogModuleInput)
+      .pipe(map((catalogModule) => new CatalogModule(catalogModule)));
+    return firstValueFrom(catalogModule$);
   }
 
   async getCatalogModule(catalogModuleId: number): Promise<CatalogModule> {
-    const catalogModule = await this._crud.read_legacy(
-      this.getCatalogModuleUrl(catalogModuleId)
-    );
-    return new CatalogModule(catalogModule);
+    const catalogModule$ = this._crud
+      .read(this.getCatalogModuleUrl(catalogModuleId))
+      .pipe(map((catalogModule) => new CatalogModule(catalogModule)));
+    return firstValueFrom(catalogModule$);
   }
 
   async updateCatalogModule(
     catalogModuleId: number,
     catalogModuleInput: ICatalogModuleInput
   ): Promise<CatalogModule> {
-    const catalogModule = await this._crud.update_legacy(
-      this.getCatalogModuleUrl(catalogModuleId),
-      catalogModuleInput
-    );
-    return new CatalogModule(catalogModule);
+    const catalogModule$ = this._crud
+      .update(this.getCatalogModuleUrl(catalogModuleId), catalogModuleInput)
+      .pipe(map((catalogModule) => new CatalogModule(catalogModule)));
+    return firstValueFrom(catalogModule$);
   }
 
   async deleteCatalogModule(catalogModuleId: number): Promise<null> {
-    return await this._crud.delete_legacy(
+    const delete$ = this._crud.delete(
       this.getCatalogModuleUrl(catalogModuleId)
     );
+    return firstValueFrom(delete$);
   }
 
   uploadGSBaustein(catalogId: number, file: File): Observable<IUploadState> {

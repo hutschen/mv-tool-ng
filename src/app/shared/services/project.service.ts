@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
+import { firstValueFrom, map } from 'rxjs';
 import { CRUDService } from './crud.service';
 import { IJiraProject } from './jira-project.service';
 
@@ -89,35 +90,38 @@ export class ProjectService {
   }
 
   async listProjects(): Promise<Project[]> {
-    const projects = await this._crud.list_legacy(this.getProjectsUrl());
-    return projects.map((project) => new Project(project));
+    const projects$ = this._crud
+      .list(this.getProjectsUrl())
+      .pipe(map((projects) => projects.map((p) => new Project(p))));
+    return firstValueFrom(projects$);
   }
 
   async createProject(projectInput: IProjectInput): Promise<Project> {
-    const project = await this._crud.create_legacy(
-      this.getProjectsUrl(),
-      projectInput
-    );
-    return new Project(project);
+    const project$ = this._crud
+      .create(this.getProjectsUrl(), projectInput)
+      .pipe(map((project) => new Project(project)));
+    return firstValueFrom(project$);
   }
 
   async getProject(projectId: number): Promise<Project> {
-    const project = await this._crud.read_legacy(this.getProjectUrl(projectId));
-    return new Project(project);
+    const project$ = this._crud
+      .read(this.getProjectUrl(projectId))
+      .pipe(map((project) => new Project(project)));
+    return firstValueFrom(project$);
   }
 
   async updateProject(
     projectId: number,
     projectInput: IProjectInput
   ): Promise<Project> {
-    const project = await this._crud.update_legacy(
-      this.getProjectUrl(projectId),
-      projectInput
-    );
-    return new Project(project);
+    const project$ = this._crud
+      .update(this.getProjectUrl(projectId), projectInput)
+      .pipe(map((project) => new Project(project)));
+    return firstValueFrom(project$);
   }
 
   async deleteProject(projectId: number): Promise<null> {
-    return this._crud.delete_legacy(this.getProjectUrl(projectId));
+    const delete$ = this._crud.delete(this.getProjectUrl(projectId));
+    return firstValueFrom(delete$);
   }
 }

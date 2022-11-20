@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
+import { firstValueFrom, map } from 'rxjs';
 import { CRUDService } from './crud.service';
 
 export interface ICatalogInput {
@@ -63,35 +64,38 @@ export class CatalogService {
   }
 
   async listCatalogs(): Promise<Catalog[]> {
-    const catalogs = await this._crud.list_legacy(this.getCatalogsUrl());
-    return catalogs.map((catalog) => new Catalog(catalog));
+    const catalogs$ = this._crud
+      .list(this.getCatalogsUrl())
+      .pipe(map((catalogs) => catalogs.map((c) => new Catalog(c))));
+    return firstValueFrom(catalogs$);
   }
 
   async createCatalog(catalogInput: ICatalogInput): Promise<Catalog> {
-    const catalog = await this._crud.create_legacy(
-      this.getCatalogsUrl(),
-      catalogInput
-    );
-    return new Catalog(catalog);
+    const catalog$ = this._crud
+      .create(this.getCatalogsUrl(), catalogInput)
+      .pipe(map((catalog) => new Catalog(catalog)));
+    return firstValueFrom(catalog$);
   }
 
   async getCatalog(catalogId: number): Promise<Catalog> {
-    const catalog = await this._crud.read_legacy(this.getCatalogUrl(catalogId));
-    return new Catalog(catalog);
+    const catalog$ = this._crud
+      .read(this.getCatalogUrl(catalogId))
+      .pipe(map((catalog) => new Catalog(catalog)));
+    return firstValueFrom(catalog$);
   }
 
   async updateCatalog(
     catalogId: number,
     catalogInput: ICatalogInput
   ): Promise<Catalog> {
-    const catalog = await this._crud.update_legacy(
-      this.getCatalogUrl(catalogId),
-      catalogInput
-    );
-    return new Catalog(catalog);
+    const catalog$ = this._crud
+      .update(this.getCatalogUrl(catalogId), catalogInput)
+      .pipe(map((catalog) => new Catalog(catalog)));
+    return firstValueFrom(catalog$);
   }
 
   async deleteCatalog(catalogId: number): Promise<null> {
-    return this._crud.delete_legacy(this.getCatalogUrl(catalogId));
+    const delete$ = this._crud.delete(this.getCatalogUrl(catalogId));
+    return firstValueFrom(delete$);
   }
 }
