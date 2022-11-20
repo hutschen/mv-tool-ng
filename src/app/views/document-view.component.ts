@@ -22,7 +22,7 @@ import { Project, ProjectService } from '../shared/services/project.service';
   selector: 'mvtool-document-view',
   template: `
     <div *ngIf="project" class="fx-column">
-      <mvtool-project-card [project]="project"></mvtool-project-card>
+      <mvtool-project-details [project]="project"></mvtool-project-details>
       <mat-divider></mat-divider>
       <mvtool-document-table [project]="project"> </mvtool-document-table>
     </div>

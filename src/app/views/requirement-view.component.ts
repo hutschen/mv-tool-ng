@@ -23,7 +23,7 @@ import { Requirement } from '../shared/services/requirement.service';
   selector: 'mvtool-requirement-view',
   template: `
     <div *ngIf="project" class="fx-column">
-      <mvtool-project-card [project]="project"></mvtool-project-card>
+      <mvtool-project-details [project]="project"></mvtool-project-details>
       <mat-divider></mat-divider>
       <mvtool-requirement-table
         [project]="project"
