@@ -81,6 +81,11 @@
   box-sizing: border-box;
 }
 
+.fx-flex {
+  flex: 1 1 0%;
+  box-sizing: border-box;
+}
+
 .fx-flex-30 {
   flex: 1 1 100%;
   max-width: 30%;

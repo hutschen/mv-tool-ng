@@ -19,7 +19,7 @@ import { Project } from '../shared/services/project.service';
 import { ProjectDialogComponent } from './project-dialog.component';
 
 @Component({
-  selector: 'mvtool-project-card',
+  selector: 'mvtool-project-details',
   template: `
     <div class="project-card fx-column fx-gap-15" *ngIf="project">
       <!-- Title -->
@@ -41,7 +41,7 @@ import { ProjectDialogComponent } from './project-dialog.component';
   styleUrls: ['../shared/styles/flex.css'],
   styles: ['h1 { margin: 0; }', '.project-card { margin: 20px; }'],
 })
-export class ProjectCardComponent {
+export class ProjectDetailsComponent {
   @Input() project: Project | null = null;
 
   constructor(protected _dialog: MatDialog) {}

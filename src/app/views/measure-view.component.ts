@@ -25,9 +25,9 @@ import {
   selector: 'mvtool-measure-view',
   template: `
     <div *ngIf="requirement" class="fx-column">
-      <mvtool-requirement-card
+      <mvtool-requirement-details
         [requirement]="requirement"
-      ></mvtool-requirement-card>
+      ></mvtool-requirement-details>
       <mat-divider></mat-divider>
       <mvtool-measure-table [requirement]="requirement"> </mvtool-measure-table>
     </div>

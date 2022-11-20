@@ -21,7 +21,7 @@ import { MaterialModule } from '../material/material.module';
 import { RequirementDialogComponent } from './requirement-dialog.component';
 import { TargetObjectInputComponent } from './target-object-input.component';
 import { ComplianceDialogComponent } from './compliance-dialog.component';
-import { RequirementCardComponent } from './requirement-card.component';
+import { RequirementDetailsComponent } from './requirement-details.component';
 import { RequirementImportDialogComponent } from './requirement-import-dialog.component';
 
 @NgModule({
@@ -30,7 +30,7 @@ import { RequirementImportDialogComponent } from './requirement-import-dialog.co
     RequirementDialogComponent,
     TargetObjectInputComponent,
     ComplianceDialogComponent,
-    RequirementCardComponent,
+    RequirementDetailsComponent,
     RequirementImportDialogComponent,
   ],
   imports: [CommonModule, SharedModule, MaterialModule],
@@ -38,7 +38,7 @@ import { RequirementImportDialogComponent } from './requirement-import-dialog.co
     RequirementTableComponent,
     RequirementDialogComponent,
     TargetObjectInputComponent,
-    RequirementCardComponent,
+    RequirementDetailsComponent,
   ],
 })
 export class RequirementModule {}

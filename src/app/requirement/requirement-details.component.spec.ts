@@ -15,18 +15,18 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ProjectCardComponent } from './project-card.component';
+import { RequirementDetailsComponent } from './requirement-details.component';
 
-describe('ProjectCardComponent', () => {
-  let component: ProjectCardComponent;
-  let fixture: ComponentFixture<ProjectCardComponent>;
+describe('RequirementCardComponent', () => {
+  let component: RequirementDetailsComponent;
+  let fixture: ComponentFixture<RequirementDetailsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ProjectCardComponent],
+      declarations: [RequirementDetailsComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ProjectCardComponent);
+    fixture = TestBed.createComponent(RequirementDetailsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

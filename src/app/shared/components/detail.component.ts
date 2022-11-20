@@ -11,7 +11,7 @@ import { Subject, takeUntil } from 'rxjs';
   template: `
     <div class="fx-row-wrap">
       <strong [style]="flexStyle">{{ label }}</strong>
-      <div fxFlex>
+      <div class="fx-flex">
         <ng-content></ng-content>
       </div>
     </div>
