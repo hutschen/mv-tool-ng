@@ -120,27 +120,4 @@ export class ProjectService {
   deleteProject(projectId: number): Observable<null> {
     return this._crud.delete(this.getProjectUrl(projectId));
   }
-
-  async listProjects_legacy(): Promise<Project[]> {
-    return firstValueFrom(this.listProjects());
-  }
-
-  async createProject_legacy(projectInput: IProjectInput): Promise<Project> {
-    return firstValueFrom(this.createProject(projectInput));
-  }
-
-  async getProject_legacy(projectId: number): Promise<Project> {
-    return firstValueFrom(this.getProject(projectId));
-  }
-
-  async updateProject_legacy(
-    projectId: number,
-    projectInput: IProjectInput
-  ): Promise<Project> {
-    return firstValueFrom(this.updateProject(projectId, projectInput));
-  }
-
-  async deleteProject_legacy(projectId: number): Promise<null> {
-    return firstValueFrom(this.deleteProject(projectId));
-  }
 }
