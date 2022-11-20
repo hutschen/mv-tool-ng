@@ -54,7 +54,7 @@ export class RequirementViewComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     const projectId = Number(this._route.snapshot.paramMap.get('projectId'));
     try {
-      this.project = await this._projectService.getProject(projectId);
+      this.project = await this._projectService.getProject_legacy(projectId);
     } catch (error: any) {
       if (error instanceof HttpErrorResponse && error.status === 404) {
         this._router.navigate(['/']);

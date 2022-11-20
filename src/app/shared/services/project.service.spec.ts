@@ -133,7 +133,7 @@ describe('ProjectService', () => {
 
   it('should list projects', (done: DoneFn) => {
     const projectList = [outputMock];
-    sut.listProjects().then((value) => {
+    sut.listProjects_legacy().then((value) => {
       expect(value).toEqual(projectList.map((project) => new Project(project)));
       done();
     });
@@ -145,7 +145,7 @@ describe('ProjectService', () => {
   });
 
   it('should create project', (done: DoneFn) => {
-    sut.createProject(inputMock).then((value) => {
+    sut.createProject_legacy(inputMock).then((value) => {
       expect(value).toEqual(new Project(outputMock));
       done();
     });
@@ -157,7 +157,7 @@ describe('ProjectService', () => {
   });
 
   it('should get a project', (done: DoneFn) => {
-    sut.getProject(outputMock.id).then((value) => {
+    sut.getProject_legacy(outputMock.id).then((value) => {
       expect(value).toEqual(new Project(outputMock));
       done();
     });
@@ -169,7 +169,7 @@ describe('ProjectService', () => {
   });
 
   it('should update a project', (done: DoneFn) => {
-    sut.updateProject(outputMock.id, inputMock).then((value) => {
+    sut.updateProject_legacy(outputMock.id, inputMock).then((value) => {
       expect(value).toEqual(new Project(outputMock));
       done();
     });
@@ -181,7 +181,7 @@ describe('ProjectService', () => {
   });
 
   it('should delete a project', (done: DoneFn) => {
-    sut.deleteProject(outputMock.id).then((value) => {
+    sut.deleteProject_legacy(outputMock.id).then((value) => {
       expect(value).toBeNull();
       done();
     });

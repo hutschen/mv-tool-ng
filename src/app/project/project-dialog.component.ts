@@ -61,9 +61,11 @@ export class ProjectDialogComponent {
     if (form.valid) {
       let project: Project;
       if (!this._project) {
-        project = await this._projectService.createProject(this.projectInput);
+        project = await this._projectService.createProject_legacy(
+          this.projectInput
+        );
       } else {
-        project = await this._projectService.updateProject(
+        project = await this._projectService.updateProject_legacy(
           this._project.id,
           this.projectInput
         );

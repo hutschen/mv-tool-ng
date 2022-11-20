@@ -155,7 +155,8 @@ export class BreadcrumbTrailComponent {
 
     const projectId = Number(first);
     const projectBreadcrumb = {
-      displayText: (await this._projectService.getProject(projectId)).name,
+      displayText: (await this._projectService.getProject_legacy(projectId))
+        .name,
       navigationCommands: ['projects', projectId, 'requirements'],
     };
     const requirementsBreadcrumb = {

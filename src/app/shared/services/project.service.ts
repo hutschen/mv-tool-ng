@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { firstValueFrom, map } from 'rxjs';
 import { CRUDService } from './crud.service';
 import { IJiraProject } from './jira-project.service';
@@ -89,39 +90,57 @@ export class ProjectService {
     return `${this.getProjectsUrl()}/${projectId}`;
   }
 
-  async listProjects(): Promise<Project[]> {
-    const projects$ = this._crud
+  listProjects(): Observable<Project[]> {
+    return this._crud
       .list(this.getProjectsUrl())
       .pipe(map((projects) => projects.map((p) => new Project(p))));
-    return firstValueFrom(projects$);
   }
 
-  async createProject(projectInput: IProjectInput): Promise<Project> {
-    const project$ = this._crud
+  createProject(projectInput: IProjectInput): Observable<Project> {
+    return this._crud
       .create(this.getProjectsUrl(), projectInput)
       .pipe(map((project) => new Project(project)));
-    return firstValueFrom(project$);
   }
 
-  async getProject(projectId: number): Promise<Project> {
-    const project$ = this._crud
+  getProject(projectId: number): Observable<Project> {
+    return this._crud
       .read(this.getProjectUrl(projectId))
       .pipe(map((project) => new Project(project)));
-    return firstValueFrom(project$);
   }
 
-  async updateProject(
+  updateProject(
+    projectId: number,
+    projectInput: IProjectInput
+  ): Observable<Project> {
+    return this._crud
+      .update(this.getProjectUrl(projectId), projectInput)
+      .pipe(map((project) => new Project(project)));
+  }
+
+  deleteProject(projectId: number): Observable<null> {
+    return this._crud.delete(this.getProjectUrl(projectId));
+  }
+
+  async listProjects_legacy(): Promise<Project[]> {
+    return firstValueFrom(this.listProjects());
+  }
+
+  async createProject_legacy(projectInput: IProjectInput): Promise<Project> {
+    return firstValueFrom(this.createProject(projectInput));
+  }
+
+  async getProject_legacy(projectId: number): Promise<Project> {
+    return firstValueFrom(this.getProject(projectId));
+  }
+
+  async updateProject_legacy(
     projectId: number,
     projectInput: IProjectInput
   ): Promise<Project> {
-    const project$ = this._crud
-      .update(this.getProjectUrl(projectId), projectInput)
-      .pipe(map((project) => new Project(project)));
-    return firstValueFrom(project$);
+    return firstValueFrom(this.updateProject(projectId, projectInput));
   }
 
-  async deleteProject(projectId: number): Promise<null> {
-    const delete$ = this._crud.delete(this.getProjectUrl(projectId));
-    return firstValueFrom(delete$);
+  async deleteProject_legacy(projectId: number): Promise<null> {
+    return firstValueFrom(this.deleteProject(projectId));
   }
 }
