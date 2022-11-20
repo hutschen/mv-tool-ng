@@ -132,4 +132,20 @@ describe('CRUDService', () => {
     });
     mockResponse.flush(null);
   });
+
+  it('should import items', (done: DoneFn) => {
+    const itemIds = [1, 2, 3];
+    sut.import('items/import', itemIds).subscribe({
+      next: (value) => {
+        expect(value.length).toEqual(1);
+        expect(value[0]).toEqual(outputMock);
+      },
+      complete: () => done(),
+    });
+    const mockResponse = httpMock.expectOne({
+      method: 'post',
+      url: baseUrl + '/items/import',
+    });
+    mockResponse.flush([outputMock]);
+  });
 });
