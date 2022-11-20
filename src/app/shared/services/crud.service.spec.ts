@@ -71,10 +71,12 @@ describe('CRUDService', () => {
   });
 
   it('should list items', (done: DoneFn) => {
-    sut.list_legacy('items').then((value) => {
-      expect(value.length).toEqual(1);
-      expect(value[0]).toEqual(outputMock);
-      done();
+    sut.list('items').subscribe({
+      next: (value) => {
+        expect(value.length).toEqual(1);
+        expect(value[0]).toEqual(outputMock);
+      },
+      complete: () => done(),
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
@@ -84,9 +86,9 @@ describe('CRUDService', () => {
   });
 
   it('should create an item', (done: DoneFn) => {
-    sut.create_legacy('items', inputMock).then((value) => {
-      expect(value).toEqual(outputMock);
-      done();
+    sut.create('items', inputMock).subscribe({
+      next: (value) => expect(value).toEqual(outputMock),
+      complete: () => done(),
     });
     const mockResponse = httpMock.expectOne({
       method: 'post',
@@ -96,9 +98,9 @@ describe('CRUDService', () => {
   });
 
   it('should read an item', (done: DoneFn) => {
-    sut.read_legacy('items/1').then((value) => {
-      expect(value).toEqual(outputMock);
-      done();
+    sut.read('items/1').subscribe({
+      next: (value) => expect(value).toEqual(outputMock),
+      complete: () => done(),
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
@@ -108,9 +110,9 @@ describe('CRUDService', () => {
   });
 
   it('should update an item', (done: DoneFn) => {
-    sut.update_legacy('items/1', inputMock).then((value) => {
-      expect(value).toEqual(outputMock);
-      done();
+    sut.update('items/1', inputMock).subscribe({
+      next: (value) => expect(value).toEqual(outputMock),
+      complete: () => done(),
     });
     const mockResponse = httpMock.expectOne({
       method: 'put',
@@ -120,9 +122,9 @@ describe('CRUDService', () => {
   });
 
   it('should delete an item', (done: DoneFn) => {
-    sut.delete_legacy('items/1').then((value) => {
-      expect(value).toBeNull();
-      done();
+    sut.delete('items/1').subscribe({
+      next: (value) => expect(value).toBeNull(),
+      complete: () => done(),
     });
     const mockResponse = httpMock.expectOne({
       method: 'delete',
