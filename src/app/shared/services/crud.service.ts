@@ -49,10 +49,6 @@ export class CRUDService<InputType, OutputType> {
     );
   }
 
-  async list_legacy(relativeUrl: string): Promise<OutputType[]> {
-    return firstValueFrom(this.list(relativeUrl));
-  }
-
   create(relativeUrl: string, itemInput: InputType): Observable<OutputType> {
     return this._httpClient.post<OutputType>(
       this.toAbsoluteUrl(relativeUrl),
@@ -61,22 +57,11 @@ export class CRUDService<InputType, OutputType> {
     );
   }
 
-  async create_legacy(
-    relativeUrl: string,
-    itemInput: InputType
-  ): Promise<OutputType> {
-    return firstValueFrom(this.create(relativeUrl, itemInput));
-  }
-
   read(relativeUrl: string): Observable<OutputType> {
     return this._httpClient.get<OutputType>(
       this.toAbsoluteUrl(relativeUrl),
       this._httpOptions
     );
-  }
-
-  async read_legacy(relativeUrl: string): Promise<OutputType> {
-    return firstValueFrom(this.read(relativeUrl));
   }
 
   update(relativeUrl: string, itemInput: InputType): Observable<OutputType> {
@@ -87,22 +72,11 @@ export class CRUDService<InputType, OutputType> {
     );
   }
 
-  async update_legacy(
-    relativeUrl: string,
-    itemInput: InputType
-  ): Promise<OutputType> {
-    return firstValueFrom(this.update(relativeUrl, itemInput));
-  }
-
   delete(relativeUrl: string): Observable<null> {
     return this._httpClient.delete<null>(
       this.toAbsoluteUrl(relativeUrl),
       this._httpOptions
     );
-  }
-
-  async delete_legacy(relativeUrl: string): Promise<null> {
-    return firstValueFrom(this.delete(relativeUrl));
   }
 
   import(relativeUrl: string, itemIds: number[]): Observable<OutputType[]> {
@@ -111,12 +85,5 @@ export class CRUDService<InputType, OutputType> {
       itemIds,
       this._httpOptions
     );
-  }
-
-  async import_legacy(
-    relativeUrl: string,
-    itemIds: number[]
-  ): Promise<OutputType[]> {
-    return firstValueFrom(this.import(relativeUrl, itemIds));
   }
 }
