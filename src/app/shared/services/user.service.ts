@@ -32,6 +32,6 @@ export class UserService {
   }
 
   async getUser(): Promise<IUser> {
-    return this._crud.read(this.getUserUrl());
+    return this._crud.read_legacy(this.getUserUrl());
   }
 }

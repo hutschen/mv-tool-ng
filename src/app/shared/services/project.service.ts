@@ -89,12 +89,12 @@ export class ProjectService {
   }
 
   async listProjects(): Promise<Project[]> {
-    const projects = await this._crud.list(this.getProjectsUrl());
+    const projects = await this._crud.list_legacy(this.getProjectsUrl());
     return projects.map((project) => new Project(project));
   }
 
   async createProject(projectInput: IProjectInput): Promise<Project> {
-    const project = await this._crud.create(
+    const project = await this._crud.create_legacy(
       this.getProjectsUrl(),
       projectInput
     );
@@ -102,7 +102,7 @@ export class ProjectService {
   }
 
   async getProject(projectId: number): Promise<Project> {
-    const project = await this._crud.read(this.getProjectUrl(projectId));
+    const project = await this._crud.read_legacy(this.getProjectUrl(projectId));
     return new Project(project);
   }
 
@@ -110,7 +110,7 @@ export class ProjectService {
     projectId: number,
     projectInput: IProjectInput
   ): Promise<Project> {
-    const project = await this._crud.update(
+    const project = await this._crud.update_legacy(
       this.getProjectUrl(projectId),
       projectInput
     );
@@ -118,6 +118,6 @@ export class ProjectService {
   }
 
   async deleteProject(projectId: number): Promise<null> {
-    return this._crud.delete(this.getProjectUrl(projectId));
+    return this._crud.delete_legacy(this.getProjectUrl(projectId));
   }
 }

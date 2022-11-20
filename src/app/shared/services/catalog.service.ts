@@ -63,12 +63,12 @@ export class CatalogService {
   }
 
   async listCatalogs(): Promise<Catalog[]> {
-    const catalogs = await this._crud.list(this.getCatalogsUrl());
+    const catalogs = await this._crud.list_legacy(this.getCatalogsUrl());
     return catalogs.map((catalog) => new Catalog(catalog));
   }
 
   async createCatalog(catalogInput: ICatalogInput): Promise<Catalog> {
-    const catalog = await this._crud.create(
+    const catalog = await this._crud.create_legacy(
       this.getCatalogsUrl(),
       catalogInput
     );
@@ -76,7 +76,7 @@ export class CatalogService {
   }
 
   async getCatalog(catalogId: number): Promise<Catalog> {
-    const catalog = await this._crud.read(this.getCatalogUrl(catalogId));
+    const catalog = await this._crud.read_legacy(this.getCatalogUrl(catalogId));
     return new Catalog(catalog);
   }
 
@@ -84,7 +84,7 @@ export class CatalogService {
     catalogId: number,
     catalogInput: ICatalogInput
   ): Promise<Catalog> {
-    const catalog = await this._crud.update(
+    const catalog = await this._crud.update_legacy(
       this.getCatalogUrl(catalogId),
       catalogInput
     );
@@ -92,6 +92,6 @@ export class CatalogService {
   }
 
   async deleteCatalog(catalogId: number): Promise<null> {
-    return this._crud.delete(this.getCatalogUrl(catalogId));
+    return this._crud.delete_legacy(this.getCatalogUrl(catalogId));
   }
 }

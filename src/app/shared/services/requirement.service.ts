@@ -119,7 +119,7 @@ export class RequirementService {
   }
 
   async listRequirements(projectId: number): Promise<Requirement[]> {
-    const requirements = await this._crud.list(
+    const requirements = await this._crud.list_legacy(
       this.getRequirementsUrl(projectId)
     );
     return requirements.map((requirement) => new Requirement(requirement));
@@ -129,7 +129,7 @@ export class RequirementService {
     projectId: number,
     requirementInput: IRequirementInput
   ): Promise<Requirement> {
-    const requirement = await this._crud.create(
+    const requirement = await this._crud.create_legacy(
       this.getRequirementsUrl(projectId),
       requirementInput
     );
@@ -137,7 +137,7 @@ export class RequirementService {
   }
 
   async getRequirement(requirementId: number): Promise<Requirement> {
-    const requirement = await this._crud.read(
+    const requirement = await this._crud.read_legacy(
       this.getRequirementUrl(requirementId)
     );
     return new Requirement(requirement);
@@ -147,7 +147,7 @@ export class RequirementService {
     requirementId: number,
     requirementInput: IRequirementInput
   ): Promise<Requirement> {
-    const requirement = await this._crud.update(
+    const requirement = await this._crud.update_legacy(
       this.getRequirementUrl(requirementId),
       requirementInput
     );
@@ -155,7 +155,7 @@ export class RequirementService {
   }
 
   async deleteRequirement(requirementId: number): Promise<null> {
-    return this._crud.delete(this.getRequirementUrl(requirementId));
+    return this._crud.delete_legacy(this.getRequirementUrl(requirementId));
   }
 
   downloadRequirementsExcel(projectId: number): Observable<IDownloadState> {
@@ -176,7 +176,7 @@ export class RequirementService {
     catalogModuleIds: number[]
   ): Promise<Requirement[]> {
     const url = `${this.getRequirementsUrl(projectId)}/import`;
-    const requirements = await this._crud.import(url, catalogModuleIds);
+    const requirements = await this._crud.import_legacy(url, catalogModuleIds);
     return requirements.map((requirement) => new Requirement(requirement));
   }
 }

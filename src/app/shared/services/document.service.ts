@@ -75,7 +75,9 @@ export class DocumentService {
   }
 
   async listDocuments(projectId: number): Promise<Document[]> {
-    const documents = await this._crud.list(this.getDocumentsUrl(projectId));
+    const documents = await this._crud.list_legacy(
+      this.getDocumentsUrl(projectId)
+    );
     return documents.map((document) => new Document(document));
   }
 
@@ -83,7 +85,7 @@ export class DocumentService {
     projectId: number,
     documentInput: IDocumentInput
   ): Promise<Document> {
-    const document = await this._crud.create(
+    const document = await this._crud.create_legacy(
       this.getDocumentsUrl(projectId),
       documentInput
     );
@@ -91,7 +93,9 @@ export class DocumentService {
   }
 
   async getDocument(documentId: number): Promise<Document> {
-    const document = await this._crud.read(this.getDocumentUrl(documentId));
+    const document = await this._crud.read_legacy(
+      this.getDocumentUrl(documentId)
+    );
     return new Document(document);
   }
 
@@ -99,7 +103,7 @@ export class DocumentService {
     documentId: number,
     documentInput: IDocumentInput
   ): Promise<Document> {
-    const document = await this._crud.update(
+    const document = await this._crud.update_legacy(
       this.getDocumentUrl(documentId),
       documentInput
     );
@@ -107,7 +111,7 @@ export class DocumentService {
   }
 
   async deleteDocument(documentId: number): Promise<null> {
-    return this._crud.delete(this.getDocumentUrl(documentId));
+    return this._crud.delete_legacy(this.getDocumentUrl(documentId));
   }
 
   downloadDocumentExcel(project_id: number): Observable<IDownloadState> {

@@ -77,7 +77,7 @@ export class CatalogModuleService {
   }
 
   async listCatalogModules(catalogId: number): Promise<CatalogModule[]> {
-    const catalogModules = await this._crud.list(
+    const catalogModules = await this._crud.list_legacy(
       this.getCatalogModulesUrl(catalogId)
     );
     return catalogModules.map(
@@ -89,7 +89,7 @@ export class CatalogModuleService {
     catalogId: number,
     catalogModuleInput: ICatalogModuleInput
   ): Promise<CatalogModule> {
-    const catalogModule = await this._crud.create(
+    const catalogModule = await this._crud.create_legacy(
       this.getCatalogModulesUrl(catalogId),
       catalogModuleInput
     );
@@ -97,7 +97,7 @@ export class CatalogModuleService {
   }
 
   async getCatalogModule(catalogModuleId: number): Promise<CatalogModule> {
-    const catalogModule = await this._crud.read(
+    const catalogModule = await this._crud.read_legacy(
       this.getCatalogModuleUrl(catalogModuleId)
     );
     return new CatalogModule(catalogModule);
@@ -107,7 +107,7 @@ export class CatalogModuleService {
     catalogModuleId: number,
     catalogModuleInput: ICatalogModuleInput
   ): Promise<CatalogModule> {
-    const catalogModule = await this._crud.update(
+    const catalogModule = await this._crud.update_legacy(
       this.getCatalogModuleUrl(catalogModuleId),
       catalogModuleInput
     );
@@ -115,7 +115,9 @@ export class CatalogModuleService {
   }
 
   async deleteCatalogModule(catalogModuleId: number): Promise<null> {
-    return await this._crud.delete(this.getCatalogModuleUrl(catalogModuleId));
+    return await this._crud.delete_legacy(
+      this.getCatalogModuleUrl(catalogModuleId)
+    );
   }
 
   uploadGSBaustein(catalogId: number, file: File): Observable<IUploadState> {

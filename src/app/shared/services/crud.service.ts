@@ -15,6 +15,7 @@
 
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
@@ -41,54 +42,81 @@ export class CRUDService<InputType, OutputType> {
     };
   }
 
-  async list(relativeUrl: string): Promise<OutputType[]> {
-    const request$ = this._httpClient.get<OutputType[]>(
+  list(relativeUrl: string): Observable<OutputType[]> {
+    return this._httpClient.get<OutputType[]>(
       this.toAbsoluteUrl(relativeUrl),
       this._httpOptions
     );
-    return firstValueFrom(request$);
   }
 
-  async create(relativeUrl: string, itemInput: InputType): Promise<OutputType> {
-    const request$ = this._httpClient.post<OutputType>(
-      this.toAbsoluteUrl(relativeUrl),
-      itemInput,
-      this._httpOptions
-    );
-    return firstValueFrom(request$);
+  async list_legacy(relativeUrl: string): Promise<OutputType[]> {
+    return firstValueFrom(this.list(relativeUrl));
   }
 
-  async read(relativeUrl: string): Promise<OutputType> {
-    const request$ = this._httpClient.get<OutputType>(
-      this.toAbsoluteUrl(relativeUrl),
-      this._httpOptions
-    );
-    return firstValueFrom(request$);
-  }
-
-  async update(relativeUrl: string, itemInput: InputType): Promise<OutputType> {
-    const request$ = this._httpClient.put<OutputType>(
+  create(relativeUrl: string, itemInput: InputType): Observable<OutputType> {
+    return this._httpClient.post<OutputType>(
       this.toAbsoluteUrl(relativeUrl),
       itemInput,
       this._httpOptions
     );
-    return firstValueFrom(request$);
   }
 
-  async delete(relativeUrl: string): Promise<null> {
-    const request$ = this._httpClient.delete<null>(
+  async create_legacy(
+    relativeUrl: string,
+    itemInput: InputType
+  ): Promise<OutputType> {
+    return firstValueFrom(this.create(relativeUrl, itemInput));
+  }
+
+  read(relativeUrl: string): Observable<OutputType> {
+    return this._httpClient.get<OutputType>(
       this.toAbsoluteUrl(relativeUrl),
       this._httpOptions
     );
-    return firstValueFrom(request$);
   }
 
-  async import(relativeUrl: string, itemIds: number[]): Promise<OutputType[]> {
-    const request$ = this._httpClient.post<OutputType[]>(
+  async read_legacy(relativeUrl: string): Promise<OutputType> {
+    return firstValueFrom(this.read(relativeUrl));
+  }
+
+  update(relativeUrl: string, itemInput: InputType): Observable<OutputType> {
+    return this._httpClient.put<OutputType>(
+      this.toAbsoluteUrl(relativeUrl),
+      itemInput,
+      this._httpOptions
+    );
+  }
+
+  async update_legacy(
+    relativeUrl: string,
+    itemInput: InputType
+  ): Promise<OutputType> {
+    return firstValueFrom(this.update(relativeUrl, itemInput));
+  }
+
+  delete(relativeUrl: string): Observable<null> {
+    return this._httpClient.delete<null>(
+      this.toAbsoluteUrl(relativeUrl),
+      this._httpOptions
+    );
+  }
+
+  async delete_legacy(relativeUrl: string): Promise<null> {
+    return firstValueFrom(this.delete(relativeUrl));
+  }
+
+  import(relativeUrl: string, itemIds: number[]): Observable<OutputType[]> {
+    return this._httpClient.post<OutputType[]>(
       this.toAbsoluteUrl(relativeUrl),
       itemIds,
       this._httpOptions
     );
-    return firstValueFrom(request$);
+  }
+
+  async import_legacy(
+    relativeUrl: string,
+    itemIds: number[]
+  ): Promise<OutputType[]> {
+    return firstValueFrom(this.import(relativeUrl, itemIds));
   }
 }

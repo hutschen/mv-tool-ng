@@ -57,17 +57,20 @@ export class JiraIssueService {
   }
 
   async getJiraIssues(jiraProjectId: string): Promise<IJiraIssue[]> {
-    return this._crud.list(this.getJiraIssuesUrl(jiraProjectId));
+    return this._crud.list_legacy(this.getJiraIssuesUrl(jiraProjectId));
   }
 
   async createAndLinkJiraIssue(
     measureId: number,
     jiraIssueInput: IJiraIssueInput
   ): Promise<IJiraIssue> {
-    return this._crud.create(this.getJiraIssueUrl(measureId), jiraIssueInput);
+    return this._crud.create_legacy(
+      this.getJiraIssueUrl(measureId),
+      jiraIssueInput
+    );
   }
 
   async getJiraIssue(measureId: number): Promise<IJiraIssue> {
-    return this._crud.read(this.getJiraIssueUrl(measureId));
+    return this._crud.read_legacy(this.getJiraIssueUrl(measureId));
   }
 }

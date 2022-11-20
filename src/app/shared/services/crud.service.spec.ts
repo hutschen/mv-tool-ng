@@ -71,7 +71,7 @@ describe('CRUDService', () => {
   });
 
   it('should list items', (done: DoneFn) => {
-    sut.list('items').then((value) => {
+    sut.list_legacy('items').then((value) => {
       expect(value.length).toEqual(1);
       expect(value[0]).toEqual(outputMock);
       done();
@@ -84,7 +84,7 @@ describe('CRUDService', () => {
   });
 
   it('should create an item', (done: DoneFn) => {
-    sut.create('items', inputMock).then((value) => {
+    sut.create_legacy('items', inputMock).then((value) => {
       expect(value).toEqual(outputMock);
       done();
     });
@@ -96,7 +96,7 @@ describe('CRUDService', () => {
   });
 
   it('should read an item', (done: DoneFn) => {
-    sut.read('items/1').then((value) => {
+    sut.read_legacy('items/1').then((value) => {
       expect(value).toEqual(outputMock);
       done();
     });
@@ -108,7 +108,7 @@ describe('CRUDService', () => {
   });
 
   it('should update an item', (done: DoneFn) => {
-    sut.update('items/1', inputMock).then((value) => {
+    sut.update_legacy('items/1', inputMock).then((value) => {
       expect(value).toEqual(outputMock);
       done();
     });
@@ -120,7 +120,7 @@ describe('CRUDService', () => {
   });
 
   it('should delete an item', (done: DoneFn) => {
-    sut.delete('items/1').then((value) => {
+    sut.delete_legacy('items/1').then((value) => {
       expect(value).toBeNull();
       done();
     });

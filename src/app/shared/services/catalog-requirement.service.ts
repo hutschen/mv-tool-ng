@@ -98,7 +98,7 @@ export class CatalogRequirementService {
   async listCatalogRequirements(
     catalogModuleId: number
   ): Promise<CatalogRequirement[]> {
-    const requirements = await this._crud.list(
+    const requirements = await this._crud.list_legacy(
       this.getCatalogRequirementsUrl(catalogModuleId)
     );
     return requirements.map((r) => new CatalogRequirement(r));
@@ -108,7 +108,7 @@ export class CatalogRequirementService {
     catalogModuleId: number,
     catalogRequirementInput: ICatalogRequirementInput
   ): Promise<CatalogRequirement> {
-    const catalogRequirement = await this._crud.create(
+    const catalogRequirement = await this._crud.create_legacy(
       this.getCatalogRequirementsUrl(catalogModuleId),
       catalogRequirementInput
     );
@@ -118,7 +118,7 @@ export class CatalogRequirementService {
   async getCatalogRequirement(
     catalogRequirementId: number
   ): Promise<CatalogRequirement> {
-    const catalogRequirement = await this._crud.read(
+    const catalogRequirement = await this._crud.read_legacy(
       this.getCatalogRequirementUrl(catalogRequirementId)
     );
     return new CatalogRequirement(catalogRequirement);
@@ -128,7 +128,7 @@ export class CatalogRequirementService {
     catalogRequirementId: number,
     catalogRequirementInput: ICatalogRequirementInput
   ): Promise<CatalogRequirement> {
-    const catalogRequirement = await this._crud.update(
+    const catalogRequirement = await this._crud.update_legacy(
       this.getCatalogRequirementUrl(catalogRequirementId),
       catalogRequirementInput
     );
@@ -136,7 +136,7 @@ export class CatalogRequirementService {
   }
 
   async deleteCatalogRequirement(catalogRequirementId: number): Promise<null> {
-    return this._crud.delete(
+    return this._crud.delete_legacy(
       this.getCatalogRequirementUrl(catalogRequirementId)
     );
   }

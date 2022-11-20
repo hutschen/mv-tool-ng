@@ -38,10 +38,10 @@ export class JiraProjectService {
   }
 
   async getJiraProjects(): Promise<IJiraProject[]> {
-    return this._crud.list(this.getJiraProjectsUrl());
+    return this._crud.list_legacy(this.getJiraProjectsUrl());
   }
 
   async getJiraProject(jiraProjectId: string): Promise<IJiraProject> {
-    return this._crud.read(this.getJiraProjectUrl(jiraProjectId));
+    return this._crud.read_legacy(this.getJiraProjectUrl(jiraProjectId));
   }
 }

@@ -108,7 +108,9 @@ export class MeasureService {
   }
 
   async listMeasures(requirementId: number): Promise<Measure[]> {
-    const measures = await this._crud.list(this.getMeasuresUrl(requirementId));
+    const measures = await this._crud.list_legacy(
+      this.getMeasuresUrl(requirementId)
+    );
     return measures.map((measure) => new Measure(measure));
   }
 
@@ -116,7 +118,7 @@ export class MeasureService {
     requirementId: number,
     measureInput: IMeasureInput
   ): Promise<Measure> {
-    const measure = await this._crud.create(
+    const measure = await this._crud.create_legacy(
       this.getMeasuresUrl(requirementId),
       measureInput
     );
@@ -124,7 +126,7 @@ export class MeasureService {
   }
 
   async getMeasure(measureId: number): Promise<Measure> {
-    const measure = await this._crud.read(this.getMeasureUrl(measureId));
+    const measure = await this._crud.read_legacy(this.getMeasureUrl(measureId));
     return new Measure(measure);
   }
 
@@ -132,7 +134,7 @@ export class MeasureService {
     measureId: number,
     measureInput: IMeasureInput
   ): Promise<Measure> {
-    const measure = await this._crud.update(
+    const measure = await this._crud.update_legacy(
       this.getMeasureUrl(measureId),
       measureInput
     );
@@ -140,7 +142,7 @@ export class MeasureService {
   }
 
   async deleteMeasure(measureId: number): Promise<null> {
-    return this._crud.delete(this.getMeasureUrl(measureId));
+    return this._crud.delete_legacy(this.getMeasureUrl(measureId));
   }
 
   downloadMeasureExcel(requirementId: number): Observable<IDownloadState> {
