@@ -200,8 +200,8 @@ export class BreadcrumbTrailComponent {
     }
 
     const requirementId = Number(first);
-    const requirement = await this._requirementService.getRequirement_legacy(
-      requirementId
+    const requirement = await firstValueFrom(
+      this._requirementService.getRequirement(requirementId)
     );
     return [
       {

@@ -111,9 +111,10 @@ export class RequirementTableComponent implements OnInit {
       });
   }
 
-  async onDeleteRequirement(requirement: Requirement): Promise<void> {
-    await this._requirementService.deleteRequirement_legacy(requirement.id);
-    await this.onReloadRequirements();
+  onDeleteRequirement(requirement: Requirement): void {
+    this._requirementService
+      .deleteRequirement(requirement.id)
+      .subscribe(this.onReloadRequirements.bind(this));
   }
 
   onExportRequirementsExcel() {
@@ -155,18 +156,20 @@ export class RequirementTableComponent implements OnInit {
       width: '500px',
       data: this.project,
     });
-    dialogRef.afterClosed().subscribe(async (result?: any) => {
-      if (result) {
-        await this.onReloadRequirements();
+    dialogRef.afterClosed().subscribe((requirements) => {
+      if (requirements) {
+        this.onReloadRequirements();
       }
     });
   }
 
-  async onReloadRequirements() {
+  onReloadRequirements(): void {
     if (this.project) {
-      this.data = await this._requirementService.listRequirements_legacy(
-        this.project.id
-      );
+      this._requirementService
+        .listRequirements(this.project.id)
+        .subscribe((requirements) => {
+          this.data = requirements;
+        });
     }
   }
 }

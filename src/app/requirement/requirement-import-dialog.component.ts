@@ -21,7 +21,7 @@ import {
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { BehaviorSubject, map, merge, Observable } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, map, merge, Observable } from 'rxjs';
 import {
   CatalogModule,
   CatalogModuleService,
@@ -298,11 +298,12 @@ export class RequirementImportDialogComponent implements OnInit {
       .filter((node) => node.checked)
       .map((node) => (node as CatalogModuleNode).catalogModule.id);
 
-    const requirements =
-      await this._requirementService.importRequirements_legacy(
+    const requirements = await firstValueFrom(
+      this._requirementService.importRequirements(
         this._project.id,
         catalogModuleIds
-      );
+      )
+    );
     this._dialogRef.close(requirements);
   }
 

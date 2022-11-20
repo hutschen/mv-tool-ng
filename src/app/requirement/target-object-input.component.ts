@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { map, Observable } from 'rxjs';
 import { Project } from '../shared/services/project.service';
 import { RequirementService } from '../shared/services/requirement.service';
 
@@ -52,20 +53,21 @@ export class TargetObjectInputComponent implements OnInit {
 
   constructor(protected _requirementService: RequirementService) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     if (this.project) {
-      const requirements =
-        await this._requirementService.listRequirements_legacy(this.project.id);
-      this.targetObjects = <string[]>requirements
-        .map(
-          (r) => r.target_object // collect all target objects
-        )
-        .filter(
-          (to) => to // remove undefined, null and empty strings
-        )
-        .filter(
-          (to, index, self) => self.indexOf(to) === index // remove duplicates
-        );
+      this._requirementService
+        .listRequirements(this.project.id)
+        .subscribe((requirements) => {
+          this.targetObjects = <string[]>requirements
+            .map((r) => r.target_object)
+            .filter(
+              (targetObject) => targetObject // remove undefined, null and empty strings
+            )
+            .filter(
+              (targetObject, index, self) =>
+                self.indexOf(targetObject) === index // remove duplicates
+            );
+        });
     }
   }
 

@@ -51,20 +51,19 @@ export class MeasureViewComponent implements OnInit {
     protected _requirementService: RequirementService
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     const requirementId = Number(
       this._route.snapshot.paramMap.get('requirementId')
     );
-    try {
-      this.requirement = await this._requirementService.getRequirement_legacy(
-        requirementId
-      );
-    } catch (error: any) {
-      if (error instanceof HttpErrorResponse && error.status === 404) {
-        this._router.navigate(['/']);
-      } else {
-        throw error;
-      }
-    }
+    this._requirementService.getRequirement(requirementId).subscribe({
+      next: (requirement) => {
+        this.requirement = requirement;
+      },
+      error: (error) => {
+        if (error instanceof HttpErrorResponse && error.status === 404) {
+          this._router.navigate(['/']);
+        }
+      },
+    });
   }
 }
