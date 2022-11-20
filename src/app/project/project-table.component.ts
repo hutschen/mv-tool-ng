@@ -68,9 +68,9 @@ export class ProjectTableComponent implements OnInit {
   }
 
   onDeleteProject(project: Project) {
-    this._projectService.deleteProject(project.id).subscribe(() => {
-      this.onReloadProjects();
-    });
+    this._projectService
+      .deleteProject(project.id)
+      .subscribe(this.onReloadProjects.bind(this));
   }
 
   onReloadProjects(): void {
