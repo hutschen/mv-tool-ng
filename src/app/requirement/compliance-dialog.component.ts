@@ -57,10 +57,11 @@ export class ComplianceDialogComponent {
 
   async onSave(form: NgForm): Promise<void> {
     if (form.valid) {
-      const requirement = await this._requirementService.updateRequirement(
-        this._requirement.id,
-        this.requirementInput
-      );
+      const requirement =
+        await this._requirementService.updateRequirement_legacy(
+          this._requirement.id,
+          this.requirementInput
+        );
       this._dialogRef.close(requirement);
     }
   }

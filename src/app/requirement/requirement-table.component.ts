@@ -112,7 +112,7 @@ export class RequirementTableComponent implements OnInit {
   }
 
   async onDeleteRequirement(requirement: Requirement): Promise<void> {
-    await this._requirementService.deleteRequirement(requirement.id);
+    await this._requirementService.deleteRequirement_legacy(requirement.id);
     await this.onReloadRequirements();
   }
 
@@ -164,7 +164,7 @@ export class RequirementTableComponent implements OnInit {
 
   async onReloadRequirements() {
     if (this.project) {
-      this.data = await this._requirementService.listRequirements(
+      this.data = await this._requirementService.listRequirements_legacy(
         this.project.id
       );
     }

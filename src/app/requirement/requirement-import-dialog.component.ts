@@ -298,10 +298,11 @@ export class RequirementImportDialogComponent implements OnInit {
       .filter((node) => node.checked)
       .map((node) => (node as CatalogModuleNode).catalogModule.id);
 
-    const requirements = await this._requirementService.importRequirements(
-      this._project.id,
-      catalogModuleIds
-    );
+    const requirements =
+      await this._requirementService.importRequirements_legacy(
+        this._project.id,
+        catalogModuleIds
+      );
     this._dialogRef.close(requirements);
   }
 

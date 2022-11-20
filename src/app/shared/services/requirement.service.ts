@@ -118,43 +118,48 @@ export class RequirementService {
     return `requirements/${requirementId}`;
   }
 
-  async listRequirements(projectId: number): Promise<Requirement[]> {
-    const requirements$ = this._crud
+  listRequirements(projectId: number): Observable<Requirement[]> {
+    return this._crud
       .list(this.getRequirementsUrl(projectId))
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
-    return firstValueFrom(requirements$);
   }
 
-  async createRequirement(
+  createRequirement(
     projectId: number,
     requirementInput: IRequirementInput
-  ): Promise<Requirement> {
-    const requirement$ = this._crud
+  ): Observable<Requirement> {
+    return this._crud
       .create(this.getRequirementsUrl(projectId), requirementInput)
       .pipe(map((requirement) => new Requirement(requirement)));
-    return firstValueFrom(requirement$);
   }
 
-  async getRequirement(requirementId: number): Promise<Requirement> {
-    const requirements$ = this._crud
+  getRequirement(requirementId: number): Observable<Requirement> {
+    return this._crud
       .read(this.getRequirementUrl(requirementId))
       .pipe(map((requirement) => new Requirement(requirement)));
-    return firstValueFrom(requirements$);
   }
 
-  async updateRequirement(
+  updateRequirement(
     requirementId: number,
     requirementInput: IRequirementInput
-  ): Promise<Requirement> {
-    const requirement$ = this._crud
+  ): Observable<Requirement> {
+    return this._crud
       .update(this.getRequirementUrl(requirementId), requirementInput)
       .pipe(map((requirement) => new Requirement(requirement)));
-    return firstValueFrom(requirement$);
   }
 
-  async deleteRequirement(requirementId: number): Promise<null> {
-    const delete$ = this._crud.delete(this.getRequirementUrl(requirementId));
-    return firstValueFrom(delete$);
+  deleteRequirement(requirementId: number): Observable<null> {
+    return this._crud.delete(this.getRequirementUrl(requirementId));
+  }
+
+  importRequirements(
+    projectId: number,
+    catalogModuleIds: number[]
+  ): Observable<Requirement[]> {
+    const url = `${this.getRequirementsUrl(projectId)}/import`;
+    return this._crud
+      .import(url, catalogModuleIds)
+      .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }
 
   downloadRequirementsExcel(projectId: number): Observable<IDownloadState> {
@@ -170,14 +175,38 @@ export class RequirementService {
     return this._upload.upload(url, file);
   }
 
-  async importRequirements(
+  async listRequirements_legacy(projectId: number): Promise<Requirement[]> {
+    return firstValueFrom(this.listRequirements(projectId));
+  }
+
+  async createRequirement_legacy(
+    projectId: number,
+    requirementInput: IRequirementInput
+  ): Promise<Requirement> {
+    return firstValueFrom(this.createRequirement(projectId, requirementInput));
+  }
+
+  async getRequirement_legacy(requirementId: number): Promise<Requirement> {
+    return firstValueFrom(this.getRequirement(requirementId));
+  }
+
+  async updateRequirement_legacy(
+    requirementId: number,
+    requirementInput: IRequirementInput
+  ): Promise<Requirement> {
+    return firstValueFrom(
+      this.updateRequirement(requirementId, requirementInput)
+    );
+  }
+
+  async deleteRequirement_legacy(requirementId: number): Promise<null> {
+    return firstValueFrom(this.deleteRequirement(requirementId));
+  }
+
+  async importRequirements_legacy(
     projectId: number,
     catalogModuleIds: number[]
   ): Promise<Requirement[]> {
-    const url = `${this.getRequirementsUrl(projectId)}/import`;
-    const requirements$ = this._crud
-      .import(url, catalogModuleIds)
-      .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
-    return firstValueFrom(requirements$);
+    return firstValueFrom(this.importRequirements(projectId, catalogModuleIds));
   }
 }

@@ -56,7 +56,7 @@ export class MeasureViewComponent implements OnInit {
       this._route.snapshot.paramMap.get('requirementId')
     );
     try {
-      this.requirement = await this._requirementService.getRequirement(
+      this.requirement = await this._requirementService.getRequirement_legacy(
         requirementId
       );
     } catch (error: any) {

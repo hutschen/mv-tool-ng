@@ -59,12 +59,12 @@ export class RequirementDialogComponent {
     if (form.valid) {
       let requirement: Requirement;
       if (!this._dialogData.requirement) {
-        requirement = await this._requirementService.createRequirement(
+        requirement = await this._requirementService.createRequirement_legacy(
           this.project.id,
           this.requirementInput
         );
       } else {
-        requirement = await this._requirementService.updateRequirement(
+        requirement = await this._requirementService.updateRequirement_legacy(
           this._dialogData.requirement.id,
           this.requirementInput
         );

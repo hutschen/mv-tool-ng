@@ -54,9 +54,8 @@ export class TargetObjectInputComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     if (this.project) {
-      const requirements = await this._requirementService.listRequirements(
-        this.project.id
-      );
+      const requirements =
+        await this._requirementService.listRequirements_legacy(this.project.id);
       this.targetObjects = <string[]>requirements
         .map(
           (r) => r.target_object // collect all target objects

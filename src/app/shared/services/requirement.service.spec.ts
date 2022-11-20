@@ -89,7 +89,7 @@ describe('RequirementService', () => {
     const projectId = outputMock.project.id;
     const requirementsList = [outputMock];
 
-    sut.listRequirements(projectId).then((value) => {
+    sut.listRequirements_legacy(projectId).then((value) => {
       expect(value).toEqual(
         requirementsList.map((requirement) => new Requirement(requirement))
       );
@@ -105,7 +105,7 @@ describe('RequirementService', () => {
   it('should create requirement', (done: DoneFn) => {
     const projectId = outputMock.project.id;
 
-    sut.createRequirement(projectId, inputMock).then((value) => {
+    sut.createRequirement_legacy(projectId, inputMock).then((value) => {
       expect(value).toEqual(new Requirement(outputMock));
       done();
     });
@@ -117,7 +117,7 @@ describe('RequirementService', () => {
   });
 
   it('should get a requirement', (done: DoneFn) => {
-    sut.getRequirement(outputMock.id).then((value) => {
+    sut.getRequirement_legacy(outputMock.id).then((value) => {
       expect(value).toEqual(new Requirement(outputMock));
       done();
     });
@@ -129,7 +129,7 @@ describe('RequirementService', () => {
   });
 
   it('should update a requirement', (done: DoneFn) => {
-    sut.updateRequirement(outputMock.id, inputMock).then((value) => {
+    sut.updateRequirement_legacy(outputMock.id, inputMock).then((value) => {
       expect(value).toEqual(new Requirement(outputMock));
       done();
     });
@@ -141,7 +141,7 @@ describe('RequirementService', () => {
   });
 
   it('should delete a requirement', (done: DoneFn) => {
-    sut.deleteRequirement(outputMock.id).then((value) => {
+    sut.deleteRequirement_legacy(outputMock.id).then((value) => {
       expect(value).toBeNull();
       done();
     });
