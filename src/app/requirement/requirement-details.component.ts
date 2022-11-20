@@ -23,7 +23,7 @@ import {
 } from './requirement-dialog.component';
 
 @Component({
-  selector: 'mvtool-requirement-card',
+  selector: 'mvtool-requirement-details',
   template: `
     <div class="requirement-card fx-column fx-gap-15" *ngIf="requirement">
       <!-- Title -->
@@ -120,7 +120,7 @@ import {
   styleUrls: ['../shared/styles/flex.css'],
   styles: ['h1 { margin: 0; }', '.requirement-card { margin: 20px; }'],
 })
-export class RequirementCardComponent {
+export class RequirementDetailsComponent {
   @Input() requirement: Requirement | null = null;
 
   constructor(protected _dialog: MatDialog) {}
