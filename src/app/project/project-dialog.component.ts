@@ -57,22 +57,22 @@ export class ProjectDialogComponent {
     }
   }
 
-  async onSave(form: NgForm): Promise<void> {
+  onSave(form: NgForm): void {
     if (form.valid) {
-      let project: Project;
       if (!this._project) {
-        project = await this._projectService.createProject_legacy(
-          this.projectInput
-        );
+        // create mode
+        this._projectService
+          .createProject(this.projectInput)
+          .subscribe((project) => this._dialogRef.close(project));
       } else {
-        project = await this._projectService.updateProject_legacy(
-          this._project.id,
-          this.projectInput
-        );
+        // edit mode
+        this._projectService
+          .updateProject(this._project.id, this.projectInput)
+          .subscribe((project) => this._dialogRef.close(project));
       }
-      this._dialogRef.close(project);
     }
   }
+
   onCancel(): void {
     this._dialogRef.close(null);
   }

@@ -46,16 +46,17 @@ export class DocumentViewComponent implements OnInit {
     protected _projectService: ProjectService
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     const projectId = Number(this._route.snapshot.paramMap.get('projectId'));
-    try {
-      this.project = await this._projectService.getProject_legacy(projectId);
-    } catch (error: any) {
-      if (error instanceof HttpErrorResponse && error.status === 404) {
-        this._router.navigate(['/']);
-      } else {
-        throw error;
-      }
-    }
+    this._projectService.getProject(projectId).subscribe({
+      next: (project) => {
+        this.project = project;
+      },
+      error: (error) => {
+        if (error instanceof HttpErrorResponse && error.status === 404) {
+          this._router.navigate(['/']);
+        }
+      },
+    });
   }
 }

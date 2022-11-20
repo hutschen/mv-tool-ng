@@ -15,7 +15,7 @@
 
 import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { filter, map } from 'rxjs';
+import { filter, firstValueFrom, map } from 'rxjs';
 import { CatalogModuleService } from './shared/services/catalog-module.service';
 import { CatalogService } from './shared/services/catalog.service';
 import { ProjectService } from './shared/services/project.service';
@@ -155,8 +155,9 @@ export class BreadcrumbTrailComponent {
 
     const projectId = Number(first);
     const projectBreadcrumb = {
-      displayText: (await this._projectService.getProject_legacy(projectId))
-        .name,
+      displayText: (
+        await firstValueFrom(this._projectService.getProject(projectId))
+      ).name,
       navigationCommands: ['projects', projectId, 'requirements'],
     };
     const requirementsBreadcrumb = {

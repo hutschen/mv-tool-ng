@@ -67,12 +67,15 @@ export class ProjectTableComponent implements OnInit {
     this._openProjectDialog(project);
   }
 
-  async onDeleteProject(project: Project) {
-    await this._projectService.deleteProject_legacy(project.id);
-    await this.onReloadProjects();
+  onDeleteProject(project: Project) {
+    this._projectService.deleteProject(project.id).subscribe(() => {
+      this.onReloadProjects();
+    });
   }
 
-  async onReloadProjects() {
-    this.data = await this._projectService.listProjects_legacy();
+  onReloadProjects(): void {
+    this._projectService.listProjects().subscribe((projects) => {
+      this.data = projects;
+    });
   }
 }
