@@ -80,9 +80,10 @@ export class DocumentTableComponent implements OnInit {
     this._openDocumentDialog(document);
   }
 
-  async onDeleteDocument(document: Document): Promise<void> {
-    await this._documentService.deleteDocument_legacy(document.id);
-    this.onReloadDocuments();
+  onDeleteDocument(document: Document): void {
+    this._documentService
+      .deleteDocument(document.id)
+      .subscribe(this.onReloadDocuments.bind(this));
   }
 
   onExportDocuments(): void {
@@ -116,11 +117,13 @@ export class DocumentTableComponent implements OnInit {
     }
   }
 
-  async onReloadDocuments(): Promise<void> {
+  onReloadDocuments(): void {
     if (this.project) {
-      this.data = await this._documentService.listDocuments_legacy(
-        this.project.id
-      );
+      this._documentService
+        .listDocuments(this.project.id)
+        .subscribe((documents) => {
+          this.data = documents;
+        });
     }
   }
 }

@@ -33,6 +33,7 @@ import { Project } from '../shared/services/project.service';
       </mat-form-field>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css'],
   styles: [],
 })
 export class DocumentInputComponent implements OnInit {
@@ -43,11 +44,13 @@ export class DocumentInputComponent implements OnInit {
 
   constructor(protected _documentService: DocumentService) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     if (this.project) {
-      this.documents = await this._documentService.listDocuments_legacy(
-        this.project.id
-      );
+      this._documentService
+        .listDocuments(this.project.id)
+        .subscribe((documents) => {
+          this.documents = documents;
+        });
     }
   }
 
