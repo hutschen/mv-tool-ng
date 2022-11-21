@@ -120,30 +120,4 @@ export class DocumentService {
     const url = `${this.getDocumentsUrl(project_id)}/excel`;
     return this._upload.upload(url, file);
   }
-
-  async listDocuments_legacy(projectId: number): Promise<Document[]> {
-    return firstValueFrom(this.listDocuments(projectId));
-  }
-
-  async createDocument_legacy(
-    projectId: number,
-    documentInput: IDocumentInput
-  ): Promise<Document> {
-    return firstValueFrom(this.createDocument(projectId, documentInput));
-  }
-
-  async getDocument_legacy(documentId: number): Promise<Document> {
-    return firstValueFrom(this.getDocument(documentId));
-  }
-
-  async updateDocument_legacy(
-    documentId: number,
-    documentInput: IDocumentInput
-  ): Promise<Document> {
-    return firstValueFrom(this.updateDocument(documentId, documentInput));
-  }
-
-  async deleteDocument_legacy(documentId: number): Promise<null> {
-    return firstValueFrom(this.deleteDocument(documentId));
-  }
 }
