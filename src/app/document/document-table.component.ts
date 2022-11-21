@@ -81,7 +81,7 @@ export class DocumentTableComponent implements OnInit {
   }
 
   async onDeleteDocument(document: Document): Promise<void> {
-    await this._documentService.deleteDocument(document.id);
+    await this._documentService.deleteDocument_legacy(document.id);
     this.onReloadDocuments();
   }
 
@@ -118,7 +118,9 @@ export class DocumentTableComponent implements OnInit {
 
   async onReloadDocuments(): Promise<void> {
     if (this.project) {
-      this.data = await this._documentService.listDocuments(this.project.id);
+      this.data = await this._documentService.listDocuments_legacy(
+        this.project.id
+      );
     }
   }
 }

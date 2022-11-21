@@ -74,43 +74,38 @@ export class DocumentService {
     return `documents/${documentId}`;
   }
 
-  async listDocuments(projectId: number): Promise<Document[]> {
-    const documents$ = this._crud
+  listDocuments(projectId: number): Observable<Document[]> {
+    return this._crud
       .list(this.getDocumentsUrl(projectId))
       .pipe(map((documents) => documents.map((d) => new Document(d))));
-    return firstValueFrom(documents$);
   }
 
-  async createDocument(
+  createDocument(
     projectId: number,
     documentInput: IDocumentInput
-  ): Promise<Document> {
-    const document$ = this._crud
+  ): Observable<Document> {
+    return this._crud
       .create(this.getDocumentsUrl(projectId), documentInput)
       .pipe(map((document) => new Document(document)));
-    return firstValueFrom(document$);
   }
 
-  async getDocument(documentId: number): Promise<Document> {
-    const document$ = this._crud
+  getDocument(documentId: number): Observable<Document> {
+    return this._crud
       .read(this.getDocumentUrl(documentId))
       .pipe(map((document) => new Document(document)));
-    return firstValueFrom(document$);
   }
 
-  async updateDocument(
+  updateDocument(
     documentId: number,
     documentInput: IDocumentInput
-  ): Promise<Document> {
-    const document = this._crud
+  ): Observable<Document> {
+    return this._crud
       .update(this.getDocumentUrl(documentId), documentInput)
       .pipe(map((document) => new Document(document)));
-    return firstValueFrom(document);
   }
 
-  async deleteDocument(documentId: number): Promise<null> {
-    const delete$ = this._crud.delete(this.getDocumentUrl(documentId));
-    return firstValueFrom(delete$);
+  deleteDocument(documentId: number): Observable<null> {
+    return this._crud.delete(this.getDocumentUrl(documentId));
   }
 
   downloadDocumentExcel(project_id: number): Observable<IDownloadState> {
@@ -124,5 +119,31 @@ export class DocumentService {
   ): Observable<IUploadState> {
     const url = `${this.getDocumentsUrl(project_id)}/excel`;
     return this._upload.upload(url, file);
+  }
+
+  async listDocuments_legacy(projectId: number): Promise<Document[]> {
+    return firstValueFrom(this.listDocuments(projectId));
+  }
+
+  async createDocument_legacy(
+    projectId: number,
+    documentInput: IDocumentInput
+  ): Promise<Document> {
+    return firstValueFrom(this.createDocument(projectId, documentInput));
+  }
+
+  async getDocument_legacy(documentId: number): Promise<Document> {
+    return firstValueFrom(this.getDocument(documentId));
+  }
+
+  async updateDocument_legacy(
+    documentId: number,
+    documentInput: IDocumentInput
+  ): Promise<Document> {
+    return firstValueFrom(this.updateDocument(documentId, documentInput));
+  }
+
+  async deleteDocument_legacy(documentId: number): Promise<null> {
+    return firstValueFrom(this.deleteDocument(documentId));
   }
 }

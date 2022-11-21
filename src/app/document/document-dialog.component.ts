@@ -61,12 +61,12 @@ export class DocumentDialogComponent {
     if (form.valid) {
       let document: Document;
       if (!this._dialogData.document) {
-        document = await this._documentService.createDocument(
+        document = await this._documentService.createDocument_legacy(
           this.project.id,
           this.documentInput
         );
       } else {
-        document = await this._documentService.updateDocument(
+        document = await this._documentService.updateDocument_legacy(
           this._dialogData.document.id,
           this.documentInput
         );

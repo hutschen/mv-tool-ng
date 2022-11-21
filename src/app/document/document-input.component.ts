@@ -45,7 +45,7 @@ export class DocumentInputComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     if (this.project) {
-      this.documents = await this._documentService.listDocuments(
+      this.documents = await this._documentService.listDocuments_legacy(
         this.project.id
       );
     }
