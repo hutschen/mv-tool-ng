@@ -141,32 +141,6 @@ export class MeasureService {
     return this._crud.delete(this.getMeasureUrl(measureId));
   }
 
-  async listMeasures_legacy(requirementId: number): Promise<Measure[]> {
-    return firstValueFrom(this.listMeasures(requirementId));
-  }
-
-  async createMeasure_legacy(
-    requirementId: number,
-    measureInput: IMeasureInput
-  ): Promise<Measure> {
-    return firstValueFrom(this.createMeasure(requirementId, measureInput));
-  }
-
-  async getMeasure_legacy(measureId: number): Promise<Measure> {
-    return firstValueFrom(this.getMeasure(measureId));
-  }
-
-  async updateMeasure_legacy(
-    measureId: number,
-    measureInput: IMeasureInput
-  ): Promise<Measure> {
-    return firstValueFrom(this.updateMeasure(measureId, measureInput));
-  }
-
-  async deleteMeasure_legacy(measureId: number): Promise<null> {
-    return firstValueFrom(this.deleteMeasure(measureId));
-  }
-
   downloadMeasureExcel(requirementId: number): Observable<IDownloadState> {
     const url = `${this.getMeasuresUrl(requirementId)}/excel`;
     return this._download.download(url);
