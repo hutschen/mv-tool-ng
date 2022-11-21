@@ -174,39 +174,4 @@ export class RequirementService {
     const url = `${this.getRequirementsUrl(projectId)}/excel`;
     return this._upload.upload(url, file);
   }
-
-  async listRequirements_legacy(projectId: number): Promise<Requirement[]> {
-    return firstValueFrom(this.listRequirements(projectId));
-  }
-
-  async createRequirement_legacy(
-    projectId: number,
-    requirementInput: IRequirementInput
-  ): Promise<Requirement> {
-    return firstValueFrom(this.createRequirement(projectId, requirementInput));
-  }
-
-  async getRequirement_legacy(requirementId: number): Promise<Requirement> {
-    return firstValueFrom(this.getRequirement(requirementId));
-  }
-
-  async updateRequirement_legacy(
-    requirementId: number,
-    requirementInput: IRequirementInput
-  ): Promise<Requirement> {
-    return firstValueFrom(
-      this.updateRequirement(requirementId, requirementInput)
-    );
-  }
-
-  async deleteRequirement_legacy(requirementId: number): Promise<null> {
-    return firstValueFrom(this.deleteRequirement(requirementId));
-  }
-
-  async importRequirements_legacy(
-    projectId: number,
-    catalogModuleIds: number[]
-  ): Promise<Requirement[]> {
-    return firstValueFrom(this.importRequirements(projectId, catalogModuleIds));
-  }
 }
