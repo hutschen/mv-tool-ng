@@ -107,43 +107,64 @@ export class MeasureService {
     return `measures/${measureId}`;
   }
 
-  async listMeasures(requirementId: number): Promise<Measure[]> {
-    const measures$ = this._crud
+  listMeasures(requirementId: number): Observable<Measure[]> {
+    return this._crud
       .list(this.getMeasuresUrl(requirementId))
       .pipe(map((measures) => measures.map((m) => new Measure(m))));
-    return firstValueFrom(measures$);
   }
 
-  async createMeasure(
+  createMeasure(
+    requirementId: number,
+    measureInput: IMeasureInput
+  ): Observable<Measure> {
+    return this._crud
+      .create(this.getMeasuresUrl(requirementId), measureInput)
+      .pipe(map((measure) => new Measure(measure)));
+  }
+
+  getMeasure(measureId: number): Observable<Measure> {
+    return this._crud
+      .read(this.getMeasureUrl(measureId))
+      .pipe(map((measure) => new Measure(measure)));
+  }
+
+  updateMeasure(
+    measureId: number,
+    measureInput: IMeasureInput
+  ): Observable<Measure> {
+    return this._crud
+      .update(this.getMeasureUrl(measureId), measureInput)
+      .pipe(map((measure) => new Measure(measure)));
+  }
+
+  deleteMeasure(measureId: number): Observable<null> {
+    return this._crud.delete(this.getMeasureUrl(measureId));
+  }
+
+  async listMeasures_legacy(requirementId: number): Promise<Measure[]> {
+    return firstValueFrom(this.listMeasures(requirementId));
+  }
+
+  async createMeasure_legacy(
     requirementId: number,
     measureInput: IMeasureInput
   ): Promise<Measure> {
-    const measure$ = this._crud
-      .create(this.getMeasuresUrl(requirementId), measureInput)
-      .pipe(map((measure) => new Measure(measure)));
-    return firstValueFrom(measure$);
+    return firstValueFrom(this.createMeasure(requirementId, measureInput));
   }
 
-  async getMeasure(measureId: number): Promise<Measure> {
-    const measure = this._crud
-      .read(this.getMeasureUrl(measureId))
-      .pipe(map((measure) => new Measure(measure)));
-    return firstValueFrom(measure);
+  async getMeasure_legacy(measureId: number): Promise<Measure> {
+    return firstValueFrom(this.getMeasure(measureId));
   }
 
-  async updateMeasure(
+  async updateMeasure_legacy(
     measureId: number,
     measureInput: IMeasureInput
   ): Promise<Measure> {
-    const measure = this._crud
-      .update(this.getMeasureUrl(measureId), measureInput)
-      .pipe(map((measure) => new Measure(measure)));
-    return firstValueFrom(measure);
+    return firstValueFrom(this.updateMeasure(measureId, measureInput));
   }
 
-  async deleteMeasure(measureId: number): Promise<null> {
-    const delete$ = this._crud.delete(this.getMeasureUrl(measureId));
-    return firstValueFrom(delete$);
+  async deleteMeasure_legacy(measureId: number): Promise<null> {
+    return firstValueFrom(this.deleteMeasure(measureId));
   }
 
   downloadMeasureExcel(requirementId: number): Observable<IDownloadState> {

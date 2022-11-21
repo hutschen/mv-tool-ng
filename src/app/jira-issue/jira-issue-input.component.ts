@@ -169,7 +169,7 @@ export class JiraIssueInputComponent implements OnInit {
         const measureInput = this.measure.toMeasureInput();
         measureInput.jira_issue_id = jiraIssue.id;
         this.loading = true;
-        this.measure = await this._measureService.updateMeasure(
+        this.measure = await this._measureService.updateMeasure_legacy(
           this.measure.id,
           measureInput
         );
@@ -184,7 +184,7 @@ export class JiraIssueInputComponent implements OnInit {
       const measureInput = this.measure.toMeasureInput();
       measureInput.jira_issue_id = null;
       this.loading = true;
-      this.measure = await this._measureService.updateMeasure(
+      this.measure = await this._measureService.updateMeasure_legacy(
         this.measure.id,
         measureInput
       );

@@ -82,7 +82,7 @@ export class MeasureTableComponent implements OnInit {
   }
 
   async onDeleteMeasure(measure: Measure): Promise<void> {
-    await this._measureService.deleteMeasure(measure.id);
+    await this._measureService.deleteMeasure_legacy(measure.id);
     await this.onReloadMeasures();
   }
 
@@ -119,7 +119,9 @@ export class MeasureTableComponent implements OnInit {
 
   async onReloadMeasures() {
     if (this.requirement) {
-      this.data = await this._measureService.listMeasures(this.requirement.id);
+      this.data = await this._measureService.listMeasures_legacy(
+        this.requirement.id
+      );
     }
   }
 }

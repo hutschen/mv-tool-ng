@@ -50,7 +50,7 @@ export class MeasureCompleteButtonComponent implements OnInit {
       this.loading = true;
       const measureInput = this.measure.toMeasureInput();
       measureInput.completed = !this.measure.completed;
-      this.measure = await this._measureService.updateMeasure(
+      this.measure = await this._measureService.updateMeasure_legacy(
         this.measure.id,
         measureInput
       );

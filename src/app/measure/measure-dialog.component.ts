@@ -63,12 +63,12 @@ export class MeasureDialogComponent {
     if (form.valid) {
       let measure: Measure;
       if (!this._dialogData.measure) {
-        measure = await this._measureService.createMeasure(
+        measure = await this._measureService.createMeasure_legacy(
           this.requirement.id,
           this.measureInput
         );
       } else {
-        measure = await this._measureService.updateMeasure(
+        measure = await this._measureService.updateMeasure_legacy(
           this._dialogData.measure.id,
           this.measureInput
         );
