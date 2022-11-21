@@ -15,6 +15,7 @@
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { firstValueFrom } from 'rxjs';
 import { JiraIssueService } from '../shared/services/jira-issue.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
@@ -169,9 +170,8 @@ export class JiraIssueInputComponent implements OnInit {
         const measureInput = this.measure.toMeasureInput();
         measureInput.jira_issue_id = jiraIssue.id;
         this.loading = true;
-        this.measure = await this._measureService.updateMeasure_legacy(
-          this.measure.id,
-          measureInput
+        this.measure = await firstValueFrom(
+          this._measureService.updateMeasure(this.measure.id, measureInput)
         );
         this.measureChange.emit(this.measure);
         this.loading = false;
@@ -184,9 +184,8 @@ export class JiraIssueInputComponent implements OnInit {
       const measureInput = this.measure.toMeasureInput();
       measureInput.jira_issue_id = null;
       this.loading = true;
-      this.measure = await this._measureService.updateMeasure_legacy(
-        this.measure.id,
-        measureInput
+      this.measure = await firstValueFrom(
+        this._measureService.updateMeasure(this.measure.id, measureInput)
       );
       this.measureChange.emit(this.measure);
       this.loading = false;
