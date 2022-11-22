@@ -70,10 +70,12 @@ export class JiraIssueDialogComponent implements OnInit {
     return description;
   }
 
-  async ngOnInit(): Promise<void> {
-    this.jiraIssueTypes = await this._jiraIssueTypeService.getJiraIssueTypes(
-      this.jiraProject.id
-    );
+  ngOnInit(): void {
+    this._jiraIssueTypeService
+      .getJiraIssueTypes(this.jiraProject.id)
+      .subscribe((jiraIssueTypes) => {
+        this.jiraIssueTypes = jiraIssueTypes;
+      });
   }
 
   onSave(form: NgForm): void {

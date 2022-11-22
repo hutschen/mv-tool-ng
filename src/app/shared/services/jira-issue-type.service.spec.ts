@@ -62,9 +62,9 @@ describe('JiraIssueTypeService', () => {
 
   it('should list jira issue types', (done: DoneFn) => {
     const jiraProjectId = '1000';
-    sut.getJiraIssueTypes(jiraProjectId).then((value) => {
-      expect(value).toEqual([outputMock]);
-      done();
+    sut.getJiraIssueTypes(jiraProjectId).subscribe({
+      next: (value) => expect(value).toEqual([outputMock]),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
