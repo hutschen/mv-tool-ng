@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 import { JiraProjectService } from './jira-project.service';
 import { MeasureService } from './measure.service';
@@ -57,24 +57,18 @@ export class JiraIssueService {
     return `${this._measureService.getMeasureUrl(measureId)}/jira-issue`;
   }
 
-  async getJiraIssues(jiraProjectId: string): Promise<IJiraIssue[]> {
-    const jiraIssues$ = this._crud.list(this.getJiraIssuesUrl(jiraProjectId));
-    return firstValueFrom(jiraIssues$);
+  getJiraIssues(jiraProjectId: string): Observable<IJiraIssue[]> {
+    return this._crud.list(this.getJiraIssuesUrl(jiraProjectId));
   }
 
-  async createAndLinkJiraIssue(
+  createAndLinkJiraIssue(
     measureId: number,
     jiraIssueInput: IJiraIssueInput
-  ): Promise<IJiraIssue> {
-    const jiraIssue$ = this._crud.create(
-      this.getJiraIssueUrl(measureId),
-      jiraIssueInput
-    );
-    return firstValueFrom(jiraIssue$);
+  ): Observable<IJiraIssue> {
+    return this._crud.create(this.getJiraIssueUrl(measureId), jiraIssueInput);
   }
 
-  async getJiraIssue(measureId: number): Promise<IJiraIssue> {
-    const jiraIssue$ = this._crud.read(this.getJiraIssueUrl(measureId));
-    return firstValueFrom(jiraIssue$);
+  getJiraIssue(measureId: number): Observable<IJiraIssue> {
+    return this._crud.read(this.getJiraIssueUrl(measureId));
   }
 }
