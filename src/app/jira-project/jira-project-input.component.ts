@@ -60,15 +60,19 @@ export class JiraProjectInputComponent implements OnInit {
 
   constructor(protected _jiraProjectService: JiraProjectService) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     if (!this.locked) {
-      this.jiraProjects = await this._jiraProjectService.getJiraProjects();
+      this._jiraProjectService.getJiraProjects().subscribe((jiraProjects) => {
+        this.jiraProjects = jiraProjects;
+      });
     }
   }
 
-  async unlock() {
-    this.locked = false;
-    this.jiraProjects = await this._jiraProjectService.getJiraProjects();
+  unlock() {
+    this._jiraProjectService.getJiraProjects().subscribe((jiraProjects) => {
+      this.jiraProjects = jiraProjects;
+      this.locked = false;
+    });
   }
 
   get jiraProjectId_(): string | null {

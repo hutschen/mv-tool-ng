@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 
 export interface IJiraProject {
@@ -38,13 +38,11 @@ export class JiraProjectService {
     return `${this.getJiraProjectsUrl()}/${jiraProjectId}`;
   }
 
-  async getJiraProjects(): Promise<IJiraProject[]> {
-    const jiraProjects$ = this._crud.list(this.getJiraProjectsUrl());
-    return firstValueFrom(jiraProjects$);
+  getJiraProjects(): Observable<IJiraProject[]> {
+    return this._crud.list(this.getJiraProjectsUrl());
   }
 
-  async getJiraProject(jiraProjectId: string): Promise<IJiraProject> {
-    const jiraProject$ = this._crud.read(this.getJiraProjectUrl(jiraProjectId));
-    return firstValueFrom(jiraProject$);
+  getJiraProject(jiraProjectId: string): Observable<IJiraProject> {
+    return this._crud.read(this.getJiraProjectUrl(jiraProjectId));
   }
 }
