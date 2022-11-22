@@ -59,9 +59,9 @@ describe('UserService', () => {
   });
 
   it('should get user', (done: DoneFn) => {
-    sut.getUser().then((value) => {
-      expect(value).toEqual(outputMock);
-      done();
+    sut.getUser().subscribe({
+      next: (value) => expect(value).toEqual(outputMock),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
