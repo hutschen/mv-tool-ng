@@ -96,7 +96,9 @@ export class BreadcrumbTrailComponent {
     const catalogId = Number(first);
     return [
       {
-        displayText: (await this._catalogService.getCatalog(catalogId)).title,
+        displayText: (
+          await firstValueFrom(this._catalogService.getCatalog(catalogId))
+        ).title,
         navigationCommands: ['catalogs', catalogId, 'catalog-modules'],
       },
       {

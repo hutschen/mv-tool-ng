@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom, map } from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 
 export interface ICatalogInput {
@@ -63,39 +63,57 @@ export class CatalogService {
     return `${this.getCatalogsUrl()}/${catalogId}`;
   }
 
-  async listCatalogs(): Promise<Catalog[]> {
-    const catalogs$ = this._crud
+  listCatalogs(): Observable<Catalog[]> {
+    return this._crud
       .list(this.getCatalogsUrl())
       .pipe(map((catalogs) => catalogs.map((c) => new Catalog(c))));
-    return firstValueFrom(catalogs$);
   }
 
-  async createCatalog(catalogInput: ICatalogInput): Promise<Catalog> {
-    const catalog$ = this._crud
+  createCatalog(catalogInput: ICatalogInput): Observable<Catalog> {
+    return this._crud
       .create(this.getCatalogsUrl(), catalogInput)
       .pipe(map((catalog) => new Catalog(catalog)));
-    return firstValueFrom(catalog$);
   }
 
-  async getCatalog(catalogId: number): Promise<Catalog> {
-    const catalog$ = this._crud
+  getCatalog(catalogId: number): Observable<Catalog> {
+    return this._crud
       .read(this.getCatalogUrl(catalogId))
       .pipe(map((catalog) => new Catalog(catalog)));
-    return firstValueFrom(catalog$);
   }
 
-  async updateCatalog(
+  updateCatalog(
+    catalogId: number,
+    catalogInput: ICatalogInput
+  ): Observable<Catalog> {
+    return this._crud
+      .update(this.getCatalogUrl(catalogId), catalogInput)
+      .pipe(map((catalog) => new Catalog(catalog)));
+  }
+
+  deleteCatalog(catalogId: number): Observable<null> {
+    return this._crud.delete(this.getCatalogUrl(catalogId));
+  }
+
+  async listCatalogs_legacy(): Promise<Catalog[]> {
+    return firstValueFrom(this.listCatalogs());
+  }
+
+  async createCatalog_legacy(catalogInput: ICatalogInput): Promise<Catalog> {
+    return firstValueFrom(this.createCatalog(catalogInput));
+  }
+
+  async getCatalog_legacy(catalogId: number): Promise<Catalog> {
+    return firstValueFrom(this.getCatalog(catalogId));
+  }
+
+  async updateCatalog_legacy(
     catalogId: number,
     catalogInput: ICatalogInput
   ): Promise<Catalog> {
-    const catalog$ = this._crud
-      .update(this.getCatalogUrl(catalogId), catalogInput)
-      .pipe(map((catalog) => new Catalog(catalog)));
-    return firstValueFrom(catalog$);
+    return firstValueFrom(this.updateCatalog(catalogId, catalogInput));
   }
 
-  async deleteCatalog(catalogId: number): Promise<null> {
-    const delete$ = this._crud.delete(this.getCatalogUrl(catalogId));
-    return firstValueFrom(delete$);
+  async deleteCatalog_legacy(catalogId: number): Promise<null> {
+    return firstValueFrom(this.deleteCatalog(catalogId));
   }
 }
