@@ -53,9 +53,8 @@ export class MeasureTableComponent implements OnInit {
     protected _dialog: MatDialog
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    await this.onReloadMeasures();
-    this.dataLoaded = true;
+  ngOnInit(): void {
+    this.onReloadMeasures();
   }
 
   protected _openMeasureDialog(measure: Measure | null = null): void {
@@ -124,6 +123,7 @@ export class MeasureTableComponent implements OnInit {
         .listMeasures(this.requirement.id)
         .subscribe((measures) => {
           this.data = measures;
+          this.dataLoaded = true;
         });
     }
   }

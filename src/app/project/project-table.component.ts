@@ -42,9 +42,8 @@ export class ProjectTableComponent implements OnInit {
     protected _dialog: MatDialog
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    await this.onReloadProjects();
-    this.dataLoaded = true;
+  ngOnInit(): void {
+    this.onReloadProjects();
   }
 
   protected _openProjectDialog(project: Project | null = null): void {
@@ -76,6 +75,7 @@ export class ProjectTableComponent implements OnInit {
   onReloadProjects(): void {
     this._projectService.listProjects().subscribe((projects) => {
       this.data = projects;
+      this.dataLoaded = true;
     });
   }
 }

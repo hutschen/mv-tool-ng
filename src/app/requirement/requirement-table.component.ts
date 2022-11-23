@@ -65,9 +65,8 @@ export class RequirementTableComponent implements OnInit {
     protected _dialog: MatDialog
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    await this.onReloadRequirements();
-    this.dataLoaded = true;
+  ngOnInit(): void {
+    this.onReloadRequirements();
   }
 
   protected _openRequirementDialog(
@@ -169,6 +168,7 @@ export class RequirementTableComponent implements OnInit {
         .listRequirements(this.project.id)
         .subscribe((requirements) => {
           this.data = requirements;
+          this.dataLoaded = true;
         });
     }
   }

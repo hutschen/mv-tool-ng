@@ -52,9 +52,8 @@ export class DocumentTableComponent implements OnInit {
     protected _dialog: MatDialog
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    await this.onReloadDocuments();
-    this.dataLoaded = true;
+  ngOnInit(): void {
+    this.onReloadDocuments();
   }
 
   protected _openDocumentDialog(document: Document | null = null): void {
@@ -123,6 +122,7 @@ export class DocumentTableComponent implements OnInit {
         .listDocuments(this.project.id)
         .subscribe((documents) => {
           this.data = documents;
+          this.dataLoaded = true;
         });
     }
   }
