@@ -60,6 +60,8 @@ export class RequirementViewComponent implements OnInit {
       error: (error) => {
         if (error instanceof HttpErrorResponse && error.status === 404) {
           this._router.navigate(['/']);
+        } else {
+          throw error;
         }
       },
     });
