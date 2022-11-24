@@ -16,6 +16,7 @@
 import { Component, Inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { firstValueFrom, Observable } from 'rxjs';
 import { CatalogModule } from '../shared/services/catalog-module.service';
 import {
   CatalogRequirement,
@@ -59,21 +60,21 @@ export class CatalogRequirementDialogComponent {
 
   async onSave(form: NgForm): Promise<void> {
     if (form.valid) {
-      let catalogRequirement: CatalogRequirement;
+      let catalogRequirement$: Observable<CatalogRequirement>;
       if (!this._dialogData.catalogRequirement) {
-        catalogRequirement =
-          await this._catalogRequirementService.createCatalogRequirement(
+        catalogRequirement$ =
+          this._catalogRequirementService.createCatalogRequirement(
             this.catalogModule.id,
             this.catalogRequirementInput
           );
       } else {
-        catalogRequirement =
-          await this._catalogRequirementService.updateCatalogRequirement(
+        catalogRequirement$ =
+          this._catalogRequirementService.updateCatalogRequirement(
             this._dialogData.catalogRequirement.id,
             this.catalogRequirementInput
           );
       }
-      this._dialogRef.close(catalogRequirement);
+      this._dialogRef.close(await firstValueFrom(catalogRequirement$));
     }
   }
 
