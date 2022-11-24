@@ -16,6 +16,7 @@
 import { Component, Inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { firstValueFrom, Observable } from 'rxjs';
 import {
   CatalogModule,
   CatalogModuleService,
@@ -61,19 +62,19 @@ export class CatalogModuleDialogComponent {
 
   async onSave(form: NgForm): Promise<void> {
     if (form.valid) {
-      let catalogModule: CatalogModule;
+      let catalogModule$: Observable<CatalogModule>;
       if (!this._dialogData.catalogModule) {
-        catalogModule = await this._catalogModuleService.createCatalogModule(
+        catalogModule$ = this._catalogModuleService.createCatalogModule(
           this.catalog.id,
           this.catalogModuleInput
         );
       } else {
-        catalogModule = await this._catalogModuleService.updateCatalogModule(
+        catalogModule$ = this._catalogModuleService.updateCatalogModule(
           this._dialogData.catalogModule.id,
           this.catalogModuleInput
         );
       }
-      this._dialogRef.close(catalogModule);
+      this._dialogRef.close(await firstValueFrom(catalogModule$));
     }
   }
 

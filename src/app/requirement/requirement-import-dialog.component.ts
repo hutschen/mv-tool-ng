@@ -21,7 +21,14 @@ import {
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { BehaviorSubject, firstValueFrom, map, merge, Observable } from 'rxjs';
+import {
+  BehaviorSubject,
+  firstValueFrom,
+  map,
+  merge,
+  Observable,
+  tap,
+} from 'rxjs';
 import {
   CatalogModule,
   CatalogModuleService,
@@ -78,15 +85,21 @@ class CatalogNode implements INode {
 
   async loadChildren(): Promise<CatalogModuleNode[]> {
     if (!this.isLoaded) {
-      const catalogModules =
-        await this._catalogModuleService.listCatalogModules(this.catalog.id);
-      this._children = catalogModules.map(
-        (catalogModule) => new CatalogModuleNode(catalogModule)
-      );
-      // set checked state of children
-      this._children.forEach((child) => {
-        child.checked = this._checked;
-      });
+      const children$ = this._catalogModuleService
+        .listCatalogModules(this.catalog.id)
+        .pipe(
+          // convert to nodes
+          map((catalogModules) =>
+            catalogModules.map(
+              (catalogModule) => new CatalogModuleNode(catalogModule)
+            )
+          ),
+          // set checked state of child nodes
+          tap((children) =>
+            children.forEach((child) => (child.checked = this._checked))
+          )
+        );
+      this._children = await firstValueFrom(children$);
       this.isLoaded = true;
     }
     return this._children;

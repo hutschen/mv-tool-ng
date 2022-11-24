@@ -93,11 +93,12 @@ describe('CatalogModuleService', () => {
     const catalogId = outputMock.catalog.id;
     const catalogModulesList = [outputMock];
 
-    sut.listCatalogModules(catalogId).then((value) => {
-      expect(value).toEqual(
-        catalogModulesList.map((cm) => new CatalogModule(cm))
-      );
-      done();
+    sut.listCatalogModules(catalogId).subscribe({
+      next: (value) =>
+        expect(value).toEqual(
+          catalogModulesList.map((cm) => new CatalogModule(cm))
+        ),
+      complete: done,
     });
 
     const mockResponse = httpMock.expectOne({
@@ -110,9 +111,9 @@ describe('CatalogModuleService', () => {
   it('should create catalog module', (done: DoneFn) => {
     const catalogId = outputMock.catalog.id;
 
-    sut.createCatalogModule(catalogId, inputMock).then((value) => {
-      expect(value).toEqual(new CatalogModule(outputMock));
-      done();
+    sut.createCatalogModule(catalogId, inputMock).subscribe({
+      next: (value) => expect(value).toEqual(new CatalogModule(outputMock)),
+      complete: done,
     });
 
     const mockResponse = httpMock.expectOne({
@@ -125,9 +126,9 @@ describe('CatalogModuleService', () => {
   it('should get catalog module', (done: DoneFn) => {
     const catalogModuleId = outputMock.id;
 
-    sut.getCatalogModule(catalogModuleId).then((value) => {
-      expect(value).toEqual(new CatalogModule(outputMock));
-      done();
+    sut.getCatalogModule(catalogModuleId).subscribe({
+      next: (value) => expect(value).toEqual(new CatalogModule(outputMock)),
+      complete: done,
     });
 
     const mockResponse = httpMock.expectOne({
@@ -140,9 +141,9 @@ describe('CatalogModuleService', () => {
   it('should update catalog module', (done: DoneFn) => {
     const catalogModuleId = outputMock.id;
 
-    sut.updateCatalogModule(catalogModuleId, inputMock).then((value) => {
-      expect(value).toEqual(new CatalogModule(outputMock));
-      done();
+    sut.updateCatalogModule(catalogModuleId, inputMock).subscribe({
+      next: (value) => expect(value).toEqual(new CatalogModule(outputMock)),
+      complete: done,
     });
 
     const mockResponse = httpMock.expectOne({
@@ -155,9 +156,9 @@ describe('CatalogModuleService', () => {
   it('should delete catalog module', (done: DoneFn) => {
     const catalogModuleId = outputMock.id;
 
-    sut.deleteCatalogModule(catalogModuleId).then((value) => {
-      expect(value).toBeNull();
-      done();
+    sut.deleteCatalogModule(catalogModuleId).subscribe({
+      next: (value) => expect(value).toBeNull(),
+      complete: done,
     });
 
     const mockResponse = httpMock.expectOne({

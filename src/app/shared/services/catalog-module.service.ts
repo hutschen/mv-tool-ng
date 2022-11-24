@@ -76,49 +76,42 @@ export class CatalogModuleService {
     return `catalog-modules/${catalogModuleId}`;
   }
 
-  async listCatalogModules(catalogId: number): Promise<CatalogModule[]> {
-    const catalogModules$ = this._crud
+  listCatalogModules(catalogId: number): Observable<CatalogModule[]> {
+    return this._crud
       .list(this.getCatalogModulesUrl(catalogId))
       .pipe(
         map((catalogModules) =>
           catalogModules.map((cm) => new CatalogModule(cm))
         )
       );
-    return firstValueFrom(catalogModules$);
   }
 
-  async createCatalogModule(
+  createCatalogModule(
     catalogId: number,
     catalogModuleInput: ICatalogModuleInput
-  ): Promise<CatalogModule> {
-    const catalogModule$ = this._crud
+  ): Observable<CatalogModule> {
+    return this._crud
       .create(this.getCatalogModulesUrl(catalogId), catalogModuleInput)
       .pipe(map((catalogModule) => new CatalogModule(catalogModule)));
-    return firstValueFrom(catalogModule$);
   }
 
-  async getCatalogModule(catalogModuleId: number): Promise<CatalogModule> {
-    const catalogModule$ = this._crud
+  getCatalogModule(catalogModuleId: number): Observable<CatalogModule> {
+    return this._crud
       .read(this.getCatalogModuleUrl(catalogModuleId))
       .pipe(map((catalogModule) => new CatalogModule(catalogModule)));
-    return firstValueFrom(catalogModule$);
   }
 
-  async updateCatalogModule(
+  updateCatalogModule(
     catalogModuleId: number,
     catalogModuleInput: ICatalogModuleInput
-  ): Promise<CatalogModule> {
-    const catalogModule$ = this._crud
+  ): Observable<CatalogModule> {
+    return this._crud
       .update(this.getCatalogModuleUrl(catalogModuleId), catalogModuleInput)
       .pipe(map((catalogModule) => new CatalogModule(catalogModule)));
-    return firstValueFrom(catalogModule$);
   }
 
-  async deleteCatalogModule(catalogModuleId: number): Promise<null> {
-    const delete$ = this._crud.delete(
-      this.getCatalogModuleUrl(catalogModuleId)
-    );
-    return firstValueFrom(delete$);
+  deleteCatalogModule(catalogModuleId: number): Observable<null> {
+    return this._crud.delete(this.getCatalogModuleUrl(catalogModuleId));
   }
 
   uploadGSBaustein(catalogId: number, file: File): Observable<IUploadState> {

@@ -117,8 +117,8 @@ export class BreadcrumbTrailComponent {
     }
 
     const catalogModuleId = Number(first);
-    const catalogModule = await this._catalogModuleService.getCatalogModule(
-      catalogModuleId
+    const catalogModule = await firstValueFrom(
+      this._catalogModuleService.getCatalogModule(catalogModuleId)
     );
     return [
       {
