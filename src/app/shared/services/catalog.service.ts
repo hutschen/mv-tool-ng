@@ -93,27 +93,4 @@ export class CatalogService {
   deleteCatalog(catalogId: number): Observable<null> {
     return this._crud.delete(this.getCatalogUrl(catalogId));
   }
-
-  async listCatalogs_legacy(): Promise<Catalog[]> {
-    return firstValueFrom(this.listCatalogs());
-  }
-
-  async createCatalog_legacy(catalogInput: ICatalogInput): Promise<Catalog> {
-    return firstValueFrom(this.createCatalog(catalogInput));
-  }
-
-  async getCatalog_legacy(catalogId: number): Promise<Catalog> {
-    return firstValueFrom(this.getCatalog(catalogId));
-  }
-
-  async updateCatalog_legacy(
-    catalogId: number,
-    catalogInput: ICatalogInput
-  ): Promise<Catalog> {
-    return firstValueFrom(this.updateCatalog(catalogId, catalogInput));
-  }
-
-  async deleteCatalog_legacy(catalogId: number): Promise<null> {
-    return firstValueFrom(this.deleteCatalog(catalogId));
-  }
 }
