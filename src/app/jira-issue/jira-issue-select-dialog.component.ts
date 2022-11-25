@@ -90,11 +90,13 @@ export class JiraIssueSelectDialogComponent implements OnInit {
     this.jiraProject = dialogData.jiraProject;
   }
 
-  async ngOnInit(): Promise<void> {
-    this.jiraIssues = await this._jiraIssueService.getJiraIssues(
-      this.jiraProject.id
-    );
-    this.jiraIssuesLoaded = true;
+  ngOnInit(): void {
+    this._jiraIssueService
+      .getJiraIssues(this.jiraProject.id)
+      .subscribe((jiraIssues) => {
+        this.jiraIssues = jiraIssues;
+        this.jiraIssuesLoaded = true;
+      });
   }
 
   get filteredJiraIssues(): IJiraIssue[] {

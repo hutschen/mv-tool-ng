@@ -16,6 +16,7 @@
 import { Component, Inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import {
   Project,
   IProjectInput,
@@ -57,20 +58,21 @@ export class ProjectDialogComponent {
     }
   }
 
-  async onSave(form: NgForm): Promise<void> {
+  onSave(form: NgForm): void {
     if (form.valid) {
-      let project: Project;
+      let project$: Observable<Project>;
       if (!this._project) {
-        project = await this._projectService.createProject(this.projectInput);
+        project$ = this._projectService.createProject(this.projectInput);
       } else {
-        project = await this._projectService.updateProject(
+        project$ = this._projectService.updateProject(
           this._project.id,
           this.projectInput
         );
       }
-      this._dialogRef.close(project);
+      project$.subscribe((project) => this._dialogRef.close(project));
     }
   }
+
   onCancel(): void {
     this._dialogRef.close(null);
   }

@@ -16,6 +16,7 @@
 import { Component, Inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import { Project } from '../shared/services/project.service';
 import {
   IRequirementInput,
@@ -55,21 +56,23 @@ export class RequirementDialogComponent {
     return !this._dialogData.requirement;
   }
 
-  async onSave(form: NgForm): Promise<void> {
+  onSave(form: NgForm): void {
     if (form.valid) {
-      let requirement: Requirement;
+      let requirement$: Observable<Requirement>;
       if (!this._dialogData.requirement) {
-        requirement = await this._requirementService.createRequirement(
+        requirement$ = this._requirementService.createRequirement(
           this.project.id,
           this.requirementInput
         );
       } else {
-        requirement = await this._requirementService.updateRequirement(
+        requirement$ = this._requirementService.updateRequirement(
           this._dialogData.requirement.id,
           this.requirementInput
         );
       }
-      this._dialogRef.close(requirement);
+      requirement$.subscribe((requirement) =>
+        this._dialogRef.close(requirement)
+      );
     }
   }
 

@@ -79,9 +79,10 @@ describe('CatalogService', () => {
 
   it('should list catalogs', (done: DoneFn) => {
     const catalogList = [outputMock];
-    sut.listCatalogs().then((value) => {
-      expect(value).toEqual(catalogList.map((c) => new Catalog(c)));
-      done();
+    sut.listCatalogs().subscribe({
+      next: (value) =>
+        expect(value).toEqual(catalogList.map((c) => new Catalog(c))),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
@@ -91,9 +92,9 @@ describe('CatalogService', () => {
   });
 
   it('should create catalog', (done: DoneFn) => {
-    sut.createCatalog(inputMock).then((value) => {
-      expect(value).toEqual(new Catalog(outputMock));
-      done();
+    sut.createCatalog(inputMock).subscribe({
+      next: (value) => expect(value).toEqual(new Catalog(outputMock)),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'post',
@@ -103,9 +104,9 @@ describe('CatalogService', () => {
   });
 
   it('should get catalog', (done: DoneFn) => {
-    sut.getCatalog(outputMock.id).then((value) => {
-      expect(value).toEqual(new Catalog(outputMock));
-      done();
+    sut.getCatalog(outputMock.id).subscribe({
+      next: (value) => expect(value).toEqual(new Catalog(outputMock)),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
@@ -115,9 +116,9 @@ describe('CatalogService', () => {
   });
 
   it('should update catalog', (done: DoneFn) => {
-    sut.updateCatalog(outputMock.id, inputMock).then((value) => {
-      expect(value).toEqual(new Catalog(outputMock));
-      done();
+    sut.updateCatalog(outputMock.id, inputMock).subscribe({
+      next: (value) => expect(value).toEqual(new Catalog(outputMock)),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'put',
@@ -127,10 +128,9 @@ describe('CatalogService', () => {
   });
 
   it('should delete catalog', (done: DoneFn) => {
-    sut.deleteCatalog(outputMock.id).then((value) => {
-      expect(value).toBeNull();
-      done();
-    });
+    sut
+      .deleteCatalog(outputMock.id)
+      .subscribe({ next: (value) => expect(value).toBeNull(), complete: done });
     const mockResponse = httpMock.expectOne({
       method: 'delete',
       url: crud.toAbsoluteUrl(sut.getCatalogUrl(outputMock.id)),

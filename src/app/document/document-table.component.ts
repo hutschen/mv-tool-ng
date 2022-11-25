@@ -52,9 +52,8 @@ export class DocumentTableComponent implements OnInit {
     protected _dialog: MatDialog
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    await this.onReloadDocuments();
-    this.dataLoaded = true;
+  ngOnInit(): void {
+    this.onReloadDocuments();
   }
 
   protected _openDocumentDialog(document: Document | null = null): void {
@@ -80,9 +79,10 @@ export class DocumentTableComponent implements OnInit {
     this._openDocumentDialog(document);
   }
 
-  async onDeleteDocument(document: Document): Promise<void> {
-    await this._documentService.deleteDocument(document.id);
-    this.onReloadDocuments();
+  onDeleteDocument(document: Document): void {
+    this._documentService
+      .deleteDocument(document.id)
+      .subscribe(this.onReloadDocuments.bind(this));
   }
 
   onExportDocuments(): void {
@@ -116,9 +116,14 @@ export class DocumentTableComponent implements OnInit {
     }
   }
 
-  async onReloadDocuments(): Promise<void> {
+  onReloadDocuments(): void {
     if (this.project) {
-      this.data = await this._documentService.listDocuments(this.project.id);
+      this._documentService
+        .listDocuments(this.project.id)
+        .subscribe((documents) => {
+          this.data = documents;
+          this.dataLoaded = true;
+        });
     }
   }
 }

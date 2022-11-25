@@ -89,11 +89,13 @@ describe('RequirementService', () => {
     const projectId = outputMock.project.id;
     const requirementsList = [outputMock];
 
-    sut.listRequirements(projectId).then((value) => {
-      expect(value).toEqual(
-        requirementsList.map((requirement) => new Requirement(requirement))
-      );
-      done();
+    sut.listRequirements(projectId).subscribe({
+      next: (value) => {
+        expect(value).toEqual(
+          requirementsList.map((requirement) => new Requirement(requirement))
+        );
+      },
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
@@ -105,9 +107,9 @@ describe('RequirementService', () => {
   it('should create requirement', (done: DoneFn) => {
     const projectId = outputMock.project.id;
 
-    sut.createRequirement(projectId, inputMock).then((value) => {
-      expect(value).toEqual(new Requirement(outputMock));
-      done();
+    sut.createRequirement(projectId, inputMock).subscribe({
+      next: (value) => expect(value).toEqual(new Requirement(outputMock)),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'post',
@@ -117,9 +119,9 @@ describe('RequirementService', () => {
   });
 
   it('should get a requirement', (done: DoneFn) => {
-    sut.getRequirement(outputMock.id).then((value) => {
-      expect(value).toEqual(new Requirement(outputMock));
-      done();
+    sut.getRequirement(outputMock.id).subscribe({
+      next: (value) => expect(value).toEqual(new Requirement(outputMock)),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
@@ -129,9 +131,9 @@ describe('RequirementService', () => {
   });
 
   it('should update a requirement', (done: DoneFn) => {
-    sut.updateRequirement(outputMock.id, inputMock).then((value) => {
-      expect(value).toEqual(new Requirement(outputMock));
-      done();
+    sut.updateRequirement(outputMock.id, inputMock).subscribe({
+      next: (value) => expect(value).toEqual(new Requirement(outputMock)),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'put',
@@ -141,14 +143,34 @@ describe('RequirementService', () => {
   });
 
   it('should delete a requirement', (done: DoneFn) => {
-    sut.deleteRequirement(outputMock.id).then((value) => {
-      expect(value).toBeNull();
-      done();
+    sut.deleteRequirement(outputMock.id).subscribe({
+      next: (value) => expect(value).toBeNull(),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'delete',
       url: crud.toAbsoluteUrl(sut.getRequirementUrl(outputMock.id)),
     });
     mockResponse.flush(null);
+  });
+
+  it('should import requirements', (done: DoneFn) => {
+    const projectId = outputMock.project.id;
+    const catalogModuleIds = [1, 2, 3];
+    const requirementsList = [outputMock];
+
+    sut.importRequirements(projectId, catalogModuleIds).subscribe({
+      next: (value) => {
+        expect(value).toEqual(
+          requirementsList.map((requirement) => new Requirement(requirement))
+        );
+      },
+      complete: done,
+    });
+    const mockResponse = httpMock.expectOne({
+      method: 'post',
+      url: crud.toAbsoluteUrl(`${sut.getRequirementsUrl(projectId)}/import`),
+    });
+    mockResponse.flush(requirementsList);
   });
 });

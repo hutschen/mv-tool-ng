@@ -51,9 +51,10 @@ export class UserMenuComponent implements OnInit {
     return this._auth.isLoggedIn;
   }
 
-  protected async _onLoggedIn() {
-    const user: IUser = await this._user.getUser();
-    this.displayName = user.display_name;
+  protected _onLoggedIn() {
+    this._user.getUser().subscribe((user) => {
+      this.displayName = user.display_name;
+    });
   }
 
   onLogOut(): void {
@@ -61,9 +62,9 @@ export class UserMenuComponent implements OnInit {
     this.displayName = '';
   }
 
-  async ngOnInit() {
+  ngOnInit() {
     if (this.isLoggedIn) {
-      await this._onLoggedIn();
+      this._onLoggedIn();
     }
     this._auth.loggedIn.subscribe(() => this._onLoggedIn());
   }

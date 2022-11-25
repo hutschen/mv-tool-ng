@@ -41,9 +41,8 @@ export class CatalogTableComponent implements OnInit {
     protected _dialog: MatDialog
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    await this.onReloadCatalogs();
-    this.dataLoaded = true;
+  ngOnInit(): void {
+    this.onReloadCatalogs();
   }
 
   protected _openCatalogDialog(catalog: Catalog | null = null): void {
@@ -66,12 +65,16 @@ export class CatalogTableComponent implements OnInit {
     return this._openCatalogDialog(catalog);
   }
 
-  async onDeleteCatalog(catalog: Catalog) {
-    await this._catalogService.deleteCatalog(catalog.id);
-    await this.onReloadCatalogs();
+  onDeleteCatalog(catalog: Catalog): void {
+    this._catalogService
+      .deleteCatalog(catalog.id)
+      .subscribe(this.onReloadCatalogs.bind(this));
   }
 
-  async onReloadCatalogs() {
-    this.data = await this._catalogService.listCatalogs();
+  onReloadCatalogs(): void {
+    this._catalogService.listCatalogs().subscribe((catalogs) => {
+      this.data = catalogs;
+      this.dataLoaded = true;
+    });
   }
 }

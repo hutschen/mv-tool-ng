@@ -16,6 +16,7 @@
 import { Component, Inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import {
   IDocumentInput,
   Document,
@@ -57,21 +58,21 @@ export class DocumentDialogComponent {
     return this._dialogData.document === null;
   }
 
-  async onSave(form: NgForm): Promise<void> {
+  onSave(form: NgForm): void {
     if (form.valid) {
-      let document: Document;
+      let document$: Observable<Document>;
       if (!this._dialogData.document) {
-        document = await this._documentService.createDocument(
+        document$ = this._documentService.createDocument(
           this.project.id,
           this.documentInput
         );
       } else {
-        document = await this._documentService.updateDocument(
+        document$ = this._documentService.updateDocument(
           this._dialogData.document.id,
           this.documentInput
         );
       }
-      this._dialogRef.close(document);
+      document$.subscribe((document) => this._dialogRef.close(document));
     }
   }
 

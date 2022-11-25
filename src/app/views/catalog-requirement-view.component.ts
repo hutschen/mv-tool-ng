@@ -16,6 +16,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { catchError, EMPTY, firstValueFrom } from 'rxjs';
 import {
   CatalogModule,
   CatalogModuleService,
@@ -38,7 +39,7 @@ import {
   styles: [],
 })
 export class CatalogRequirementViewComponent implements OnInit {
-  catalogModule: CatalogModule | null = null;
+  catalogModule?: CatalogModule;
 
   constructor(
     protected _route: ActivatedRoute,
@@ -46,20 +47,21 @@ export class CatalogRequirementViewComponent implements OnInit {
     protected _catalogModuleService: CatalogModuleService
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit() {
     const catalogModuleId = Number(
       this._route.snapshot.paramMap.get('catalogModuleId')
     );
-    try {
-      this.catalogModule = await this._catalogModuleService.getCatalogModule(
-        catalogModuleId
-      );
-    } catch (error: any) {
-      if (error instanceof HttpErrorResponse && error.status === 404) {
-        this._router.navigate(['/']);
-      } else {
-        throw error;
-      }
-    }
+    this._catalogModuleService
+      .getCatalogModule(catalogModuleId)
+      .pipe(
+        catchError((error) => {
+          if (error instanceof HttpErrorResponse && error.status === 404) {
+            this._router.navigate(['/']);
+            return EMPTY;
+          }
+          throw error;
+        })
+      )
+      .subscribe((catalogModule) => (this.catalogModule = catalogModule));
   }
 }

@@ -67,10 +67,12 @@ describe('JiraProjectService', () => {
   });
 
   it('should list jira projects', (done: DoneFn) => {
-    sut.getJiraProjects().then((value) => {
-      expect(value.length).toEqual(1);
-      expect(value[0]).toEqual(outputMock);
-      done();
+    sut.getJiraProjects().subscribe({
+      next: (value) => {
+        expect(value.length).toEqual(1);
+        expect(value[0]).toEqual(outputMock);
+      },
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
@@ -80,9 +82,9 @@ describe('JiraProjectService', () => {
   });
 
   it('should get jira project', (done: DoneFn) => {
-    sut.getJiraProject(outputMock.id).then((value) => {
-      expect(value).toEqual(outputMock);
-      done();
+    sut.getJiraProject(outputMock.id).subscribe({
+      next: (value) => expect(value).toEqual(outputMock),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',

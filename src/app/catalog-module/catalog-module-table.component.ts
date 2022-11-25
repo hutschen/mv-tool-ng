@@ -15,6 +15,7 @@
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { firstValueFrom } from 'rxjs';
 import { ITableColumn } from '../shared/components/table.component';
 import { UploadDialogComponent } from '../shared/components/upload-dialog.component';
 import {
@@ -54,7 +55,6 @@ export class CatalogModuleTableComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.onReloadCatalogModules();
-    this.dataLoaded = true;
   }
 
   protected _openCatalogModuleDialog(
@@ -102,15 +102,18 @@ export class CatalogModuleTableComponent implements OnInit {
   }
 
   async onDeleteCatalogModule(catalogModule: CatalogModule): Promise<void> {
-    await this._catalogModuleService.deleteCatalogModule(catalogModule.id);
+    await firstValueFrom(
+      this._catalogModuleService.deleteCatalogModule(catalogModule.id)
+    );
     await this.onReloadCatalogModules();
   }
 
   async onReloadCatalogModules(): Promise<void> {
     if (this.catalog) {
-      this.data = await this._catalogModuleService.listCatalogModules(
-        this.catalog.id
+      this.data = await firstValueFrom(
+        this._catalogModuleService.listCatalogModules(this.catalog.id)
       );
+      this.dataLoaded = true;
     }
   }
 }

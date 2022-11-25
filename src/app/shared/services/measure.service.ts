@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 import { IDocument, Document } from './document.service';
 import { DownloadService, IDownloadState } from './download.service';
@@ -107,39 +107,37 @@ export class MeasureService {
     return `measures/${measureId}`;
   }
 
-  async listMeasures(requirementId: number): Promise<Measure[]> {
-    const measures = await this._crud.list(this.getMeasuresUrl(requirementId));
-    return measures.map((measure) => new Measure(measure));
+  listMeasures(requirementId: number): Observable<Measure[]> {
+    return this._crud
+      .list(this.getMeasuresUrl(requirementId))
+      .pipe(map((measures) => measures.map((m) => new Measure(m))));
   }
 
-  async createMeasure(
+  createMeasure(
     requirementId: number,
     measureInput: IMeasureInput
-  ): Promise<Measure> {
-    const measure = await this._crud.create(
-      this.getMeasuresUrl(requirementId),
-      measureInput
-    );
-    return new Measure(measure);
+  ): Observable<Measure> {
+    return this._crud
+      .create(this.getMeasuresUrl(requirementId), measureInput)
+      .pipe(map((measure) => new Measure(measure)));
   }
 
-  async getMeasure(measureId: number): Promise<Measure> {
-    const measure = await this._crud.read(this.getMeasureUrl(measureId));
-    return new Measure(measure);
+  getMeasure(measureId: number): Observable<Measure> {
+    return this._crud
+      .read(this.getMeasureUrl(measureId))
+      .pipe(map((measure) => new Measure(measure)));
   }
 
-  async updateMeasure(
+  updateMeasure(
     measureId: number,
     measureInput: IMeasureInput
-  ): Promise<Measure> {
-    const measure = await this._crud.update(
-      this.getMeasureUrl(measureId),
-      measureInput
-    );
-    return new Measure(measure);
+  ): Observable<Measure> {
+    return this._crud
+      .update(this.getMeasureUrl(measureId), measureInput)
+      .pipe(map((measure) => new Measure(measure)));
   }
 
-  async deleteMeasure(measureId: number): Promise<null> {
+  deleteMeasure(measureId: number): Observable<null> {
     return this._crud.delete(this.getMeasureUrl(measureId));
   }
 

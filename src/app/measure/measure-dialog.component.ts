@@ -16,6 +16,7 @@
 import { Component, Inject } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import {
   IMeasureInput,
   Measure,
@@ -59,21 +60,21 @@ export class MeasureDialogComponent {
     return this._dialogData.measure === null;
   }
 
-  async onSave(form: NgForm): Promise<void> {
+  onSave(form: NgForm): void {
     if (form.valid) {
-      let measure: Measure;
+      let measure$: Observable<Measure>;
       if (!this._dialogData.measure) {
-        measure = await this._measureService.createMeasure(
+        measure$ = this._measureService.createMeasure(
           this.requirement.id,
           this.measureInput
         );
       } else {
-        measure = await this._measureService.updateMeasure(
+        measure$ = this._measureService.updateMeasure(
           this._dialogData.measure.id,
           this.measureInput
         );
       }
-      this._dialogRef.close(measure);
+      measure$.subscribe((measure) => this._dialogRef.close(measure));
     }
   }
 

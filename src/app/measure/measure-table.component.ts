@@ -53,9 +53,8 @@ export class MeasureTableComponent implements OnInit {
     protected _dialog: MatDialog
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    await this.onReloadMeasures();
-    this.dataLoaded = true;
+  ngOnInit(): void {
+    this.onReloadMeasures();
   }
 
   protected _openMeasureDialog(measure: Measure | null = null): void {
@@ -82,8 +81,9 @@ export class MeasureTableComponent implements OnInit {
   }
 
   async onDeleteMeasure(measure: Measure): Promise<void> {
-    await this._measureService.deleteMeasure(measure.id);
-    await this.onReloadMeasures();
+    this._measureService
+      .deleteMeasure(measure.id)
+      .subscribe(this.onReloadMeasures.bind(this));
   }
 
   onExportMeasures(): void {
@@ -117,9 +117,14 @@ export class MeasureTableComponent implements OnInit {
     }
   }
 
-  async onReloadMeasures() {
+  onReloadMeasures(): void {
     if (this.requirement) {
-      this.data = await this._measureService.listMeasures(this.requirement.id);
+      this._measureService
+        .listMeasures(this.requirement.id)
+        .subscribe((measures) => {
+          this.data = measures;
+          this.dataLoaded = true;
+        });
     }
   }
 }

@@ -15,6 +15,7 @@
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { firstValueFrom, tap } from 'rxjs';
 import { ITableColumn } from '../shared/components/table.component';
 import { CatalogModule } from '../shared/services/catalog-module.service';
 import {
@@ -54,7 +55,6 @@ export class CatalogRequirementTableComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.onReloadCatalogRequirements();
-    this.dataLoaded = true;
   }
 
   protected _openCatalogRequirementDialog(
@@ -87,17 +87,20 @@ export class CatalogRequirementTableComponent implements OnInit {
   async onDeleteCatalogRequirement(
     catalogRequirement: CatalogRequirement
   ): Promise<void> {
-    await this._catalogRequirementService.deleteCatalogRequirement(
-      catalogRequirement.id
+    await firstValueFrom(
+      this._catalogRequirementService.deleteCatalogRequirement(
+        catalogRequirement.id
+      )
     );
     await this.onReloadCatalogRequirements();
   }
 
   async onReloadCatalogRequirements(): Promise<void> {
     if (this.catalogModule) {
-      this.data = await this._catalogRequirementService.listCatalogRequirements(
-        this.catalogModule.id
-      );
+      const catalogRequirements$ = this._catalogRequirementService
+        .listCatalogRequirements(this.catalogModule.id)
+        .pipe(tap(() => (this.dataLoaded = true)));
+      this.data = await firstValueFrom(catalogRequirements$);
     }
   }
 }

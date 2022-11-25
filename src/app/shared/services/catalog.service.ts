@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
+import { firstValueFrom, map, Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 
 export interface ICatalogInput {
@@ -62,36 +63,34 @@ export class CatalogService {
     return `${this.getCatalogsUrl()}/${catalogId}`;
   }
 
-  async listCatalogs(): Promise<Catalog[]> {
-    const catalogs = await this._crud.list(this.getCatalogsUrl());
-    return catalogs.map((catalog) => new Catalog(catalog));
+  listCatalogs(): Observable<Catalog[]> {
+    return this._crud
+      .list(this.getCatalogsUrl())
+      .pipe(map((catalogs) => catalogs.map((c) => new Catalog(c))));
   }
 
-  async createCatalog(catalogInput: ICatalogInput): Promise<Catalog> {
-    const catalog = await this._crud.create(
-      this.getCatalogsUrl(),
-      catalogInput
-    );
-    return new Catalog(catalog);
+  createCatalog(catalogInput: ICatalogInput): Observable<Catalog> {
+    return this._crud
+      .create(this.getCatalogsUrl(), catalogInput)
+      .pipe(map((catalog) => new Catalog(catalog)));
   }
 
-  async getCatalog(catalogId: number): Promise<Catalog> {
-    const catalog = await this._crud.read(this.getCatalogUrl(catalogId));
-    return new Catalog(catalog);
+  getCatalog(catalogId: number): Observable<Catalog> {
+    return this._crud
+      .read(this.getCatalogUrl(catalogId))
+      .pipe(map((catalog) => new Catalog(catalog)));
   }
 
-  async updateCatalog(
+  updateCatalog(
     catalogId: number,
     catalogInput: ICatalogInput
-  ): Promise<Catalog> {
-    const catalog = await this._crud.update(
-      this.getCatalogUrl(catalogId),
-      catalogInput
-    );
-    return new Catalog(catalog);
+  ): Observable<Catalog> {
+    return this._crud
+      .update(this.getCatalogUrl(catalogId), catalogInput)
+      .pipe(map((catalog) => new Catalog(catalog)));
   }
 
-  async deleteCatalog(catalogId: number): Promise<null> {
+  deleteCatalog(catalogId: number): Observable<null> {
     return this._crud.delete(this.getCatalogUrl(catalogId));
   }
 }

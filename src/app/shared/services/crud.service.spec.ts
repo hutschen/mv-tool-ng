@@ -71,10 +71,12 @@ describe('CRUDService', () => {
   });
 
   it('should list items', (done: DoneFn) => {
-    sut.list('items').then((value) => {
-      expect(value.length).toEqual(1);
-      expect(value[0]).toEqual(outputMock);
-      done();
+    sut.list('items').subscribe({
+      next: (value) => {
+        expect(value.length).toEqual(1);
+        expect(value[0]).toEqual(outputMock);
+      },
+      complete: () => done(),
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
@@ -84,9 +86,9 @@ describe('CRUDService', () => {
   });
 
   it('should create an item', (done: DoneFn) => {
-    sut.create('items', inputMock).then((value) => {
-      expect(value).toEqual(outputMock);
-      done();
+    sut.create('items', inputMock).subscribe({
+      next: (value) => expect(value).toEqual(outputMock),
+      complete: () => done(),
     });
     const mockResponse = httpMock.expectOne({
       method: 'post',
@@ -96,9 +98,9 @@ describe('CRUDService', () => {
   });
 
   it('should read an item', (done: DoneFn) => {
-    sut.read('items/1').then((value) => {
-      expect(value).toEqual(outputMock);
-      done();
+    sut.read('items/1').subscribe({
+      next: (value) => expect(value).toEqual(outputMock),
+      complete: () => done(),
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
@@ -108,9 +110,9 @@ describe('CRUDService', () => {
   });
 
   it('should update an item', (done: DoneFn) => {
-    sut.update('items/1', inputMock).then((value) => {
-      expect(value).toEqual(outputMock);
-      done();
+    sut.update('items/1', inputMock).subscribe({
+      next: (value) => expect(value).toEqual(outputMock),
+      complete: () => done(),
     });
     const mockResponse = httpMock.expectOne({
       method: 'put',
@@ -120,14 +122,30 @@ describe('CRUDService', () => {
   });
 
   it('should delete an item', (done: DoneFn) => {
-    sut.delete('items/1').then((value) => {
-      expect(value).toBeNull();
-      done();
+    sut.delete('items/1').subscribe({
+      next: (value) => expect(value).toBeNull(),
+      complete: () => done(),
     });
     const mockResponse = httpMock.expectOne({
       method: 'delete',
       url: baseUrl + '/items/1',
     });
     mockResponse.flush(null);
+  });
+
+  it('should import items', (done: DoneFn) => {
+    const itemIds = [1, 2, 3];
+    sut.import('items/import', itemIds).subscribe({
+      next: (value) => {
+        expect(value.length).toEqual(1);
+        expect(value[0]).toEqual(outputMock);
+      },
+      complete: () => done(),
+    });
+    const mockResponse = httpMock.expectOne({
+      method: 'post',
+      url: baseUrl + '/items/import',
+    });
+    mockResponse.flush([outputMock]);
   });
 });
