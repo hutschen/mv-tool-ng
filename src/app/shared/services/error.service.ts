@@ -69,8 +69,20 @@ export class ErrorService implements ErrorHandler {
       const router = this._injector.get(Router);
       const authService = this._injector.get(AuthService);
 
+      authService.logOut();
       router.navigate(['/login']).then(() => {
-        authService.logOut();
+        this.openErrorDialog(error);
+      });
+    }
+  }
+
+  handleForbiddenError(error: HttpErrorResponse): void {
+    if (error.status === 403) {
+      const router = this._injector.get(Router);
+      const authService = this._injector.get(AuthService);
+
+      authService.logOut();
+      router.navigate(['/login']).then(() => {
         this.openErrorDialog(error);
       });
     }
@@ -87,6 +99,8 @@ export class ErrorService implements ErrorHandler {
     switch (error.status) {
       case 401:
         return this.handleUnauthorizedError(error);
+      case 403:
+        return this.handleForbiddenError(error);
       case 404:
         return this.handleNotFoundError(error);
       default:
