@@ -21,13 +21,29 @@ import { Subject } from 'rxjs';
 import { ErrorDialogComponent } from '../components/error-dialog.component';
 import { AuthService } from './auth.service';
 
+export class ErrorReport {
+  code?: number;
+  title?: string;
+  detail: string;
+
+  constructor(public error: any) {
+    if (this.error instanceof HttpErrorResponse) {
+      this.code = this.error.status;
+      this.title = this.error.statusText;
+      this.detail = this.error.error.detail || 'Unknown error';
+    } else {
+      this.detail = this.error.message || 'Unknown error';
+    }
+  }
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class ErrorService implements ErrorHandler {
   protected _dialogRef?: MatDialogRef<ErrorDialogComponent>;
-  protected _errorSubject = new Subject<any>();
-  protected _errors$ = this._errorSubject.asObservable();
+  protected _errorReportsSubject = new Subject<any>();
+  protected _errorReports$ = this._errorReportsSubject.asObservable();
 
   constructor(protected _injector: Injector) {}
 
@@ -37,7 +53,7 @@ export class ErrorService implements ErrorHandler {
       const dialog = this._injector.get(MatDialog);
       this._dialogRef = dialog.open(ErrorDialogComponent, {
         width: '500px',
-        data: this._errors$,
+        data: this._errorReports$,
       });
       this._dialogRef.afterClosed().subscribe(() => {
         this._dialogRef = undefined;
@@ -45,7 +61,7 @@ export class ErrorService implements ErrorHandler {
     }
 
     // push error to error subject to report it
-    this._errorSubject.next(error);
+    this._errorReportsSubject.next(new ErrorReport(error));
   }
 
   handleUnauthorizedError(error: HttpErrorResponse): void {
