@@ -25,7 +25,6 @@ import { AppToolbarComponent } from './app-toolbar.component';
 import { LoginViewComponent } from './views/login-view.component';
 import { ProjectsViewComponent } from './views/projects-view.component';
 import { AuthGuard } from './auth.guard';
-import { GlobalErrorHandler } from './global-error-handler';
 import { JiraProjectModule } from './jira-project/jira-project.module';
 import { RequirementViewComponent } from './views/requirement-view.component';
 import { DocumentViewComponent } from './views/document-view.component';
@@ -48,6 +47,7 @@ import { CatalogModuleViewComponent } from './views/catalog-module-view.componen
 import { CatalogModuleModule } from './catalog-module/catalog-module.module';
 import { CatalogRequirementViewComponent } from './views/catalog-requirement-view.component';
 import { CatalogRequirementModule } from './catalog-requirement/catalog-requirement.module';
+import { ErrorService } from './shared/services/error.service';
 
 const routes = [
   {
@@ -119,7 +119,7 @@ const routes = [
     CatalogModuleModule,
     CatalogRequirementModule,
   ],
-  providers: [{ provide: ErrorHandler, useClass: GlobalErrorHandler }],
+  providers: [{ provide: ErrorHandler, useClass: ErrorService }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

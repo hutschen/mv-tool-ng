@@ -15,6 +15,8 @@
 
 import { Component, EventEmitter, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../shared/services/auth.service';
 
 @Component({
@@ -32,7 +34,7 @@ export class UserLoginComponent {
     password: '',
   };
 
-  constructor(protected _auth: AuthService) {
+  constructor(protected _auth: AuthService, protected _snackBar: MatSnackBar) {
     this.loggedIn = this._auth.loggedIn;
   }
 
@@ -46,11 +48,16 @@ export class UserLoginComponent {
 
   async onSubmit(form: NgForm): Promise<void> {
     if (form.valid) {
-      try {
-        await this._auth.logIn(this.credentials, this.keepLoggedIn);
-      } catch (error) {
+      const loggedIn = await firstValueFrom(
+        this._auth.logIn(this.credentials, this.keepLoggedIn)
+      );
+      if (!loggedIn) {
+        this._snackBar.open(
+          'Log in failed. Please try to log in again.',
+          'Close',
+          { duration: 10 * 1000 }
+        );
         this.onReset();
-        throw error;
       }
     }
   }
