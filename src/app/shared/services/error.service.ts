@@ -17,6 +17,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandler, Injectable, Injector, NgZone } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 import { ErrorDialogComponent } from '../components/error-dialog.component';
 import { AuthService } from './auth.service';
 
@@ -25,6 +26,8 @@ import { AuthService } from './auth.service';
 })
 export class ErrorService implements ErrorHandler {
   protected _dialogRef?: MatDialogRef<ErrorDialogComponent>;
+  protected _errorSubject = new Subject<any>();
+  protected _errors$ = this._errorSubject.asObservable();
 
   constructor(protected _injector: Injector) {}
 
@@ -34,12 +37,15 @@ export class ErrorService implements ErrorHandler {
       const dialog = this._injector.get(MatDialog);
       this._dialogRef = dialog.open(ErrorDialogComponent, {
         width: '500px',
-        data: error, // TODO: add observable to provide error details
+        data: this._errors$,
       });
       this._dialogRef.afterClosed().subscribe(() => {
         this._dialogRef = undefined;
       });
     }
+
+    // push error to error subject to report it
+    this._errorSubject.next(error);
   }
 
   handleUnauthorizedError(error: HttpErrorResponse): void {

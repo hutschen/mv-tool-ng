@@ -15,6 +15,7 @@
 
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'mvtool-error-dialog',
@@ -35,10 +36,14 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   styles: [],
 })
 export class ErrorDialogComponent {
+  error: any;
+
   constructor(
     protected _dialogRef: MatDialogRef<ErrorDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public error: any
-  ) {}
+    @Inject(MAT_DIALOG_DATA) public error$: Observable<any>
+  ) {
+    this.error$.subscribe((error) => (this.error = error));
+  }
 
   onClose() {
     this._dialogRef.close();
