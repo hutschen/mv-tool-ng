@@ -24,14 +24,22 @@ import { AuthService } from './auth.service';
   providedIn: 'root',
 })
 export class ErrorService implements ErrorHandler {
+  protected _dialogRef?: MatDialogRef<ErrorDialogComponent>;
+
   constructor(protected _injector: Injector) {}
 
-  protected _openErrorDialog(error: any): MatDialogRef<ErrorDialogComponent> {
-    const dialog = this._injector.get(MatDialog);
-    return dialog.open(ErrorDialogComponent, {
-      width: '500px',
-      data: error,
-    });
+  openErrorDialog(error: any): void {
+    // open dialog when it is not already open
+    if (!this._dialogRef) {
+      const dialog = this._injector.get(MatDialog);
+      this._dialogRef = dialog.open(ErrorDialogComponent, {
+        width: '500px',
+        data: error, // TODO: add observable to provide error details
+      });
+      this._dialogRef.afterClosed().subscribe(() => {
+        this._dialogRef = undefined;
+      });
+    }
   }
 
   handleUnauthorizedError(error: HttpErrorResponse): void {
@@ -41,7 +49,7 @@ export class ErrorService implements ErrorHandler {
 
       router.navigate(['/login']).then(() => {
         authService.logOut();
-        this._openErrorDialog(error);
+        this.openErrorDialog(error);
       });
     }
   }
@@ -49,7 +57,7 @@ export class ErrorService implements ErrorHandler {
   handleNotFoundError(error: HttpErrorResponse): void {
     if (error.status === 404) {
       const router = this._injector.get(Router);
-      router.navigate(['/']).then(() => this._openErrorDialog(error));
+      router.navigate(['/']).then(() => this.openErrorDialog(error));
     }
   }
 
@@ -60,7 +68,7 @@ export class ErrorService implements ErrorHandler {
       case 404:
         return this.handleNotFoundError(error);
       default:
-        this._openErrorDialog(error);
+        this.openErrorDialog(error);
     }
   }
 
