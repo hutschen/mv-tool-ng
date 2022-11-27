@@ -14,11 +14,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ITableColumn } from '../shared/components/table.component';
 import { Project, ProjectService } from '../shared/services/project.service';
-import { ProjectDialogComponent } from './project-dialog.component';
+import { ProjectDialogService } from './project-dialog.component';
 
 @Component({
   selector: 'mvtool-project-table',
@@ -41,34 +40,27 @@ export class ProjectTableComponent implements OnInit {
 
   constructor(
     protected _projectService: ProjectService,
-    protected _dialog: MatDialog
+    protected _projectDialogService: ProjectDialogService
   ) {}
 
   async ngOnInit(): Promise<void> {
     await this.onReloadProjects();
   }
 
-  protected _openProjectDialog(
-    project: Project | null = null
-  ): MatDialogRef<ProjectDialogComponent> {
-    const dialogRef = this._dialog.open(ProjectDialogComponent, {
-      width: '500px',
-      data: project,
-    });
-    dialogRef.afterClosed().subscribe(async (project: Project | null) => {
-      if (project) {
-        this.onReloadProjects();
-      }
-    });
-    return dialogRef;
+  protected async _createOrEditProject(project?: Project): Promise<void> {
+    const dialogRef = this._projectDialogService.openProjectDialog(project);
+    const resultingProject = await firstValueFrom(dialogRef.afterClosed());
+    if (resultingProject) {
+      await this.onReloadProjects();
+    }
   }
 
-  onCreateProject(): MatDialogRef<ProjectDialogComponent> {
-    return this._openProjectDialog();
+  async onCreateProject(): Promise<void> {
+    await this._createOrEditProject();
   }
 
-  onEditProject(project: Project): MatDialogRef<ProjectDialogComponent> {
-    return this._openProjectDialog(project);
+  async onEditProject(project: Project): Promise<void> {
+    await this._createOrEditProject(project);
   }
 
   async onDeleteProject(project: Project): Promise<void> {

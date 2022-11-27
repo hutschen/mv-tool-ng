@@ -38,7 +38,7 @@ export class ProjectDialogService {
   ): MatDialogRef<ProjectDialogComponent, Project> {
     return this._dialog.open(ProjectDialogComponent, {
       width: '500px',
-      data: { project },
+      data: project,
     });
   }
 }
