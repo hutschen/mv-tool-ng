@@ -14,25 +14,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import {
-  DownloadDialogComponent,
-  IDownloadDialogData,
-} from '../shared/components/download-dialog.component';
+import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { ITableColumn } from '../shared/components/table.component';
-import { UploadDialogComponent } from '../shared/components/upload-dialog.component';
+import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { Project } from '../shared/services/project.service';
 import {
   Requirement,
   RequirementService,
 } from '../shared/services/requirement.service';
-import { IUploadState } from '../shared/services/upload.service';
-import { ComplianceDialogComponent } from './compliance-dialog.component';
-import {
-  IRequirementDialogData,
-  RequirementDialogComponent,
-} from './requirement-dialog.component';
-import { RequirementImportDialogComponent } from './requirement-import-dialog.component';
+import { ComplianceDialogService } from './compliance-dialog.component';
+import { RequirementDialogService } from './requirement-dialog.component';
+import { RequirementImportDialogService } from './requirement-import-dialog.component';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -55,121 +48,121 @@ export class RequirementTableComponent implements OnInit {
     { name: 'completion', optional: true },
     { name: 'options', optional: false },
   ];
-  data: Requirement[] = [];
+  protected _dataSubject = new ReplaySubject<Requirement[]>(1);
+  data$: Observable<Requirement[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;
   @Input() project: Project | null = null;
   @Output() requirementClicked = new EventEmitter<Requirement>();
 
   constructor(
     protected _requirementService: RequirementService,
-    protected _dialog: MatDialog
+    protected _requirementDialogService: RequirementDialogService,
+    protected _complianceDialogService: ComplianceDialogService,
+    protected _downloadDialogService: DownloadDialogService,
+    protected _uploadDialogService: UploadDialogService,
+    protected _requirementImportDialogService: RequirementImportDialogService
   ) {}
 
-  ngOnInit(): void {
-    this.onReloadRequirements();
+  async ngOnInit(): Promise<void> {
+    await this.onReloadRequirements();
   }
 
-  protected _openRequirementDialog(
-    requirement: Requirement | null = null
-  ): void {
-    const dialogRef = this._dialog.open(RequirementDialogComponent, {
-      width: '500px',
-      data: {
-        project: this.project,
-        requirement: requirement,
-      } as IRequirementDialogData,
-    });
-    dialogRef
-      .afterClosed()
-      .subscribe(async (requirement: Requirement | null) => {
-        if (requirement) {
-          this.onReloadRequirements();
-        }
-      });
-  }
-
-  onCreateRequirement(): void {
-    this._openRequirementDialog();
-  }
-
-  onEditRequirement(requirement: Requirement): void {
-    this._openRequirementDialog(requirement);
-  }
-
-  onEditCompliance(requirement: Requirement): void {
-    const dialogRef = this._dialog.open(ComplianceDialogComponent, {
-      width: '500px',
-      data: requirement,
-    });
-    dialogRef
-      .afterClosed()
-      .subscribe(async (requirement: Requirement | null) => {
-        if (requirement) {
-          this.onReloadRequirements();
-        }
-      });
-  }
-
-  onDeleteRequirement(requirement: Requirement): void {
-    this._requirementService
-      .deleteRequirement(requirement.id)
-      .subscribe(this.onReloadRequirements.bind(this));
-  }
-
-  onExportRequirementsExcel() {
+  protected async _createOrEditRequirement(
+    requirement?: Requirement
+  ): Promise<void> {
     if (this.project) {
-      this._dialog.open(DownloadDialogComponent, {
-        width: '500px',
-        data: {
-          download$: this._requirementService.downloadRequirementsExcel(
-            this.project.id
-          ),
-          filename: 'requirements.xlsx',
-        } as IDownloadDialogData,
-      });
+      const dialogRef = this._requirementDialogService.openRequirementDialog(
+        this.project,
+        requirement
+      );
+      const resultingRequirement = await firstValueFrom(
+        dialogRef.afterClosed()
+      );
+      if (resultingRequirement) {
+        await this.onReloadRequirements();
+      }
+    } else {
+      throw new Error('Project is undefined');
     }
   }
 
-  onImportRequirementsExcel() {
+  async onCreateRequirement(): Promise<void> {
+    await this._createOrEditRequirement();
+  }
+
+  async onEditRequirement(requirement: Requirement): Promise<void> {
+    await this._createOrEditRequirement(requirement);
+  }
+
+  async onEditCompliance(requirement: Requirement): Promise<void> {
+    const dialogRef =
+      this._complianceDialogService.openComplianceDialog(requirement);
+    const updatedRequirement = await firstValueFrom(dialogRef.afterClosed());
+    if (updatedRequirement) {
+      await this.onReloadRequirements();
+    }
+  }
+
+  async onDeleteRequirement(requirement: Requirement): Promise<void> {
+    await firstValueFrom(
+      this._requirementService.deleteRequirement(requirement.id)
+    );
+    await this.onReloadRequirements();
+  }
+
+  async onExportRequirementsExcel(): Promise<void> {
     if (this.project) {
-      const projectId = this.project.id;
-      const dialogRef = this._dialog.open(UploadDialogComponent, {
-        width: '500px',
-        data: (file: File) => {
+      const dialogRef = this._downloadDialogService.openDownloadDialog(
+        this._requirementService.downloadRequirementsExcel(this.project.id),
+        'requirements.xlsx'
+      );
+      await firstValueFrom(dialogRef.afterClosed());
+    } else {
+      throw new Error('Project is undefined');
+    }
+  }
+
+  async onImportRequirementsExcel(): Promise<void> {
+    const dialogRef = this._uploadDialogService.openUploadDialog(
+      (file: File) => {
+        if (this.project) {
           return this._requirementService.uploadRequirementsExcel(
-            projectId,
+            this.project.id,
             file
           );
-        },
-      });
-      dialogRef.afterClosed().subscribe((uploadState: IUploadState | null) => {
-        if (uploadState && uploadState.state == 'done') {
-          this.onReloadRequirements();
+        } else {
+          throw new Error('Project is undefined');
         }
-      });
+      }
+    );
+    const uploadState = await firstValueFrom(dialogRef.afterClosed());
+    if (uploadState && uploadState.state == 'done') {
+      await this.onReloadRequirements();
     }
   }
 
-  onImportFromCatalog() {
-    const dialogRef = this._dialog.open(RequirementImportDialogComponent, {
-      width: '500px',
-      data: this.project,
-    });
-    dialogRef.afterClosed().subscribe((requirements) => {
-      if (requirements) {
-        this.onReloadRequirements();
+  async onImportFromCatalog(): Promise<void> {
+    if (this.project) {
+      const dialogRef =
+        this._requirementImportDialogService.openRequirementImportDialog(
+          this.project
+        );
+      const result = await firstValueFrom(dialogRef.afterClosed());
+      if (result) {
+        await this.onReloadRequirements();
       }
-    });
+    } else {
+      throw new Error('Project is undefined');
+    }
   }
 
-  onReloadRequirements(): void {
+  async onReloadRequirements(): Promise<void> {
     if (this.project) {
-      this._requirementService
-        .listRequirements(this.project.id)
-        .subscribe((requirements) => {
-          this.data = requirements;
-          this.dataLoaded = true;
-        });
+      const data = await firstValueFrom(
+        this._requirementService.listRequirements(this.project.id)
+      );
+      this._dataSubject.next(data);
+      this.dataLoaded = true;
     }
   }
 }
