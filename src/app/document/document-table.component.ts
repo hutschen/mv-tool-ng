@@ -15,6 +15,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import {
   DownloadDialogComponent,
   IDownloadDialogData,
@@ -42,7 +43,8 @@ export class DocumentTableComponent implements OnInit {
     { name: 'description', optional: true },
     { name: 'options', optional: false },
   ];
-  data: Document[] = [];
+  protected _dataSubject = new ReplaySubject<Document[]>(1);
+  data$: Observable<Document[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;
   @Input() project: Project | null = null;
   // @Output() documentClicked = new EventEmitter<Document>()
@@ -116,14 +118,13 @@ export class DocumentTableComponent implements OnInit {
     }
   }
 
-  onReloadDocuments(): void {
+  async onReloadDocuments(): Promise<void> {
     if (this.project) {
-      this._documentService
-        .listDocuments(this.project.id)
-        .subscribe((documents) => {
-          this.data = documents;
-          this.dataLoaded = true;
-        });
+      const data = await firstValueFrom(
+        this._documentService.listDocuments(this.project.id)
+      );
+      this._dataSubject.next(data);
+      this.dataLoaded = true;
     }
   }
 }
