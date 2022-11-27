@@ -33,6 +33,7 @@ import {
   MatTable,
   MatTableDataSource,
 } from '@angular/material/table';
+import { Observable } from 'rxjs';
 
 export interface ITableColumn {
   name: string;
@@ -139,6 +140,11 @@ export class TableComponent<T> implements AfterContentInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this._dataSource.paginator = this.paginator;
+  }
+
+  @Input()
+  set data$(data$: Observable<T[]>) {
+    data$.subscribe((data) => (this._dataSource.data = data));
   }
 
   @Input()

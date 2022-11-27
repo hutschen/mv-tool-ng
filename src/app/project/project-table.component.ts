@@ -14,7 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ITableColumn } from '../shared/components/table.component';
 import { Project, ProjectService } from '../shared/services/project.service';
 import { ProjectDialogComponent } from './project-dialog.component';
@@ -33,7 +34,8 @@ export class ProjectTableComponent implements OnInit {
     { name: 'completion', optional: true },
     { name: 'options', optional: false },
   ];
-  data: Project[] = [];
+  protected _dataSubject = new ReplaySubject<Project[]>(1);
+  data$: Observable<Project[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;
   @Output() projectClicked = new EventEmitter<Project>();
 
@@ -42,11 +44,13 @@ export class ProjectTableComponent implements OnInit {
     protected _dialog: MatDialog
   ) {}
 
-  ngOnInit(): void {
-    this.onReloadProjects();
+  async ngOnInit(): Promise<void> {
+    await this.onReloadProjects();
   }
 
-  protected _openProjectDialog(project: Project | null = null): void {
+  protected _openProjectDialog(
+    project: Project | null = null
+  ): MatDialogRef<ProjectDialogComponent> {
     const dialogRef = this._dialog.open(ProjectDialogComponent, {
       width: '500px',
       data: project,
@@ -56,26 +60,25 @@ export class ProjectTableComponent implements OnInit {
         this.onReloadProjects();
       }
     });
+    return dialogRef;
   }
 
-  onCreateProject(): void {
-    this._openProjectDialog();
+  onCreateProject(): MatDialogRef<ProjectDialogComponent> {
+    return this._openProjectDialog();
   }
 
-  onEditProject(project: Project): void {
-    this._openProjectDialog(project);
+  onEditProject(project: Project): MatDialogRef<ProjectDialogComponent> {
+    return this._openProjectDialog(project);
   }
 
-  onDeleteProject(project: Project) {
-    this._projectService
-      .deleteProject(project.id)
-      .subscribe(this.onReloadProjects.bind(this));
+  async onDeleteProject(project: Project): Promise<void> {
+    await firstValueFrom(this._projectService.deleteProject(project.id));
+    await this.onReloadProjects();
   }
 
-  onReloadProjects(): void {
-    this._projectService.listProjects().subscribe((projects) => {
-      this.data = projects;
-      this.dataLoaded = true;
-    });
+  async onReloadProjects(): Promise<void> {
+    const data = await firstValueFrom(this._projectService.listProjects());
+    this._dataSubject.next(data);
+    this.dataLoaded = true;
   }
 }
