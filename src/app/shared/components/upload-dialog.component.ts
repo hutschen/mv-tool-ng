@@ -13,10 +13,31 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Observable, throwError } from 'rxjs';
+import { Component, Inject, Injectable } from '@angular/core';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import { IUploadState } from '../services/upload.service';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class UploadDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openUploadDialog(
+    callback: (file: File) => Observable<IUploadState>
+  ): MatDialogRef<UploadDialogComponent, IUploadState> {
+    const dialogRef = this._dialog.open(UploadDialogComponent, {
+      width: '500px',
+      data: callback,
+    });
+    return dialogRef;
+  }
+}
 
 @Component({
   selector: 'mvtool-upload-dialog',

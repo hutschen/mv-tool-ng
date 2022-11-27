@@ -13,15 +13,35 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import {
   Project,
   IProjectInput,
   ProjectService,
 } from '../shared/services/project.service';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ProjectDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openProjectDialog(
+    project?: Project
+  ): MatDialogRef<ProjectDialogComponent, Project> {
+    return this._dialog.open(ProjectDialogComponent, {
+      width: '500px',
+      data: { project },
+    });
+  }
+}
 
 @Component({
   selector: 'mvtool-project-dialog',

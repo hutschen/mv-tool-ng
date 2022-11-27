@@ -19,8 +19,12 @@ import {
   SelectionChange,
 } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Inject, Injectable, OnInit } from '@angular/core';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import {
   BehaviorSubject,
   firstValueFrom,
@@ -35,7 +39,10 @@ import {
 } from '../shared/services/catalog-module.service';
 import { Catalog, CatalogService } from '../shared/services/catalog.service';
 import { Project } from '../shared/services/project.service';
-import { RequirementService } from '../shared/services/requirement.service';
+import {
+  Requirement,
+  RequirementService,
+} from '../shared/services/requirement.service';
 
 interface INode {
   get name(): string;
@@ -207,6 +214,21 @@ class CatalogDataSource implements DataSource<INode> {
 
   get selection(): INode[] {
     return this.data.filter((node) => node.checked);
+  }
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class RequirementImportDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openRequirementImportDialog(
+    project: Project
+  ): MatDialogRef<RequirementImportDialogComponent, Requirement[]> {
+    return this._dialog.open(RequirementImportDialogComponent, {
+      data: project,
+    });
   }
 }
 

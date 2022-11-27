@@ -13,9 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import {
   IDocumentInput,
@@ -26,7 +30,24 @@ import { Project } from '../shared/services/project.service';
 
 export interface IDocumentDialogData {
   project: Project;
-  document: Document | null;
+  document?: Document;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class DocumentDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openDocumentDialog(
+    project: Project,
+    document?: Document
+  ): MatDialogRef<DocumentDialogComponent, Document> {
+    return this._dialog.open(DocumentDialogComponent, {
+      width: '500px',
+      data: { project, document },
+    });
+  }
 }
 
 @Component({
@@ -55,7 +76,7 @@ export class DocumentDialogComponent {
   }
 
   get createMode(): boolean {
-    return this._dialogData.document === null;
+    return !this._dialogData.document;
   }
 
   onSave(form: NgForm): void {

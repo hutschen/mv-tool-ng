@@ -13,9 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, Injectable, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import {
   IJiraIssueType,
   JiraIssueTypeService,
@@ -27,6 +31,23 @@ import { Measure } from '../shared/services/measure.service';
 export interface IJiraIssueDialogData {
   jiraProject: IJiraProject;
   measure: Measure;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class JiraIssueDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openJiraIssueDialog(
+    jiraProject: IJiraProject,
+    measure: Measure
+  ): MatDialogRef<JiraIssueDialogComponent, IJiraIssueInput> {
+    return this._dialog.open(JiraIssueDialogComponent, {
+      width: '500px',
+      data: { jiraProject, measure },
+    });
+  }
 }
 
 @Component({
