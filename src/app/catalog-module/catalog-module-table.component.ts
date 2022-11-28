@@ -14,20 +14,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ITableColumn } from '../shared/components/table.component';
-import { UploadDialogComponent } from '../shared/components/upload-dialog.component';
+import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import {
   CatalogModule,
   CatalogModuleService,
 } from '../shared/services/catalog-module.service';
 import { Catalog } from '../shared/services/catalog.service';
-import { IUploadState } from '../shared/services/upload.service';
-import {
-  CatalogModuleDialogComponent,
-  ICatalogModuleDialogData,
-} from './catalog-module-dialog.component';
+import { CatalogModuleDialogService } from './catalog-module-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-module-table',
@@ -47,60 +42,45 @@ export class CatalogModuleTableComponent implements OnInit {
   data$: Observable<CatalogModule[]> = this._dataSubject.asObservable();
   data: CatalogModule[] = [];
   dataLoaded: boolean = false;
-  @Input() catalog: Catalog | null = null;
+  @Input() catalog?: Catalog;
   @Output() catalogModuleClicked = new EventEmitter<CatalogModule>();
 
   constructor(
     protected _catalogModuleService: CatalogModuleService,
-    protected _dialog: MatDialog
+    protected _catalogModuleDialogService: CatalogModuleDialogService,
+    protected _uploadDialogService: UploadDialogService
   ) {}
 
   async ngOnInit(): Promise<void> {
     await this.onReloadCatalogModules();
   }
 
-  protected _openCatalogModuleDialog(
-    catalogModule: CatalogModule | null
-  ): void {
-    const dialogRef = this._dialog.open(CatalogModuleDialogComponent, {
-      width: '500px',
-      data: {
-        catalog: this.catalog,
-        catalogModule: catalogModule,
-      } as ICatalogModuleDialogData,
-    });
-    dialogRef
-      .afterClosed()
-      .subscribe(async (catalogModule: CatalogModule | null) => {
-        if (catalogModule) {
-          await this.onReloadCatalogModules();
-        }
-      });
-  }
-
-  onImportGSBaustein() {
+  protected async _createOrEditCatalogModule(
+    catalogModule?: CatalogModule
+  ): Promise<void> {
     if (this.catalog) {
-      const projectId = this.catalog.id;
-      const dialogRef = this._dialog.open(UploadDialogComponent, {
-        width: '500px',
-        data: (file: File) => {
-          return this._catalogModuleService.uploadGSBaustein(projectId, file);
-        },
-      });
-      dialogRef.afterClosed().subscribe((uploadState: IUploadState | null) => {
-        if (uploadState && uploadState.state == 'done') {
-          this.onReloadCatalogModules();
-        }
-      });
+      const dialogRef =
+        this._catalogModuleDialogService.openCatalogModuleDialog(
+          this.catalog,
+          catalogModule
+        );
+      const resultingCatalogModule = await firstValueFrom(
+        dialogRef.afterClosed()
+      );
+      if (resultingCatalogModule) {
+        await this.onReloadCatalogModules();
+      }
+    } else {
+      throw new Error('catalog is undefined');
     }
   }
 
-  onCreateCatalogModule(): void {
-    this._openCatalogModuleDialog(null);
+  async onCreateCatalogModule(): Promise<void> {
+    await this._createOrEditCatalogModule();
   }
 
-  onEditCatalogModule(catalogModule: CatalogModule): void {
-    this._openCatalogModuleDialog(catalogModule);
+  async onEditCatalogModule(catalogModule: CatalogModule): Promise<void> {
+    await this._createOrEditCatalogModule(catalogModule);
   }
 
   async onDeleteCatalogModule(catalogModule: CatalogModule): Promise<void> {
@@ -108,6 +88,25 @@ export class CatalogModuleTableComponent implements OnInit {
       this._catalogModuleService.deleteCatalogModule(catalogModule.id)
     );
     await this.onReloadCatalogModules();
+  }
+
+  async onImportGSBaustein(): Promise<void> {
+    const dialogRef = this._uploadDialogService.openUploadDialog(
+      (file: File) => {
+        if (this.catalog) {
+          return this._catalogModuleService.uploadGSBaustein(
+            this.catalog.id,
+            file
+          );
+        } else {
+          throw new Error('catalog is undefined');
+        }
+      }
+    );
+    const uploadState = await firstValueFrom(dialogRef.afterClosed());
+    if (uploadState && uploadState.state == 'done') {
+      await this.onReloadCatalogModules();
+    }
   }
 
   async onReloadCatalogModules(): Promise<void> {
