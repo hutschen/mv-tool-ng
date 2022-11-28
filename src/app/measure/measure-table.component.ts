@@ -15,6 +15,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { first, firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import {
   DownloadDialogComponent,
   IDownloadDialogData,
@@ -44,7 +45,8 @@ export class MeasureTableComponent implements OnInit {
     { name: 'completed', optional: false },
     { name: 'options', optional: false },
   ];
-  data: Measure[] = [];
+  protected _dataSubject = new ReplaySubject<Measure[]>(1);
+  data$: Observable<Measure[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;
   @Input() requirement: Requirement | null = null;
 
@@ -117,14 +119,13 @@ export class MeasureTableComponent implements OnInit {
     }
   }
 
-  onReloadMeasures(): void {
+  async onReloadMeasures(): Promise<void> {
     if (this.requirement) {
-      this._measureService
-        .listMeasures(this.requirement.id)
-        .subscribe((measures) => {
-          this.data = measures;
-          this.dataLoaded = true;
-        });
+      const data = await firstValueFrom(
+        this._measureService.listMeasures(this.requirement.id)
+      );
+      this._dataSubject.next(data);
+      this.dataLoaded = true;
     }
   }
 }
