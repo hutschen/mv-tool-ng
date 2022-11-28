@@ -15,7 +15,7 @@
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ITableColumn } from '../shared/components/table.component';
 import { UploadDialogComponent } from '../shared/components/upload-dialog.component';
 import {
@@ -43,6 +43,8 @@ export class CatalogModuleTableComponent implements OnInit {
     { name: 'description', optional: true },
     { name: 'options', optional: false },
   ];
+  protected _dataSubject = new ReplaySubject<CatalogModule[]>(1);
+  data$: Observable<CatalogModule[]> = this._dataSubject.asObservable();
   data: CatalogModule[] = [];
   dataLoaded: boolean = false;
   @Input() catalog: Catalog | null = null;
@@ -110,9 +112,10 @@ export class CatalogModuleTableComponent implements OnInit {
 
   async onReloadCatalogModules(): Promise<void> {
     if (this.catalog) {
-      this.data = await firstValueFrom(
+      const data = await firstValueFrom(
         this._catalogModuleService.listCatalogModules(this.catalog.id)
       );
+      this._dataSubject.next(data);
       this.dataLoaded = true;
     }
   }

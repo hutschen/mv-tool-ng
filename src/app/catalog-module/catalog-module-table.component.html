@@ -38,7 +38,7 @@
   <!-- Catalog Modules table -->
   <mvtool-table
     [columns]="columns"
-    [data]="data"
+    [data$]="data$"
     [dataLoaded]="dataLoaded"
     [filterValue]="tableToolbar.filterValue"
     (create)="onCreateCatalogModule()"
