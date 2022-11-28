@@ -14,11 +14,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ITableColumn } from '../shared/components/table.component';
 import { Catalog, CatalogService } from '../shared/services/catalog.service';
-import { CatalogDialogComponent } from './catalog-dialog.component';
+import { CatalogDialogService } from './catalog-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-table',
@@ -40,37 +39,32 @@ export class CatalogTableComponent implements OnInit {
 
   constructor(
     protected _catalogService: CatalogService,
-    protected _dialog: MatDialog
+    protected _catalogDialogService: CatalogDialogService
   ) {}
 
   async ngOnInit(): Promise<void> {
     await this.onReloadCatalogs();
   }
 
-  protected _openCatalogDialog(catalog: Catalog | null = null): void {
-    const dialogRef = this._dialog.open(CatalogDialogComponent, {
-      width: '500px',
-      data: catalog,
-    });
-    dialogRef.afterClosed().subscribe(async (catalog: Catalog | null) => {
-      if (catalog) {
-        this.onReloadCatalogs();
-      }
-    });
+  protected async _createOrEditCatalog(catalog?: Catalog): Promise<void> {
+    const dialogRef = this._catalogDialogService.openCatalogDialog(catalog);
+    const resultingCatalog = await firstValueFrom(dialogRef.afterClosed());
+    if (resultingCatalog) {
+      await this.onReloadCatalogs();
+    }
   }
 
-  onCreateCatalog(): void {
-    return this._openCatalogDialog();
+  async onCreateCatalog(): Promise<void> {
+    await this._createOrEditCatalog();
   }
 
-  onEditCatalog(catalog: Catalog): void {
-    return this._openCatalogDialog(catalog);
+  async onEditCatalog(catalog: Catalog): Promise<void> {
+    await this._createOrEditCatalog(catalog);
   }
 
-  onDeleteCatalog(catalog: Catalog): void {
-    this._catalogService
-      .deleteCatalog(catalog.id)
-      .subscribe(this.onReloadCatalogs.bind(this));
+  async onDeleteCatalog(catalog: Catalog): Promise<void> {
+    await firstValueFrom(this._catalogService.deleteCatalog(catalog.id));
+    await this.onReloadCatalogs();
   }
 
   async onReloadCatalogs(): Promise<void> {
