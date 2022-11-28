@@ -15,6 +15,7 @@
 
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ITableColumn } from '../shared/components/table.component';
 import { Catalog, CatalogService } from '../shared/services/catalog.service';
 import { CatalogDialogComponent } from './catalog-dialog.component';
@@ -32,7 +33,8 @@ export class CatalogTableComponent implements OnInit {
     { name: 'description', optional: true },
     { name: 'options', optional: false },
   ];
-  data: Catalog[] = [];
+  protected _dataSubject = new ReplaySubject<Catalog[]>(1);
+  data$: Observable<Catalog[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;
   @Output() catalogClicked = new EventEmitter<Catalog>();
 
@@ -41,8 +43,8 @@ export class CatalogTableComponent implements OnInit {
     protected _dialog: MatDialog
   ) {}
 
-  ngOnInit(): void {
-    this.onReloadCatalogs();
+  async ngOnInit(): Promise<void> {
+    await this.onReloadCatalogs();
   }
 
   protected _openCatalogDialog(catalog: Catalog | null = null): void {
@@ -71,10 +73,9 @@ export class CatalogTableComponent implements OnInit {
       .subscribe(this.onReloadCatalogs.bind(this));
   }
 
-  onReloadCatalogs(): void {
-    this._catalogService.listCatalogs().subscribe((catalogs) => {
-      this.data = catalogs;
-      this.dataLoaded = true;
-    });
+  async onReloadCatalogs(): Promise<void> {
+    const data = await firstValueFrom(this._catalogService.listCatalogs());
+    this._dataSubject.next(data);
+    this.dataLoaded = true;
   }
 }
