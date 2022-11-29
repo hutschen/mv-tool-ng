@@ -163,6 +163,8 @@ export class RequirementTableComponent implements OnInit {
       );
       this._dataSubject.next(data);
       this.dataLoaded = true;
+    } else {
+      throw new Error('Project is undefined');
     }
   }
 }

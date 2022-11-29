@@ -116,6 +116,8 @@ export class CatalogModuleTableComponent implements OnInit {
       );
       this._dataSubject.next(data);
       this.dataLoaded = true;
+    } else {
+      throw new Error('catalog is undefined');
     }
   }
 }
