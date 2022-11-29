@@ -40,6 +40,16 @@ export interface ITableColumn {
   optional: boolean;
 }
 
+function getColumnNames<T>(columns: ITableColumn[], data: T[]): string[] {
+  return columns
+    .filter(
+      (column) =>
+        !column.optional ||
+        data.some((d) => (column.name in d ? d[column.name as keyof T] : false))
+    )
+    .map((c) => c.name);
+}
+
 @Component({
   selector: 'mvtool-table',
   template: `
@@ -148,32 +158,7 @@ export class TableComponent<T> implements AfterContentInit, AfterViewInit {
   }
 
   get displayedColumns(): string[] {
-    // TODO: this should only be recomputed when data changes
-    let displayFlags = new Map<string, boolean>();
-    for (let column of this.columns) {
-      displayFlags.set(column.name, !column.optional);
-    }
-
-    for (let row of this._dataSource.data) {
-      for (let column of this.columns) {
-        // try to get value of property row.column.name
-        const key = column.name;
-        if (key in row) {
-          const value: any = row[key as keyof T];
-          if (value && displayFlags.has(key)) {
-            displayFlags.set(key, true);
-          }
-        }
-      }
-    }
-    let displayedColumns: string[] = [];
-
-    for (let columnName of displayFlags.keys()) {
-      if (displayFlags.get(columnName)) {
-        displayedColumns.push(columnName);
-      }
-    }
-    return displayedColumns;
+    return getColumnNames(this.columns, this._dataSource.data);
   }
 
   @Input()
