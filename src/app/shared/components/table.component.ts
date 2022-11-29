@@ -147,11 +147,6 @@ export class TableComponent<T> implements AfterContentInit, AfterViewInit {
     data$.subscribe((data) => (this._dataSource.data = data));
   }
 
-  @Input()
-  set data(data: T[]) {
-    this._dataSource.data = data;
-  }
-
   get displayedColumns(): string[] {
     // TODO: this should only be recomputed when data changes
     let displayFlags = new Map<string, boolean>();
