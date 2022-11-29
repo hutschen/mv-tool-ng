@@ -43,6 +43,8 @@ export class CatalogRequirementTableComponent implements OnInit {
     { name: 'gs_verantwortliche', optional: true },
     { name: 'options', optional: false },
   ];
+  protected _dataSubject = new ReplaySubject<CatalogRequirement[]>(1);
+  data$: Observable<CatalogRequirement[]> = this._dataSubject.asObservable();
   data: CatalogRequirement[] = [];
   dataLoaded: boolean = false;
   @Input() catalogModule?: CatalogModule;
@@ -97,10 +99,15 @@ export class CatalogRequirementTableComponent implements OnInit {
 
   async onReloadCatalogRequirements(): Promise<void> {
     if (this.catalogModule) {
-      const catalogRequirements$ = this._catalogRequirementService
-        .listCatalogRequirements(this.catalogModule.id)
-        .pipe(tap(() => (this.dataLoaded = true)));
-      this.data = await firstValueFrom(catalogRequirements$);
+      const data = await firstValueFrom(
+        this._catalogRequirementService.listCatalogRequirements(
+          this.catalogModule.id
+        )
+      );
+      this._dataSubject.next(data);
+      this.dataLoaded = true;
+    } else {
+      throw new Error('catalog module is undefined');
     }
   }
 }
