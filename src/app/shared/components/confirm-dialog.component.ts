@@ -13,8 +13,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Injectable, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, Injectable } from '@angular/core';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 
 interface IConfirmDialogData {
   title: string;
@@ -42,12 +46,40 @@ export class ConfirmDialogService {
 }
 
 @Component({
-  selector: 'mvtool-confim-dialog',
-  template: ` <p>confim-dialog works!</p> `,
+  selector: 'mvtool-confirm-dialog',
+  template: `
+    <div mat-dialog-title>{{ title }}</div>
+    <div mat-dialog-content>{{ message }}</div>
+    <div mat-dialog-actions align="end">
+      <button mat-button (click)="onCancel()">
+        <mat-icon>cancel</mat-icon>
+        No
+      </button>
+      <button mat-raised-button color="accent" (click)="onConfirm()">
+        <mat-icon>check</mat-icon>
+        Yes
+      </button>
+    </div>
+  `,
   styles: [],
 })
-export class ConfirmDialogComponent implements OnInit {
-  constructor() {}
+export class ConfirmDialogComponent {
+  title: string;
+  message: string;
 
-  ngOnInit(): void {}
+  constructor(
+    protected _dialogRef: MatDialogRef<ConfirmDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) dialogData: IConfirmDialogData
+  ) {
+    this.title = dialogData.title;
+    this.message = dialogData.message;
+  }
+
+  onConfirm() {
+    this._dialogRef.close(true);
+  }
+
+  onCancel() {
+    this._dialogRef.close(false);
+  }
 }
