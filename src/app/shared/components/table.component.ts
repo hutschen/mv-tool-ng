@@ -113,7 +113,7 @@ export class TableComponent<T>
 {
   // see https://github.com/angular/components/tree/main/src/components-examples/material/table/table-wrapped
 
-  @Input() data$: Observable<T[]> = of([]);
+  @Input() data$: Observable<T[]> = of([] as T[]);
   @Input() columns: ITableColumn[] = [];
   @Input() pageSize: number = 25;
   @Input() dataLoaded: boolean = true;
