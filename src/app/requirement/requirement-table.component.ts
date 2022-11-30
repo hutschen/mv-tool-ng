@@ -15,6 +15,7 @@
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { ITableColumn } from '../shared/components/table.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
@@ -60,7 +61,8 @@ export class RequirementTableComponent implements OnInit {
     protected _complianceDialogService: ComplianceDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
-    protected _requirementImportDialogService: RequirementImportDialogService
+    protected _requirementImportDialogService: RequirementImportDialogService,
+    protected _confirmDialogService: ConfirmDialogService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -104,10 +106,17 @@ export class RequirementTableComponent implements OnInit {
   }
 
   async onDeleteRequirement(requirement: Requirement): Promise<void> {
-    await firstValueFrom(
-      this._requirementService.deleteRequirement(requirement.id)
+    const confirmDialogRef = this._confirmDialogService.openConfirmDialog(
+      'Delete Requirement',
+      `Do you really want to delete requirement "${requirement.summary}"?`
     );
-    await this.onReloadRequirements();
+    const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
+    if (confirmed) {
+      await firstValueFrom(
+        this._requirementService.deleteRequirement(requirement.id)
+      );
+      await this.onReloadRequirements();
+    }
   }
 
   async onExportRequirementsExcel(): Promise<void> {
