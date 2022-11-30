@@ -20,6 +20,7 @@ import {
   ContentChildren,
   EventEmitter,
   Input,
+  OnInit,
   Output,
   QueryList,
   ViewChild,
@@ -33,10 +34,21 @@ import {
   MatTable,
   MatTableDataSource,
 } from '@angular/material/table';
+import { Observable, of } from 'rxjs';
 
 export interface ITableColumn {
   name: string;
   optional: boolean;
+}
+
+function getColumnNames<T>(columns: ITableColumn[], data: T[] = []): string[] {
+  return columns
+    .filter(
+      (column) =>
+        !column.optional ||
+        data.some((d) => (column.name in d ? d[column.name as keyof T] : false))
+    )
+    .map((c) => c.name);
 }
 
 @Component({
@@ -45,14 +57,11 @@ export interface ITableColumn {
     <div class="mat-elevation-z3 fx-column">
       <table mat-table [dataSource]="_dataSource">
         <ng-content></ng-content>
-        <tr
-          mat-header-row
-          *matHeaderRowDef="displayedColumns; sticky: true"
-        ></tr>
+        <tr mat-header-row *matHeaderRowDef="columnNames; sticky: true"></tr>
         <tr
           mat-row
           [class.clickable-row]="rowClicked.observed"
-          *matRowDef="let row; columns: displayedColumns"
+          *matRowDef="let row; columns: columnNames"
           (click)="rowClicked.emit(row)"
         ></tr>
 
@@ -99,9 +108,12 @@ export interface ITableColumn {
     '.clickable-row:hover { background: rgba(0,0,0,0.04); }',
   ],
 })
-export class TableComponent<T> implements AfterContentInit, AfterViewInit {
+export class TableComponent<T>
+  implements OnInit, AfterContentInit, AfterViewInit
+{
   // see https://github.com/angular/components/tree/main/src/components-examples/material/table/table-wrapped
 
+  @Input() data$: Observable<T[]> = of([] as T[]);
   @Input() columns: ITableColumn[] = [];
   @Input() pageSize: number = 25;
   @Input() dataLoaded: boolean = true;
@@ -110,6 +122,7 @@ export class TableComponent<T> implements AfterContentInit, AfterViewInit {
   @Input() createLabel: string = 'Create One';
   @Output() rowClicked = new EventEmitter<T>();
   @Output() create = new EventEmitter<void>();
+  columnNames: string[] = [];
   protected _dataSource = new MatTableDataSource<T>();
   protected _filterValue: string = '';
 
@@ -124,7 +137,13 @@ export class TableComponent<T> implements AfterContentInit, AfterViewInit {
   @ViewChild(MatTable, { static: true }) table: MatTable<T> | null = null;
   @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
 
-  constructor() {}
+  ngOnInit(): void {
+    this.columnNames = getColumnNames(this.columns);
+    this.data$.subscribe((data) => {
+      this._dataSource.data = data;
+      this.columnNames = getColumnNames(this.columns, data);
+    });
+  }
 
   ngAfterContentInit(): void {
     this.columnDefs?.forEach((columnDef) =>
@@ -139,40 +158,6 @@ export class TableComponent<T> implements AfterContentInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this._dataSource.paginator = this.paginator;
-  }
-
-  @Input()
-  set data(data: T[]) {
-    this._dataSource.data = data;
-  }
-
-  get displayedColumns(): string[] {
-    // TODO: this should only be recomputed when data changes
-    let displayFlags = new Map<string, boolean>();
-    for (let column of this.columns) {
-      displayFlags.set(column.name, !column.optional);
-    }
-
-    for (let row of this._dataSource.data) {
-      for (let column of this.columns) {
-        // try to get value of property row.column.name
-        const key = column.name;
-        if (key in row) {
-          const value: any = row[key as keyof T];
-          if (value && displayFlags.has(key)) {
-            displayFlags.set(key, true);
-          }
-        }
-      }
-    }
-    let displayedColumns: string[] = [];
-
-    for (let columnName of displayFlags.keys()) {
-      if (displayFlags.get(columnName)) {
-        displayedColumns.push(columnName);
-      }
-    }
-    return displayedColumns;
   }
 
   @Input()

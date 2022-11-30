@@ -13,14 +13,35 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import {
   IRequirementInput,
   Requirement,
   RequirementService,
 } from '../shared/services/requirement.service';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ComplianceDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openComplianceDialog(
+    requirement: Requirement
+  ): MatDialogRef<ComplianceDialogComponent, Requirement> {
+    const dialogRef = this._dialog.open(ComplianceDialogComponent, {
+      width: '500px',
+      data: requirement,
+    });
+    return dialogRef;
+  }
+}
 
 @Component({
   selector: 'mvtool-compliance-dialog',

@@ -13,9 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { firstValueFrom, Observable } from 'rxjs';
 import {
   CatalogModule,
@@ -26,7 +30,24 @@ import { Catalog } from '../shared/services/catalog.service';
 
 export interface ICatalogModuleDialogData {
   catalog: Catalog;
-  catalogModule: CatalogModule | null;
+  catalogModule?: CatalogModule;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class CatalogModuleDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openCatalogModuleDialog(
+    catalog: Catalog,
+    catalogModule?: CatalogModule
+  ): MatDialogRef<CatalogModuleDialogComponent, CatalogModule> {
+    return this._dialog.open(CatalogModuleDialogComponent, {
+      width: '500px',
+      data: { catalog, catalogModule },
+    });
+  }
 }
 
 @Component({

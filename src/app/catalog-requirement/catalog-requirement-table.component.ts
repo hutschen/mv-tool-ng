@@ -15,7 +15,7 @@
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { firstValueFrom, tap } from 'rxjs';
+import { firstValueFrom, Observable, ReplaySubject, tap } from 'rxjs';
 import { ITableColumn } from '../shared/components/table.component';
 import { CatalogModule } from '../shared/services/catalog-module.service';
 import {
@@ -24,6 +24,7 @@ import {
 } from '../shared/services/catalog-requirement.service';
 import {
   CatalogRequirementDialogComponent,
+  CatalogRequirementDialogService,
   ICatalogRequirementDialogData,
 } from './catalog-requirement-dialog.component';
 
@@ -43,6 +44,8 @@ export class CatalogRequirementTableComponent implements OnInit {
     { name: 'gs_verantwortliche', optional: true },
     { name: 'options', optional: false },
   ];
+  protected _dataSubject = new ReplaySubject<CatalogRequirement[]>(1);
+  data$: Observable<CatalogRequirement[]> = this._dataSubject.asObservable();
   data: CatalogRequirement[] = [];
   dataLoaded: boolean = false;
   @Input() catalogModule?: CatalogModule;
@@ -50,6 +53,7 @@ export class CatalogRequirementTableComponent implements OnInit {
 
   constructor(
     protected _catalogRequirementService: CatalogRequirementService,
+    protected _catalogRequirementDialogService: CatalogRequirementDialogService,
     protected _dialog: MatDialog
   ) {}
 
@@ -57,31 +61,34 @@ export class CatalogRequirementTableComponent implements OnInit {
     await this.onReloadCatalogRequirements();
   }
 
-  protected _openCatalogRequirementDialog(
+  protected async _createOrEditCatalogRequirement(
     catalogRequirement?: CatalogRequirement
-  ): void {
-    const dialogRef = this._dialog.open(CatalogRequirementDialogComponent, {
-      width: '500px',
-      data: {
-        catalogRequirement: catalogRequirement,
-        catalogModule: this.catalogModule,
-      } as ICatalogRequirementDialogData,
-    });
-    dialogRef
-      .afterClosed()
-      .subscribe(async (catalogRequirement?: CatalogRequirement) => {
-        if (catalogRequirement) {
-          await this.onReloadCatalogRequirements();
-        }
-      });
+  ): Promise<void> {
+    if (this.catalogModule) {
+      const dialogRef =
+        this._catalogRequirementDialogService.openCatalogRequirementDialog(
+          this.catalogModule,
+          catalogRequirement
+        );
+      const resultingCatalogRequirement = await firstValueFrom(
+        dialogRef.afterClosed()
+      );
+      if (resultingCatalogRequirement) {
+        await this.onReloadCatalogRequirements();
+      }
+    } else {
+      throw new Error('catalog module is undefined');
+    }
   }
 
-  onCreateCatalogRequirement(): void {
-    this._openCatalogRequirementDialog();
+  async onCreateCatalogRequirement(): Promise<void> {
+    this._createOrEditCatalogRequirement();
   }
 
-  onEditCatalogRequirement(catalogRequirement: CatalogRequirement): void {
-    this._openCatalogRequirementDialog(catalogRequirement);
+  async onEditCatalogRequirement(
+    catalogRequirement: CatalogRequirement
+  ): Promise<void> {
+    this._createOrEditCatalogRequirement(catalogRequirement);
   }
 
   async onDeleteCatalogRequirement(
@@ -97,10 +104,15 @@ export class CatalogRequirementTableComponent implements OnInit {
 
   async onReloadCatalogRequirements(): Promise<void> {
     if (this.catalogModule) {
-      const catalogRequirements$ = this._catalogRequirementService
-        .listCatalogRequirements(this.catalogModule.id)
-        .pipe(tap(() => (this.dataLoaded = true)));
-      this.data = await firstValueFrom(catalogRequirements$);
+      const data = await firstValueFrom(
+        this._catalogRequirementService.listCatalogRequirements(
+          this.catalogModule.id
+        )
+      );
+      this._dataSubject.next(data);
+      this.dataLoaded = true;
+    } else {
+      throw new Error('catalog module is undefined');
     }
   }
 }

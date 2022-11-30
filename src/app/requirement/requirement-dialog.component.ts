@@ -13,9 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { Project } from '../shared/services/project.service';
 import {
@@ -26,7 +30,24 @@ import {
 
 export interface IRequirementDialogData {
   project: Project;
-  requirement: Requirement | null;
+  requirement?: Requirement;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class RequirementDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openRequirementDialog(
+    project: Project,
+    requirement?: Requirement
+  ): MatDialogRef<RequirementDialogComponent, Requirement> {
+    return this._dialog.open(RequirementDialogComponent, {
+      width: '500px',
+      data: { project, requirement },
+    });
+  }
 }
 
 @Component({

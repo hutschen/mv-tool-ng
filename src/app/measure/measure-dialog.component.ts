@@ -13,9 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import {
   IMeasureInput,
@@ -26,7 +30,24 @@ import { Requirement } from '../shared/services/requirement.service';
 
 export interface IMeasureDialogData {
   requirement: Requirement;
-  measure: Measure | null;
+  measure?: Measure;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class MeasureDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openMeasureDialog(
+    requirement: Requirement,
+    measure?: Measure
+  ): MatDialogRef<MeasureDialogComponent, Measure> {
+    return this._dialog.open(MeasureDialogComponent, {
+      width: '500px',
+      data: { requirement, measure },
+    });
+  }
 }
 
 @Component({
@@ -57,7 +78,7 @@ export class MeasureDialogComponent {
   }
 
   get createMode(): boolean {
-    return this._dialogData.measure === null;
+    return !this._dialogData.measure;
   }
 
   onSave(form: NgForm): void {
@@ -79,6 +100,6 @@ export class MeasureDialogComponent {
   }
 
   onCancel(): void {
-    this._dialogRef.close(null);
+    this._dialogRef.close();
   }
 }

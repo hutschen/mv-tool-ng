@@ -14,20 +14,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import {
-  DownloadDialogComponent,
-  IDownloadDialogData,
-} from '../shared/components/download-dialog.component';
+import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { ITableColumn } from '../shared/components/table.component';
-import { UploadDialogComponent } from '../shared/components/upload-dialog.component';
+import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { DocumentService, Document } from '../shared/services/document.service';
 import { Project } from '../shared/services/project.service';
-import { IUploadState } from '../shared/services/upload.service';
-import {
-  DocumentDialogComponent,
-  IDocumentDialogData,
-} from './document-dialog.component';
+import { DocumentDialogService } from './document-dialog.component';
 
 @Component({
   selector: 'mvtool-document-table',
@@ -42,88 +35,91 @@ export class DocumentTableComponent implements OnInit {
     { name: 'description', optional: true },
     { name: 'options', optional: false },
   ];
-  data: Document[] = [];
+  protected _dataSubject = new ReplaySubject<Document[]>(1);
+  data$: Observable<Document[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;
   @Input() project: Project | null = null;
   // @Output() documentClicked = new EventEmitter<Document>()
 
   constructor(
     protected _documentService: DocumentService,
-    protected _dialog: MatDialog
+    protected _documentDialogService: DocumentDialogService,
+    protected _downloadDialogService: DownloadDialogService,
+    protected _uploadDialogService: UploadDialogService
   ) {}
 
-  ngOnInit(): void {
-    this.onReloadDocuments();
+  async ngOnInit(): Promise<void> {
+    await this.onReloadDocuments();
   }
 
-  protected _openDocumentDialog(document: Document | null = null): void {
-    let dialogRef = this._dialog.open(DocumentDialogComponent, {
-      width: '500px',
-      data: {
-        project: this.project,
-        document: document,
-      } as IDocumentDialogData,
-    });
-    dialogRef.afterClosed().subscribe((document: Document | null) => {
-      if (document) {
-        this.onReloadDocuments();
+  protected async _createOrEditDocument(document?: Document) {
+    if (this.project) {
+      const dialogRef = this._documentDialogService.openDocumentDialog(
+        this.project,
+        document
+      );
+      const resultingDocument = await firstValueFrom(dialogRef.afterClosed());
+      if (resultingDocument) {
+        await this.onReloadDocuments();
       }
-    });
-  }
-
-  onCreateDocument(): void {
-    this._openDocumentDialog();
-  }
-
-  onEditDocument(document: Document): void {
-    this._openDocumentDialog(document);
-  }
-
-  onDeleteDocument(document: Document): void {
-    this._documentService
-      .deleteDocument(document.id)
-      .subscribe(this.onReloadDocuments.bind(this));
-  }
-
-  onExportDocuments(): void {
-    if (this.project) {
-      this._dialog.open(DownloadDialogComponent, {
-        width: '500px',
-        data: {
-          download$: this._documentService.downloadDocumentExcel(
-            this.project.id
-          ),
-          filename: 'documents.xlsx',
-        } as IDownloadDialogData,
-      });
+    } else {
+      throw new Error('Project is undefined');
     }
   }
 
-  onImportDocuments(): void {
+  async onCreateDocument(): Promise<void> {
+    await this._createOrEditDocument();
+  }
+
+  async onEditDocument(document: Document): Promise<void> {
+    await this._createOrEditDocument(document);
+  }
+
+  async onDeleteDocument(document: Document): Promise<void> {
+    await firstValueFrom(this._documentService.deleteDocument(document.id));
+    await this.onReloadDocuments();
+  }
+
+  async onExportDocuments(): Promise<void> {
     if (this.project) {
-      const projectId = this.project.id;
-      const dialogRef = this._dialog.open(UploadDialogComponent, {
-        width: '500px',
-        data: (file: File) => {
-          return this._documentService.uploadDocumentExcel(projectId, file);
-        },
-      });
-      dialogRef.afterClosed().subscribe((uploadState: IUploadState | null) => {
-        if (uploadState && uploadState.state == 'done') {
-          this.onReloadDocuments();
+      const dialogRef = this._downloadDialogService.openDownloadDialog(
+        this._documentService.downloadDocumentExcel(this.project.id),
+        'documents.xlsx'
+      );
+      await firstValueFrom(dialogRef.afterClosed());
+    } else {
+      throw new Error('Project is undefined');
+    }
+  }
+
+  async onImportDocuments(): Promise<void> {
+    const dialogRef = this._uploadDialogService.openUploadDialog(
+      (file: File) => {
+        if (this.project) {
+          return this._documentService.uploadDocumentExcel(
+            this.project.id,
+            file
+          );
+        } else {
+          throw new Error('Project is undefined');
         }
-      });
+      }
+    );
+    const uploadState = await firstValueFrom(dialogRef.afterClosed());
+    if (uploadState && uploadState.state == 'done') {
+      await this.onReloadDocuments();
     }
   }
 
-  onReloadDocuments(): void {
+  async onReloadDocuments(): Promise<void> {
     if (this.project) {
-      this._documentService
-        .listDocuments(this.project.id)
-        .subscribe((documents) => {
-          this.data = documents;
-          this.dataLoaded = true;
-        });
+      const data = await firstValueFrom(
+        this._documentService.listDocuments(this.project.id)
+      );
+      this._dataSubject.next(data);
+      this.dataLoaded = true;
+    } else {
+      throw new Error('Project is undefined');
     }
   }
 }
