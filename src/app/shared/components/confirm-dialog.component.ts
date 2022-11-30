@@ -14,6 +14,32 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Injectable, OnInit } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+
+interface IConfirmDialogData {
+  title: string;
+  message: string;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ConfirmDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openConfirmDialog(
+    title: string,
+    message: string
+  ): MatDialogRef<ConfirmDialogComponent, boolean> {
+    return this._dialog.open(ConfirmDialogComponent, {
+      width: '500px',
+      data: {
+        title,
+        message,
+      } as IConfirmDialogData,
+    });
+  }
+}
 
 @Component({
   selector: 'mvtool-confim-dialog',
