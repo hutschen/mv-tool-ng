@@ -27,6 +27,7 @@ import { DetailComponent } from './components/detail.component';
 import { ErrorDialogComponent } from './components/error-dialog.component';
 import { CreateEditDialogComponent } from './components/create-edit-dialog.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog.component';
+import { FilterDialogComponent } from './components/filter-dialog.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog.component';
     ErrorDialogComponent,
     CreateEditDialogComponent,
     ConfirmDialogComponent,
+    FilterDialogComponent,
   ],
   imports: [CommonModule, MaterialModule],
   exports: [
