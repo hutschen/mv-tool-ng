@@ -27,7 +27,11 @@ import { CatalogRequirementDialogService } from './catalog-requirement-dialog.co
 @Component({
   selector: 'mvtool-catalog-requirement-table',
   templateUrl: './catalog-requirement-table.component.html',
-  styleUrls: ['../shared/styles/mat-table.css', '../shared/styles/flex.css'],
+  styleUrls: [
+    '../shared/styles/mat-table.css',
+    '../shared/styles/flex.css',
+    '../shared/styles/truncate.css',
+  ],
   styles: ['.mat-column-gs_absicherung {text-align: center;}'],
 })
 export class CatalogRequirementTableComponent implements OnInit {

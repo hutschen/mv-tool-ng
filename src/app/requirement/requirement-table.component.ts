@@ -31,7 +31,11 @@ import { RequirementImportDialogService } from './requirement-import-dialog.comp
 @Component({
   selector: 'mvtool-requirement-table',
   templateUrl: './requirement-table.component.html',
-  styleUrls: ['../shared/styles/mat-table.css', '../shared/styles/flex.css'],
+  styleUrls: [
+    '../shared/styles/mat-table.css',
+    '../shared/styles/flex.css',
+    '../shared/styles/truncate.css',
+  ],
   styles: ['.mat-column-gsAbsicherung {text-align: center;}'],
 })
 export class RequirementTableComponent implements OnInit {
