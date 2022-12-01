@@ -15,22 +15,13 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<div mat-dialog-title>
-  <h1>
-    <span *ngIf="createMode">Create</span>
-    <span *ngIf="!createMode">Edit</span>
-    <span>&nbsp;</span>
-    <span>Project</span>
-  </h1>
-</div>
-<!-- content -->
-<div mat-dialog-content>
-  <form
-    id="projectForm"
-    #form="ngForm"
-    (submit)="onSave(form)"
-    class="fx-column"
-  >
+<mvtool-create-edit-dialog
+  [createMode]="createMode"
+  objectName="Project"
+  (save)="onSave($event)"
+  (cancel)="onCancel()"
+>
+  <div class="fx-column">
     <!-- Project name input -->
     <mat-form-field appearance="fill">
       <mat-label>Project name</mat-label>
@@ -53,23 +44,5 @@
       [(jiraProjectId)]="projectInput.jira_project_id"
     >
     </mvtool-jira-project-input>
-  </form>
-</div>
-<div mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">
-    <mat-icon>cancel</mat-icon>
-    Cancel
-  </button>
-  <button
-    mat-raised-button
-    disabled="{{ form.invalid }}"
-    color="accent"
-    type="submit"
-    form="projectForm"
-  >
-    <mat-icon>save</mat-icon>
-    <span>&nbsp;</span>
-    <span *ngIf="createMode">Create</span>
-    <span *ngIf="!createMode">Save</span>
-  </button>
-</div>
+  </div>
+</mvtool-create-edit-dialog>

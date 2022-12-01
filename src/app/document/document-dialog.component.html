@@ -15,22 +15,13 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<div mat-dialog-title>
-  <h1>
-    <span *ngIf="createMode">Create</span>
-    <span *ngIf="!createMode">Edit</span>
-    <span>&nbsp;</span>
-    <span>Document</span>
-  </h1>
-</div>
-<!-- Content -->
-<div mat-dialog-content>
-  <form
-    id="documentForm"
-    #form="ngForm"
-    (submit)="onSave(form)"
-    class="fx-column"
-  >
+<mvtool-create-edit-dialog
+  [createMode]="createMode"
+  objectName="Document"
+  (save)="onSave($event)"
+  (cancel)="onCancel()"
+>
+  <div class="fx-column">
     <!-- Document reference input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Document reference</mat-label>
@@ -53,25 +44,5 @@
       >
       </textarea>
     </mat-form-field>
-  </form>
-</div>
-<!-- Buttons -->
-<div mat-dialog-actions align="end">
-  <button mat-button class="form-button" (click)="onCancel()">
-    <mat-icon>cancel</mat-icon>
-    Cancel
-  </button>
-  <button
-    mat-raised-button
-    disabled="{{ form.invalid }}"
-    class="form-button"
-    color="accent"
-    type="submit"
-    form="documentForm"
-  >
-    <mat-icon>save</mat-icon>
-    <span>&nbsp;</span>
-    <span *ngIf="createMode">Create</span>
-    <span *ngIf="!createMode">Save</span>
-  </button>
-</div>
+  </div>
+</mvtool-create-edit-dialog>
