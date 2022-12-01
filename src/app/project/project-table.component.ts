@@ -15,6 +15,7 @@
 
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { ITableColumn } from '../shared/components/table.component';
 import { Project, ProjectService } from '../shared/services/project.service';
 import { ProjectDialogService } from './project-dialog.component';
@@ -40,7 +41,8 @@ export class ProjectTableComponent implements OnInit {
 
   constructor(
     protected _projectService: ProjectService,
-    protected _projectDialogService: ProjectDialogService
+    protected _projectDialogService: ProjectDialogService,
+    protected _confirmDialogService: ConfirmDialogService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -64,8 +66,15 @@ export class ProjectTableComponent implements OnInit {
   }
 
   async onDeleteProject(project: Project): Promise<void> {
-    await firstValueFrom(this._projectService.deleteProject(project.id));
-    await this.onReloadProjects();
+    const confirmDialogRef = this._confirmDialogService.openConfirmDialog(
+      'Delete Project',
+      `Do you really want to delete project "${project.name}"?`
+    );
+    const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
+    if (confirmed) {
+      await firstValueFrom(this._projectService.deleteProject(project.id));
+      await this.onReloadProjects();
+    }
   }
 
   async onReloadProjects(): Promise<void> {

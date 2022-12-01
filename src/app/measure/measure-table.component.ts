@@ -15,6 +15,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { ITableColumn } from '../shared/components/table.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
@@ -46,7 +47,8 @@ export class MeasureTableComponent implements OnInit {
     protected _measureService: MeasureService,
     protected _measureDialogService: MeasureDialogService,
     protected _downloadDialogService: DownloadDialogService,
-    protected _uploadDialogService: UploadDialogService
+    protected _uploadDialogService: UploadDialogService,
+    protected _confirmDialogService: ConfirmDialogService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -77,8 +79,15 @@ export class MeasureTableComponent implements OnInit {
   }
 
   async onDeleteMeasure(measure: Measure): Promise<void> {
-    await firstValueFrom(this._measureService.deleteMeasure(measure.id));
-    await this.onReloadMeasures();
+    const confirmDialogRef = this._confirmDialogService.openConfirmDialog(
+      'Delete Measure',
+      `Do you really want to delete measure "${measure.summary}"?`
+    );
+    const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
+    if (confirmed) {
+      await firstValueFrom(this._measureService.deleteMeasure(measure.id));
+      await this.onReloadMeasures();
+    }
   }
 
   async onExportMeasures(): Promise<void> {

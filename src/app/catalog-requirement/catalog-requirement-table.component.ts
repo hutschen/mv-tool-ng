@@ -14,19 +14,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { firstValueFrom, Observable, ReplaySubject, tap } from 'rxjs';
+import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { ITableColumn } from '../shared/components/table.component';
 import { CatalogModule } from '../shared/services/catalog-module.service';
 import {
   CatalogRequirement,
   CatalogRequirementService,
 } from '../shared/services/catalog-requirement.service';
-import {
-  CatalogRequirementDialogComponent,
-  CatalogRequirementDialogService,
-  ICatalogRequirementDialogData,
-} from './catalog-requirement-dialog.component';
+import { CatalogRequirementDialogService } from './catalog-requirement-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-requirement-table',
@@ -54,7 +50,7 @@ export class CatalogRequirementTableComponent implements OnInit {
   constructor(
     protected _catalogRequirementService: CatalogRequirementService,
     protected _catalogRequirementDialogService: CatalogRequirementDialogService,
-    protected _dialog: MatDialog
+    protected _confirmDialogService: ConfirmDialogService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -94,12 +90,19 @@ export class CatalogRequirementTableComponent implements OnInit {
   async onDeleteCatalogRequirement(
     catalogRequirement: CatalogRequirement
   ): Promise<void> {
-    await firstValueFrom(
-      this._catalogRequirementService.deleteCatalogRequirement(
-        catalogRequirement.id
-      )
+    const confirmDialogRef = this._confirmDialogService.openConfirmDialog(
+      'Delete Catalog Requirement',
+      `Do you really want to delete the catalog requirement "${catalogRequirement.summary}"?`
     );
-    await this.onReloadCatalogRequirements();
+    const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
+    if (confirmed) {
+      await firstValueFrom(
+        this._catalogRequirementService.deleteCatalogRequirement(
+          catalogRequirement.id
+        )
+      );
+      await this.onReloadCatalogRequirements();
+    }
   }
 
   async onReloadCatalogRequirements(): Promise<void> {
