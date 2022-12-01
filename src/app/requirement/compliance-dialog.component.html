@@ -15,17 +15,13 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<div mat-dialog-title>
-  <h1>Edit Compliance Information</h1>
-</div>
-<!-- Content -->
-<div mat-dialog-content>
-  <form
-    id="complianceForm"
-    #form="ngForm"
-    (submit)="onSave(form)"
-    class="fx-column"
-  >
+<mvtool-create-edit-dialog
+  [createMode]="false"
+  objectName="Compliance"
+  (save)="onSave($event)"
+  (cancel)="onCancel()"
+>
+  <div class="fx-column">
     <!-- Compliance Status Input -->
     <mat-form-field appearance="fill">
       <mat-label>Select compliance status</mat-label>
@@ -49,21 +45,5 @@
         [disabled]="complianceCommentDisabled"
       ></textarea>
     </mat-form-field>
-  </form>
-</div>
-<div mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">
-    <mat-icon>cancel</mat-icon>
-    Cancel
-  </button>
-  <button
-    mat-raised-button
-    disabled="{{ form.invalid }}"
-    color="accent"
-    type="submit"
-    form="complianceForm"
-  >
-    <mat-icon>save</mat-icon>
-    Save
-  </button>
-</div>
+  </div>
+</mvtool-create-edit-dialog>
