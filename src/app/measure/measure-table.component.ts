@@ -26,7 +26,11 @@ import { MeasureDialogService } from './measure-dialog.component';
 @Component({
   selector: 'mvtool-measure-table',
   templateUrl: './measure-table.component.html',
-  styleUrls: ['../shared/styles/mat-table.css', '../shared/styles/flex.css'],
+  styleUrls: [
+    '../shared/styles/mat-table.css',
+    '../shared/styles/flex.css',
+    '../shared/styles/truncate.css',
+  ],
   styles: [],
 })
 export class MeasureTableComponent implements OnInit {

@@ -15,17 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-@import "~@fontsource/roboto/300.css";
-@import "~@fontsource/roboto/400.css";
-@import "~@fontsource/roboto/500.css";
-@import "~@fontsource/material-icons/base.css";
-@import "@angular/material/prebuilt-themes/indigo-pink.css";
-
-html,
-body {
-  height: 100%;
+/* TODO: Replace this workaround when line-clamp is finally part of CSS standard. 
+See also https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-line-clamp */
+.truncate-lines {
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
 }
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+
+.truncate-lines:hover {
+  -webkit-line-clamp: unset;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.truncate:hover {
+  overflow: unset;
+  text-overflow: unset;
+  white-space: unset;
 }

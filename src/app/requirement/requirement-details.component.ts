@@ -117,7 +117,7 @@ import {
       </div>
     </div>
   `,
-  styleUrls: ['../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/flex.css', '../shared/styles/truncate.css'],
   styles: ['h1 { margin: 0; }', '.requirement-card { margin: 20px; }'],
 })
 export class RequirementDetailsComponent {
