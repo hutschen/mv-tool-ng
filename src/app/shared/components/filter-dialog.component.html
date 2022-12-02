@@ -15,4 +15,10 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<p>filter-dialog works!</p>
+<mvtool-create-edit-dialog
+  [createMode]="true"
+  objectName="Filter"
+  (save)="onSave($event)"
+  (cancel)="onCancel()"
+>
+</mvtool-create-edit-dialog>
