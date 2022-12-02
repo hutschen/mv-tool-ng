@@ -34,11 +34,11 @@ export class FilterDialogService<T> {
   openFilterDialog(
     filterName: string,
     columnName: string,
-    data$: Observable<T>
+    data$: Observable<T[]>
   ): MatDialogRef<FilterDialogComponent, FilterOperator<T>> {
     return this._dialog.open(FilterDialogComponent, {
       width: '500px',
-      data: { filterName, columnName, data$ },
+      data: { filterName, columnName, data$ } as IFilterDialogData<T>,
     });
   }
 }

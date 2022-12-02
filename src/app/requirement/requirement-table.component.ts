@@ -17,6 +17,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
+import { FilterDialogService } from '../shared/components/filter-dialog.component';
 import { ITableColumn } from '../shared/components/table.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { Project } from '../shared/services/project.service';
@@ -66,6 +67,7 @@ export class RequirementTableComponent implements OnInit {
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _requirementImportDialogService: RequirementImportDialogService,
+    protected _filterDialogService: FilterDialogService<Requirement>,
     protected _confirmDialogService: ConfirmDialogService
   ) {}
 
@@ -167,6 +169,15 @@ export class RequirementTableComponent implements OnInit {
     } else {
       throw new Error('Project is undefined');
     }
+  }
+
+  async onFilterRequirements(): Promise<void> {
+    const dialogRef = this._filterDialogService.openFilterDialog(
+      'Filter Summary',
+      'summary',
+      this.data$
+    );
+    const filterOperator = await firstValueFrom(dialogRef.afterClosed());
   }
 
   async onReloadRequirements(): Promise<void> {
