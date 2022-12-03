@@ -39,6 +39,41 @@ import { Observable, of } from 'rxjs';
 export interface ITableColumn<T> {
   id: string;
   optional: boolean;
+  toValue?: (data: T) => any;
+  toStr?: (data: T) => string;
+  toBool?: (data: T) => boolean;
+}
+
+class TableColumn<T> implements ITableColumn<T> {
+  id: string;
+  optional: boolean;
+  protected _toValue?: (data: T) => any;
+  protected _toStr?: (data: T) => string;
+  protected _toBool?: (data: T) => boolean;
+
+  constructor(tableColumn: ITableColumn<T>) {
+    this.id = tableColumn.id;
+    this.optional = tableColumn.optional;
+    this._toValue = tableColumn.toValue;
+    this._toStr = tableColumn.toStr;
+    this._toBool = tableColumn.toBool;
+  }
+
+  toValue(data: T): any {
+    if (this._toValue) {
+      return this._toValue(data);
+    } else {
+      return this.id in data ? data[this.id as keyof T] : null;
+    }
+  }
+
+  toStr(data: T): string {
+    return this._toStr ? this._toStr(data) : this.toValue(data).toString();
+  }
+
+  toBool(data: T): boolean {
+    return this._toBool ? this._toBool(data) : !!this.toValue(data);
+  }
 }
 
 function getColumnNames<T>(
