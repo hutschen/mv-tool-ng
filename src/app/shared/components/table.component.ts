@@ -39,6 +39,7 @@ import { Observable, of } from 'rxjs';
 export interface ITableColumn<T> {
   id: string;
   optional: boolean;
+  label?: string;
   toValue?: (data: T) => any;
   toStr?: (data: T) => string;
   toBool?: (data: T) => boolean;
@@ -47,6 +48,7 @@ export interface ITableColumn<T> {
 class TableColumn<T> implements ITableColumn<T> {
   id: string;
   optional: boolean;
+  label: string;
   protected _toValue?: (data: T) => any;
   protected _toStr?: (data: T) => string;
   protected _toBool?: (data: T) => boolean;
@@ -54,6 +56,7 @@ class TableColumn<T> implements ITableColumn<T> {
   constructor(tableColumn: ITableColumn<T>) {
     this.id = tableColumn.id;
     this.optional = tableColumn.optional;
+    this.label = tableColumn.label ?? this.id;
     this._toValue = tableColumn.toValue;
     this._toStr = tableColumn.toStr;
     this._toBool = tableColumn.toBool;
