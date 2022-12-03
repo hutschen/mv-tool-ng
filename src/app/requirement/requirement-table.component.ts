@@ -41,33 +41,37 @@ import { RequirementImportDialogService } from './requirement-import-dialog.comp
 })
 export class RequirementTableComponent implements OnInit {
   columns: ITableColumn<Requirement>[] = [
-    { id: 'reference', optional: true },
+    { id: 'reference', label: 'Reference', optional: true },
     {
       id: 'gsAnforderungReference',
+      label: 'GS Reference',
       optional: true,
       toValue: (r) => r.catalog_requirement?.gs_anforderung_reference,
     },
     {
       id: 'catalog_module',
+      label: 'Catalog Module',
       optional: true,
       toValue: (r) => r.catalog_requirement?.catalog_module.title,
     },
-    { id: 'summary', optional: false },
-    { id: 'description', optional: true },
+    { id: 'summary', label: 'Summary', optional: false },
+    { id: 'description', label: 'Description', optional: true },
     {
       id: 'gsAbsicherung',
+      label: 'GS Absicherung',
       optional: true,
       toValue: (r) => r.catalog_requirement?.gs_absicherung,
     },
     {
       id: 'gsVerantwortliche',
+      label: 'GS Verantwortliche',
       optional: true,
       toValue: (r) => r.catalog_requirement?.gs_verantwortliche,
     },
-    { id: 'target_object', optional: true },
-    { id: 'compliance_status', optional: false },
-    { id: 'compliance_comment', optional: true },
-    { id: 'completion', optional: true },
+    { id: 'target_object', label: 'Target Object', optional: true },
+    { id: 'compliance_status', label: 'Compliance', optional: false },
+    { id: 'compliance_comment', label: 'Compliance Comment', optional: true },
+    { id: 'completion', label: 'Completion', optional: true },
     { id: 'options', optional: false },
   ];
   protected _dataSubject = new ReplaySubject<Requirement[]>(1);
