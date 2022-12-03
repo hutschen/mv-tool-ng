@@ -87,22 +87,9 @@ class TableColumns<T> {
 
   columnIds(data: T[] = []): string[] {
     return this._columns
-      .filter((c) => c.optional || data.some((d) => c.toBool(d)))
+      .filter((c) => !c.optional || data.some((d) => c.toBool(d)))
       .map((c) => c.id);
   }
-}
-
-function getColumnNames<T>(
-  columns: ITableColumn<T>[],
-  data: T[] = []
-): string[] {
-  return columns
-    .filter(
-      (column) =>
-        !column.optional ||
-        data.some((d) => (column.id in d ? d[column.id as keyof T] : false))
-    )
-    .map((c) => c.id);
 }
 
 @Component({
@@ -190,10 +177,11 @@ export class TableComponent<T>
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   ngOnInit(): void {
-    this.columnIds = getColumnNames(this.columns);
+    const columns = new TableColumns(this.columns);
+    this.columnIds = columns.columnIds();
     this.data$.subscribe((data) => {
       this._dataSource.data = data;
-      this.columnIds = getColumnNames(this.columns, data);
+      this.columnIds = columns.columnIds(data);
     });
   }
 
