@@ -40,6 +40,7 @@ export interface ITableColumn<T> {
   id: string;
   optional: boolean;
   label?: string;
+  group?: number | string;
   toValue?: (data: T) => any;
   toStr?: (data: T) => string;
   toBool?: (data: T) => boolean;
@@ -49,6 +50,7 @@ export class TableColumn<T> implements ITableColumn<T> {
   id: string;
   optional: boolean;
   label: string;
+  group?: number | string;
   protected _toValue?: (data: T) => any;
   protected _toStr?: (data: T) => string;
   protected _toBool?: (data: T) => boolean;
@@ -57,6 +59,7 @@ export class TableColumn<T> implements ITableColumn<T> {
     this.id = tableColumn.id;
     this.optional = tableColumn.optional;
     this.label = tableColumn.label ?? this.id;
+    this.group = tableColumn.group;
     this._toValue = tableColumn.toValue;
     this._toStr = tableColumn.toStr;
     this._toBool = tableColumn.toBool;
@@ -88,10 +91,14 @@ export class TableColumns<T> {
     this._columnMap = new Map(this._columns.map((c) => [c.id, c]));
   }
 
-  columnIds(data: T[] = []): string[] {
-    return this._columns
-      .filter((c) => !c.optional || data.some((d) => c.toBool(d)))
-      .map((c) => c.id);
+  columnsToShow(data: T[] = []): TableColumn<T>[] {
+    return this._columns.filter(
+      (c) => !c.optional || data.some((d) => c.toBool(d))
+    );
+  }
+
+  columnsByGroup(group?: number | string): TableColumn<T>[] {
+    return this._columns.filter((c) => c.group === group);
   }
 }
 
@@ -181,10 +188,10 @@ export class TableComponent<T>
 
   ngOnInit(): void {
     const columns = new TableColumns(this.columns);
-    this.columnIds = columns.columnIds();
+    this.columnIds = columns.columnsToShow().map((c) => c.id);
     this.data$.subscribe((data) => {
       this._dataSource.data = data;
-      this.columnIds = columns.columnIds(data);
+      this.columnIds = columns.columnsToShow(data).map((c) => c.id);
     });
   }
 
