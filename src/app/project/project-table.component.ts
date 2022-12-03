@@ -28,11 +28,11 @@ import { ProjectDialogService } from './project-dialog.component';
 })
 export class ProjectTableComponent implements OnInit {
   columns: ITableColumn[] = [
-    { name: 'name', optional: false },
-    { name: 'description', optional: true },
-    { name: 'jira_project_id', optional: false },
-    { name: 'completion', optional: true },
-    { name: 'options', optional: false },
+    { id: 'name', optional: false },
+    { id: 'description', optional: true },
+    { id: 'jira_project_id', optional: false },
+    { id: 'completion', optional: true },
+    { id: 'options', optional: false },
   ];
   protected _dataSubject = new ReplaySubject<Project[]>(1);
   data$: Observable<Project[]> = this._dataSubject.asObservable();

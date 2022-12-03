@@ -32,10 +32,10 @@ import { CatalogDialogService } from './catalog-dialog.component';
 })
 export class CatalogTableComponent implements OnInit {
   columns: ITableColumn[] = [
-    { name: 'reference', optional: true },
-    { name: 'title', optional: false },
-    { name: 'description', optional: true },
-    { name: 'options', optional: false },
+    { id: 'reference', optional: true },
+    { id: 'title', optional: false },
+    { id: 'description', optional: true },
+    { id: 'options', optional: false },
   ];
   protected _dataSubject = new ReplaySubject<Catalog[]>(1);
   data$: Observable<Catalog[]> = this._dataSubject.asObservable();

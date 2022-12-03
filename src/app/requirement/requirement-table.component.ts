@@ -41,18 +41,18 @@ import { RequirementImportDialogService } from './requirement-import-dialog.comp
 })
 export class RequirementTableComponent implements OnInit {
   columns: ITableColumn[] = [
-    { name: 'reference', optional: true },
-    { name: 'gsAnforderungReference', optional: true },
-    { name: 'catalog_module', optional: true },
-    { name: 'summary', optional: false },
-    { name: 'description', optional: true },
-    { name: 'gsAbsicherung', optional: true },
-    { name: 'gsVerantwortliche', optional: true },
-    { name: 'target_object', optional: true },
-    { name: 'compliance_status', optional: false },
-    { name: 'compliance_comment', optional: true },
-    { name: 'completion', optional: true },
-    { name: 'options', optional: false },
+    { id: 'reference', optional: true },
+    { id: 'gsAnforderungReference', optional: true },
+    { id: 'catalog_module', optional: true },
+    { id: 'summary', optional: false },
+    { id: 'description', optional: true },
+    { id: 'gsAbsicherung', optional: true },
+    { id: 'gsVerantwortliche', optional: true },
+    { id: 'target_object', optional: true },
+    { id: 'compliance_status', optional: false },
+    { id: 'compliance_comment', optional: true },
+    { id: 'completion', optional: true },
+    { id: 'options', optional: false },
   ];
   protected _dataSubject = new ReplaySubject<Requirement[]>(1);
   data$: Observable<Requirement[]> = this._dataSubject.asObservable();

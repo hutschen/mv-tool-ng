@@ -37,7 +37,7 @@ import {
 import { Observable, of } from 'rxjs';
 
 export interface ITableColumn {
-  name: string;
+  id: string;
   optional: boolean;
 }
 
@@ -46,9 +46,9 @@ function getColumnNames<T>(columns: ITableColumn[], data: T[] = []): string[] {
     .filter(
       (column) =>
         !column.optional ||
-        data.some((d) => (column.name in d ? d[column.name as keyof T] : false))
+        data.some((d) => (column.id in d ? d[column.id as keyof T] : false))
     )
-    .map((c) => c.name);
+    .map((c) => c.id);
 }
 
 @Component({

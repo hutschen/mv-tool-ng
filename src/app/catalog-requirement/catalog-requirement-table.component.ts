@@ -36,13 +36,13 @@ import { CatalogRequirementDialogService } from './catalog-requirement-dialog.co
 })
 export class CatalogRequirementTableComponent implements OnInit {
   columns: ITableColumn[] = [
-    { name: 'reference', optional: true },
-    { name: 'gs_anforderung_reference', optional: true },
-    { name: 'summary', optional: false },
-    { name: 'description', optional: true },
-    { name: 'gs_absicherung', optional: true },
-    { name: 'gs_verantwortliche', optional: true },
-    { name: 'options', optional: false },
+    { id: 'reference', optional: true },
+    { id: 'gs_anforderung_reference', optional: true },
+    { id: 'summary', optional: false },
+    { id: 'description', optional: true },
+    { id: 'gs_absicherung', optional: true },
+    { id: 'gs_verantwortliche', optional: true },
+    { id: 'options', optional: false },
   ];
   protected _dataSubject = new ReplaySubject<CatalogRequirement[]>(1);
   data$: Observable<CatalogRequirement[]> = this._dataSubject.asObservable();
