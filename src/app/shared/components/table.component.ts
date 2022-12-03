@@ -111,11 +111,11 @@ function getColumnNames<T>(
     <div class="mat-elevation-z3 fx-column">
       <table mat-table [dataSource]="_dataSource">
         <ng-content></ng-content>
-        <tr mat-header-row *matHeaderRowDef="columnNames; sticky: true"></tr>
+        <tr mat-header-row *matHeaderRowDef="columnIds; sticky: true"></tr>
         <tr
           mat-row
           [class.clickable-row]="rowClicked.observed"
-          *matRowDef="let row; columns: columnNames"
+          *matRowDef="let row; columns: columnIds"
           (click)="rowClicked.emit(row)"
         ></tr>
 
@@ -176,7 +176,7 @@ export class TableComponent<T>
   @Input() createLabel: string = 'Create One';
   @Output() rowClicked = new EventEmitter<T>();
   @Output() create = new EventEmitter<void>();
-  columnNames: string[] = [];
+  columnIds: string[] = [];
   protected _dataSource = new MatTableDataSource<T>();
   protected _filterValue: string = '';
 
@@ -190,10 +190,10 @@ export class TableComponent<T>
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   ngOnInit(): void {
-    this.columnNames = getColumnNames(this.columns);
+    this.columnIds = getColumnNames(this.columns);
     this.data$.subscribe((data) => {
       this._dataSource.data = data;
-      this.columnNames = getColumnNames(this.columns, data);
+      this.columnIds = getColumnNames(this.columns, data);
     });
   }
 
