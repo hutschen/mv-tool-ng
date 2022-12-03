@@ -40,7 +40,7 @@ import { RequirementImportDialogService } from './requirement-import-dialog.comp
   styles: ['.mat-column-gsAbsicherung {text-align: center;}'],
 })
 export class RequirementTableComponent implements OnInit {
-  columns: ITableColumn[] = [
+  columns: ITableColumn<Requirement>[] = [
     { id: 'reference', optional: true },
     { id: 'gsAnforderungReference', optional: true },
     { id: 'catalog_module', optional: true },

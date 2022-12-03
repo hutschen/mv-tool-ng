@@ -36,12 +36,15 @@ import {
 } from '@angular/material/table';
 import { Observable, of } from 'rxjs';
 
-export interface ITableColumn {
+export interface ITableColumn<T> {
   id: string;
   optional: boolean;
 }
 
-function getColumnNames<T>(columns: ITableColumn[], data: T[] = []): string[] {
+function getColumnNames<T>(
+  columns: ITableColumn<T>[],
+  data: T[] = []
+): string[] {
   return columns
     .filter(
       (column) =>
@@ -114,7 +117,7 @@ export class TableComponent<T>
   // see https://github.com/angular/components/tree/main/src/components-examples/material/table/table-wrapped
 
   @Input() data$: Observable<T[]> = of([] as T[]);
-  @Input() columns: ITableColumn[] = [];
+  @Input() columns: ITableColumn<T>[] = [];
   @Input() pageSize: number = 25;
   @Input() dataLoaded: boolean = true;
   @Input() noContentText: string = 'Nothing to display';

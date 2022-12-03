@@ -34,7 +34,7 @@ import { MeasureDialogService } from './measure-dialog.component';
   styles: [],
 })
 export class MeasureTableComponent implements OnInit {
-  columns: ITableColumn[] = [
+  columns: ITableColumn<Measure>[] = [
     { id: 'summary', optional: false },
     { id: 'description', optional: true },
     { id: 'document', optional: true },

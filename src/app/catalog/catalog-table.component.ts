@@ -31,7 +31,7 @@ import { CatalogDialogService } from './catalog-dialog.component';
   styles: [],
 })
 export class CatalogTableComponent implements OnInit {
-  columns: ITableColumn[] = [
+  columns: ITableColumn<Catalog>[] = [
     { id: 'reference', optional: true },
     { id: 'title', optional: false },
     { id: 'description', optional: true },

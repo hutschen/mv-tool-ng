@@ -34,7 +34,7 @@ import { DocumentDialogService } from './document-dialog.component';
   styles: [],
 })
 export class DocumentTableComponent implements OnInit {
-  columns: ITableColumn[] = [
+  columns: ITableColumn<Document>[] = [
     { id: 'reference', optional: true },
     { id: 'title', optional: false },
     { id: 'description', optional: true },

@@ -35,7 +35,7 @@ import { CatalogRequirementDialogService } from './catalog-requirement-dialog.co
   styles: ['.mat-column-gs_absicherung {text-align: center;}'],
 })
 export class CatalogRequirementTableComponent implements OnInit {
-  columns: ITableColumn[] = [
+  columns: ITableColumn<CatalogRequirement>[] = [
     { id: 'reference', optional: true },
     { id: 'gs_anforderung_reference', optional: true },
     { id: 'summary', optional: false },
