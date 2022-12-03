@@ -45,7 +45,7 @@ export class RequirementTableComponent implements OnInit {
     {
       id: 'gsAnforderungReference',
       optional: true,
-      toValue: (r) => r.catalog_requirement?.reference,
+      toValue: (r) => r.catalog_requirement?.gs_anforderung_reference,
     },
     {
       id: 'catalog_module',
