@@ -45,7 +45,7 @@ export interface ITableColumn<T> {
   toBool?: (data: T) => boolean;
 }
 
-class TableColumn<T> implements ITableColumn<T> {
+export class TableColumn<T> implements ITableColumn<T> {
   id: string;
   optional: boolean;
   label: string;
@@ -79,7 +79,7 @@ class TableColumn<T> implements ITableColumn<T> {
   }
 }
 
-class TableColumns<T> {
+export class TableColumns<T> {
   protected _columns: TableColumn<T>[] = [];
   protected _columnMap: Map<string, TableColumn<T>>;
 
