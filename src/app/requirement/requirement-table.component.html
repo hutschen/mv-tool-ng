@@ -90,8 +90,8 @@
     <ng-container matColumnDef="catalog_module">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Catalog Module</th>
       <td mat-cell *matCellDef="let requirement">
-        <span *ngIf="requirement.catalog_module" class="truncate-lines">
-          {{ requirement.catalog_module.title }}
+        <span *ngIf="requirement.catalog_requirement" class="truncate-lines">
+          {{ requirement.catalog_requirement.catalog_module.title }}
         </span>
       </td>
     </ng-container>
