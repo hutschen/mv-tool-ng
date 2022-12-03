@@ -76,6 +76,22 @@ class TableColumn<T> implements ITableColumn<T> {
   }
 }
 
+class TableColumns<T> {
+  protected _columns: TableColumn<T>[] = [];
+  protected _columnMap: Map<string, TableColumn<T>>;
+
+  constructor(columns: ITableColumn<T>[]) {
+    this._columns = columns.map((c) => new TableColumn(c));
+    this._columnMap = new Map(this._columns.map((c) => [c.id, c]));
+  }
+
+  columnIds(data: T[] = []): string[] {
+    return this._columns
+      .filter((c) => c.optional || data.some((d) => c.toBool(d)))
+      .map((c) => c.id);
+  }
+}
+
 function getColumnNames<T>(
   columns: ITableColumn<T>[],
   data: T[] = []
