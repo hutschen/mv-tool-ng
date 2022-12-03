@@ -42,12 +42,28 @@ import { RequirementImportDialogService } from './requirement-import-dialog.comp
 export class RequirementTableComponent implements OnInit {
   columns: ITableColumn<Requirement>[] = [
     { id: 'reference', optional: true },
-    { id: 'gsAnforderungReference', optional: true },
-    { id: 'catalog_module', optional: true },
+    {
+      id: 'gsAnforderungReference',
+      optional: true,
+      toValue: (r) => r.catalog_requirement?.reference,
+    },
+    {
+      id: 'catalog_module',
+      optional: true,
+      toValue: (r) => r.catalog_requirement?.catalog_module.title,
+    },
     { id: 'summary', optional: false },
     { id: 'description', optional: true },
-    { id: 'gsAbsicherung', optional: true },
-    { id: 'gsVerantwortliche', optional: true },
+    {
+      id: 'gsAbsicherung',
+      optional: true,
+      toValue: (r) => r.catalog_requirement?.gs_absicherung,
+    },
+    {
+      id: 'gsVerantwortliche',
+      optional: true,
+      toValue: (r) => r.catalog_requirement?.gs_verantwortliche,
+    },
     { id: 'target_object', optional: true },
     { id: 'compliance_status', optional: false },
     { id: 'compliance_comment', optional: true },
