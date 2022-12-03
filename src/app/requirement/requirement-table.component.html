@@ -62,12 +62,6 @@
     #sort="matSort"
     [sort]="sort"
   >
-    <!-- ID Column -->
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef>ID</th>
-      <td mat-cell *matCellDef="let requirement">{{ requirement.id }}</td>
-    </ng-container>
-
     <!-- Reference column -->
     <ng-container matColumnDef="reference">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference</th>
