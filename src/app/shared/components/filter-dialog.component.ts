@@ -13,21 +13,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject, Injectable, OnInit } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import {
   MatDialog,
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
-
-type FilterOperator<T> = (data$: Observable<T[]>) => Observable<T[]>;
+import { TableColumn } from './table.component';
 
 interface IFilterDialogData<T> {
-  filterName: string;
-  columnName: string;
-  data$: Observable<T[]>;
+  column: TableColumn<T>;
+  data: T[];
 }
 
 @Injectable({
@@ -37,13 +34,12 @@ export class FilterDialogService<T> {
   constructor(protected _dialog: MatDialog) {}
 
   openFilterDialog(
-    filterName: string,
-    columnName: string,
-    data$: Observable<T[]>
-  ): MatDialogRef<FilterDialogComponent<T>, FilterOperator<T>> {
+    column: TableColumn<T>,
+    data: T[]
+  ): MatDialogRef<FilterDialogComponent<T>, string[]> {
     return this._dialog.open(FilterDialogComponent, {
       width: '500px',
-      data: { filterName, columnName, data$ } as IFilterDialogData<T>,
+      data: { column, data } as IFilterDialogData<T>,
     });
   }
 }
@@ -53,13 +49,11 @@ export class FilterDialogService<T> {
   templateUrl: './filter-dialog.component.html',
   styles: [],
 })
-export class FilterDialogComponent<T> implements OnInit {
+export class FilterDialogComponent<T> {
   constructor(
     protected _dialogRef: MatDialogRef<FilterDialogComponent<T>>,
     @Inject(MAT_DIALOG_DATA) dialogData: IFilterDialogData<T>
   ) {}
-
-  ngOnInit(): void {}
 
   onSave(form: NgForm): void {
     console.log('onSave', form);

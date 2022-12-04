@@ -209,12 +209,16 @@ export class RequirementTableComponent implements OnInit {
   }
 
   async onFilterRequirements(): Promise<void> {
+    const column = this.columns.getColumn('summary');
     const dialogRef = this._filterDialogService.openFilterDialog(
-      'Filter Summary',
-      'summary',
-      this.data$
+      column,
+      await firstValueFrom(this.data$)
     );
-    const filterOperator = await firstValueFrom(dialogRef.afterClosed());
+    const filters = await firstValueFrom(dialogRef.afterClosed());
+    if (filters instanceof Array<string>) {
+      column.filters = filters;
+      console.log(filters);
+    }
   }
 
   async onReloadRequirements(): Promise<void> {
