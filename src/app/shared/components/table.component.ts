@@ -41,6 +41,8 @@ export interface ITableColumn<T> {
   optional: boolean;
   label?: string;
   group?: number | string;
+  filterable?: boolean;
+  filters?: string[];
   toValue?: (data: T) => any;
   toStr?: (data: T) => string;
   toBool?: (data: T) => boolean;
@@ -51,6 +53,8 @@ export class TableColumn<T> implements ITableColumn<T> {
   optional: boolean;
   label: string;
   group?: number | string;
+  filterable: boolean;
+  filters: string[];
   protected _toValue?: (data: T) => any;
   protected _toStr?: (data: T) => string;
   protected _toBool?: (data: T) => boolean;
@@ -60,9 +64,21 @@ export class TableColumn<T> implements ITableColumn<T> {
     this.optional = tableColumn.optional;
     this.label = tableColumn.label ?? this.id;
     this.group = tableColumn.group;
+    this.filterable = tableColumn.filterable ?? true;
+    this.filters = tableColumn.filters ?? [];
     this._toValue = tableColumn.toValue;
     this._toStr = tableColumn.toStr;
     this._toBool = tableColumn.toBool;
+  }
+
+  filter(data: T): boolean {
+    if (!this.filterable) {
+      return true;
+    }
+    if (this.filters.length === 0) {
+      return true;
+    }
+    return this.filters.includes(this.toStr(data));
   }
 
   toValue(data: T): any {
@@ -74,7 +90,7 @@ export class TableColumn<T> implements ITableColumn<T> {
   }
 
   toStr(data: T): string {
-    return this._toStr ? this._toStr(data) : this.toValue(data).toString();
+    return this._toStr ? this._toStr(data) : String(this.toValue(data));
   }
 
   toBool(data: T): boolean {
@@ -89,6 +105,10 @@ export class TableColumns<T> {
   constructor(columns: ITableColumn<T>[]) {
     this._columns = columns.map((c) => new TableColumn(c));
     this._columnMap = new Map(this._columns.map((c) => [c.id, c]));
+  }
+
+  filter(data: T[]): T[] {
+    return data.filter((d) => this._columns.every((c) => c.filter(d)));
   }
 
   getColumn(id: string): TableColumn<T> {
@@ -197,8 +217,8 @@ export class TableComponent<T>
   ngOnInit(): void {
     this.columnIds = this.columns.columnsToShow().map((c) => c.id);
     this.data$.subscribe((data) => {
-      this._dataSource.data = data;
       this.columnIds = this.columns.columnsToShow(data).map((c) => c.id);
+      this._dataSource.data = this.columns.filter(data);
     });
   }
 
