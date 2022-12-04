@@ -18,7 +18,10 @@ import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { FilterDialogService } from '../shared/components/filter-dialog.component';
-import { ITableColumn } from '../shared/components/table.component';
+import {
+  ITableColumn,
+  TableColumns,
+} from '../shared/components/table.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { Project } from '../shared/services/project.service';
 import {
@@ -79,6 +82,7 @@ export class RequirementTableComponent implements OnInit {
     { id: 'completion', label: 'Completion', optional: true, group: 'special' },
     { id: 'options', optional: false, group: 'special' },
   ];
+  altColumns = new TableColumns<Requirement>(this.columns);
   protected _dataSubject = new ReplaySubject<Requirement[]>(1);
   data$: Observable<Requirement[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;
