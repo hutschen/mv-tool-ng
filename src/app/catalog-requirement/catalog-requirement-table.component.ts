@@ -16,7 +16,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
-import { ITableColumn } from '../shared/components/table.component';
+import { TableColumns } from '../shared/components/table.component';
 import { CatalogModule } from '../shared/services/catalog-module.service';
 import {
   CatalogRequirement,
@@ -35,7 +35,7 @@ import { CatalogRequirementDialogService } from './catalog-requirement-dialog.co
   styles: ['.mat-column-gs_absicherung {text-align: center;}'],
 })
 export class CatalogRequirementTableComponent implements OnInit {
-  columns: ITableColumn<CatalogRequirement>[] = [
+  columns = new TableColumns<CatalogRequirement>([
     { id: 'reference', optional: true },
     { id: 'gs_anforderung_reference', optional: true },
     { id: 'summary', optional: false },
@@ -43,7 +43,7 @@ export class CatalogRequirementTableComponent implements OnInit {
     { id: 'gs_absicherung', optional: true },
     { id: 'gs_verantwortliche', optional: true },
     { id: 'options', optional: false },
-  ];
+  ]);
   protected _dataSubject = new ReplaySubject<CatalogRequirement[]>(1);
   data$: Observable<CatalogRequirement[]> = this._dataSubject.asObservable();
   data: CatalogRequirement[] = [];

@@ -17,7 +17,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
-import { ITableColumn } from '../shared/components/table.component';
+import { TableColumns } from '../shared/components/table.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { DocumentService, Document } from '../shared/services/document.service';
 import { Project } from '../shared/services/project.service';
@@ -34,12 +34,12 @@ import { DocumentDialogService } from './document-dialog.component';
   styles: [],
 })
 export class DocumentTableComponent implements OnInit {
-  columns: ITableColumn<Document>[] = [
+  columns = new TableColumns<Document>([
     { id: 'reference', optional: true },
     { id: 'title', optional: false },
     { id: 'description', optional: true },
     { id: 'options', optional: false },
-  ];
+  ]);
   protected _dataSubject = new ReplaySubject<Document[]>(1);
   data$: Observable<Document[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;

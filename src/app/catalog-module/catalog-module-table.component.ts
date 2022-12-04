@@ -16,7 +16,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
-import { ITableColumn } from '../shared/components/table.component';
+import { TableColumns } from '../shared/components/table.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import {
   CatalogModule,
@@ -36,13 +36,13 @@ import { CatalogModuleDialogService } from './catalog-module-dialog.component';
   styles: [],
 })
 export class CatalogModuleTableComponent implements OnInit {
-  columns: ITableColumn<CatalogModule>[] = [
+  columns = new TableColumns<CatalogModule>([
     { id: 'reference', optional: true },
     { id: 'gs_reference', optional: true },
     { id: 'title', optional: false },
     { id: 'description', optional: true },
     { id: 'options', optional: false },
-  ];
+  ]);
   protected _dataSubject = new ReplaySubject<CatalogModule[]>(1);
   data$: Observable<CatalogModule[]> = this._dataSubject.asObservable();
   data: CatalogModule[] = [];

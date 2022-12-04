@@ -16,7 +16,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
-import { ITableColumn } from '../shared/components/table.component';
+import { TableColumns } from '../shared/components/table.component';
 import { Project, ProjectService } from '../shared/services/project.service';
 import { ProjectDialogService } from './project-dialog.component';
 
@@ -27,13 +27,13 @@ import { ProjectDialogService } from './project-dialog.component';
   styles: [],
 })
 export class ProjectTableComponent implements OnInit {
-  columns: ITableColumn<Project>[] = [
+  columns = new TableColumns<Project>([
     { id: 'name', optional: false },
     { id: 'description', optional: true },
     { id: 'jira_project_id', optional: false },
     { id: 'completion', optional: true },
     { id: 'options', optional: false },
-  ];
+  ]);
   protected _dataSubject = new ReplaySubject<Project[]>(1);
   data$: Observable<Project[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;

@@ -17,7 +17,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
-import { ITableColumn } from '../shared/components/table.component';
+import { TableColumns } from '../shared/components/table.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Requirement } from '../shared/services/requirement.service';
@@ -34,14 +34,14 @@ import { MeasureDialogService } from './measure-dialog.component';
   styles: [],
 })
 export class MeasureTableComponent implements OnInit {
-  columns: ITableColumn<Measure>[] = [
+  columns = new TableColumns<Measure>([
     { id: 'summary', optional: false },
     { id: 'description', optional: true },
     { id: 'document', optional: true },
     { id: 'jira_issue', optional: false },
     { id: 'completed', optional: false },
     { id: 'options', optional: false },
-  ];
+  ]);
   protected _dataSubject = new ReplaySubject<Measure[]>(1);
   data$: Observable<Measure[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;

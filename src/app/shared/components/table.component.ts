@@ -173,7 +173,7 @@ export class TableComponent<T>
   // see https://github.com/angular/components/tree/main/src/components-examples/material/table/table-wrapped
 
   @Input() data$: Observable<T[]> = of([] as T[]);
-  @Input() columns: ITableColumn<T>[] = [];
+  @Input() columns = new TableColumns<T>([]);
   @Input() pageSize: number = 25;
   @Input() dataLoaded: boolean = true;
   @Input() noContentText: string = 'Nothing to display';
@@ -195,11 +195,10 @@ export class TableComponent<T>
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   ngOnInit(): void {
-    const columns = new TableColumns(this.columns);
-    this.columnIds = columns.columnsToShow().map((c) => c.id);
+    this.columnIds = this.columns.columnsToShow().map((c) => c.id);
     this.data$.subscribe((data) => {
       this._dataSource.data = data;
-      this.columnIds = columns.columnsToShow(data).map((c) => c.id);
+      this.columnIds = this.columns.columnsToShow(data).map((c) => c.id);
     });
   }
 

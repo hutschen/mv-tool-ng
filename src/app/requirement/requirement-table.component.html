@@ -64,7 +64,7 @@
   >
     <!-- Create non-special / text-only columns-->
     <ng-container
-      *ngFor="let column of altColumns.columnsByGroup()"
+      *ngFor="let column of columns.columnsByGroup()"
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -82,7 +82,7 @@
 
     <!-- Compliance column -->
     <ng-container
-      *ngIf="altColumns.getColumn('compliance_status') as column"
+      *ngIf="columns.getColumn('compliance_status') as column"
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -103,7 +103,7 @@
 
     <!-- Completion column -->
     <ng-container
-      *ngIf="altColumns.getColumn('completion') as column"
+      *ngIf="columns.getColumn('completion') as column"
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>

@@ -18,10 +18,7 @@ import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { FilterDialogService } from '../shared/components/filter-dialog.component';
-import {
-  ITableColumn,
-  TableColumns,
-} from '../shared/components/table.component';
+import { TableColumns } from '../shared/components/table.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { Project } from '../shared/services/project.service';
 import {
@@ -43,7 +40,7 @@ import { RequirementImportDialogService } from './requirement-import-dialog.comp
   styles: ['.mat-column-gs_absicherung {text-align: center;}'],
 })
 export class RequirementTableComponent implements OnInit {
-  columns: ITableColumn<Requirement>[] = [
+  columns = new TableColumns<Requirement>([
     { id: 'reference', label: 'Reference', optional: true },
     {
       id: 'gs_anforderung_reference',
@@ -93,8 +90,7 @@ export class RequirementTableComponent implements OnInit {
       toBool: (r) => r.percentComplete !== null,
     },
     { id: 'options', optional: false, group: 'special' },
-  ];
-  altColumns = new TableColumns<Requirement>(this.columns);
+  ]);
   protected _dataSubject = new ReplaySubject<Requirement[]>(1);
   data$: Observable<Requirement[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;
