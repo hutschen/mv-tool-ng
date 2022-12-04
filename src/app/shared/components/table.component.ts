@@ -91,6 +91,14 @@ export class TableColumns<T> {
     this._columnMap = new Map(this._columns.map((c) => [c.id, c]));
   }
 
+  getColumn(id: string): TableColumn<T> {
+    const column = this._columnMap.get(id);
+    if (!column) {
+      throw new Error(`Column "${id}" not found`);
+    }
+    return column;
+  }
+
   columnsToShow(data: T[] = []): TableColumn<T>[] {
     return this._columns.filter(
       (c) => !c.optional || data.some((d) => c.toBool(d))
