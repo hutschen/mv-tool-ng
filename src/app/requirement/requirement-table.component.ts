@@ -80,7 +80,18 @@ export class RequirementTableComponent implements OnInit {
       toStr: (r) => (r.compliance_status ? r.compliance_status : 'Not set'),
     },
     { id: 'compliance_comment', label: 'Compliance Comment', optional: true },
-    { id: 'completion', label: 'Completion', optional: true, group: 'special' },
+    {
+      id: 'completion',
+      label: 'Completion',
+      optional: true,
+      group: 'special',
+      toValue: (r) => r.percentComplete,
+      toStr: (r) =>
+        r.percentComplete !== null
+          ? `${r.percentComplete}% complete`
+          : 'Nothing to be completed',
+      toBool: (r) => r.percentComplete !== null,
+    },
     { id: 'options', optional: false, group: 'special' },
   ];
   altColumns = new TableColumns<Requirement>(this.columns);

@@ -102,22 +102,23 @@
     </ng-container>
 
     <!-- Completion column -->
-    <ng-container matColumnDef="completion">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Completion</th>
+    <ng-container
+      *ngIf="altColumns.getColumn('completion') as column"
+      [matColumnDef]="column.id"
+    >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ column.label }}
+      </th>
       <td
         mat-cell
         *matCellDef="let requirement"
-        [matTooltip]="
-          requirement.percentComplete !== null
-            ? requirement.percentComplete + '% complete'
-            : 'Nothing to be completed'
-        "
+        [matTooltip]="column.toStr(requirement)"
       >
         <mat-progress-bar
-          *ngIf="requirement.percentComplete !== null"
+          *ngIf="column.toBool(requirement)"
           class="example-margin"
           mode="determinate"
-          [value]="requirement.percentComplete"
+          [value]="column.toValue(requirement)"
         >
         </mat-progress-bar>
       </td>
