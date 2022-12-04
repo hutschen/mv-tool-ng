@@ -40,13 +40,13 @@ import { RequirementImportDialogService } from './requirement-import-dialog.comp
     '../shared/styles/flex.css',
     '../shared/styles/truncate.css',
   ],
-  styles: ['.mat-column-gsAbsicherung {text-align: center;}'],
+  styles: ['.mat-column-gs_absicherung {text-align: center;}'],
 })
 export class RequirementTableComponent implements OnInit {
   columns: ITableColumn<Requirement>[] = [
     { id: 'reference', label: 'Reference', optional: true },
     {
-      id: 'gsAnforderungReference',
+      id: 'gs_anforderung_reference',
       label: 'GS Reference',
       optional: true,
       toValue: (r) => r.catalog_requirement?.gs_anforderung_reference,
@@ -60,13 +60,13 @@ export class RequirementTableComponent implements OnInit {
     { id: 'summary', label: 'Summary', optional: false },
     { id: 'description', label: 'Description', optional: true },
     {
-      id: 'gsAbsicherung',
+      id: 'gs_absicherung',
       label: 'GS Absicherung',
       optional: true,
       toValue: (r) => r.catalog_requirement?.gs_absicherung,
     },
     {
-      id: 'gsVerantwortliche',
+      id: 'gs_verantwortliche',
       label: 'GS Verantwortliche',
       optional: true,
       toValue: (r) => r.catalog_requirement?.gs_verantwortliche,
