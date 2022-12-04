@@ -81,8 +81,13 @@
     </ng-container>
 
     <!-- Compliance column -->
-    <ng-container matColumnDef="compliance_status">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Compliance</th>
+    <ng-container
+      *ngIf="altColumns.getColumn('compliance_status') as column"
+      [matColumnDef]="column.id"
+    >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ column.label }}
+      </th>
       <td mat-cell *matCellDef="let requirement">
         <button
           mat-button
@@ -91,10 +96,7 @@
             onEditCompliance(requirement); $event.stopImmediatePropagation()
           "
         >
-          <span *ngIf="!requirement.compliance_status">Not set</span>
-          <span *ngIf="requirement.compliance_status">{{
-            requirement.compliance_status
-          }}</span>
+          {{ column.toStr(requirement) }}
         </button>
       </td>
     </ng-container>
