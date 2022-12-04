@@ -69,10 +69,15 @@ export class RequirementTableComponent implements OnInit {
       toValue: (r) => r.catalog_requirement?.gs_verantwortliche,
     },
     { id: 'target_object', label: 'Target Object', optional: true },
-    { id: 'compliance_status', label: 'Compliance', optional: false },
+    {
+      id: 'compliance_status',
+      label: 'Compliance',
+      optional: false,
+      group: 'special',
+    },
     { id: 'compliance_comment', label: 'Compliance Comment', optional: true },
-    { id: 'completion', label: 'Completion', optional: true },
-    { id: 'options', optional: false },
+    { id: 'completion', label: 'Completion', optional: true, group: 'special' },
+    { id: 'options', optional: false, group: 'special' },
   ];
   protected _dataSubject = new ReplaySubject<Requirement[]>(1);
   data$: Observable<Requirement[]> = this._dataSubject.asObservable();
