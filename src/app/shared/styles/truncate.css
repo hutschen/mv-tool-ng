@@ -17,7 +17,8 @@
 
 /* TODO: Replace this workaround when line-clamp is finally part of CSS standard. 
 See also https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-line-clamp */
-.truncate-lines {
+.truncate-lines,
+.expandable-lines {
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -25,17 +26,18 @@ See also https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-line-clamp */
   display: -webkit-box;
 }
 
-.truncate-lines:hover {
+.expandable-lines:hover {
   -webkit-line-clamp: unset;
 }
 
-.truncate {
+.truncate,
+.expandable {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.truncate:hover {
+.expandable:hover {
   overflow: unset;
   text-overflow: unset;
   white-space: unset;
