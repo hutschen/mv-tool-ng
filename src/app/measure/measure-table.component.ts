@@ -35,12 +35,22 @@ import { MeasureDialogService } from './measure-dialog.component';
 })
 export class MeasureTableComponent implements OnInit {
   columns = new TableColumns<Measure>([
-    { id: 'summary', optional: false },
-    { id: 'description', optional: true },
-    { id: 'document', optional: true },
-    { id: 'jira_issue', optional: false },
-    { id: 'completed', optional: false },
-    { id: 'options', optional: false },
+    { id: 'summary', optional: false, label: 'Summary' },
+    { id: 'description', optional: true, label: 'Description' },
+    {
+      id: 'document',
+      optional: true,
+      label: 'Document',
+      toStr: (m) => (m.document?.title ? m.document.title : ''),
+    },
+    {
+      id: 'jira_issue',
+      optional: false,
+      label: 'Jira Issue',
+      group: 'special',
+    },
+    { id: 'completed', optional: false, label: 'Completed', group: 'special' },
+    { id: 'options', optional: false, group: 'special' },
   ]);
   protected _dataSubject = new ReplaySubject<Measure[]>(1);
   data$: Observable<Measure[]> = this._dataSubject.asObservable();

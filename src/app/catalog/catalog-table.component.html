@@ -40,33 +40,18 @@
     #sort="matSort"
     [sort]="sort"
   >
-    <!-- ID Column -->
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
-      <td mat-cell *matCellDef="let catalog">{{ catalog.id }}</td>
-    </ng-container>
-
-    <!-- Reference column -->
-    <ng-container matColumnDef="reference">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference</th>
+    <!-- Create non-special / text-only columns-->
+    <ng-container
+      *ngFor="let column of columns.columnsByGroup()"
+      [matColumnDef]="column.id"
+    >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ column.label }}
+      </th>
       <td mat-cell *matCellDef="let catalog">
-        {{ catalog.reference }}
-      </td>
-    </ng-container>
-
-    <!-- Title column -->
-    <ng-container matColumnDef="title">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
-      <td mat-cell *matCellDef="let catalog">
-        <span class="truncate-lines">{{ catalog.title }}</span>
-      </td>
-    </ng-container>
-
-    <!-- Description column -->
-    <ng-container matColumnDef="description">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
-      <td mat-cell *matCellDef="let catalog">
-        <span class="truncate-lines">{{ catalog.description }}</span>
+        <span *ngIf="column.toStr(catalog) as str" class="expandable-lines">
+          {{ str }}
+        </span>
       </td>
     </ng-container>
 

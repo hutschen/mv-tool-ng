@@ -28,11 +28,27 @@ import { ProjectDialogService } from './project-dialog.component';
 })
 export class ProjectTableComponent implements OnInit {
   columns = new TableColumns<Project>([
-    { id: 'name', optional: false },
-    { id: 'description', optional: true },
-    { id: 'jira_project_id', optional: false },
-    { id: 'completion', optional: true },
-    { id: 'options', optional: false },
+    { id: 'name', optional: false, label: 'Name' },
+    { id: 'description', optional: true, label: 'Description' },
+    {
+      id: 'jira_project',
+      optional: false,
+      label: 'Jira Project',
+      group: 'special',
+    },
+    {
+      id: 'completion',
+      optional: true,
+      label: 'Completion',
+      group: 'special',
+      toValue: (p) => p.percentComplete,
+      toStr: (p) =>
+        p.percentComplete !== null
+          ? `${p.percentComplete}% complete`
+          : 'Nothing to be completed',
+      toBool: (p) => p.percentComplete !== null,
+    },
+    { id: 'options', optional: false, group: 'special' },
   ]);
   protected _dataSubject = new ReplaySubject<Project[]>(1);
   data$: Observable<Project[]> = this._dataSubject.asObservable();

@@ -41,29 +41,29 @@
     #sort="matSort"
     [sort]="sort"
   >
-    <!-- ID Column -->
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
-      <td mat-cell *matCellDef="let project">{{ project.id }}</td>
-    </ng-container>
-
-    <!-- Name column -->
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
-      <td mat-cell *matCellDef="let project">{{ project.name }}</td>
-    </ng-container>
-
-    <!-- Description column -->
-    <ng-container matColumnDef="description">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+    <!-- Create non-special / text-only columns-->
+    <ng-container
+      *ngFor="let column of columns.columnsByGroup()"
+      [matColumnDef]="column.id"
+    >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ column.label }}
+      </th>
       <td mat-cell *matCellDef="let project">
-        {{ project.description | truncate }}
+        <span *ngIf="column.toStr(project) as str" class="expandable-lines">
+          {{ str }}
+        </span>
       </td>
     </ng-container>
 
     <!-- JIRA project column -->
-    <ng-container matColumnDef="jira_project_id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>JIRA Project</th>
+    <ng-container
+      *ngIf="columns.getColumn('jira_project') as column"
+      [matColumnDef]="column.id"
+    >
+      <th mat-header-cell *matHeaderCellDef>
+        {{ column.label }}
+      </th>
       <td mat-cell *matCellDef="let project">
         <mvtool-jira-project-label
           [project]="project"
@@ -74,22 +74,22 @@
     </ng-container>
 
     <!-- Completion column -->
-    <ng-container matColumnDef="completion">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Completion</th>
+    <ng-container
+      *ngIf="columns.getColumn('completion') as column"
+      [matColumnDef]="column.id"
+    >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ column.label }}
+      </th>
       <td
         mat-cell
         *matCellDef="let project"
-        [matTooltip]="
-          project.percentComplete !== null
-            ? project.percentComplete + '% complete'
-            : 'Nothing to be completed'
-        "
+        [matTooltip]="column.toStr(project)"
       >
         <mat-progress-bar
-          *ngIf="project.percentComplete !== null"
-          class="example-margin"
+          *ngIf="column.toBool(project)"
           mode="determinate"
-          [value]="project.percentComplete"
+          [value]="column.toValue(project)"
         >
         </mat-progress-bar>
       </td>

@@ -40,98 +40,20 @@
     #sort="matSort"
     [sort]="sort"
   >
-    <!-- ID Column -->
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef>ID</th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        {{ catalogRequirement.id }}
-      </td>
-    </ng-container>
-
-    <!-- Reference column -->
-    <ng-container matColumnDef="reference">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference</th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        {{ catalogRequirement.reference }}
-      </td>
-    </ng-container>
-
-    <!-- GS Anforderungs-Referenz -->
-    <ng-container matColumnDef="gs_anforderung_reference">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>GS ID</th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        <span *ngIf="catalogRequirement.gs_anforderung_reference">
-          {{ catalogRequirement.gs_anforderung_reference }}
-        </span>
-      </td>
-    </ng-container>
-
-    <!-- Summary column -->
-    <ng-container matColumnDef="summary">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Summary</th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        <span class="truncate-lines">{{ catalogRequirement.summary }}</span>
-      </td>
-    </ng-container>
-
-    <!-- Description column -->
-    <ng-container matColumnDef="description">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        <span class="truncate-lines">{{ catalogRequirement.description }}</span>
-      </td>
-    </ng-container>
-
-    <!-- GS Absicherung column -->
-    <ng-container matColumnDef="gs_absicherung">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>GS Absicherung</th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        <span *ngIf="catalogRequirement.gs_absicherung">
-          {{ catalogRequirement.gs_absicherung }}
-        </span>
-      </td>
-    </ng-container>
-
-    <!-- GS Verantwortliche column -->
-    <ng-container matColumnDef="gs_verantwortliche">
+    <!-- Create non-special / text-only columns-->
+    <ng-container
+      *ngFor="let column of columns.columnsByGroup()"
+      [matColumnDef]="column.id"
+    >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        GS Verantwortliche
+        {{ column.label }}
       </th>
       <td mat-cell *matCellDef="let catalogRequirement">
         <span
-          *ngIf="catalogRequirement.gs_verantwortliche"
-          class="truncate-lines"
+          *ngIf="column.toStr(catalogRequirement) as str"
+          class="expandable-lines"
         >
-          {{ catalogRequirement.gs_verantwortliche }}
-        </span>
-      </td>
-    </ng-container>
-
-    <!-- Target object column -->
-    <ng-container matColumnDef="target_object">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Target Object</th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        {{ catalogRequirement.target_object }}
-      </td>
-    </ng-container>
-
-    <!-- Compliance status column -->
-    <ng-container matColumnDef="compliance_status">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Compliance</th>
-      <th></th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        {{ catalogRequirement.compliance_status }}
-      </td>
-    </ng-container>
-
-    <!-- Compliance comment column -->
-    <ng-container matColumnDef="compliance_comment">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        Compliance Comment
-      </th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        <span class="truncate-lines">
-          {{ catalogRequirement.compliance_comment }}
+          {{ str }}
         </span>
       </td>
     </ng-container>

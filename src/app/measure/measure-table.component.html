@@ -42,42 +42,24 @@
     #sort="matSort"
     [sort]="sort"
   >
-    <!-- ID Column -->
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
-      <td mat-cell *matCellDef="let measure">{{ measure.id }}</td>
-    </ng-container>
-
-    <!-- Summary column -->
-    <ng-container matColumnDef="summary">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Summary</th>
+    <!-- Create non-special / text-only columns-->
+    <ng-container
+      *ngFor="let column of columns.columnsByGroup()"
+      [matColumnDef]="column.id"
+    >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ column.label }}
+      </th>
       <td mat-cell *matCellDef="let measure">
-        <span class="truncate-lines">{{ measure.summary }}</span>
-      </td>
-    </ng-container>
-
-    <!-- Description column -->
-    <ng-container matColumnDef="description">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
-      <td mat-cell *matCellDef="let measure">
-        <span class="truncate-lines">{{ measure.description }}</span>
-      </td>
-    </ng-container>
-
-    <!-- Document column -->
-    <ng-container matColumnDef="document">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Document</th>
-      <td mat-cell *matCellDef="let measure">
-        <span *ngIf="measure.document" class="truncate-lines">
-          {{ measure.document.reference }}
-          {{ measure.document.title }}
+        <span *ngIf="column.toStr(measure) as str" class="expandable-lines">
+          {{ str }}
         </span>
       </td>
     </ng-container>
 
     <!-- JIRA issue column -->
     <ng-container matColumnDef="jira_issue">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>JIRA Issue</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Jira Issue</th>
       <td mat-cell *matCellDef="let measure">
         <mvtool-jira-issue-input
           [measure]="measure"
