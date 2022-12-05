@@ -90,7 +90,12 @@ export class TableColumn<T> implements ITableColumn<T> {
   }
 
   toStr(data: T): string {
-    return this._toStr ? this._toStr(data) : String(this.toValue(data));
+    if (this._toStr) {
+      return this._toStr(data);
+    } else {
+      const value = this.toValue(data);
+      return value === null || value === undefined ? '' : String(value);
+    }
   }
 
   toBool(data: T): boolean {
