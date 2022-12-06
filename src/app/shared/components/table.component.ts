@@ -137,55 +137,7 @@ export class TableColumns<T> {
 
 @Component({
   selector: 'mvtool-table',
-  template: `
-    <div class="mat-elevation-z3 fx-column">
-      <table mat-table [dataSource]="_dataSource">
-        <ng-content></ng-content>
-        <tr mat-header-row *matHeaderRowDef="columnIds; sticky: true"></tr>
-        <tr
-          mat-row
-          [class.clickable-row]="rowClicked.observed"
-          *matRowDef="let row; columns: columnIds"
-          (click)="rowClicked.emit(row)"
-        ></tr>
-
-        <tr class="mat-row" *matNoDataRow>
-          <!-- Shown when there is no matching data -->
-          <td *ngIf="filterValue" class="mat-cell" colspan="100">
-            No data matching the filter:
-            <strong>{{ filterValue }}</strong>
-          </td>
-          <!-- Shown when the table is empty -->
-          <td *ngIf="!filterValue" class="mat-cell" colspan="100">
-            <div *ngIf="dataLoaded" class="fx-row fx-space-between-center">
-              <div>{{ noContentText }}</div>
-              <button
-                *ngIf="create.observed"
-                mat-raised-button
-                (click)="create.emit()"
-                color="accent"
-              >
-                <mat-icon>add</mat-icon>
-                {{ createLabel }}
-              </button>
-            </div>
-            <div *ngIf="!dataLoaded" class="fx-row fx-gap-10">
-              <mat-spinner diameter="20"></mat-spinner>
-              <div>{{ loadingText }}</div>
-            </div>
-          </td>
-        </tr>
-      </table>
-
-      <!-- Table paginator -->
-      <mat-paginator
-        [pageSize]="pageSize"
-        [pageSizeOptions]="[10, 25, 50, 100, 150]"
-        showFirstLastButtons
-      >
-      </mat-paginator>
-    </div>
-  `,
+  templateUrl: './table.component.html',
   styleUrls: ['../styles/flex.css'],
   styles: [
     '.clickable-row { cursor: pointer; }',

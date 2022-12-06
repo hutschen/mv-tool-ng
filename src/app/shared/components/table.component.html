@@ -1,0 +1,64 @@
+<!--
+ Copyright (C) 2022 Helmar Hutschenreuter
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+ 
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<div class="mat-elevation-z3 fx-column">
+  <table mat-table [dataSource]="_dataSource">
+    <ng-content></ng-content>
+    <tr mat-header-row *matHeaderRowDef="columnIds; sticky: true"></tr>
+    <tr
+      mat-row
+      [class.clickable-row]="rowClicked.observed"
+      *matRowDef="let row; columns: columnIds"
+      (click)="rowClicked.emit(row)"
+    ></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <!-- Shown when there is no matching data -->
+      <td *ngIf="filterValue" class="mat-cell" colspan="100">
+        No data matching the filter:
+        <strong>{{ filterValue }}</strong>
+      </td>
+      <!-- Shown when the table is empty -->
+      <td *ngIf="!filterValue" class="mat-cell" colspan="100">
+        <div *ngIf="dataLoaded" class="fx-row fx-space-between-center">
+          <div>{{ noContentText }}</div>
+          <button
+            *ngIf="create.observed"
+            mat-raised-button
+            (click)="create.emit()"
+            color="accent"
+          >
+            <mat-icon>add</mat-icon>
+            {{ createLabel }}
+          </button>
+        </div>
+        <div *ngIf="!dataLoaded" class="fx-row fx-gap-10">
+          <mat-spinner diameter="20"></mat-spinner>
+          <div>{{ loadingText }}</div>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Table paginator -->
+  <mat-paginator
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[10, 25, 50, 100, 150]"
+    showFirstLastButtons
+  >
+  </mat-paginator>
+</div>
