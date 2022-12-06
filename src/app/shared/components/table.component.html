@@ -17,7 +17,23 @@
 
 <div class="mat-elevation-z3 fx-column">
   <table mat-table [dataSource]="_dataSource">
+    <!-- Auto create columns -->
+    <ng-container
+      *ngFor="let column of columns.columnsToAutoCreate()"
+      [matColumnDef]="column.id"
+    >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ column.label }}
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <span *ngIf="column.toBool(row)" class="expandable-lines">
+          {{ column.toStr(row) }}
+        </span>
+      </td>
+    </ng-container>
+
     <ng-content></ng-content>
+
     <tr mat-header-row *matHeaderRowDef="columnIds; sticky: true"></tr>
     <tr
       mat-row

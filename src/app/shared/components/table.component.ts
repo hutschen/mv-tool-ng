@@ -38,8 +38,9 @@ import { Observable, of } from 'rxjs';
 
 export interface ITableColumn<T> {
   id: string;
-  optional: boolean;
+  optional?: boolean;
   label?: string;
+  auto?: boolean;
   group?: number | string;
   filterable?: boolean;
   filters?: string[];
@@ -52,6 +53,7 @@ export class TableColumn<T> implements ITableColumn<T> {
   id: string;
   optional: boolean;
   label: string;
+  auto: boolean;
   group?: number | string;
   filterable: boolean;
   filters: string[];
@@ -61,8 +63,9 @@ export class TableColumn<T> implements ITableColumn<T> {
 
   constructor(tableColumn: ITableColumn<T>) {
     this.id = tableColumn.id;
-    this.optional = tableColumn.optional;
+    this.optional = tableColumn.optional ?? false;
     this.label = tableColumn.label ?? this.id;
+    this.auto = tableColumn.auto ?? false;
     this.group = tableColumn.group;
     this.filterable = tableColumn.filterable ?? true;
     this.filters = tableColumn.filters ?? [];
@@ -90,12 +93,7 @@ export class TableColumn<T> implements ITableColumn<T> {
   }
 
   toStr(data: T): string {
-    if (this._toStr) {
-      return this._toStr(data);
-    } else {
-      const value = this.toValue(data);
-      return value === null || value === undefined ? '' : String(value);
-    }
+    return this._toStr ? this._toStr(data) : String(this.toValue(data));
   }
 
   toBool(data: T): boolean {
@@ -133,12 +131,20 @@ export class TableColumns<T> {
   columnsByGroup(group?: number | string): TableColumn<T>[] {
     return this._columns.filter((c) => c.group === group);
   }
+
+  columnsToAutoCreate(): TableColumn<T>[] {
+    return this._columns.filter((c) => c.auto);
+  }
 }
 
 @Component({
   selector: 'mvtool-table',
   templateUrl: './table.component.html',
-  styleUrls: ['../styles/flex.css'],
+  styleUrls: [
+    '../styles/mat-table.css',
+    '../styles/flex.css',
+    '../styles/truncate.css',
+  ],
   styles: [
     '.clickable-row { cursor: pointer; }',
     '.clickable-row:hover { background: rgba(0,0,0,0.04); }',
