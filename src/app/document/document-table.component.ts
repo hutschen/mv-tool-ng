@@ -35,10 +35,10 @@ import { DocumentDialogService } from './document-dialog.component';
 })
 export class DocumentTableComponent implements OnInit {
   columns = new TableColumns<Document>([
-    { id: 'reference', optional: true, label: 'Reference' },
-    { id: 'title', optional: false, label: 'Title' },
-    { id: 'description', optional: true, label: 'Description' },
-    { id: 'options', optional: false, group: 'special' },
+    { id: 'reference', label: 'Reference', optional: true, auto: true },
+    { id: 'title', label: 'Title', auto: true },
+    { id: 'description', label: 'Description', optional: true, auto: true },
+    { id: 'options' },
   ]);
   protected _dataSubject = new ReplaySubject<Document[]>(1);
   data$: Observable<Document[]> = this._dataSubject.asObservable();

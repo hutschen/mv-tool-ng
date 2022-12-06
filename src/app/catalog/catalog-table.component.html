@@ -40,21 +40,6 @@
     #sort="matSort"
     [sort]="sort"
   >
-    <!-- Create non-special / text-only columns-->
-    <ng-container
-      *ngFor="let column of columns.columnsByGroup()"
-      [matColumnDef]="column.id"
-    >
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        {{ column.label }}
-      </th>
-      <td mat-cell *matCellDef="let catalog">
-        <span *ngIf="column.toStr(catalog) as str" class="expandable-lines">
-          {{ str }}
-        </span>
-      </td>
-    </ng-container>
-
     <!-- Options column -->
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef></th>

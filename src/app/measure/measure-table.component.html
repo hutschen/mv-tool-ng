@@ -42,21 +42,6 @@
     #sort="matSort"
     [sort]="sort"
   >
-    <!-- Create non-special / text-only columns-->
-    <ng-container
-      *ngFor="let column of columns.columnsByGroup()"
-      [matColumnDef]="column.id"
-    >
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        {{ column.label }}
-      </th>
-      <td mat-cell *matCellDef="let measure">
-        <span *ngIf="column.toStr(measure) as str" class="expandable-lines">
-          {{ str }}
-        </span>
-      </td>
-    </ng-container>
-
     <!-- JIRA issue column -->
     <ng-container matColumnDef="jira_issue">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Jira Issue</th>

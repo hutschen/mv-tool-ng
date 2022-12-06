@@ -62,17 +62,17 @@
     #sort="matSort"
     [sort]="sort"
   >
-    <!-- Create non-special / text-only columns-->
+    <!-- GS Absicherung column -->
     <ng-container
-      *ngFor="let column of columns.columnsByGroup()"
+      *ngIf="columns.getColumn('gs_absicherung') as column"
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
         {{ column.label }}
       </th>
       <td mat-cell *matCellDef="let requirement">
-        <span *ngIf="column.toStr(requirement) as str" class="expandable-lines">
-          {{ str }}
+        <span *ngIf="column.toBool(requirement)" class="expandable-lines">
+          {{ column.toStr(requirement) }}
         </span>
       </td>
     </ng-container>
