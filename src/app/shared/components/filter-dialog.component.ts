@@ -44,18 +44,29 @@ export class FilterDialogService<T> {
   }
 }
 
-interface IFilterState {
+class FilterState {
   text: string;
   selected: boolean;
+
+  constructor(text: string, selected?: boolean) {
+    this.text = text;
+    this.selected = selected ?? true;
+  }
+
+  toggleSelected() {
+    this.selected = !this.selected;
+  }
 }
 
 class FilterSelection {
-  filterStates: IFilterState[];
+  filterStates: FilterState[];
 
   constructor(searchStr: string, filters: string[]) {
+    searchStr = searchStr.toLowerCase();
     this.filterStates = filters
-      .filter((filter) => filter.includes(searchStr))
-      .map((filter) => ({ text: filter, selected: true } as IFilterState));
+      .filter((filter, index) => filters.indexOf(filter) === index) // remove duplicates
+      .filter((filter) => filter.toLowerCase().includes(searchStr))
+      .map((filter) => new FilterState(filter));
   }
 
   get allSelected(): boolean {
@@ -88,16 +99,45 @@ class FilterSelection {
 @Component({
   selector: 'mvtool-filter-dialog',
   templateUrl: './filter-dialog.component.html',
-  styles: [],
+  styleUrls: ['../styles/flex.css'],
+  styles: ['ul { list-style-type: none; padding-left: 0;}'],
 })
 export class FilterDialogComponent<T> {
+  column: TableColumn<T>;
+  protected _dataStrings: string[];
+  filterSelection: FilterSelection;
+  protected _searchStr = '';
+
   constructor(
     protected _dialogRef: MatDialogRef<FilterDialogComponent<T>>,
     @Inject(MAT_DIALOG_DATA) dialogData: IFilterDialogData<T>
-  ) {}
+  ) {
+    this.column = dialogData.column;
+    this._dataStrings = dialogData.data.map((data) => this.column.toStr(data));
+    this.filterSelection = new FilterSelection(
+      this._searchStr,
+      this._dataStrings
+    );
+  }
+
+  get searchStr(): string {
+    return this._searchStr;
+  }
+
+  set searchStr(searchStr: string) {
+    this._searchStr = searchStr;
+    this.filterSelection = new FilterSelection(
+      this._searchStr,
+      this._dataStrings
+    );
+  }
 
   onSave(form: NgForm): void {
-    console.log('onSave', form);
+    if (!this.searchStr && this.filterSelection.allSelected) {
+      this._dialogRef.close();
+    } else {
+      this._dialogRef.close(this.filterSelection.selectedFilters);
+    }
   }
 
   onCancel(): void {

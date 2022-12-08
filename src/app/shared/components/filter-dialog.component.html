@@ -16,9 +16,44 @@
 -->
 
 <mvtool-create-edit-dialog
-  [createMode]="true"
-  objectName="Filter"
+  [createMode]="false"
+  [objectName]="'Filter: ' + column.label"
   (save)="onSave($event)"
   (cancel)="onCancel()"
 >
+  <div class="fx-column">
+    <!-- Search string -->
+    <mat-form-field appearance="fill">
+      <mat-label>Search</mat-label>
+      <input name="search" [(ngModel)]="searchStr" matInput />
+    </mat-form-field>
+
+    <div class="filtersList">
+      <ul *ngIf="filterSelection.filterStates.length">
+        <li>
+          <!-- Select all checkbox -->
+          <mat-checkbox
+            name="selectAll"
+            [checked]="filterSelection.allSelected"
+            [indeterminate]="filterSelection.partlySelected"
+            (change)="filterSelection.toggleSelectAll()"
+            >Select all search results
+          </mat-checkbox>
+        </li>
+        <li
+          *ngFor="let filterState of filterSelection.filterStates"
+          [class.selected]="filterState.selected"
+        >
+          <mat-checkbox
+            [checked]="filterState.selected"
+            (change)="filterState.toggleSelected()"
+            >{{ filterState.text }}</mat-checkbox
+          >
+        </li>
+      </ul>
+      <div *ngIf="!filterSelection.filterStates.length">
+        No search results found.
+      </div>
+    </div>
+  </div>
 </mvtool-create-edit-dialog>
