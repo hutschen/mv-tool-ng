@@ -44,6 +44,47 @@ export class FilterDialogService<T> {
   }
 }
 
+interface IFilterState {
+  text: string;
+  selected: boolean;
+}
+
+class FilterSelection {
+  filterStates: IFilterState[];
+
+  constructor(searchStr: string, filters: string[]) {
+    this.filterStates = filters
+      .filter((filter) => filter.includes(searchStr))
+      .map((filter) => ({ text: filter, selected: true } as IFilterState));
+  }
+
+  get allSelected(): boolean {
+    return this.filterStates.every((filter) => filter.selected);
+  }
+
+  get nothingSelected(): boolean {
+    return this.filterStates.every((filter) => !filter.selected);
+  }
+
+  get partlySelected(): boolean {
+    return !this.allSelected && !this.nothingSelected;
+  }
+
+  toggleSelectAll() {
+    if (this.allSelected) {
+      this.filterStates.forEach((filter) => (filter.selected = false));
+    } else {
+      this.filterStates.forEach((filter) => (filter.selected = true));
+    }
+  }
+
+  get selectedFilters(): string[] {
+    return this.filterStates
+      .filter((filter) => filter.selected)
+      .map((filter) => filter.text);
+  }
+}
+
 @Component({
   selector: 'mvtool-filter-dialog',
   templateUrl: './filter-dialog.component.html',
