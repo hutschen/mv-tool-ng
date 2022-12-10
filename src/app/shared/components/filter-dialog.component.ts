@@ -14,7 +14,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Inject, Injectable } from '@angular/core';
-import { NgForm } from '@angular/forms';
 import {
   MatDialog,
   MatDialogRef,
@@ -59,22 +58,26 @@ class FilterOption {
 }
 
 class FilterSelection {
-  filterStates: FilterOption[];
+  filterOptions: FilterOption[];
 
   constructor(searchStr: string, filters: string[]) {
     searchStr = searchStr.toLowerCase();
-    this.filterStates = filters
+    this.filterOptions = filters
       .filter((filter, index) => filters.indexOf(filter) === index) // remove duplicates
       .filter((filter) => filter.toLowerCase().includes(searchStr))
       .map((filter) => new FilterOption(filter));
   }
 
+  get isEmpty(): boolean {
+    return this.filterOptions.length === 0;
+  }
+
   get allSelected(): boolean {
-    return this.filterStates.every((filter) => filter.selected);
+    return this.filterOptions.every((filter) => filter.selected);
   }
 
   get nothingSelected(): boolean {
-    return this.filterStates.every((filter) => !filter.selected);
+    return this.filterOptions.every((filter) => !filter.selected);
   }
 
   get partlySelected(): boolean {
@@ -83,14 +86,14 @@ class FilterSelection {
 
   toggleSelectAll() {
     if (this.allSelected) {
-      this.filterStates.forEach((filter) => (filter.selected = false));
+      this.filterOptions.forEach((filter) => (filter.selected = false));
     } else {
-      this.filterStates.forEach((filter) => (filter.selected = true));
+      this.filterOptions.forEach((filter) => (filter.selected = true));
     }
   }
 
   get selectedFilters(): string[] {
-    return this.filterStates
+    return this.filterOptions
       .filter((filter) => filter.selected)
       .map((filter) => filter.text);
   }
@@ -100,11 +103,14 @@ class FilterSelection {
   selector: 'mvtool-filter-dialog',
   templateUrl: './filter-dialog.component.html',
   styleUrls: ['../styles/flex.css', '../styles/truncate.css'],
-  styles: ['ul { list-style-type: none; padding-left: 0;}'],
+  styles: [
+    'ul { list-style-type: none; padding-left: 0;}',
+    '.checkbox-label { width: 420px; }',
+  ],
 })
 export class FilterDialogComponent<T> {
   column: TableColumn<T>;
-  protected _dataStrings: string[];
+  protected _texts: string[];
   filterSelection: FilterSelection;
   protected _searchStr = '';
 
@@ -113,11 +119,8 @@ export class FilterDialogComponent<T> {
     @Inject(MAT_DIALOG_DATA) dialogData: IFilterDialogData<T>
   ) {
     this.column = dialogData.column;
-    this._dataStrings = dialogData.data.map((data) => this.column.toStr(data));
-    this.filterSelection = new FilterSelection(
-      this._searchStr,
-      this._dataStrings
-    );
+    this._texts = dialogData.data.map((data) => this.column.toStr(data));
+    this.filterSelection = new FilterSelection(this._searchStr, this._texts);
   }
 
   get searchStr(): string {
@@ -126,21 +129,18 @@ export class FilterDialogComponent<T> {
 
   set searchStr(searchStr: string) {
     this._searchStr = searchStr;
-    this.filterSelection = new FilterSelection(
-      this._searchStr,
-      this._dataStrings
-    );
+    this.filterSelection = new FilterSelection(this._searchStr, this._texts);
   }
 
-  onSave(form: NgForm): void {
+  onApplyFilter(): void {
     if (!this.searchStr && this.filterSelection.allSelected) {
-      this._dialogRef.close();
+      this._dialogRef.close([]);
     } else {
       this._dialogRef.close(this.filterSelection.selectedFilters);
     }
   }
 
-  onCancel(): void {
-    this._dialogRef.close();
+  onResetFilter(): void {
+    this._dialogRef.close([]);
   }
 }
