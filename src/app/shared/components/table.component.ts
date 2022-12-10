@@ -34,7 +34,8 @@ import {
   MatTable,
   MatTableDataSource,
 } from '@angular/material/table';
-import { Observable, of } from 'rxjs';
+import { firstValueFrom, Observable, of } from 'rxjs';
+import { FilterDialogService } from './filter-dialog.component';
 
 export interface ITableColumn<T> {
   id: string;
@@ -177,6 +178,8 @@ export class TableComponent<T>
   @ViewChild(MatTable, { static: true }) table!: MatTable<T>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
+  constructor(protected _filterDialogService: FilterDialogService<T>) {}
+
   ngOnInit(): void {
     this.columnIds = this.columns.columnsToShow().map((c) => c.id);
     this.data$.subscribe((data) => {
@@ -211,5 +214,16 @@ export class TableComponent<T>
 
   get filterValue(): string {
     return this._filterValue;
+  }
+
+  async onSetFilter(column: TableColumn<T>): Promise<void> {
+    const dialogRef = this._filterDialogService.openFilterDialog(
+      column,
+      await firstValueFrom(this.data$)
+    );
+    const filters = await firstValueFrom(dialogRef.afterClosed());
+    if (filters instanceof Array<string>) {
+      column.filters = filters;
+    }
   }
 }

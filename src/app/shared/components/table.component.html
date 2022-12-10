@@ -23,7 +23,12 @@
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        {{ column.label }}
+        <span
+          (click)="onSetFilter(column); $event.stopPropagation()"
+          matTooltip="Click to filter"
+        >
+          {{ column.label }}
+        </span>
       </th>
       <td mat-cell *matCellDef="let row">
         <span *ngIf="column.toBool(row)" class="expandable-lines">
