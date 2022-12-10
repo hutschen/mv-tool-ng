@@ -28,6 +28,9 @@
           matTooltip="Click to filter"
         >
           {{ column.label }}
+          <mat-icon class="filter-icon" *ngIf="column.filtered"
+            >filter_alt
+          </mat-icon>
         </span>
       </th>
       <td mat-cell *matCellDef="let row">

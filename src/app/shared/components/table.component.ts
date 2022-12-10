@@ -88,6 +88,10 @@ export class TableColumn<T> implements ITableColumn<T> {
     return this.filters.includes(this.toStr(data));
   }
 
+  get filtered(): boolean {
+    return this.filterable && this.filters.length > 0;
+  }
+
   toValue(data: T): any {
     if (this._toValue) {
       return this._toValue(data);
