@@ -48,7 +48,6 @@ export interface ITableColumn<T> {
   optional?: boolean;
   label?: string;
   auto?: boolean;
-  group?: number | string;
   filterable?: boolean;
   filters?: string[];
   toValue?: (data: T) => any;
@@ -61,7 +60,6 @@ export class TableColumn<T> implements ITableColumn<T> {
   optional: boolean;
   label: string;
   auto: boolean;
-  group?: number | string;
   filterable: boolean;
   filters: string[];
   protected _toValue?: (data: T) => any;
@@ -73,7 +71,6 @@ export class TableColumn<T> implements ITableColumn<T> {
     this.optional = tableColumn.optional ?? false;
     this.label = tableColumn.label ?? this.id;
     this.auto = tableColumn.auto ?? false;
-    this.group = tableColumn.group;
     this.filterable = tableColumn.filterable ?? true;
     this.filters = tableColumn.filters ?? [];
     this._toValue = tableColumn.toValue;
@@ -133,10 +130,6 @@ export class TableColumns<T> {
     return this._columns.filter(
       (c) => !c.optional || data.some((d) => c.toBool(d))
     );
-  }
-
-  columnsByGroup(group?: number | string): TableColumn<T>[] {
-    return this._columns.filter((c) => c.group === group);
   }
 
   columnsToAutoCreate(): TableColumn<T>[] {
