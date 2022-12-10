@@ -28,27 +28,30 @@
       <input name="search" [(ngModel)]="searchStr" matInput />
     </mat-form-field>
 
-    <div class="filtersList">
+    <div>
       <ul *ngIf="filterSelection.filterStates.length">
-        <li>
+        <li class="fx-row fx-gap-10">
           <!-- Select all checkbox -->
           <mat-checkbox
             name="selectAll"
             [checked]="filterSelection.allSelected"
             [indeterminate]="filterSelection.partlySelected"
             (change)="filterSelection.toggleSelectAll()"
-            >Select all search results
-          </mat-checkbox>
+          ></mat-checkbox>
+          <div class="truncate">Select all search results</div>
         </li>
         <li
           *ngFor="let filterState of filterSelection.filterStates"
           [class.selected]="filterState.selected"
+          class="fx-row fx-gap-10"
         >
           <mat-checkbox
             [checked]="filterState.selected"
             (change)="filterState.toggleSelected()"
-            >{{ filterState.text }}</mat-checkbox
-          >
+          ></mat-checkbox>
+          <div class="truncate">
+            {{ filterState.text }}
+          </div>
         </li>
       </ul>
       <div *ngIf="!filterSelection.filterStates.length">

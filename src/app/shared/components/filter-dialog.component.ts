@@ -99,7 +99,7 @@ class FilterSelection {
 @Component({
   selector: 'mvtool-filter-dialog',
   templateUrl: './filter-dialog.component.html',
-  styleUrls: ['../styles/flex.css'],
+  styleUrls: ['../styles/flex.css', '../styles/truncate.css'],
   styles: ['ul { list-style-type: none; padding-left: 0;}'],
 })
 export class FilterDialogComponent<T> {
