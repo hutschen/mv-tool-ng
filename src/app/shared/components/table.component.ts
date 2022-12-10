@@ -34,7 +34,13 @@ import {
   MatTable,
   MatTableDataSource,
 } from '@angular/material/table';
-import { firstValueFrom, Observable, of } from 'rxjs';
+import {
+  combineLatest,
+  firstValueFrom,
+  Observable,
+  of,
+  ReplaySubject,
+} from 'rxjs';
 import { FilterDialogService } from './filter-dialog.component';
 
 export interface ITableColumn<T> {
@@ -165,6 +171,8 @@ export class TableComponent<T>
   @Input() createLabel: string = 'Create One';
   @Output() rowClicked = new EventEmitter<T>();
   @Output() create = new EventEmitter<void>();
+  protected _columnsSubject = new ReplaySubject<TableColumns<T>>(1);
+  protected _columns$ = this._columnsSubject.asObservable();
   columnIds: string[] = [];
   protected _dataSource = new MatTableDataSource<T>();
   protected _filterValue: string = '';
@@ -182,9 +190,10 @@ export class TableComponent<T>
 
   ngOnInit(): void {
     this.columnIds = this.columns.columnsToShow().map((c) => c.id);
-    this.data$.subscribe((data) => {
-      this.columnIds = this.columns.columnsToShow(data).map((c) => c.id);
-      this._dataSource.data = this.columns.filter(data);
+    this._columnsSubject.next(this.columns);
+    combineLatest([this._columns$, this.data$]).subscribe(([columns, data]) => {
+      this.columnIds = columns.columnsToShow(data).map((c) => c.id);
+      this._dataSource.data = columns.filter(data);
     });
   }
 
@@ -219,11 +228,14 @@ export class TableComponent<T>
   async onSetFilter(column: TableColumn<T>): Promise<void> {
     const dialogRef = this._filterDialogService.openFilterDialog(
       column,
-      await firstValueFrom(this.data$)
+      this._dataSource.data
     );
     const filters = await firstValueFrom(dialogRef.afterClosed());
-    if (filters instanceof Array<string>) {
+    if (filters) {
       column.filters = filters;
+    } else {
+      column.filters = [];
     }
+    this._columnsSubject.next(this.columns);
   }
 }
