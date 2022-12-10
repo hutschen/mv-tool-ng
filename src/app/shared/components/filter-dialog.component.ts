@@ -48,7 +48,7 @@ class FilterState {
   text: string;
   selected: boolean;
 
-  constructor(text: string, selected?: boolean) {
+  constructor(text: string, label?: string, selected?: boolean) {
     this.text = text;
     this.selected = selected ?? true;
   }

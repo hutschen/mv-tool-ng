@@ -50,7 +50,7 @@
             (change)="filterState.toggleSelected()"
           ></mat-checkbox>
           <div class="truncate">
-            {{ filterState.text }}
+            {{ filterState.text ? filterState.text : "(Empty)" }}
           </div>
         </li>
       </ul>

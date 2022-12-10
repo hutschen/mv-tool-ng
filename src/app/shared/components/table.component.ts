@@ -100,7 +100,7 @@ export class TableColumn<T> implements ITableColumn<T> {
   }
 
   toStr(data: T): string {
-    return this._toStr ? this._toStr(data) : String(this.toValue(data));
+    return this._toStr ? this._toStr(data) : String(this.toValue(data) ?? '');
   }
 
   toBool(data: T): boolean {
