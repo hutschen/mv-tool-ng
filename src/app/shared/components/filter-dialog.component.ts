@@ -44,7 +44,7 @@ export class FilterDialogService<T> {
   }
 }
 
-class FilterState {
+class FilterOption {
   text: string;
   selected: boolean;
 
@@ -59,14 +59,14 @@ class FilterState {
 }
 
 class FilterSelection {
-  filterStates: FilterState[];
+  filterStates: FilterOption[];
 
   constructor(searchStr: string, filters: string[]) {
     searchStr = searchStr.toLowerCase();
     this.filterStates = filters
       .filter((filter, index) => filters.indexOf(filter) === index) // remove duplicates
       .filter((filter) => filter.toLowerCase().includes(searchStr))
-      .map((filter) => new FilterState(filter));
+      .map((filter) => new FilterOption(filter));
   }
 
   get allSelected(): boolean {
