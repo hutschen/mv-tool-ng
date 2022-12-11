@@ -19,7 +19,7 @@
   <table mat-table [dataSource]="_dataSource">
     <!-- Auto create columns -->
     <ng-container
-      *ngFor="let column of columns.columnsToAutoCreate()"
+      *ngFor="let column of autoCreateColumns"
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>

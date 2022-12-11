@@ -74,6 +74,7 @@ export class TableComponent<T extends object>
   columnIds: string[] = [];
   protected _dataSource = new MatTableDataSource<T>();
   protected _filterValue: string = '';
+  autoCreateColumns: TableColumn<T>[] = [];
 
   @ContentChildren(MatColumnDef) columnDefs!: QueryList<MatColumnDef>;
   @ViewChild(MatTable, { static: true }) table!: MatTable<T>;
@@ -91,7 +92,14 @@ export class TableComponent<T extends object>
   }
 
   ngAfterContentInit(): void {
-    this.columnDefs.forEach((columnDef) => this.table.addColumnDef(columnDef));
+    const definedColumnIds: string[] = [];
+    this.columnDefs.forEach((columnDef) => {
+      this.table.addColumnDef(columnDef);
+      definedColumnIds.push(columnDef.name);
+    });
+    this.autoCreateColumns = this.columns.columns.filter(
+      (c) => !definedColumnIds.includes(c.id)
+    );
   }
 
   ngAfterViewInit(): void {

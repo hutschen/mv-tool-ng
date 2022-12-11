@@ -88,6 +88,10 @@ export class TableColumns<T extends object> {
     this._columnMap = new Map(this._columns.map((c) => [c.id, c]));
   }
 
+  get columns(): TableColumn<T>[] {
+    return this._columns;
+  }
+
   filter(data: T[]): T[] {
     return data.filter((d) => this._columns.every((c) => c.filter(d)));
   }
