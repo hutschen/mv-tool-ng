@@ -19,7 +19,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { TableColumn } from './table.component';
+import { TableColumn } from '../table-columns';
 
 interface IFilterDialogData<T> {
   column: TableColumn<T>;

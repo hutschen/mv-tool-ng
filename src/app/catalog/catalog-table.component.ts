@@ -16,7 +16,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
-import { TableColumns } from '../shared/components/table.component';
+import { TableColumns } from '../shared/table-columns';
 import { Catalog, CatalogService } from '../shared/services/catalog.service';
 import { CatalogDialogService } from './catalog-dialog.component';
 
