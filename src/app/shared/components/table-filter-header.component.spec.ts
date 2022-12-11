@@ -18,8 +18,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TableFilterHeaderComponent } from './table-filter-header.component';
 
 describe('TableFilterHeaderComponent', () => {
-  let component: TableFilterHeaderComponent;
-  let fixture: ComponentFixture<TableFilterHeaderComponent>;
+  let component: TableFilterHeaderComponent<any>;
+  let fixture: ComponentFixture<TableFilterHeaderComponent<any>>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

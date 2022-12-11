@@ -13,15 +13,28 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { TableColumn } from '../table-columns';
+import { TableComponent } from './table.component';
 
 @Component({
   selector: 'mvtool-table-filter-header',
-  template: ` <p>table-filter-header works!</p> `,
-  styles: [],
+  template: `
+    <span
+      (click)="table.onSetFilter(column); $event.stopPropagation()"
+      matTooltip="Click to filter"
+    >
+      {{ column.label }}
+      <mat-icon class="filter-icon" *ngIf="column.filtered"
+        >filter_alt
+      </mat-icon>
+    </span>
+  `,
+  styles: ['.filter-icon {   width: 12px; height: 12px; font-size: 12px;}'],
 })
-export class TableFilterHeaderComponent implements OnInit {
-  constructor() {}
+export class TableFilterHeaderComponent<T extends object> {
+  @Input() column!: TableColumn<T>;
+  @Input() table!: TableComponent<T>;
 
-  ngOnInit(): void {}
+  constructor() {}
 }
