@@ -21,7 +21,7 @@ import {
 } from '@angular/material/dialog';
 import { TableColumn } from '../table-columns';
 
-interface IFilterDialogData<T> {
+interface IFilterDialogData<T extends object> {
   column: TableColumn<T>;
   data: T[];
 }
@@ -29,7 +29,7 @@ interface IFilterDialogData<T> {
 @Injectable({
   providedIn: 'root',
 })
-export class FilterDialogService<T> {
+export class FilterDialogService<T extends object> {
   constructor(protected _dialog: MatDialog) {}
 
   openFilterDialog(
@@ -108,7 +108,7 @@ class FilterSelection {
     '.checkbox-label { width: 420px; }',
   ],
 })
-export class FilterDialogComponent<T> {
+export class FilterDialogComponent<T extends object> {
   column: TableColumn<T>;
   protected _texts: string[];
   filterSelection: FilterSelection;

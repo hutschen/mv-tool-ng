@@ -55,7 +55,7 @@ import { FilterDialogService } from './filter-dialog.component';
     '.clickable-row:hover { background: rgba(0,0,0,0.04); }',
   ],
 })
-export class TableComponent<T>
+export class TableComponent<T extends object>
   implements OnInit, AfterContentInit, AfterViewInit
 {
   // see https://github.com/angular/components/tree/main/src/components-examples/material/table/table-wrapped

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export interface ITableColumn<T> {
+export interface ITableColumn<T extends object> {
   id: string;
   optional?: boolean;
   label?: string;
@@ -25,7 +25,7 @@ export interface ITableColumn<T> {
   toBool?: (data: T) => boolean;
 }
 
-export class TableColumn<T> implements ITableColumn<T> {
+export class TableColumn<T extends object> implements ITableColumn<T> {
   id: string;
   optional: boolean;
   label: string;
@@ -79,7 +79,7 @@ export class TableColumn<T> implements ITableColumn<T> {
   }
 }
 
-export class TableColumns<T> {
+export class TableColumns<T extends object> {
   protected _columns: TableColumn<T>[] = [];
   protected _columnMap: Map<string, TableColumn<T>>;
 
