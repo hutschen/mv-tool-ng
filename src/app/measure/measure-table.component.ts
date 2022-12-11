@@ -27,7 +27,7 @@ import { MeasureDialogService } from './measure-dialog.component';
   selector: 'mvtool-measure-table',
   templateUrl: './measure-table.component.html',
   styleUrls: [
-    '../shared/styles/mat-table.css',
+    '../shared/styles/table.css',
     '../shared/styles/flex.css',
     '../shared/styles/truncate.css',
   ],

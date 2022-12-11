@@ -32,7 +32,7 @@ import { RequirementImportDialogService } from './requirement-import-dialog.comp
   selector: 'mvtool-requirement-table',
   templateUrl: './requirement-table.component.html',
   styleUrls: [
-    '../shared/styles/mat-table.css',
+    '../shared/styles/table.css',
     '../shared/styles/flex.css',
     '../shared/styles/truncate.css',
   ],

@@ -28,7 +28,7 @@ import { CatalogRequirementDialogService } from './catalog-requirement-dialog.co
   selector: 'mvtool-catalog-requirement-table',
   templateUrl: './catalog-requirement-table.component.html',
   styleUrls: [
-    '../shared/styles/mat-table.css',
+    '../shared/styles/table.css',
     '../shared/styles/flex.css',
     '../shared/styles/truncate.css',
   ],

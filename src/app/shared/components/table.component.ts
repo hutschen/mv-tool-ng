@@ -46,7 +46,7 @@ import { FilterDialogService } from './filter-dialog.component';
   selector: 'mvtool-table',
   templateUrl: './table.component.html',
   styleUrls: [
-    '../styles/mat-table.css',
+    '../styles/table.css',
     '../styles/flex.css',
     '../styles/truncate.css',
   ],

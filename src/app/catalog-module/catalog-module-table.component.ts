@@ -29,7 +29,7 @@ import { CatalogModuleDialogService } from './catalog-module-dialog.component';
   selector: 'mvtool-catalog-module-table',
   templateUrl: './catalog-module-table.component.html',
   styleUrls: [
-    '../shared/styles/mat-table.css',
+    '../shared/styles/table.css',
     '../shared/styles/flex.css',
     '../shared/styles/truncate.css',
   ],
