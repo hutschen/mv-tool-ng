@@ -38,7 +38,7 @@ import {
   Observable,
   ReplaySubject,
 } from 'rxjs';
-import { TableColumn, TableColumns } from '../table-columns';
+import { ITableRow, TableColumn, TableColumns } from '../table-columns';
 import { FilterDialogService } from './filter-dialog.component';
 
 @Component({

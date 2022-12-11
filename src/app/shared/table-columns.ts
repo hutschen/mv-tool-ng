@@ -13,6 +13,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+export interface ITableRow<T extends object> {
+  data: T;
+}
+
 export interface ITableColumn<T extends object> {
   id: string;
   optional?: boolean;
@@ -93,12 +97,12 @@ export class TableColumns<T extends object> {
     return data.filter((d) => this._columns.every((c) => c.filter(d)));
   }
 
-  toRowData(data: T[]): any[] {
+  toRowData(data: T[]): ITableRow<T>[] {
     return data.map((d) => {
       const row: any = {};
       this._columns.forEach((c) => (row[c.id] = c.toStr(d)));
       row['data'] = d;
-      return row;
+      return row as ITableRow<T>;
     });
   }
 
