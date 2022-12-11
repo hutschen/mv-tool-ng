@@ -37,10 +37,10 @@ import { CatalogModuleDialogService } from './catalog-module-dialog.component';
 })
 export class CatalogModuleTableComponent implements OnInit {
   columns = new TableColumns<CatalogModule>([
-    { id: 'reference', label: 'Reference', optional: true, auto: true },
-    { id: 'gs_reference', label: 'GS Reference', optional: true, auto: true },
-    { id: 'title', label: 'Title', auto: true },
-    { id: 'description', label: 'Description', optional: true, auto: true },
+    { id: 'reference', label: 'Reference', optional: true },
+    { id: 'gs_reference', label: 'GS Reference', optional: true },
+    { id: 'title', label: 'Title' },
+    { id: 'description', label: 'Description', optional: true },
     { id: 'options' },
   ]);
   protected _dataSubject = new ReplaySubject<CatalogModule[]>(1);

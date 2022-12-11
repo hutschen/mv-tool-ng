@@ -17,7 +17,6 @@ export interface ITableColumn<T extends object> {
   id: string;
   optional?: boolean;
   label?: string;
-  auto?: boolean;
   filterable?: boolean;
   filters?: string[];
   toValue?: (data: T) => any;
@@ -29,7 +28,6 @@ export class TableColumn<T extends object> implements ITableColumn<T> {
   id: string;
   optional: boolean;
   label: string;
-  auto: boolean;
   filterable: boolean;
   filters: string[];
   protected _toValue?: (data: T) => any;
@@ -40,7 +38,6 @@ export class TableColumn<T extends object> implements ITableColumn<T> {
     this.id = tableColumn.id;
     this.optional = tableColumn.optional ?? false;
     this.label = tableColumn.label ?? this.id;
-    this.auto = tableColumn.auto ?? false;
     this.filterable = tableColumn.filterable ?? true;
     this.filters = tableColumn.filters ?? [];
     this._toValue = tableColumn.toValue;
@@ -117,9 +114,5 @@ export class TableColumns<T extends object> {
     return this._columns.filter(
       (c) => !c.optional || data.some((d) => c.toBool(d))
     );
-  }
-
-  columnsToAutoCreate(): TableColumn<T>[] {
-    return this._columns.filter((c) => c.auto);
   }
 }

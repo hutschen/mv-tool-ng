@@ -35,19 +35,15 @@ import { MeasureDialogService } from './measure-dialog.component';
 })
 export class MeasureTableComponent implements OnInit {
   columns = new TableColumns<Measure>([
-    { id: 'summary', label: 'Summary', auto: true },
-    { id: 'description', optional: true, label: 'Description', auto: true },
+    { id: 'summary', label: 'Summary' },
+    { id: 'description', optional: true, label: 'Description' },
     {
       id: 'document',
       optional: true,
-      auto: true,
       label: 'Document',
       toValue: (m) => m.document?.title,
     },
-    {
-      id: 'jira_issue',
-      label: 'Jira Issue',
-    },
+    { id: 'jira_issue', label: 'Jira Issue' },
     { id: 'completed', label: 'Completed' },
     { id: 'options' },
   ]);

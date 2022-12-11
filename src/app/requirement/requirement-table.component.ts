@@ -39,49 +39,40 @@ import { RequirementImportDialogService } from './requirement-import-dialog.comp
 })
 export class RequirementTableComponent implements OnInit {
   columns = new TableColumns<Requirement>([
-    { id: 'reference', label: 'Reference', optional: true, auto: true },
+    { id: 'reference', label: 'Reference', optional: true },
     {
       id: 'gs_anforderung_reference',
       label: 'GS Reference',
       optional: true,
-      auto: true,
       toValue: (r) => r.catalog_requirement?.gs_anforderung_reference,
     },
     {
       id: 'catalog_module',
       label: 'Catalog Module',
       optional: true,
-      auto: true,
       toValue: (r) => r.catalog_requirement?.catalog_module.title,
     },
-    { id: 'summary', label: 'Summary', optional: false, auto: true },
-    { id: 'description', label: 'Description', optional: true, auto: true },
+    { id: 'summary', label: 'Summary' },
+    { id: 'description', label: 'Description', optional: true },
     {
       id: 'gs_absicherung',
       label: 'GS Absicherung',
       optional: true,
-      auto: true,
       toValue: (r) => r.catalog_requirement?.gs_absicherung,
     },
     {
       id: 'gs_verantwortliche',
       label: 'GS Verantwortliche',
       optional: true,
-      auto: true,
       toValue: (r) => r.catalog_requirement?.gs_verantwortliche,
     },
-    { id: 'target_object', label: 'Target Object', optional: true, auto: true },
+    { id: 'target_object', label: 'Target Object', optional: true },
     {
       id: 'compliance_status',
       label: 'Compliance',
       toStr: (r) => (r.compliance_status ? r.compliance_status : 'Not set'),
     },
-    {
-      id: 'compliance_comment',
-      label: 'Compliance Comment',
-      optional: true,
-      auto: true,
-    },
+    { id: 'compliance_comment', label: 'Compliance Comment', optional: true },
     {
       id: 'completion',
       label: 'Completion',

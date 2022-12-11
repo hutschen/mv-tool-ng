@@ -36,27 +36,12 @@ import { CatalogRequirementDialogService } from './catalog-requirement-dialog.co
 })
 export class CatalogRequirementTableComponent implements OnInit {
   columns = new TableColumns<CatalogRequirement>([
-    { id: 'reference', label: 'Reference', optional: true, auto: true },
-    {
-      id: 'gs_anforderung_reference',
-      label: 'GS Reference',
-      optional: true,
-      auto: true,
-    },
-    { id: 'summary', label: 'Summary', auto: true },
-    { id: 'description', optional: true, label: 'Description', auto: true },
-    {
-      id: 'gs_absicherung',
-      optional: true,
-      label: 'GS Absicherung',
-      auto: true,
-    },
-    {
-      id: 'gs_verantwortliche',
-      optional: true,
-      label: 'GS Verantwortliche',
-      auto: true,
-    },
+    { id: 'reference', label: 'Reference', optional: true },
+    { id: 'gs_anforderung_reference', label: 'GS Reference', optional: true },
+    { id: 'summary', label: 'Summary' },
+    { id: 'description', optional: true, label: 'Description' },
+    { id: 'gs_absicherung', optional: true, label: 'GS Absicherung' },
+    { id: 'gs_verantwortliche', optional: true, label: 'GS Verantwortliche' },
     { id: 'options' },
   ]);
   protected _dataSubject = new ReplaySubject<CatalogRequirement[]>(1);

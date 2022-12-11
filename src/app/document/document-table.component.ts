@@ -35,9 +35,9 @@ import { DocumentDialogService } from './document-dialog.component';
 })
 export class DocumentTableComponent implements OnInit {
   columns = new TableColumns<Document>([
-    { id: 'reference', label: 'Reference', optional: true, auto: true },
-    { id: 'title', label: 'Title', auto: true },
-    { id: 'description', label: 'Description', optional: true, auto: true },
+    { id: 'reference', label: 'Reference', optional: true },
+    { id: 'title', label: 'Title' },
+    { id: 'description', label: 'Description', optional: true },
     { id: 'options' },
   ]);
   protected _dataSubject = new ReplaySubject<Document[]>(1);

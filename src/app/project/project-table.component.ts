@@ -28,8 +28,8 @@ import { ProjectDialogService } from './project-dialog.component';
 })
 export class ProjectTableComponent implements OnInit {
   columns = new TableColumns<Project>([
-    { id: 'name', label: 'Name', auto: true },
-    { id: 'description', label: 'Description', optional: true, auto: true },
+    { id: 'name', label: 'Name' },
+    { id: 'description', label: 'Description', optional: true },
     { id: 'jira_project', label: 'Jira Project' },
     {
       id: 'completion',
