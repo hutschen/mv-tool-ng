@@ -122,6 +122,15 @@ export class TableColumns<T> {
     return data.filter((d) => this._columns.every((c) => c.filter(d)));
   }
 
+  toRowData(data: T[]): any[] {
+    return data.map((d) => {
+      const row: any = {};
+      this._columns.forEach((c) => (row[c.id] = c.toStr(d)));
+      row['data'] = d;
+      return row;
+    });
+  }
+
   getColumn(id: string): TableColumn<T> {
     const column = this._columnMap.get(id);
     if (!column) {
