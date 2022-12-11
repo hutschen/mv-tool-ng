@@ -70,7 +70,6 @@ export class TableComponent<T extends object>
   @Output() rowClicked = new EventEmitter<T>();
   @Output() create = new EventEmitter<void>();
   protected _columnsSubject = new ReplaySubject<TableColumns<T>>(1);
-  protected _columns$ = this._columnsSubject.asObservable();
   columnIds: string[] = [];
   protected _dataSource = new MatTableDataSource<T>();
   protected _filterValue: string = '';
@@ -85,10 +84,12 @@ export class TableComponent<T extends object>
   ngOnInit(): void {
     this.columnIds = this.columns.columnsToShow().map((c) => c.id);
     this._columnsSubject.next(this.columns);
-    combineLatest([this._columns$, this.data$]).subscribe(([columns, data]) => {
-      this.columnIds = columns.columnsToShow(data).map((c) => c.id);
-      this._dataSource.data = columns.filter(data);
-    });
+    combineLatest([this._columnsSubject.asObservable(), this.data$]).subscribe(
+      ([columns, data]) => {
+        this.columnIds = columns.columnsToShow(data).map((c) => c.id);
+        this._dataSource.data = columns.filter(data);
+      }
+    );
   }
 
   ngAfterContentInit(): void {
