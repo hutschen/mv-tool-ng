@@ -29,8 +29,6 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import {
   MatColumnDef,
-  MatHeaderRowDef,
-  MatRowDef,
   MatTable,
   MatTableDataSource,
 } from '@angular/material/table';
@@ -77,12 +75,7 @@ export class TableComponent<T>
   protected _dataSource = new MatTableDataSource<T>();
   protected _filterValue: string = '';
 
-  @ContentChildren(MatHeaderRowDef) headerRowDefs!: QueryList<MatHeaderRowDef>;
-  @ContentChildren(MatRowDef) rowDefs!: QueryList<MatRowDef<T>>;
   @ContentChildren(MatColumnDef) columnDefs!: QueryList<MatColumnDef>;
-  // Comment out noDataRow because it's defined in the template and must not
-  // be loaded from the content children
-  // @ContentChild(MatNoDataRow) noDataRow: MatNoDataRow;
   @ViewChild(MatTable, { static: true }) table!: MatTable<T>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -99,11 +92,6 @@ export class TableComponent<T>
 
   ngAfterContentInit(): void {
     this.columnDefs.forEach((columnDef) => this.table.addColumnDef(columnDef));
-    this.rowDefs.forEach((rowDef) => this.table.addRowDef(rowDef));
-    this.headerRowDefs.forEach((headerRowDef) =>
-      this.table.addHeaderRowDef(headerRowDef)
-    );
-    // this.table?.setNoDataRow(this.noDataRow);
   }
 
   ngAfterViewInit(): void {
