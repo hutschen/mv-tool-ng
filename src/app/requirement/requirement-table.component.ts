@@ -36,7 +36,6 @@ import { RequirementImportDialogService } from './requirement-import-dialog.comp
     '../shared/styles/flex.css',
     '../shared/styles/truncate.css',
   ],
-  styles: ['.mat-column-gs_absicherung {text-align: center;}'],
 })
 export class RequirementTableComponent implements OnInit {
   columns = new TableColumns<Requirement>([
@@ -61,6 +60,7 @@ export class RequirementTableComponent implements OnInit {
       id: 'gs_absicherung',
       label: 'GS Absicherung',
       optional: true,
+      auto: true,
       toValue: (r) => r.catalog_requirement?.gs_absicherung,
     },
     {
