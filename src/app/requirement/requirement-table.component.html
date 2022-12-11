@@ -65,15 +65,15 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
         {{ column.label }}
       </th>
-      <td mat-cell *matCellDef="let requirement">
+      <td mat-cell *matCellDef="let row">
         <button
           mat-button
           matTooltip="Click to set compliance status"
           (click)="
-            onEditCompliance(requirement); $event.stopImmediatePropagation()
+            onEditCompliance(row.data); $event.stopImmediatePropagation()
           "
         >
-          {{ column.toStr(requirement) }}
+          {{ column.toStr(row.data) }}
         </button>
       </td>
     </ng-container>
@@ -86,15 +86,11 @@
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
         {{ column.label }}
       </th>
-      <td
-        mat-cell
-        *matCellDef="let requirement"
-        [matTooltip]="column.toStr(requirement)"
-      >
+      <td mat-cell *matCellDef="let row" [matTooltip]="column.toStr(row.data)">
         <mat-progress-bar
-          *ngIf="column.toBool(requirement)"
+          *ngIf="column.toBool(row.data)"
           mode="determinate"
-          [value]="column.toValue(requirement)"
+          [value]="column.toValue(row.data)"
         >
         </mat-progress-bar>
       </td>
@@ -103,10 +99,10 @@
     <!-- Options column -->
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let requirement">
+      <td mat-cell *matCellDef="let row">
         <mvtool-table-options
-          (edit)="onEditRequirement(requirement)"
-          (delete)="onDeleteRequirement(requirement)"
+          (edit)="onEditRequirement(row.data)"
+          (delete)="onDeleteRequirement(row.data)"
         >
         </mvtool-table-options>
       </td>

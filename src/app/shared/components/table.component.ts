@@ -20,7 +20,6 @@ import {
   ContentChildren,
   EventEmitter,
   Input,
-  OnInit,
   Output,
   QueryList,
   ViewChild,
@@ -37,7 +36,6 @@ import {
   combineLatest,
   firstValueFrom,
   Observable,
-  of,
   ReplaySubject,
 } from 'rxjs';
 import { TableColumn, TableColumns } from '../table-columns';
@@ -64,7 +62,7 @@ export class TableComponent<T extends object>
   protected _dataSubject = new BehaviorSubject<T[]>([] as T[]);
   protected _data: T[] = [];
 
-  dataSource: MatTableDataSource<T> = new MatTableDataSource<T>([]);
+  dataSource = new MatTableDataSource<ITableRow<T>>([]);
   columnsToAutoCreate: TableColumn<T>[] = [];
   idsOfColumnsToDisplay: string[] = [];
 

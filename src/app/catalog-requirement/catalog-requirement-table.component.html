@@ -43,10 +43,10 @@
     <!-- Options column -->
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let requirement">
+      <td mat-cell *matCellDef="let row">
         <mvtool-table-options
-          (edit)="onEditCatalogRequirement(requirement)"
-          (delete)="onDeleteCatalogRequirement(requirement)"
+          (edit)="onEditCatalogRequirement(row.data)"
+          (delete)="onDeleteCatalogRequirement(row.data)"
         >
         </mvtool-table-options>
       </td>
