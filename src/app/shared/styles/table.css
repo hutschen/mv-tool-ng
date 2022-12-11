@@ -15,10 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.mat-row {
-  height: auto;
-}
-
 .mat-header-cell {
   white-space: nowrap;
   padding: 5px 10px 5px 0px;
