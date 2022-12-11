@@ -16,10 +16,10 @@
 -->
 
 <div class="mat-elevation-z3 fx-column">
-  <table mat-table [dataSource]="_dataSource">
+  <table mat-table [dataSource]="dataSource">
     <!-- Auto create columns -->
     <ng-container
-      *ngFor="let column of autoCreateColumns"
+      *ngFor="let column of columnsToAutoCreate"
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -34,30 +34,33 @@
         </span>
       </th>
       <td mat-cell *matCellDef="let row">
-        <span *ngIf="column.toBool(row)" class="expandable-lines">
-          {{ column.toStr(row) }}
+        <span *ngIf="column.toBool(row.data)" class="expandable-lines">
+          {{ column.toStr(row.data) }}
         </span>
       </td>
     </ng-container>
 
     <ng-content></ng-content>
 
-    <tr mat-header-row *matHeaderRowDef="columnIds; sticky: true"></tr>
+    <tr
+      mat-header-row
+      *matHeaderRowDef="idsOfColumnsToDisplay; sticky: true"
+    ></tr>
     <tr
       mat-row
       [class.clickable-row]="rowClicked.observed"
-      *matRowDef="let row; columns: columnIds"
-      (click)="rowClicked.emit(row)"
+      *matRowDef="let row; columns: idsOfColumnsToDisplay"
+      (click)="rowClicked.emit(row.data)"
     ></tr>
 
     <tr class="mat-row" *matNoDataRow>
       <!-- Shown when there is no matching data -->
-      <td *ngIf="filterValue" class="mat-cell" colspan="100">
+      <td *ngIf="filter" class="mat-cell" colspan="100">
         No data matching the filter:
-        <strong>{{ filterValue }}</strong>
+        <strong>{{ filter }}</strong>
       </td>
       <!-- Shown when the table is empty -->
-      <td *ngIf="!filterValue" class="mat-cell" colspan="100">
+      <td *ngIf="!filter" class="mat-cell" colspan="100">
         <div *ngIf="dataLoaded" class="fx-row fx-space-between-center">
           <div>{{ noContentText }}</div>
           <button

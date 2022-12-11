@@ -33,6 +33,7 @@ import {
   MatTableDataSource,
 } from '@angular/material/table';
 import {
+  BehaviorSubject,
   combineLatest,
   firstValueFrom,
   Observable,
@@ -56,12 +57,21 @@ import { FilterDialogService } from './filter-dialog.component';
   ],
 })
 export class TableComponent<T extends object>
-  implements OnInit, AfterContentInit, AfterViewInit
+  implements AfterContentInit, AfterViewInit
 {
-  // see https://github.com/angular/components/tree/main/src/components-examples/material/table/table-wrapped
+  protected _columnsSubject = new ReplaySubject<TableColumns<T>>(1);
+  protected _columns: TableColumns<T> = new TableColumns<T>([]);
+  protected _dataSubject = new BehaviorSubject<T[]>([] as T[]);
+  protected _data: T[] = [];
 
-  @Input() data$: Observable<T[]> = of([] as T[]);
-  @Input() columns = new TableColumns<T>([]);
+  dataSource: MatTableDataSource<T> = new MatTableDataSource<T>([]);
+  columnsToAutoCreate: TableColumn<T>[] = [];
+  idsOfColumnsToDisplay: string[] = [];
+
+  @ViewChild(MatTable, { static: true }) matTable!: MatTable<T>;
+  @ViewChild(MatPaginator) matPaginator!: MatPaginator;
+  @ContentChildren(MatColumnDef) matColumnDefs!: QueryList<MatColumnDef>;
+
   @Input() pageSize: number = 25;
   @Input() dataLoaded: boolean = true;
   @Input() noContentText: string = 'Nothing to display';
@@ -69,63 +79,73 @@ export class TableComponent<T extends object>
   @Input() createLabel: string = 'Create One';
   @Output() rowClicked = new EventEmitter<T>();
   @Output() create = new EventEmitter<void>();
-  protected _columnsSubject = new ReplaySubject<TableColumns<T>>(1);
-  columnIds: string[] = [];
-  protected _dataSource = new MatTableDataSource<T>();
-  protected _filterValue: string = '';
-  autoCreateColumns: TableColumn<T>[] = [];
 
-  @ContentChildren(MatColumnDef) columnDefs!: QueryList<MatColumnDef>;
-  @ViewChild(MatTable, { static: true }) table!: MatTable<T>;
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-
-  constructor(protected _filterDialogService: FilterDialogService<T>) {}
-
-  ngOnInit(): void {
-    this.columnIds = this.columns.columnsToShow().map((c) => c.id);
-    this._columnsSubject.next(this.columns);
-    combineLatest([this._columnsSubject.asObservable(), this.data$]).subscribe(
-      ([columns, data]) => {
-        this.columnIds = columns.columnsToShow(data).map((c) => c.id);
-        this._dataSource.data = columns.filter(data);
-      }
-    );
+  @Input()
+  set columns(columns: TableColumns<T>) {
+    this._columnsSubject.next(columns);
   }
 
-  ngAfterContentInit(): void {
-    const definedColumnIds: string[] = [];
-    this.columnDefs.forEach((columnDef) => {
-      this.table.addColumnDef(columnDef);
-      definedColumnIds.push(columnDef.name);
-    });
-    this.autoCreateColumns = this.columns.columns.filter(
-      (c) => !definedColumnIds.includes(c.id)
-    );
+  @Input()
+  set columns$(columns$: Observable<TableColumns<T>>) {
+    columns$.subscribe((columns) => this._columnsSubject.next(columns));
   }
 
-  ngAfterViewInit(): void {
-    this._dataSource.paginator = this.paginator;
+  @Input()
+  set data(data: T[]) {
+    this._dataSubject.next(data);
+  }
+
+  @Input()
+  set data$(data$: Observable<T[]>) {
+    data$.subscribe((data) => this._dataSubject.next(data));
   }
 
   @Input()
   set sort(sort: MatSort) {
-    this._dataSource.sort = sort;
+    this.dataSource.sort = sort;
   }
 
-  @Input()
-  set filterValue(value: string) {
-    this._filterValue = value;
-    this._dataSource.filter = value;
+  @Input('filterValue')
+  set filter(filter: string) {
+    this.dataSource.filter = filter;
   }
 
-  get filterValue(): string {
-    return this._filterValue;
+  get filter(): string {
+    return this.dataSource.filter;
+  }
+
+  constructor(protected _filterDialogService: FilterDialogService<T>) {
+    // update when columns or data change
+    combineLatest([
+      this._columnsSubject.asObservable(),
+      this._dataSubject.asObservable(),
+    ]).subscribe(([columns, data]) => {
+      this._columns = columns;
+      this._data = data;
+      this.idsOfColumnsToDisplay = columns.columnsToShow(data).map((c) => c.id);
+      this.dataSource.data = columns.toRowData(columns.filter(data));
+    });
+  }
+
+  ngAfterContentInit(): void {
+    const idsOfColumnsDefined: string[] = [];
+    this.matColumnDefs.forEach((matColumnDef) => {
+      this.matTable.addColumnDef(matColumnDef);
+      idsOfColumnsDefined.push(matColumnDef.name);
+    });
+    this.columnsToAutoCreate = this._columns.columns.filter(
+      (column) => !idsOfColumnsDefined.includes(column.id)
+    );
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.matPaginator;
   }
 
   async onSetFilter(column: TableColumn<T>): Promise<void> {
     const dialogRef = this._filterDialogService.openFilterDialog(
       column,
-      this._dataSource.data
+      this._data
     );
     const filters = await firstValueFrom(dialogRef.afterClosed());
     if (filters) {
@@ -133,6 +153,6 @@ export class TableComponent<T extends object>
     } else {
       column.filters = [];
     }
-    this._columnsSubject.next(this.columns);
+    this._columnsSubject.next(this._columns);
   }
 }
