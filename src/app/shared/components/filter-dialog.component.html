@@ -57,7 +57,7 @@
 </div>
 <div mat-dialog-actions align="end">
   <button mat-button (click)="onResetFilter()">
-    <mat-icon>cancel</mat-icon>
+    <mat-icon>filter_alt_off</mat-icon>
     Reset Filter
   </button>
   <button
@@ -66,7 +66,7 @@
     [disabled]="filterSelection.isEmpty || filterSelection.nothingSelected"
     (click)="onApplyFilter()"
   >
-    <mat-icon>save</mat-icon>
+    <mat-icon>filter_alt</mat-icon>
     Apply Filter
   </button>
 </div>
