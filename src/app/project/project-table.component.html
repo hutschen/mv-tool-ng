@@ -46,8 +46,16 @@
       *ngIf="columns.getColumn('jira_project') as column"
       [matColumnDef]="column.id"
     >
-      <th mat-header-cell *matHeaderCellDef>
-        {{ column.label }}
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        <span
+          (click)="onSetFilter(column); $event.stopPropagation()"
+          matTooltip="Click to filter"
+        >
+          {{ column.label }}
+          <mat-icon class="filter-icon" *ngIf="column.filtered"
+            >filter_alt
+          </mat-icon>
+        </span>
       </th>
       <td mat-cell *matCellDef="let row">
         <mvtool-jira-project-label
@@ -64,7 +72,15 @@
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        {{ column.label }}
+        <span
+          (click)="onSetFilter(column); $event.stopPropagation()"
+          matTooltip="Click to filter"
+        >
+          {{ column.label }}
+          <mat-icon class="filter-icon" *ngIf="column.filtered"
+            >filter_alt
+          </mat-icon>
+        </span>
       </th>
       <td mat-cell *matCellDef="let row" [matTooltip]="column.toStr(row.data)">
         <mat-progress-bar

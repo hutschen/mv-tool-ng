@@ -13,10 +13,17 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
-import { TableColumns } from '../shared/table-columns';
+import { TableComponent } from '../shared/components/table.component';
+import { TableColumn, TableColumns } from '../shared/table-columns';
 import { Project, ProjectService } from '../shared/services/project.service';
 import { ProjectDialogService } from './project-dialog.component';
 
@@ -30,7 +37,19 @@ export class ProjectTableComponent implements OnInit {
   columns = new TableColumns<Project>([
     { id: 'name', label: 'Name' },
     { id: 'description', label: 'Description', optional: true },
-    { id: 'jira_project', label: 'Jira Project' },
+    {
+      id: 'jira_project',
+      label: 'Jira Project',
+      toStr: (p) => {
+        if (p.jira_project) {
+          return `${p.jira_project.key} / ${p.jira_project.name}`;
+        } else if (p.jira_project_id) {
+          return 'No permission on Jira project';
+        } else {
+          return 'No Jira project assigned';
+        }
+      },
+    },
     {
       id: 'completion',
       label: 'Completion',
@@ -48,6 +67,7 @@ export class ProjectTableComponent implements OnInit {
   data$: Observable<Project[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;
   @Output() projectClicked = new EventEmitter<Project>();
+  @ViewChild(TableComponent<Project>) tableComponent!: TableComponent<Project>;
 
   constructor(
     protected _projectService: ProjectService,
@@ -91,5 +111,9 @@ export class ProjectTableComponent implements OnInit {
     const data = await firstValueFrom(this._projectService.listProjects());
     this._dataSubject.next(data);
     this.dataLoaded = true;
+  }
+
+  async onSetFilter(column: TableColumn<Project>): Promise<void> {
+    return this.tableComponent.onSetFilter(column);
   }
 }
