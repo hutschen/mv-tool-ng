@@ -41,43 +41,13 @@
     #sort="matSort"
     [sort]="sort"
   >
-    <!-- ID Column -->
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
-      <td mat-cell *matCellDef="let document">{{ document.id }}</td>
-    </ng-container>
-
-    <!-- Reference column -->
-    <ng-container matColumnDef="reference">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference</th>
-      <td mat-cell *matCellDef="let document">
-        <span class="truncate-lines">{{ document.reference }}</span>
-      </td>
-    </ng-container>
-
-    <!-- Title column -->
-    <ng-container matColumnDef="title">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
-      <td mat-cell *matCellDef="let document">
-        <span class="truncate-lines">{{ document.title }}</span>
-      </td>
-    </ng-container>
-
-    <!-- Description column -->
-    <ng-container matColumnDef="description">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
-      <td mat-cell *matCellDef="let document">
-        <span class="truncate-lines">{{ document.description }}</span>
-      </td>
-    </ng-container>
-
     <!-- Options column -->
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let document">
+      <td mat-cell *matCellDef="let row">
         <mvtool-table-options
-          (edit)="onEditDocument(document)"
-          (delete)="onDeleteDocument(document)"
+          (edit)="onEditDocument(row.data)"
+          (delete)="onDeleteDocument(row.data)"
         >
         </mvtool-table-options>
       </td>

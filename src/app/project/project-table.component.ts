@@ -16,24 +16,46 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
-import { ITableColumn } from '../shared/components/table.component';
+import { TableColumns } from '../shared/table-columns';
 import { Project, ProjectService } from '../shared/services/project.service';
 import { ProjectDialogService } from './project-dialog.component';
 
 @Component({
   selector: 'mvtool-project-table',
   templateUrl: './project-table.component.html',
-  styleUrls: ['../shared/styles/mat-table.css', '../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/table.css', '../shared/styles/flex.css'],
   styles: [],
 })
 export class ProjectTableComponent implements OnInit {
-  columns: ITableColumn[] = [
-    { name: 'name', optional: false },
-    { name: 'description', optional: true },
-    { name: 'jira_project_id', optional: false },
-    { name: 'completion', optional: true },
-    { name: 'options', optional: false },
-  ];
+  columns = new TableColumns<Project>([
+    { id: 'name', label: 'Name' },
+    { id: 'description', label: 'Description', optional: true },
+    {
+      id: 'jira_project',
+      label: 'Jira Project',
+      toStr: (p) => {
+        if (p.jira_project) {
+          return `${p.jira_project.key} / ${p.jira_project.name}`;
+        } else if (p.jira_project_id) {
+          return 'No permission on Jira project';
+        } else {
+          return 'No Jira project assigned';
+        }
+      },
+    },
+    {
+      id: 'completion',
+      label: 'Completion',
+      optional: true,
+      toValue: (p) => p.percentComplete,
+      toStr: (p) =>
+        p.percentComplete !== null
+          ? `${p.percentComplete}% complete`
+          : 'Nothing to be completed',
+      toBool: (p) => p.percentComplete !== null,
+    },
+    { id: 'options' },
+  ]);
   protected _dataSubject = new ReplaySubject<Project[]>(1);
   data$: Observable<Project[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;

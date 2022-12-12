@@ -17,7 +17,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
-import { ITableColumn } from '../shared/components/table.component';
+import { TableColumns } from '../shared/table-columns';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { Project } from '../shared/services/project.service';
 import {
@@ -32,27 +32,60 @@ import { RequirementImportDialogService } from './requirement-import-dialog.comp
   selector: 'mvtool-requirement-table',
   templateUrl: './requirement-table.component.html',
   styleUrls: [
-    '../shared/styles/mat-table.css',
+    '../shared/styles/table.css',
     '../shared/styles/flex.css',
     '../shared/styles/truncate.css',
   ],
-  styles: ['.mat-column-gsAbsicherung {text-align: center;}'],
 })
 export class RequirementTableComponent implements OnInit {
-  columns: ITableColumn[] = [
-    { name: 'reference', optional: true },
-    { name: 'gsAnforderungReference', optional: true },
-    { name: 'catalog_module', optional: true },
-    { name: 'summary', optional: false },
-    { name: 'description', optional: true },
-    { name: 'gsAbsicherung', optional: true },
-    { name: 'gsVerantwortliche', optional: true },
-    { name: 'target_object', optional: true },
-    { name: 'compliance_status', optional: false },
-    { name: 'compliance_comment', optional: true },
-    { name: 'completion', optional: true },
-    { name: 'options', optional: false },
-  ];
+  columns = new TableColumns<Requirement>([
+    { id: 'reference', label: 'Reference', optional: true },
+    {
+      id: 'gs_anforderung_reference',
+      label: 'GS Reference',
+      optional: true,
+      toValue: (r) => r.catalog_requirement?.gs_anforderung_reference,
+    },
+    {
+      id: 'catalog_module',
+      label: 'Catalog Module',
+      optional: true,
+      toValue: (r) => r.catalog_requirement?.catalog_module.title,
+    },
+    { id: 'summary', label: 'Summary' },
+    { id: 'description', label: 'Description', optional: true },
+    {
+      id: 'gs_absicherung',
+      label: 'GS Absicherung',
+      optional: true,
+      toValue: (r) => r.catalog_requirement?.gs_absicherung,
+    },
+    {
+      id: 'gs_verantwortliche',
+      label: 'GS Verantwortliche',
+      optional: true,
+      toValue: (r) => r.catalog_requirement?.gs_verantwortliche,
+    },
+    { id: 'target_object', label: 'Target Object', optional: true },
+    {
+      id: 'compliance_status',
+      label: 'Compliance',
+      toStr: (r) => (r.compliance_status ? r.compliance_status : 'Not set'),
+    },
+    { id: 'compliance_comment', label: 'Compliance Comment', optional: true },
+    {
+      id: 'completion',
+      label: 'Completion',
+      optional: true,
+      toValue: (r) => r.percentComplete,
+      toStr: (r) =>
+        r.percentComplete !== null
+          ? `${r.percentComplete}% complete`
+          : 'Nothing to be completed',
+      toBool: (r) => r.percentComplete !== null,
+    },
+    { id: 'options' },
+  ]);
   protected _dataSubject = new ReplaySubject<Requirement[]>(1);
   data$: Observable<Requirement[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;

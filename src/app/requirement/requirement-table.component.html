@@ -56,133 +56,48 @@
     matSort
     #sort="matSort"
     [sort]="sort"
+    #table
   >
-    <!-- ID Column -->
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef>ID</th>
-      <td mat-cell *matCellDef="let requirement">{{ requirement.id }}</td>
-    </ng-container>
-
-    <!-- Reference column -->
-    <ng-container matColumnDef="reference">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference</th>
-      <td mat-cell *matCellDef="let requirement">
-        {{ requirement.reference }}
-      </td>
-    </ng-container>
-
-    <!-- GS Anforderungs-Referenz -->
-    <ng-container matColumnDef="gsAnforderungReference">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>GS ID</th>
-      <td mat-cell *matCellDef="let requirement">
-        <span *ngIf="requirement.gsAnforderungReference">
-          {{ requirement.gsAnforderungReference }}
-        </span>
-      </td>
-    </ng-container>
-
-    <!-- Catalog Module column -->
-    <ng-container matColumnDef="catalog_module">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Catalog Module</th>
-      <td mat-cell *matCellDef="let requirement">
-        <span *ngIf="requirement.catalog_module" class="truncate-lines">
-          {{ requirement.catalog_module.title }}
-        </span>
-      </td>
-    </ng-container>
-
-    <!-- Summary column -->
-    <ng-container matColumnDef="summary">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Summary</th>
-      <td mat-cell *matCellDef="let requirement">
-        <span class="truncate-lines">{{ requirement.summary }}</span>
-      </td>
-    </ng-container>
-
-    <!-- Description column -->
-    <ng-container matColumnDef="description">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
-      <td mat-cell *matCellDef="let requirement">
-        <span class="truncate-lines">{{ requirement.description }}</span>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="gsAbsicherung">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>GS Absicherung</th>
-      <td mat-cell *matCellDef="let requirement">
-        <span *ngIf="requirement.gsAbsicherung">
-          {{ requirement.gsAbsicherung }}
-        </span>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="gsVerantwortliche">
+    <!-- Compliance column -->
+    <ng-container
+      *ngIf="columns.getColumn('compliance_status') as column"
+      [matColumnDef]="column.id"
+    >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        GS Verantwortliche
+        <mvtool-table-filter-header
+          [column]="column"
+          [table]="table"
+        ></mvtool-table-filter-header>
       </th>
-      <td mat-cell *matCellDef="let requirement">
-        <span *ngIf="requirement.gsVerantwortliche" class="truncate-lines">
-          {{ requirement.gsVerantwortliche }}
-        </span>
-      </td>
-    </ng-container>
-
-    <!-- Target object column -->
-    <ng-container matColumnDef="target_object">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Target Object</th>
-      <td mat-cell *matCellDef="let requirement">
-        {{ requirement.target_object }}
-      </td>
-    </ng-container>
-
-    <!-- Compliance status column -->
-    <ng-container matColumnDef="compliance_status">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Compliance</th>
-      <td mat-cell *matCellDef="let requirement">
+      <td mat-cell *matCellDef="let row">
         <button
           mat-button
           matTooltip="Click to set compliance status"
           (click)="
-            onEditCompliance(requirement); $event.stopImmediatePropagation()
+            onEditCompliance(row.data); $event.stopImmediatePropagation()
           "
         >
-          <span *ngIf="!requirement.compliance_status">Not set</span>
-          <span *ngIf="requirement.compliance_status">{{
-            requirement.compliance_status
-          }}</span>
+          {{ column.toStr(row.data) }}
         </button>
       </td>
     </ng-container>
 
-    <!-- Compliance comment column -->
-    <ng-container matColumnDef="compliance_comment">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        Compliance Comment
-      </th>
-      <td mat-cell *matCellDef="let requirement">
-        <span class="truncate-lines">
-          {{ requirement.compliance_comment }}
-        </span>
-      </td>
-    </ng-container>
-
     <!-- Completion column -->
-    <ng-container matColumnDef="completion">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Completion</th>
-      <td
-        mat-cell
-        *matCellDef="let requirement"
-        [matTooltip]="
-          requirement.percentComplete !== null
-            ? requirement.percentComplete + '% complete'
-            : 'Nothing to be completed'
-        "
-      >
+    <ng-container
+      *ngIf="columns.getColumn('completion') as column"
+      [matColumnDef]="column.id"
+    >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mvtool-table-filter-header
+          [column]="column"
+          [table]="table"
+        ></mvtool-table-filter-header>
+      </th>
+      <td mat-cell *matCellDef="let row" [matTooltip]="column.toStr(row.data)">
         <mat-progress-bar
-          *ngIf="requirement.percentComplete !== null"
-          class="example-margin"
+          *ngIf="column.toBool(row.data)"
           mode="determinate"
-          [value]="requirement.percentComplete"
+          [value]="column.toValue(row.data)"
         >
         </mat-progress-bar>
       </td>
@@ -191,10 +106,10 @@
     <!-- Options column -->
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let requirement">
+      <td mat-cell *matCellDef="let row">
         <mvtool-table-options
-          (edit)="onEditRequirement(requirement)"
-          (delete)="onDeleteRequirement(requirement)"
+          (edit)="onEditRequirement(row.data)"
+          (delete)="onDeleteRequirement(row.data)"
         >
         </mvtool-table-options>
       </td>

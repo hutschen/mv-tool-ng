@@ -20,9 +20,10 @@ import { Component, EventEmitter, Output } from '@angular/core';
   template: `
     <div class="fx-row fx-end-center">
       <button
-        mat-button
+        mat-icon-button
         [matMenuTriggerFor]="menu"
         (click)="$event.stopPropagation()"
+        aria-label="Show options"
       >
         <mat-icon>more_vert</mat-icon>
       </button>

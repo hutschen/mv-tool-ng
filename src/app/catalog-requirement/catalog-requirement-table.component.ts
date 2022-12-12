@@ -16,7 +16,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
-import { ITableColumn } from '../shared/components/table.component';
+import { TableColumns } from '../shared/table-columns';
 import { CatalogModule } from '../shared/services/catalog-module.service';
 import {
   CatalogRequirement,
@@ -28,22 +28,22 @@ import { CatalogRequirementDialogService } from './catalog-requirement-dialog.co
   selector: 'mvtool-catalog-requirement-table',
   templateUrl: './catalog-requirement-table.component.html',
   styleUrls: [
-    '../shared/styles/mat-table.css',
+    '../shared/styles/table.css',
     '../shared/styles/flex.css',
     '../shared/styles/truncate.css',
   ],
   styles: ['.mat-column-gs_absicherung {text-align: center;}'],
 })
 export class CatalogRequirementTableComponent implements OnInit {
-  columns: ITableColumn[] = [
-    { name: 'reference', optional: true },
-    { name: 'gs_anforderung_reference', optional: true },
-    { name: 'summary', optional: false },
-    { name: 'description', optional: true },
-    { name: 'gs_absicherung', optional: true },
-    { name: 'gs_verantwortliche', optional: true },
-    { name: 'options', optional: false },
-  ];
+  columns = new TableColumns<CatalogRequirement>([
+    { id: 'reference', label: 'Reference', optional: true },
+    { id: 'gs_anforderung_reference', label: 'GS Reference', optional: true },
+    { id: 'summary', label: 'Summary' },
+    { id: 'description', optional: true, label: 'Description' },
+    { id: 'gs_absicherung', optional: true, label: 'GS Absicherung' },
+    { id: 'gs_verantwortliche', optional: true, label: 'GS Verantwortliche' },
+    { id: 'options' },
+  ]);
   protected _dataSubject = new ReplaySubject<CatalogRequirement[]>(1);
   data$: Observable<CatalogRequirement[]> = this._dataSubject.asObservable();
   data: CatalogRequirement[] = [];

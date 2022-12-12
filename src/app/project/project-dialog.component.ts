@@ -59,7 +59,7 @@ export class ProjectDialogComponent {
   constructor(
     protected _dialogRef: MatDialogRef<ProjectDialogComponent>,
     protected _projectService: ProjectService,
-    @Inject(MAT_DIALOG_DATA) protected _project: Project | null
+    @Inject(MAT_DIALOG_DATA) protected _project?: Project
   ) {
     if (this._project) {
       this.projectInput = this._project.toProjectInput();
@@ -94,6 +94,6 @@ export class ProjectDialogComponent {
   }
 
   onCancel(): void {
-    this._dialogRef.close(null);
+    this._dialogRef.close();
   }
 }

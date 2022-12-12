@@ -17,7 +17,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
-import { ITableColumn } from '../shared/components/table.component';
+import { TableColumns } from '../shared/table-columns';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { DocumentService, Document } from '../shared/services/document.service';
 import { Project } from '../shared/services/project.service';
@@ -27,19 +27,19 @@ import { DocumentDialogService } from './document-dialog.component';
   selector: 'mvtool-document-table',
   templateUrl: './document-table.component.html',
   styleUrls: [
-    '../shared/styles/mat-table.css',
+    '../shared/styles/table.css',
     '../shared/styles/flex.css',
     '../shared/styles/truncate.css',
   ],
   styles: [],
 })
 export class DocumentTableComponent implements OnInit {
-  columns: ITableColumn[] = [
-    { name: 'reference', optional: true },
-    { name: 'title', optional: false },
-    { name: 'description', optional: true },
-    { name: 'options', optional: false },
-  ];
+  columns = new TableColumns<Document>([
+    { id: 'reference', label: 'Reference', optional: true },
+    { id: 'title', label: 'Title' },
+    { id: 'description', label: 'Description', optional: true },
+    { id: 'options' },
+  ]);
   protected _dataSubject = new ReplaySubject<Document[]>(1);
   data$: Observable<Document[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;

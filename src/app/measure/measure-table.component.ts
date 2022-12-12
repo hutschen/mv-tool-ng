@@ -17,7 +17,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
-import { ITableColumn } from '../shared/components/table.component';
+import { TableColumns } from '../shared/table-columns';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Requirement } from '../shared/services/requirement.service';
@@ -27,21 +27,42 @@ import { MeasureDialogService } from './measure-dialog.component';
   selector: 'mvtool-measure-table',
   templateUrl: './measure-table.component.html',
   styleUrls: [
-    '../shared/styles/mat-table.css',
+    '../shared/styles/table.css',
     '../shared/styles/flex.css',
     '../shared/styles/truncate.css',
   ],
   styles: [],
 })
 export class MeasureTableComponent implements OnInit {
-  columns: ITableColumn[] = [
-    { name: 'summary', optional: false },
-    { name: 'description', optional: true },
-    { name: 'document', optional: true },
-    { name: 'jira_issue', optional: false },
-    { name: 'completed', optional: false },
-    { name: 'options', optional: false },
-  ];
+  columns = new TableColumns<Measure>([
+    { id: 'summary', label: 'Summary' },
+    { id: 'description', optional: true, label: 'Description' },
+    {
+      id: 'document',
+      optional: true,
+      label: 'Document',
+      toValue: (m) => m.document?.title,
+    },
+    {
+      id: 'jira_issue',
+      label: 'Jira Issue',
+      toStr: (m) => {
+        if (m.jira_issue) {
+          return m.jira_issue.key;
+        } else if (m.jira_issue_id) {
+          return 'No permission on Jira issue';
+        } else {
+          return 'No Jira issue assigned';
+        }
+      },
+    },
+    {
+      id: 'completed',
+      label: 'Completed',
+      toStr: (m) => (m.completed ? 'Completed' : 'Not completed'),
+    },
+    { id: 'options' },
+  ]);
   protected _dataSubject = new ReplaySubject<Measure[]>(1);
   data$: Observable<Measure[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;
