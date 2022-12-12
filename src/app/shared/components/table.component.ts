@@ -148,9 +148,7 @@ export class TableComponent<T extends object>
     const filters = await firstValueFrom(dialogRef.afterClosed());
     if (filters) {
       column.filters = filters;
-    } else {
-      column.filters = [];
+      this._columnsSubject.next(this._columns);
     }
-    this._columnsSubject.next(this._columns);
   }
 }

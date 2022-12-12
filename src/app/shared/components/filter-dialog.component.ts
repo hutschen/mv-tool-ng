@@ -166,4 +166,8 @@ export class FilterDialogComponent<T extends object> {
   onRemoveFilter(): void {
     this._dialogRef.close([]);
   }
+
+  onCancel(): void {
+    this._dialogRef.close();
+  }
 }
