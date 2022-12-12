@@ -41,10 +41,19 @@
     matSort
     #sort="matSort"
     [sort]="sort"
+    #table
   >
     <!-- JIRA issue column -->
-    <ng-container matColumnDef="jira_issue">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Jira Issue</th>
+    <ng-container
+      *ngIf="columns.getColumn('jira_issue') as column"
+      [matColumnDef]="column.id"
+    >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mvtool-table-filter-header
+          [column]="column"
+          [table]="table"
+        ></mvtool-table-filter-header>
+      </th>
       <td mat-cell *matCellDef="let row">
         <mvtool-jira-issue-input
           [measure]="row.data"
@@ -56,8 +65,16 @@
     </ng-container>
 
     <!-- Completed column -->
-    <ng-container matColumnDef="completed">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Completed</th>
+    <ng-container
+      *ngIf="columns.getColumn('completed') as column"
+      [matColumnDef]="column.id"
+    >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mvtool-table-filter-header
+          [column]="column"
+          [table]="table"
+        ></mvtool-table-filter-header>
+      </th>
       <td mat-cell *matCellDef="let row">
         <mvtool-measure-complete-button
           [measure]="row.data"

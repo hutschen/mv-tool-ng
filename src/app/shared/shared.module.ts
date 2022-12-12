@@ -55,6 +55,7 @@ import { TableFilterHeaderComponent } from './components/table-filter-header.com
     DetailComponent,
     ErrorDialogComponent,
     CreateEditDialogComponent,
+    TableFilterHeaderComponent,
   ],
 })
 export class SharedModule {}

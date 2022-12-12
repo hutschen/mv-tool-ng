@@ -43,8 +43,24 @@ export class MeasureTableComponent implements OnInit {
       label: 'Document',
       toValue: (m) => m.document?.title,
     },
-    { id: 'jira_issue', label: 'Jira Issue' },
-    { id: 'completed', label: 'Completed' },
+    {
+      id: 'jira_issue',
+      label: 'Jira Issue',
+      toStr: (m) => {
+        if (m.jira_issue) {
+          return m.jira_issue.key;
+        } else if (m.jira_issue_id) {
+          return 'No permission on Jira issue';
+        } else {
+          return 'No Jira issue assigned';
+        }
+      },
+    },
+    {
+      id: 'completed',
+      label: 'Completed',
+      toStr: (m) => (m.completed ? 'Completed' : 'Not completed'),
+    },
     { id: 'options' },
   ]);
   protected _dataSubject = new ReplaySubject<Measure[]>(1);
