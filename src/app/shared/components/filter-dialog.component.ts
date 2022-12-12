@@ -140,7 +140,7 @@ export class FilterDialogComponent<T extends object> {
     }
   }
 
-  onResetFilter(): void {
+  onRemoveFilter(): void {
     this._dialogRef.close([]);
   }
 }
