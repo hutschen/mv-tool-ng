@@ -47,7 +47,7 @@ class FilterOption {
   text: string;
   selected: boolean;
 
-  constructor(text: string, label?: string, selected?: boolean) {
+  constructor(text: string, selected?: boolean) {
     this.text = text;
     this.selected = selected ?? true;
   }
@@ -60,12 +60,31 @@ class FilterOption {
 class FilterSelection {
   filterOptions: FilterOption[];
 
-  constructor(searchStr: string, filters: string[]) {
+  constructor(
+    searchStr: string,
+    filters: string[],
+    selectedFilters: string[] = []
+  ) {
     searchStr = searchStr.toLowerCase();
-    this.filterOptions = filters
+    filters = filters
       .filter((filter, index) => filters.indexOf(filter) === index) // remove duplicates
-      .filter((filter) => filter.toLowerCase().includes(searchStr))
-      .map((filter) => new FilterOption(filter));
+      .filter((filter) => filter.toLowerCase().includes(searchStr));
+    selectedFilters = selectedFilters.map((filter) => filter.toLowerCase());
+    selectedFilters = selectedFilters.filter(
+      (filter, index) => selectedFilters.indexOf(filter) === index
+    );
+
+    if (selectedFilters.length) {
+      this.filterOptions = filters.map(
+        (filter) =>
+          new FilterOption(
+            filter,
+            selectedFilters.includes(filter.toLowerCase())
+          )
+      );
+    } else {
+      this.filterOptions = filters.map((filter) => new FilterOption(filter));
+    }
   }
 
   get isEmpty(): boolean {
@@ -120,7 +139,11 @@ export class FilterDialogComponent<T extends object> {
   ) {
     this.column = dialogData.column;
     this._texts = dialogData.data.map((data) => this.column.toStr(data));
-    this.filterSelection = new FilterSelection(this._searchStr, this._texts);
+    this.filterSelection = new FilterSelection(
+      this._searchStr,
+      this._texts,
+      this.column.filters
+    );
   }
 
   get searchStr(): string {
