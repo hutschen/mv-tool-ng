@@ -18,8 +18,8 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FilterDialogComponent } from './filter-dialog.component';
 
 describe('FilterDialogComponent', () => {
-  let component: FilterDialogComponent;
-  let fixture: ComponentFixture<FilterDialogComponent>;
+  let component: FilterDialogComponent<any>;
+  let fixture: ComponentFixture<FilterDialogComponent<any>>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
