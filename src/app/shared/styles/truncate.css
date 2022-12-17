@@ -15,15 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.mat-row {
-  height: auto;
+/* TODO: Replace this workaround when line-clamp is finally part of CSS standard. 
+See also https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-line-clamp */
+.truncate-lines,
+.expandable-lines {
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
 }
 
-.mat-header-cell {
+.expandable-lines:hover {
+  -webkit-line-clamp: unset;
+}
+
+.truncate,
+.expandable {
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 5px 10px 5px 0px;
 }
 
-.mat-cell {
-  padding: 5px 10px 5px 0px;
+.expandable:hover {
+  overflow: unset;
+  text-overflow: unset;
+  white-space: unset;
 }

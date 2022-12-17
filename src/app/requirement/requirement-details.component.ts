@@ -23,20 +23,11 @@ import {
 } from './requirement-dialog.component';
 
 @Component({
-  selector: 'mvtool-requirement-card',
+  selector: 'mvtool-requirement-details',
   template: `
-    <div
-      class="requirement-card"
-      *ngIf="requirement"
-      fxLayout="column"
-      fxLayoutGap="15px"
-    >
+    <div class="requirement-card fx-column fx-gap-15" *ngIf="requirement">
       <!-- Title -->
-      <div
-        fxLayout="row"
-        fxLayoutAlign="space-between center"
-        fxLayoutGap="5px"
-      >
+      <div class="fx-row fx-space-between-center fx-gap-5">
         <h1 class="truncate">{{ requirement.summary }}</h1>
         <button mat-stroked-button [matMenuTriggerFor]="menu">
           <mat-icon>more_vert</mat-icon>
@@ -53,7 +44,7 @@ import {
       </div>
 
       <!-- Content -->
-      <div fxLayout="column" fxLayoutGap="5px">
+      <div class="fx-column fx-gap-5">
         <!-- Reference -->
         <mvtool-detail *ngIf="requirement.reference" label="Reference">
           <div class="truncate">{{ requirement.reference }}</div>
@@ -126,9 +117,10 @@ import {
       </div>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css', '../shared/styles/truncate.css'],
   styles: ['h1 { margin: 0; }', '.requirement-card { margin: 20px; }'],
 })
-export class RequirementCardComponent {
+export class RequirementDetailsComponent {
   @Input() requirement: Requirement | null = null;
 
   constructor(protected _dialog: MatDialog) {}

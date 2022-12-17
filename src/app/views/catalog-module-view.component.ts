@@ -22,7 +22,7 @@ import { Catalog, CatalogService } from '../shared/services/catalog.service';
 @Component({
   selector: 'mvtool-catalog-module-view',
   template: `
-    <div *ngIf="catalog" fxLayout="column">
+    <div *ngIf="catalog" class="fx-column">
       <mvtool-catalog-details [catalog]="catalog"></mvtool-catalog-details>
       <mat-divider></mat-divider>
       <mvtool-catalog-module-table
@@ -31,6 +31,7 @@ import { Catalog, CatalogService } from '../shared/services/catalog.service';
       ></mvtool-catalog-module-table>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css'],
   styles: [],
 })
 export class CatalogModuleViewComponent implements OnInit {
@@ -42,17 +43,20 @@ export class CatalogModuleViewComponent implements OnInit {
     protected _catalogService: CatalogService
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     const catalogId = Number(this._route.snapshot.paramMap.get('catalogId'));
-    try {
-      this.catalog = await this._catalogService.getCatalog(catalogId);
-    } catch (error: any) {
-      if (error instanceof HttpErrorResponse && error.status === 404) {
-        this._router.navigate(['/']);
-      } else {
-        throw error;
-      }
-    }
+    this._catalogService.getCatalog(catalogId).subscribe({
+      next: (catalog) => {
+        this.catalog = catalog;
+      },
+      error: (error) => {
+        if (error instanceof HttpErrorResponse && error.status === 404) {
+          this._router.navigate(['/']);
+        } else {
+          throw error;
+        }
+      },
+    });
   }
 
   onCatalogModuleClicked(catalogModule: CatalogModule): void {

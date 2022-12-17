@@ -133,9 +133,13 @@ describe('ProjectService', () => {
 
   it('should list projects', (done: DoneFn) => {
     const projectList = [outputMock];
-    sut.listProjects().then((value) => {
-      expect(value).toEqual(projectList.map((project) => new Project(project)));
-      done();
+    sut.listProjects().subscribe({
+      next: (value) => {
+        expect(value).toEqual(
+          projectList.map((project) => new Project(project))
+        );
+      },
+      complete: () => done(),
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
@@ -145,9 +149,9 @@ describe('ProjectService', () => {
   });
 
   it('should create project', (done: DoneFn) => {
-    sut.createProject(inputMock).then((value) => {
-      expect(value).toEqual(new Project(outputMock));
-      done();
+    sut.createProject(inputMock).subscribe({
+      next: (value) => expect(value).toEqual(new Project(outputMock)),
+      complete: () => done(),
     });
     const mockResponse = httpMock.expectOne({
       method: 'post',
@@ -157,9 +161,9 @@ describe('ProjectService', () => {
   });
 
   it('should get a project', (done: DoneFn) => {
-    sut.getProject(outputMock.id).then((value) => {
-      expect(value).toEqual(new Project(outputMock));
-      done();
+    sut.getProject(outputMock.id).subscribe({
+      next: (value) => expect(value).toEqual(new Project(outputMock)),
+      complete: () => done(),
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
@@ -169,9 +173,9 @@ describe('ProjectService', () => {
   });
 
   it('should update a project', (done: DoneFn) => {
-    sut.updateProject(outputMock.id, inputMock).then((value) => {
-      expect(value).toEqual(new Project(outputMock));
-      done();
+    sut.updateProject(outputMock.id, inputMock).subscribe({
+      next: (value) => expect(value).toEqual(new Project(outputMock)),
+      complete: () => done(),
     });
     const mockResponse = httpMock.expectOne({
       method: 'put',
@@ -181,9 +185,9 @@ describe('ProjectService', () => {
   });
 
   it('should delete a project', (done: DoneFn) => {
-    sut.deleteProject(outputMock.id).then((value) => {
-      expect(value).toBeNull();
-      done();
+    sut.deleteProject(outputMock.id).subscribe({
+      next: (value) => expect(value).toBeNull(),
+      complete: () => done(),
     });
     const mockResponse = httpMock.expectOne({
       method: 'delete',

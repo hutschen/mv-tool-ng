@@ -24,20 +24,11 @@ import {
 @Component({
   selector: 'mvtool-catalog-module-details',
   template: `
-    <div
-      class="details"
-      *ngIf="catalogModule"
-      fxLayout="column"
-      fxLayoutGap="15px"
-    >
+    <div class="details fx-column fx-gap-15" *ngIf="catalogModule">
       <!-- Title -->
-      <div
-        fxLayout="row"
-        fxLayoutAlign="space-between center"
-        fxLayoutGap="5px"
-      >
+      <div class="fx-row fx-space-between-center fx-gap-5">
         <h1 class="truncate">{{ catalogModule.title }}</h1>
-        <div fxLayout="row" fxLayoutGap="5px">
+        <div class="fx-row fx-gap-5">
           <button mat-stroked-button (click)="onEditCatalogModule()">
             <mat-icon>edit_note</mat-icon>
             Edit Catalog Module
@@ -46,6 +37,7 @@ import {
       </div>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css', '../shared/styles/truncate.css'],
   styles: ['h1 { margin: 0; }', '.details { margin: 20px; }'],
 })
 export class CatalogModuleDetailsComponent {

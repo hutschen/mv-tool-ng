@@ -13,25 +13,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
-import { RequirementCardComponent } from './requirement-card.component';
+import { ErrorService } from './error.service';
 
-describe('RequirementCardComponent', () => {
-  let component: RequirementCardComponent;
-  let fixture: ComponentFixture<RequirementCardComponent>;
+describe('ErrorService', () => {
+  let service: ErrorService;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [RequirementCardComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(RequirementCardComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(ErrorService);
   });
 
-  xit('should create', () => {
-    expect(component).toBeTruthy();
+  xit('should be created', () => {
+    expect(service).toBeTruthy();
   });
 });

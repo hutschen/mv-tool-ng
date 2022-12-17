@@ -15,7 +15,7 @@
 
 import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { filter, map } from 'rxjs';
+import { filter, firstValueFrom, map } from 'rxjs';
 import { CatalogModuleService } from './shared/services/catalog-module.service';
 import { CatalogService } from './shared/services/catalog.service';
 import { ProjectService } from './shared/services/project.service';
@@ -31,7 +31,7 @@ interface IBreadcrumb {
   selector: 'mvtool-breadcrumb-trail',
   template: `
     <div *ngIf="breadcrumbs.length">
-      <div fxLayout="row">
+      <div class="fx-row">
         <div
           class="breadcrumb-trail"
           *ngFor="let breadcrumb of breadcrumbs; let i = index"
@@ -62,6 +62,7 @@ interface IBreadcrumb {
       <mat-divider></mat-divider>
     </div>
   `,
+  styleUrls: ['./shared/styles/flex.css'],
   styles: ['.breadcrumb-trail { padding: 5px 2px; }'],
 })
 export class BreadcrumbTrailComponent {
@@ -95,7 +96,9 @@ export class BreadcrumbTrailComponent {
     const catalogId = Number(first);
     return [
       {
-        displayText: (await this._catalogService.getCatalog(catalogId)).title,
+        displayText: (
+          await firstValueFrom(this._catalogService.getCatalog(catalogId))
+        ).title,
         navigationCommands: ['catalogs', catalogId, 'catalog-modules'],
       },
       {
@@ -114,8 +117,8 @@ export class BreadcrumbTrailComponent {
     }
 
     const catalogModuleId = Number(first);
-    const catalogModule = await this._catalogModuleService.getCatalogModule(
-      catalogModuleId
+    const catalogModule = await firstValueFrom(
+      this._catalogModuleService.getCatalogModule(catalogModuleId)
     );
     return [
       {
@@ -154,7 +157,9 @@ export class BreadcrumbTrailComponent {
 
     const projectId = Number(first);
     const projectBreadcrumb = {
-      displayText: (await this._projectService.getProject(projectId)).name,
+      displayText: (
+        await firstValueFrom(this._projectService.getProject(projectId))
+      ).name,
       navigationCommands: ['projects', projectId, 'requirements'],
     };
     const requirementsBreadcrumb = {
@@ -197,8 +202,8 @@ export class BreadcrumbTrailComponent {
     }
 
     const requirementId = Number(first);
-    const requirement = await this._requirementService.getRequirement(
-      requirementId
+    const requirement = await firstValueFrom(
+      this._requirementService.getRequirement(requirementId)
     );
     return [
       {

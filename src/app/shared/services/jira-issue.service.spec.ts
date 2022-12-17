@@ -86,9 +86,9 @@ describe('JiraIssueService', () => {
   });
 
   it('should list jira issues', (done: DoneFn) => {
-    sut.getJiraIssues(outputMock.project_id).then((value) => {
-      expect(value).toEqual([outputMock]);
-      done();
+    sut.getJiraIssues(outputMock.project_id).subscribe({
+      next: (value) => expect(value).toEqual([outputMock]),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
@@ -99,9 +99,9 @@ describe('JiraIssueService', () => {
 
   it('should create jira issue', (done: DoneFn) => {
     const measureId = 1;
-    sut.createAndLinkJiraIssue(measureId, inputMock).then((value) => {
-      expect(value).toEqual(outputMock);
-      done();
+    sut.createAndLinkJiraIssue(measureId, inputMock).subscribe({
+      next: (value) => expect(value).toEqual(outputMock),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'post',
@@ -112,9 +112,9 @@ describe('JiraIssueService', () => {
 
   it('should get jira issue', (done: DoneFn) => {
     const measureId = 1;
-    sut.getJiraIssue(measureId).then((value) => {
-      expect(value).toEqual(outputMock);
-      done();
+    sut.getJiraIssue(measureId).subscribe({
+      next: (value) => expect(value).toEqual(outputMock),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',

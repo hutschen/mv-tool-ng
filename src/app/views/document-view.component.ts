@@ -21,20 +21,20 @@ import { Project, ProjectService } from '../shared/services/project.service';
 @Component({
   selector: 'mvtool-document-view',
   template: `
-    <div *ngIf="project" fxLayout="column">
-      <mvtool-project-card [project]="project"></mvtool-project-card>
+    <div *ngIf="project" class="fx-column">
+      <mvtool-project-details [project]="project"></mvtool-project-details>
       <mat-divider></mat-divider>
       <mvtool-document-table [project]="project"> </mvtool-document-table>
     </div>
     <div
       *ngIf="!project"
-      fxLayout="column"
+      class="fx-column fx-center-center"
       style="height: 50%"
-      fxLayoutAlign="center center"
     >
       <mat-spinner></mat-spinner>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css'],
   styles: [],
 })
 export class DocumentViewComponent implements OnInit {
@@ -46,16 +46,19 @@ export class DocumentViewComponent implements OnInit {
     protected _projectService: ProjectService
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     const projectId = Number(this._route.snapshot.paramMap.get('projectId'));
-    try {
-      this.project = await this._projectService.getProject(projectId);
-    } catch (error: any) {
-      if (error instanceof HttpErrorResponse && error.status === 404) {
-        this._router.navigate(['/']);
-      } else {
-        throw error;
-      }
-    }
+    this._projectService.getProject(projectId).subscribe({
+      next: (project) => {
+        this.project = project;
+      },
+      error: (error) => {
+        if (error instanceof HttpErrorResponse && error.status === 404) {
+          this._router.navigate(['/']);
+        } else {
+          throw error;
+        }
+      },
+    });
   }
 }

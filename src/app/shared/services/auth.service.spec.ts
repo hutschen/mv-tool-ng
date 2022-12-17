@@ -50,10 +50,12 @@ describe('AuthService', () => {
   });
 
   it('should log in', (done: DoneFn) => {
-    sut.logIn(credentials).then(() => {
-      expect(sut.isLoggedIn).toBeTrue();
-      expect(sut.accessToken).toEqual(accessToken);
-      done();
+    sut.logIn(credentials).subscribe({
+      next: () => {
+        expect(sut.isLoggedIn).toBeTrue();
+        expect(sut.accessToken).toEqual(accessToken);
+      },
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({ method: 'post', url: authUrl });
     mockResponse.flush(accessToken);

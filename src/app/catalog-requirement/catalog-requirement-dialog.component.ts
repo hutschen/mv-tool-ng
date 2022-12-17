@@ -13,9 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import { firstValueFrom, Observable } from 'rxjs';
 import { CatalogModule } from '../shared/services/catalog-module.service';
 import {
   CatalogRequirement,
@@ -28,9 +33,27 @@ export interface ICatalogRequirementDialogData {
   catalogRequirement?: CatalogRequirement;
 }
 
+@Injectable({
+  providedIn: 'root',
+})
+export class CatalogRequirementDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openCatalogRequirementDialog(
+    catalogModule: CatalogModule,
+    catalogRequirement?: CatalogRequirement
+  ): MatDialogRef<CatalogRequirementDialogComponent, CatalogRequirement> {
+    return this._dialog.open(CatalogRequirementDialogComponent, {
+      width: '500px',
+      data: { catalogModule, catalogRequirement },
+    });
+  }
+}
+
 @Component({
   selector: 'mvtool-catalog-requirement-dialog',
   templateUrl: './catalog-requirement-dialog.component.html',
+  styleUrls: ['../shared/styles/flex.css'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class CatalogRequirementDialogComponent {
@@ -58,21 +81,21 @@ export class CatalogRequirementDialogComponent {
 
   async onSave(form: NgForm): Promise<void> {
     if (form.valid) {
-      let catalogRequirement: CatalogRequirement;
+      let catalogRequirement$: Observable<CatalogRequirement>;
       if (!this._dialogData.catalogRequirement) {
-        catalogRequirement =
-          await this._catalogRequirementService.createCatalogRequirement(
+        catalogRequirement$ =
+          this._catalogRequirementService.createCatalogRequirement(
             this.catalogModule.id,
             this.catalogRequirementInput
           );
       } else {
-        catalogRequirement =
-          await this._catalogRequirementService.updateCatalogRequirement(
+        catalogRequirement$ =
+          this._catalogRequirementService.updateCatalogRequirement(
             this._dialogData.catalogRequirement.id,
             this.catalogRequirementInput
           );
       }
-      this._dialogRef.close(catalogRequirement);
+      this._dialogRef.close(await firstValueFrom(catalogRequirement$));
     }
   }
 

@@ -13,9 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import { firstValueFrom, Observable } from 'rxjs';
 import {
   CatalogModule,
   CatalogModuleService,
@@ -25,12 +30,30 @@ import { Catalog } from '../shared/services/catalog.service';
 
 export interface ICatalogModuleDialogData {
   catalog: Catalog;
-  catalogModule: CatalogModule | null;
+  catalogModule?: CatalogModule;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class CatalogModuleDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openCatalogModuleDialog(
+    catalog: Catalog,
+    catalogModule?: CatalogModule
+  ): MatDialogRef<CatalogModuleDialogComponent, CatalogModule> {
+    return this._dialog.open(CatalogModuleDialogComponent, {
+      width: '500px',
+      data: { catalog, catalogModule },
+    });
+  }
 }
 
 @Component({
   selector: 'mvtool-catalog-module-dialog',
   templateUrl: './catalog-module-dialog.component.html',
+  styleUrls: ['../shared/styles/flex.css'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class CatalogModuleDialogComponent {
@@ -60,19 +83,19 @@ export class CatalogModuleDialogComponent {
 
   async onSave(form: NgForm): Promise<void> {
     if (form.valid) {
-      let catalogModule: CatalogModule;
+      let catalogModule$: Observable<CatalogModule>;
       if (!this._dialogData.catalogModule) {
-        catalogModule = await this._catalogModuleService.createCatalogModule(
+        catalogModule$ = this._catalogModuleService.createCatalogModule(
           this.catalog.id,
           this.catalogModuleInput
         );
       } else {
-        catalogModule = await this._catalogModuleService.updateCatalogModule(
+        catalogModule$ = this._catalogModuleService.updateCatalogModule(
           this._dialogData.catalogModule.id,
           this.catalogModuleInput
         );
       }
-      this._dialogRef.close(catalogModule);
+      this._dialogRef.close(await firstValueFrom(catalogModule$));
     }
   }
 

@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 
 @Component({
@@ -50,9 +51,8 @@ export class MeasureCompleteButtonComponent implements OnInit {
       this.loading = true;
       const measureInput = this.measure.toMeasureInput();
       measureInput.completed = !this.measure.completed;
-      this.measure = await this._measureService.updateMeasure(
-        this.measure.id,
-        measureInput
+      this.measure = await firstValueFrom(
+        this._measureService.updateMeasure(this.measure.id, measureInput)
       );
       this.measureChange.emit(this.measure);
       this.loading = false;

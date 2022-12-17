@@ -15,16 +15,24 @@
 
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
+import { ErrorReport } from '../services/error.service';
 
 @Component({
   selector: 'mvtool-error-dialog',
   template: `
     <div mat-dialog-title>
-      Error {{ error.status }} - {{ error.statusText }}
+      <span *ngIf="1 >= errorReports.length">Error Report</span>
+      <span *ngIf="1 < errorReports.length">Error Reports</span>
     </div>
     <div mat-dialog-content>
-      <p *ngIf="!error.error.detail">{{ error.message }}</p>
-      <p *ngIf="error.error.detail">{{ error.error.detail }}</p>
+      <ul>
+        <li *ngFor="let errReport of errorReports">
+          <strong *ngIf="errReport.code">{{ errReport.code }}&nbsp;</strong>
+          <strong *ngIf="errReport.title">{{ errReport.title }}&nbsp;</strong>
+          <span *ngIf="errReport.detail">{{ errReport.detail }}</span>
+        </li>
+      </ul>
     </div>
     <div mat-dialog-actions align="end">
       <button mat-raised-button color="accent" (click)="onClose()">
@@ -32,13 +40,20 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
       </button>
     </div>
   `,
-  styles: [],
+  styles: [
+    'ul { list-style-type: none; margin: 0; padding: 0; }',
+    'li:not(:last-child) { margin-bottom: 1em; }',
+  ],
 })
 export class ErrorDialogComponent {
+  errorReports: ErrorReport[] = [];
+
   constructor(
     protected _dialogRef: MatDialogRef<ErrorDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public error: any
-  ) {}
+    @Inject(MAT_DIALOG_DATA) errorReports$: Observable<ErrorReport>
+  ) {
+    errorReports$.subscribe((error) => this.errorReports.push(error));
+  }
 
   onClose() {
     this._dialogRef.close();

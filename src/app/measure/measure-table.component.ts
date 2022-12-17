@@ -14,112 +14,147 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import {
-  DownloadDialogComponent,
-  IDownloadDialogData,
-} from '../shared/components/download-dialog.component';
-import { ITableColumn } from '../shared/components/table.component';
-import { UploadDialogComponent } from '../shared/components/upload-dialog.component';
+import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
+import { DownloadDialogService } from '../shared/components/download-dialog.component';
+import { TableColumns } from '../shared/table-columns';
+import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Requirement } from '../shared/services/requirement.service';
-import { IUploadState } from '../shared/services/upload.service';
-import {
-  IMeasureDialogData,
-  MeasureDialogComponent,
-} from './measure-dialog.component';
+import { MeasureDialogService } from './measure-dialog.component';
 
 @Component({
   selector: 'mvtool-measure-table',
   templateUrl: './measure-table.component.html',
-  styleUrls: ['../shared/styles/mat-table.css'],
+  styleUrls: [
+    '../shared/styles/table.css',
+    '../shared/styles/flex.css',
+    '../shared/styles/truncate.css',
+  ],
   styles: [],
 })
 export class MeasureTableComponent implements OnInit {
-  columns: ITableColumn[] = [
-    { name: 'summary', optional: false },
-    { name: 'description', optional: true },
-    { name: 'document', optional: true },
-    { name: 'jira_issue', optional: false },
-    { name: 'completed', optional: false },
-    { name: 'options', optional: false },
-  ];
-  data: Measure[] = [];
+  columns = new TableColumns<Measure>([
+    { id: 'summary', label: 'Summary' },
+    { id: 'description', optional: true, label: 'Description' },
+    {
+      id: 'document',
+      optional: true,
+      label: 'Document',
+      toValue: (m) => m.document?.title,
+    },
+    {
+      id: 'jira_issue',
+      label: 'Jira Issue',
+      toStr: (m) => {
+        if (m.jira_issue) {
+          return m.jira_issue.key;
+        } else if (m.jira_issue_id) {
+          return 'No permission on Jira issue';
+        } else {
+          return 'No Jira issue assigned';
+        }
+      },
+    },
+    {
+      id: 'completed',
+      label: 'Completed',
+      toStr: (m) => (m.completed ? 'Completed' : 'Not completed'),
+    },
+    { id: 'options' },
+  ]);
+  protected _dataSubject = new ReplaySubject<Measure[]>(1);
+  data$: Observable<Measure[]> = this._dataSubject.asObservable();
   dataLoaded: boolean = false;
   @Input() requirement: Requirement | null = null;
 
   constructor(
     protected _measureService: MeasureService,
-    protected _dialog: MatDialog
+    protected _measureDialogService: MeasureDialogService,
+    protected _downloadDialogService: DownloadDialogService,
+    protected _uploadDialogService: UploadDialogService,
+    protected _confirmDialogService: ConfirmDialogService
   ) {}
 
   async ngOnInit(): Promise<void> {
     await this.onReloadMeasures();
-    this.dataLoaded = true;
   }
 
-  protected _openMeasureDialog(measure: Measure | null = null): void {
-    let dialogRef = this._dialog.open(MeasureDialogComponent, {
-      width: '500px',
-      data: {
-        requirement: this.requirement,
-        measure: measure,
-      } as IMeasureDialogData,
-    });
-    dialogRef.afterClosed().subscribe((measure: Measure | null) => {
-      if (measure) {
-        this.onReloadMeasures();
+  protected async _createOrEditMeasure(measure?: Measure): Promise<void> {
+    if (this.requirement) {
+      const dialogRef = this._measureDialogService.openMeasureDialog(
+        this.requirement,
+        measure
+      );
+      const resultingMeasure = await firstValueFrom(dialogRef.afterClosed());
+      if (resultingMeasure) {
+        await this.onReloadMeasures();
       }
-    });
+    } else {
+      throw new Error('Requirement is undefined');
+    }
   }
 
-  onCreateMeasure(): void {
-    this._openMeasureDialog();
+  async onCreateMeasure(): Promise<void> {
+    await this._createOrEditMeasure();
   }
 
-  onEditMeasure(measure: Measure): void {
-    this._openMeasureDialog(measure);
+  async onEditMeasure(measure: Measure): Promise<void> {
+    await this._createOrEditMeasure(measure);
   }
 
   async onDeleteMeasure(measure: Measure): Promise<void> {
-    await this._measureService.deleteMeasure(measure.id);
-    await this.onReloadMeasures();
-  }
-
-  onExportMeasures(): void {
-    if (this.requirement) {
-      this._dialog.open(DownloadDialogComponent, {
-        width: '500px',
-        data: {
-          download$: this._measureService.downloadMeasureExcel(
-            this.requirement.id
-          ),
-          filename: 'measures.xlsx',
-        } as IDownloadDialogData,
-      });
+    const confirmDialogRef = this._confirmDialogService.openConfirmDialog(
+      'Delete Measure',
+      `Do you really want to delete measure "${measure.summary}"?`
+    );
+    const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
+    if (confirmed) {
+      await firstValueFrom(this._measureService.deleteMeasure(measure.id));
+      await this.onReloadMeasures();
     }
   }
 
-  onImportMeasures(): void {
+  async onExportMeasures(): Promise<void> {
     if (this.requirement) {
-      const requirementId = this.requirement.id;
-      const dialogRef = this._dialog.open(UploadDialogComponent, {
-        width: '500px',
-        data: (file: File) => {
-          return this._measureService.uploadMeasureExcel(requirementId, file);
-        },
-      });
-      dialogRef.afterClosed().subscribe((uploadState: IUploadState | null) => {
-        if (uploadState && uploadState.state == 'done') {
-          this.onReloadMeasures();
+      const dialogRef = this._downloadDialogService.openDownloadDialog(
+        this._measureService.downloadMeasureExcel(this.requirement.id),
+        'measure.xlsx'
+      );
+      await firstValueFrom(dialogRef.afterClosed());
+    } else {
+      throw new Error('Requirement is undefined');
+    }
+  }
+
+  async onImportMeasures(): Promise<void> {
+    const dialogRef = this._uploadDialogService.openUploadDialog(
+      (file: File) => {
+        if (this.requirement) {
+          return this._measureService.uploadMeasureExcel(
+            this.requirement.id,
+            file
+          );
+        } else {
+          throw new Error('Requirement is undefined');
         }
-      });
+      }
+    );
+    const uploadState = await firstValueFrom(dialogRef.afterClosed());
+    if (uploadState && uploadState.state == 'done') {
+      await this.onReloadMeasures();
     }
   }
 
-  async onReloadMeasures() {
+  async onReloadMeasures(): Promise<void> {
     if (this.requirement) {
-      this.data = await this._measureService.listMeasures(this.requirement.id);
+      const data = await firstValueFrom(
+        this._measureService.listMeasures(this.requirement.id)
+      );
+      this._dataSubject.next(data);
+      this.dataLoaded = true;
+    } else {
+      throw new Error('Requirement is undefined');
     }
   }
 }

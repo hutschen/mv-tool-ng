@@ -22,7 +22,7 @@ import {
 @Component({
   selector: 'mvtool-jira-project-input',
   template: `
-    <div *ngIf="locked" fxLayout="row" fxLayoutAlign="space-between center">
+    <div *ngIf="locked" class="fx-row fx-space-between-center">
       <div>You have not the permission to view the JIRA project.</div>
       <!-- button unlock -->
       <button
@@ -34,7 +34,7 @@ import {
         Unlock
       </button>
     </div>
-    <div *ngIf="!locked" fxLayout="column" fxLayoutAlign="stretch">
+    <div *ngIf="!locked" class="fx-column fx-stretch">
       <mat-form-field appearance="fill">
         <mat-label>Select Jira project</mat-label>
         <mat-select name="jiraProject" [(ngModel)]="jiraProjectId_">
@@ -49,6 +49,7 @@ import {
       </mat-form-field>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css'],
   styles: [],
 })
 export class JiraProjectInputComponent implements OnInit {
@@ -59,15 +60,19 @@ export class JiraProjectInputComponent implements OnInit {
 
   constructor(protected _jiraProjectService: JiraProjectService) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     if (!this.locked) {
-      this.jiraProjects = await this._jiraProjectService.getJiraProjects();
+      this._jiraProjectService.getJiraProjects().subscribe((jiraProjects) => {
+        this.jiraProjects = jiraProjects;
+      });
     }
   }
 
-  async unlock() {
-    this.locked = false;
-    this.jiraProjects = await this._jiraProjectService.getJiraProjects();
+  unlock() {
+    this._jiraProjectService.getJiraProjects().subscribe((jiraProjects) => {
+      this.jiraProjects = jiraProjects;
+      this.locked = false;
+    });
   }
 
   get jiraProjectId_(): string | null {

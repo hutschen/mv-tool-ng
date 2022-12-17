@@ -13,26 +13,43 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Observable, throwError } from 'rxjs';
+import { Component, Inject, Injectable } from '@angular/core';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import { IUploadState } from '../services/upload.service';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class UploadDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openUploadDialog(
+    callback: (file: File) => Observable<IUploadState>
+  ): MatDialogRef<UploadDialogComponent, IUploadState> {
+    const dialogRef = this._dialog.open(UploadDialogComponent, {
+      width: '500px',
+      data: callback,
+    });
+    return dialogRef;
+  }
+}
 
 @Component({
   selector: 'mvtool-upload-dialog',
   template: `
     <div mat-dialog-content>
       <!-- File input -->
-      <div
-        *ngIf="!uploadState"
-        fxLayout="row"
-        fxLayoutAlign="space-between center"
-      >
-        <mat-form-field appearance="fill" fxFlex="grow">
+      <div *ngIf="!uploadState" class="fx-row fx-space-beetween-center">
+        <mat-form-field appearance="fill" class="fx-grow">
           <mat-label>Filename</mat-label>
           <input matInput readonly="true" [value]="file ? file.name : ''" />
         </mat-form-field>
-        <div fxFlex="nogrow">
+        <div class="fx-no-grow">
           <button mat-button (click)="fileInput.click()">
             <mat-icon>attach_file</mat-icon>
             Choose file
@@ -76,6 +93,7 @@ import { IUploadState } from '../services/upload.service';
       </button>
     </div>
   `,
+  styleUrls: ['../styles/flex.css'],
   styles: [],
 })
 export class UploadDialogComponent {

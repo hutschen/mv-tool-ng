@@ -24,22 +24,22 @@ import {
 @Component({
   selector: 'mvtool-measure-view',
   template: `
-    <div *ngIf="requirement" fxLayout="column">
-      <mvtool-requirement-card
+    <div *ngIf="requirement" class="fx-column">
+      <mvtool-requirement-details
         [requirement]="requirement"
-      ></mvtool-requirement-card>
+      ></mvtool-requirement-details>
       <mat-divider></mat-divider>
       <mvtool-measure-table [requirement]="requirement"> </mvtool-measure-table>
     </div>
     <div
       *ngIf="!requirement"
-      fxLayout="column"
+      class="fx-column fx-center-center"
       style="height: 50%"
-      fxLayoutAlign="center center"
     >
       <mat-spinner></mat-spinner>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css'],
   styles: [],
 })
 export class MeasureViewComponent implements OnInit {
@@ -51,20 +51,21 @@ export class MeasureViewComponent implements OnInit {
     protected _requirementService: RequirementService
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     const requirementId = Number(
       this._route.snapshot.paramMap.get('requirementId')
     );
-    try {
-      this.requirement = await this._requirementService.getRequirement(
-        requirementId
-      );
-    } catch (error: any) {
-      if (error instanceof HttpErrorResponse && error.status === 404) {
-        this._router.navigate(['/']);
-      } else {
-        throw error;
-      }
-    }
+    this._requirementService.getRequirement(requirementId).subscribe({
+      next: (requirement) => {
+        this.requirement = requirement;
+      },
+      error: (error) => {
+        if (error instanceof HttpErrorResponse && error.status === 404) {
+          this._router.navigate(['/']);
+        } else {
+          throw error;
+        }
+      },
+    });
   }
 }

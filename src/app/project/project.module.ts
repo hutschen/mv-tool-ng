@@ -20,15 +20,15 @@ import { ProjectTableComponent } from './project-table.component';
 import { SharedModule } from '../shared/shared.module';
 import { ProjectDialogComponent } from './project-dialog.component';
 import { JiraProjectModule } from '../jira-project/jira-project.module';
-import { ProjectCardComponent } from './project-card.component';
+import { ProjectDetailsComponent } from './project-details.component';
 
 @NgModule({
   declarations: [
     ProjectTableComponent,
     ProjectDialogComponent,
-    ProjectCardComponent,
+    ProjectDetailsComponent,
   ],
   imports: [CommonModule, SharedModule, MaterialModule, JiraProjectModule],
-  exports: [ProjectTableComponent, ProjectCardComponent],
+  exports: [ProjectTableComponent, ProjectDetailsComponent],
 })
 export class ProjectModule {}

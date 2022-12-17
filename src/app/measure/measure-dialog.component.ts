@@ -13,9 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import {
   IMeasureInput,
   Measure,
@@ -25,12 +30,30 @@ import { Requirement } from '../shared/services/requirement.service';
 
 export interface IMeasureDialogData {
   requirement: Requirement;
-  measure: Measure | null;
+  measure?: Measure;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class MeasureDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openMeasureDialog(
+    requirement: Requirement,
+    measure?: Measure
+  ): MatDialogRef<MeasureDialogComponent, Measure> {
+    return this._dialog.open(MeasureDialogComponent, {
+      width: '500px',
+      data: { requirement, measure },
+    });
+  }
 }
 
 @Component({
   selector: 'mvtool-measure-dialog',
   templateUrl: './measure-dialog.component.html',
+  styleUrls: ['../shared/styles/flex.css'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class MeasureDialogComponent {
@@ -55,28 +78,28 @@ export class MeasureDialogComponent {
   }
 
   get createMode(): boolean {
-    return this._dialogData.measure === null;
+    return !this._dialogData.measure;
   }
 
-  async onSave(form: NgForm): Promise<void> {
+  onSave(form: NgForm): void {
     if (form.valid) {
-      let measure: Measure;
+      let measure$: Observable<Measure>;
       if (!this._dialogData.measure) {
-        measure = await this._measureService.createMeasure(
+        measure$ = this._measureService.createMeasure(
           this.requirement.id,
           this.measureInput
         );
       } else {
-        measure = await this._measureService.updateMeasure(
+        measure$ = this._measureService.updateMeasure(
           this._dialogData.measure.id,
           this.measureInput
         );
       }
-      this._dialogRef.close(measure);
+      measure$.subscribe((measure) => this._dialogRef.close(measure));
     }
   }
 
   onCancel(): void {
-    this._dialogRef.close(null);
+    this._dialogRef.close();
   }
 }

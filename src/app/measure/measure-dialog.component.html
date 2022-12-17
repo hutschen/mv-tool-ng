@@ -15,22 +15,13 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<div mat-dialog-title>
-  <h1>
-    <span *ngIf="createMode">Create</span>
-    <span *ngIf="!createMode">Edit</span>
-    <span>&nbsp;</span>
-    <span>Measure</span>
-  </h1>
-</div>
-<!-- Content -->
-<div mat-dialog-content>
-  <form
-    id="measureForm"
-    #form="ngForm"
-    (submit)="onSave(form)"
-    fxLayout="column"
-  >
+<mvtool-create-edit-dialog
+  [createMode]="createMode"
+  objectName="Measure"
+  (save)="onSave($event)"
+  (cancel)="onCancel()"
+>
+  <div class="fx-column">
     <!-- Summary input -->
     <mat-form-field appearance="fill">
       <mat-label>Measure summary</mat-label>
@@ -63,24 +54,5 @@
     <mat-checkbox name="completed" [(ngModel)]="measureInput.completed">
       Completed
     </mat-checkbox>
-  </form>
-</div>
-<!-- Actions -->
-<div mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">
-    <mat-icon>cancel</mat-icon>
-    Cancel
-  </button>
-  <button
-    mat-raised-button
-    disabled="{{ form.invalid }}"
-    color="accent"
-    type="submit"
-    form="measureForm"
-  >
-    <mat-icon>save</mat-icon>
-    <span>&nbsp;</span>
-    <span *ngIf="createMode">Create</span>
-    <span *ngIf="!createMode">Save</span>
-  </button>
-</div>
+  </div>
+</mvtool-create-edit-dialog>

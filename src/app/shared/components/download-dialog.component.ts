@@ -13,8 +13,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Inject, Injectable } from '@angular/core';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Observable } from 'rxjs';
 import { IDownloadState } from '../services/download.service';
@@ -22,6 +26,24 @@ import { IDownloadState } from '../services/download.service';
 export interface IDownloadDialogData {
   download$: Observable<IDownloadState>;
   filename: string;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class DownloadDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openDownloadDialog(
+    download$: Observable<IDownloadState>,
+    filename: string
+  ): MatDialogRef<DownloadDialogComponent> {
+    const dialogRef = this._dialog.open(DownloadDialogComponent, {
+      width: '500px',
+      data: { download$, filename },
+    });
+    return dialogRef;
+  }
 }
 
 @Component({
@@ -97,6 +119,6 @@ export class DownloadDialogComponent {
   }
 
   onClose(): void {
-    this._dialogRef.close(null);
+    this._dialogRef.close();
   }
 }

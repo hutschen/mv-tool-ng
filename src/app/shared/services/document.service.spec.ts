@@ -91,9 +91,9 @@ describe('DocumentService', () => {
   });
 
   it('should list documents', (done: DoneFn) => {
-    sut.listDocuments(outputMock.project.id).then((value) => {
-      expect(value).toEqual([new Document(outputMock)]);
-      done();
+    sut.listDocuments(outputMock.project.id).subscribe({
+      next: (value) => expect(value).toEqual([new Document(outputMock)]),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
@@ -103,9 +103,9 @@ describe('DocumentService', () => {
   });
 
   it('should create document', (done: DoneFn) => {
-    sut.createDocument(outputMock.project.id, inputMock).then((value) => {
-      expect(value).toEqual(new Document(outputMock));
-      done();
+    sut.createDocument(outputMock.project.id, inputMock).subscribe({
+      next: (value) => expect(value).toEqual(new Document(outputMock)),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'post',
@@ -115,9 +115,9 @@ describe('DocumentService', () => {
   });
 
   it('should get document', (done: DoneFn) => {
-    sut.getDocument(outputMock.id).then((value) => {
-      expect(value).toEqual(new Document(outputMock));
-      done();
+    sut.getDocument(outputMock.id).subscribe({
+      next: (value) => expect(value).toEqual(new Document(outputMock)),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
@@ -127,9 +127,9 @@ describe('DocumentService', () => {
   });
 
   it('should update document', (done: DoneFn) => {
-    sut.updateDocument(outputMock.id, inputMock).then((value) => {
-      expect(value).toEqual(new Document(outputMock));
-      done();
+    sut.updateDocument(outputMock.id, inputMock).subscribe({
+      next: (value) => expect(value).toEqual(new Document(outputMock)),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'put',
@@ -139,9 +139,9 @@ describe('DocumentService', () => {
   });
 
   it('should delete document', (done: DoneFn) => {
-    sut.deleteDocument(outputMock.id).then((value) => {
-      expect(value).toBeNull();
-      done();
+    sut.deleteDocument(outputMock.id).subscribe({
+      next: (value) => expect(value).toBeNull(),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'delete',

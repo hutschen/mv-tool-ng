@@ -13,9 +13,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { catchError, map, Observable, of, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UnauthorizedError } from '../errors';
 
@@ -39,7 +39,7 @@ export class AuthService {
 
   constructor(protected _httpClient: HttpClient) {}
 
-  async logIn(credentials: ICredentials, keepLoggedIn = false): Promise<void> {
+  logIn(credentials: ICredentials, keepLoggedIn = false): Observable<boolean> {
     // Prepare request form
     const formData = new FormData();
     formData.append('username', credentials.username);
@@ -47,17 +47,19 @@ export class AuthService {
     formData.append('grant_type', 'password');
 
     // Send request
-    let accessToken: IAccessToken;
-    try {
-      accessToken = await firstValueFrom(
-        this._httpClient.post<IAccessToken>(environment.authUrl, formData)
+    return this._httpClient
+      .post<IAccessToken>(environment.authUrl, formData)
+      .pipe(
+        tap((accessToken) => this.setAccessToken(accessToken, keepLoggedIn)),
+        map(() => true),
+        catchError((error) => {
+          if (error instanceof HttpErrorResponse && error.status === 401) {
+            return of(false);
+          } else {
+            throw error;
+          }
+        })
       );
-    } catch (error) {
-      throw error;
-    }
-
-    // Store access token
-    this.setAccessToken(accessToken, keepLoggedIn);
   }
 
   public setAccessToken(accessToken: IAccessToken, keepLoggedIn = false) {

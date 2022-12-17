@@ -14,34 +14,38 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { ITableColumn } from '../shared/components/table.component';
+import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
+import { TableColumns } from '../shared/table-columns';
 import { CatalogModule } from '../shared/services/catalog-module.service';
 import {
   CatalogRequirement,
   CatalogRequirementService,
 } from '../shared/services/catalog-requirement.service';
-import {
-  CatalogRequirementDialogComponent,
-  ICatalogRequirementDialogData,
-} from './catalog-requirement-dialog.component';
+import { CatalogRequirementDialogService } from './catalog-requirement-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-requirement-table',
   templateUrl: './catalog-requirement-table.component.html',
-  styleUrls: ['../shared/styles/mat-table.css'],
+  styleUrls: [
+    '../shared/styles/table.css',
+    '../shared/styles/flex.css',
+    '../shared/styles/truncate.css',
+  ],
   styles: ['.mat-column-gs_absicherung {text-align: center;}'],
 })
 export class CatalogRequirementTableComponent implements OnInit {
-  columns: ITableColumn[] = [
-    { name: 'reference', optional: true },
-    { name: 'gs_anforderung_reference', optional: true },
-    { name: 'summary', optional: false },
-    { name: 'description', optional: true },
-    { name: 'gs_absicherung', optional: true },
-    { name: 'gs_verantwortliche', optional: true },
-    { name: 'options', optional: false },
-  ];
+  columns = new TableColumns<CatalogRequirement>([
+    { id: 'reference', label: 'Reference', optional: true },
+    { id: 'gs_anforderung_reference', label: 'GS Reference', optional: true },
+    { id: 'summary', label: 'Summary' },
+    { id: 'description', optional: true, label: 'Description' },
+    { id: 'gs_absicherung', optional: true, label: 'GS Absicherung' },
+    { id: 'gs_verantwortliche', optional: true, label: 'GS Verantwortliche' },
+    { id: 'options' },
+  ]);
+  protected _dataSubject = new ReplaySubject<CatalogRequirement[]>(1);
+  data$: Observable<CatalogRequirement[]> = this._dataSubject.asObservable();
   data: CatalogRequirement[] = [];
   dataLoaded: boolean = false;
   @Input() catalogModule?: CatalogModule;
@@ -49,55 +53,73 @@ export class CatalogRequirementTableComponent implements OnInit {
 
   constructor(
     protected _catalogRequirementService: CatalogRequirementService,
-    protected _dialog: MatDialog
+    protected _catalogRequirementDialogService: CatalogRequirementDialogService,
+    protected _confirmDialogService: ConfirmDialogService
   ) {}
 
   async ngOnInit(): Promise<void> {
     await this.onReloadCatalogRequirements();
-    this.dataLoaded = true;
   }
 
-  protected _openCatalogRequirementDialog(
+  protected async _createOrEditCatalogRequirement(
     catalogRequirement?: CatalogRequirement
-  ): void {
-    const dialogRef = this._dialog.open(CatalogRequirementDialogComponent, {
-      width: '500px',
-      data: {
-        catalogRequirement: catalogRequirement,
-        catalogModule: this.catalogModule,
-      } as ICatalogRequirementDialogData,
-    });
-    dialogRef
-      .afterClosed()
-      .subscribe(async (catalogRequirement?: CatalogRequirement) => {
-        if (catalogRequirement) {
-          await this.onReloadCatalogRequirements();
-        }
-      });
+  ): Promise<void> {
+    if (this.catalogModule) {
+      const dialogRef =
+        this._catalogRequirementDialogService.openCatalogRequirementDialog(
+          this.catalogModule,
+          catalogRequirement
+        );
+      const resultingCatalogRequirement = await firstValueFrom(
+        dialogRef.afterClosed()
+      );
+      if (resultingCatalogRequirement) {
+        await this.onReloadCatalogRequirements();
+      }
+    } else {
+      throw new Error('catalog module is undefined');
+    }
   }
 
-  onCreateCatalogRequirement(): void {
-    this._openCatalogRequirementDialog();
+  async onCreateCatalogRequirement(): Promise<void> {
+    this._createOrEditCatalogRequirement();
   }
 
-  onEditCatalogRequirement(catalogRequirement: CatalogRequirement): void {
-    this._openCatalogRequirementDialog(catalogRequirement);
+  async onEditCatalogRequirement(
+    catalogRequirement: CatalogRequirement
+  ): Promise<void> {
+    this._createOrEditCatalogRequirement(catalogRequirement);
   }
 
   async onDeleteCatalogRequirement(
     catalogRequirement: CatalogRequirement
   ): Promise<void> {
-    await this._catalogRequirementService.deleteCatalogRequirement(
-      catalogRequirement.id
+    const confirmDialogRef = this._confirmDialogService.openConfirmDialog(
+      'Delete Catalog Requirement',
+      `Do you really want to delete the catalog requirement "${catalogRequirement.summary}"?`
     );
-    await this.onReloadCatalogRequirements();
+    const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
+    if (confirmed) {
+      await firstValueFrom(
+        this._catalogRequirementService.deleteCatalogRequirement(
+          catalogRequirement.id
+        )
+      );
+      await this.onReloadCatalogRequirements();
+    }
   }
 
   async onReloadCatalogRequirements(): Promise<void> {
     if (this.catalogModule) {
-      this.data = await this._catalogRequirementService.listCatalogRequirements(
-        this.catalogModule.id
+      const data = await firstValueFrom(
+        this._catalogRequirementService.listCatalogRequirements(
+          this.catalogModule.id
+        )
       );
+      this._dataSubject.next(data);
+      this.dataLoaded = true;
+    } else {
+      throw new Error('catalog module is undefined');
     }
   }
 }

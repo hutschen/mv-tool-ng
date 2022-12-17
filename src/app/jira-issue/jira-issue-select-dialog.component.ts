@@ -1,6 +1,10 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, Injectable, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import {
   IJiraIssue,
   JiraIssueService,
@@ -9,6 +13,22 @@ import { IJiraProject } from '../shared/services/jira-project.service';
 
 export interface IJiraIssueSelectDialogData {
   jiraProject: IJiraProject;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class JiraIssueSelectDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openJiraIssueSelectDialog(
+    jiraProject: IJiraProject
+  ): MatDialogRef<JiraIssueSelectDialogComponent, IJiraIssue> {
+    return this._dialog.open(JiraIssueSelectDialogComponent, {
+      width: '500px',
+      data: { jiraProject },
+    });
+  }
 }
 
 @Component({
@@ -25,7 +45,7 @@ export interface IJiraIssueSelectDialogData {
         id="jiraIssueSelectForm"
         #jiraIssueSelectForm="ngForm"
         (submit)="onSubmit(jiraIssueSelectForm)"
-        fxLayout="column"
+        class="fx-column"
       >
         <mat-form-field appearance="fill">
           <mat-label>Issue</mat-label>
@@ -73,6 +93,7 @@ export interface IJiraIssueSelectDialogData {
       </button>
     </div>
   `,
+  styleUrls: ['../shared/styles/flex.css'],
   styles: [],
 })
 export class JiraIssueSelectDialogComponent implements OnInit {
@@ -89,11 +110,13 @@ export class JiraIssueSelectDialogComponent implements OnInit {
     this.jiraProject = dialogData.jiraProject;
   }
 
-  async ngOnInit(): Promise<void> {
-    this.jiraIssues = await this._jiraIssueService.getJiraIssues(
-      this.jiraProject.id
-    );
-    this.jiraIssuesLoaded = true;
+  ngOnInit(): void {
+    this._jiraIssueService
+      .getJiraIssues(this.jiraProject.id)
+      .subscribe((jiraIssues) => {
+        this.jiraIssues = jiraIssues;
+        this.jiraIssuesLoaded = true;
+      });
   }
 
   get filteredJiraIssues(): IJiraIssue[] {

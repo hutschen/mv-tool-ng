@@ -15,7 +15,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<div fxLayout="column">
+<div class="fx-column">
   <!-- Toolbar -->
   <mvtool-table-toolbar
     (refresh)="onReloadCatalogRequirements()"
@@ -30,7 +30,7 @@
   <!-- Catalog requirements table -->
   <mvtool-table
     [columns]="columns"
-    [data]="data"
+    [data$]="data$"
     [dataLoaded]="dataLoaded"
     [filterValue]="tableToolbar.filterValue"
     (create)="onCreateCatalogRequirement()"
@@ -40,109 +40,13 @@
     #sort="matSort"
     [sort]="sort"
   >
-    <!-- ID Column -->
-    <ng-container matColumnDef="id">
-      <th mat-header-cell *matHeaderCellDef>ID</th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        {{ catalogRequirement.id }}
-      </td>
-    </ng-container>
-
-    <!-- Reference column -->
-    <ng-container matColumnDef="reference">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Reference</th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        {{ catalogRequirement.reference }}
-      </td>
-    </ng-container>
-
-    <!-- GS Anforderungs-Referenz -->
-    <ng-container matColumnDef="gs_anforderung_reference">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>GS ID</th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        <span *ngIf="catalogRequirement.gs_anforderung_reference">
-          {{ catalogRequirement.gs_anforderung_reference }}
-        </span>
-      </td>
-    </ng-container>
-
-    <!-- Summary column -->
-    <ng-container matColumnDef="summary">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Summary</th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        <span class="truncate-lines">{{ catalogRequirement.summary }}</span>
-      </td>
-    </ng-container>
-
-    <!-- Description column -->
-    <ng-container matColumnDef="description">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        <span class="truncate-lines">{{ catalogRequirement.description }}</span>
-      </td>
-    </ng-container>
-
-    <!-- GS Absicherung column -->
-    <ng-container matColumnDef="gs_absicherung">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>GS Absicherung</th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        <span *ngIf="catalogRequirement.gs_absicherung">
-          {{ catalogRequirement.gs_absicherung }}
-        </span>
-      </td>
-    </ng-container>
-
-    <!-- GS Verantwortliche column -->
-    <ng-container matColumnDef="gs_verantwortliche">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        GS Verantwortliche
-      </th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        <span
-          *ngIf="catalogRequirement.gs_verantwortliche"
-          class="truncate-lines"
-        >
-          {{ catalogRequirement.gs_verantwortliche }}
-        </span>
-      </td>
-    </ng-container>
-
-    <!-- Target object column -->
-    <ng-container matColumnDef="target_object">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Target Object</th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        {{ catalogRequirement.target_object }}
-      </td>
-    </ng-container>
-
-    <!-- Compliance status column -->
-    <ng-container matColumnDef="compliance_status">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Compliance</th>
-      <th></th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        {{ catalogRequirement.compliance_status }}
-      </td>
-    </ng-container>
-
-    <!-- Compliance comment column -->
-    <ng-container matColumnDef="compliance_comment">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        Compliance Comment
-      </th>
-      <td mat-cell *matCellDef="let catalogRequirement">
-        <span class="truncate-lines">
-          {{ catalogRequirement.compliance_comment }}
-        </span>
-      </td>
-    </ng-container>
-
     <!-- Options column -->
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let requirement">
+      <td mat-cell *matCellDef="let row">
         <mvtool-table-options
-          (edit)="onEditCatalogRequirement(requirement)"
-          (delete)="onDeleteCatalogRequirement(requirement)"
+          (edit)="onEditCatalogRequirement(row.data)"
+          (delete)="onDeleteCatalogRequirement(row.data)"
         >
         </mvtool-table-options>
       </td>

@@ -15,6 +15,7 @@
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { firstValueFrom } from 'rxjs';
 import { JiraIssueService } from '../shared/services/jira-issue.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
@@ -145,9 +146,11 @@ export class JiraIssueInputComponent implements OnInit {
     dialogRef.afterClosed().subscribe(async (jiraIssueInput) => {
       if (jiraIssueInput && this.measure) {
         this.loading = true;
-        const jiraIssue = await this._jiraIssueService.createAndLinkJiraIssue(
-          this.measure.id,
-          jiraIssueInput
+        const jiraIssue = await firstValueFrom(
+          this._jiraIssueService.createAndLinkJiraIssue(
+            this.measure.id,
+            jiraIssueInput
+          )
         );
         this.measure.jira_issue = jiraIssue;
         this.measure.jira_issue_id = jiraIssue.id;
@@ -169,9 +172,8 @@ export class JiraIssueInputComponent implements OnInit {
         const measureInput = this.measure.toMeasureInput();
         measureInput.jira_issue_id = jiraIssue.id;
         this.loading = true;
-        this.measure = await this._measureService.updateMeasure(
-          this.measure.id,
-          measureInput
+        this.measure = await firstValueFrom(
+          this._measureService.updateMeasure(this.measure.id, measureInput)
         );
         this.measureChange.emit(this.measure);
         this.loading = false;
@@ -184,9 +186,8 @@ export class JiraIssueInputComponent implements OnInit {
       const measureInput = this.measure.toMeasureInput();
       measureInput.jira_issue_id = null;
       this.loading = true;
-      this.measure = await this._measureService.updateMeasure(
-        this.measure.id,
-        measureInput
+      this.measure = await firstValueFrom(
+        this._measureService.updateMeasure(this.measure.id, measureInput)
       );
       this.measureChange.emit(this.measure);
       this.loading = false;

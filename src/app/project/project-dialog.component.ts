@@ -13,18 +13,40 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import {
   Project,
   IProjectInput,
   ProjectService,
 } from '../shared/services/project.service';
 
+@Injectable({
+  providedIn: 'root',
+})
+export class ProjectDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openProjectDialog(
+    project?: Project
+  ): MatDialogRef<ProjectDialogComponent, Project> {
+    return this._dialog.open(ProjectDialogComponent, {
+      width: '500px',
+      data: project,
+    });
+  }
+}
+
 @Component({
   selector: 'mvtool-project-dialog',
   templateUrl: './project-dialog.component.html',
+  styleUrls: ['../shared/styles/flex.css'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class ProjectDialogComponent {
@@ -37,7 +59,7 @@ export class ProjectDialogComponent {
   constructor(
     protected _dialogRef: MatDialogRef<ProjectDialogComponent>,
     protected _projectService: ProjectService,
-    @Inject(MAT_DIALOG_DATA) protected _project: Project | null
+    @Inject(MAT_DIALOG_DATA) protected _project?: Project
   ) {
     if (this._project) {
       this.projectInput = this._project.toProjectInput();
@@ -56,21 +78,22 @@ export class ProjectDialogComponent {
     }
   }
 
-  async onSave(form: NgForm): Promise<void> {
+  onSave(form: NgForm): void {
     if (form.valid) {
-      let project: Project;
+      let project$: Observable<Project>;
       if (!this._project) {
-        project = await this._projectService.createProject(this.projectInput);
+        project$ = this._projectService.createProject(this.projectInput);
       } else {
-        project = await this._projectService.updateProject(
+        project$ = this._projectService.updateProject(
           this._project.id,
           this.projectInput
         );
       }
-      this._dialogRef.close(project);
+      project$.subscribe((project) => this._dialogRef.close(project));
     }
   }
+
   onCancel(): void {
-    this._dialogRef.close(null);
+    this._dialogRef.close();
   }
 }

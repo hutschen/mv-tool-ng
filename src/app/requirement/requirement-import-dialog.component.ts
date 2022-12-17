@@ -19,16 +19,30 @@ import {
   SelectionChange,
 } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { BehaviorSubject, map, merge, Observable } from 'rxjs';
+import { Component, Inject, Injectable, OnInit } from '@angular/core';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import {
+  BehaviorSubject,
+  firstValueFrom,
+  map,
+  merge,
+  Observable,
+  tap,
+} from 'rxjs';
 import {
   CatalogModule,
   CatalogModuleService,
 } from '../shared/services/catalog-module.service';
 import { Catalog, CatalogService } from '../shared/services/catalog.service';
 import { Project } from '../shared/services/project.service';
-import { RequirementService } from '../shared/services/requirement.service';
+import {
+  Requirement,
+  RequirementService,
+} from '../shared/services/requirement.service';
 
 interface INode {
   get name(): string;
@@ -78,15 +92,21 @@ class CatalogNode implements INode {
 
   async loadChildren(): Promise<CatalogModuleNode[]> {
     if (!this.isLoaded) {
-      const catalogModules =
-        await this._catalogModuleService.listCatalogModules(this.catalog.id);
-      this._children = catalogModules.map(
-        (catalogModule) => new CatalogModuleNode(catalogModule)
-      );
-      // set checked state of children
-      this._children.forEach((child) => {
-        child.checked = this._checked;
-      });
+      const children$ = this._catalogModuleService
+        .listCatalogModules(this.catalog.id)
+        .pipe(
+          // convert to nodes
+          map((catalogModules) =>
+            catalogModules.map(
+              (catalogModule) => new CatalogModuleNode(catalogModule)
+            )
+          ),
+          // set checked state of child nodes
+          tap((children) =>
+            children.forEach((child) => (child.checked = this._checked))
+          )
+        );
+      this._children = await firstValueFrom(children$);
       this.isLoaded = true;
     }
     return this._children;
@@ -197,6 +217,21 @@ class CatalogDataSource implements DataSource<INode> {
   }
 }
 
+@Injectable({
+  providedIn: 'root',
+})
+export class RequirementImportDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openRequirementImportDialog(
+    project: Project
+  ): MatDialogRef<RequirementImportDialogComponent, Requirement[]> {
+    return this._dialog.open(RequirementImportDialogComponent, {
+      data: project,
+    });
+  }
+}
+
 // Implemented according to examples from https://material.angular.io/components/tree/examples
 @Component({
   selector: 'mvtool-requirement-import-dialog',
@@ -276,7 +311,7 @@ export class RequirementImportDialogComponent implements OnInit {
 
   // load catalogs and catalog modules
   async ngOnInit(): Promise<void> {
-    const catalogs = await this._catalogService.listCatalogs();
+    const catalogs = await firstValueFrom(this._catalogService.listCatalogs());
     this.dataSource.data = catalogs.map(
       (catalog) => new CatalogNode(catalog, this._catalogModuleService)
     );
@@ -298,9 +333,11 @@ export class RequirementImportDialogComponent implements OnInit {
       .filter((node) => node.checked)
       .map((node) => (node as CatalogModuleNode).catalogModule.id);
 
-    const requirements = await this._requirementService.importRequirements(
-      this._project.id,
-      catalogModuleIds
+    const requirements = await firstValueFrom(
+      this._requirementService.importRequirements(
+        this._project.id,
+        catalogModuleIds
+      )
     );
     this._dialogRef.close(requirements);
   }

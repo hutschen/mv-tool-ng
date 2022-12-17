@@ -173,11 +173,12 @@ describe('MeasureService', () => {
     const requirementId = outputMock.requirement.id;
     const measuresList = [outputMock];
 
-    sut.listMeasures(requirementId).then((value) => {
-      expect(value).toEqual(
-        measuresList.map((measure) => new Measure(measure))
-      );
-      done();
+    sut.listMeasures(requirementId).subscribe({
+      next: (value) =>
+        expect(value).toEqual(
+          measuresList.map((measure) => new Measure(measure))
+        ),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
@@ -189,9 +190,9 @@ describe('MeasureService', () => {
   it('should create measure', (done: DoneFn) => {
     const requirementId = outputMock.requirement.id;
 
-    sut.createMeasure(requirementId, inputMock).then((value) => {
-      expect(value).toEqual(new Measure(outputMock));
-      done();
+    sut.createMeasure(requirementId, inputMock).subscribe({
+      next: (value) => expect(value).toEqual(new Measure(outputMock)),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'post',
@@ -201,9 +202,9 @@ describe('MeasureService', () => {
   });
 
   it('should get measure', (done: DoneFn) => {
-    sut.getMeasure(outputMock.id).then((value) => {
-      expect(value).toEqual(new Measure(outputMock));
-      done();
+    sut.getMeasure(outputMock.id).subscribe({
+      next: (value) => expect(value).toEqual(new Measure(outputMock)),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
@@ -213,9 +214,9 @@ describe('MeasureService', () => {
   });
 
   it('should update measure', (done: DoneFn) => {
-    sut.updateMeasure(outputMock.id, inputMock).then((value) => {
-      expect(value).toEqual(new Measure(outputMock));
-      done();
+    sut.updateMeasure(outputMock.id, inputMock).subscribe({
+      next: (value) => expect(value).toEqual(new Measure(outputMock)),
+      complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'put',
@@ -225,10 +226,9 @@ describe('MeasureService', () => {
   });
 
   it('should delete measure', (done: DoneFn) => {
-    sut.deleteMeasure(outputMock.id).then((value) => {
-      expect(value).toBeNull();
-      done();
-    });
+    sut
+      .deleteMeasure(outputMock.id)
+      .subscribe({ next: (value) => expect(value).toBeNull(), complete: done });
     const mockResponse = httpMock.expectOne({
       method: 'delete',
       url: crud.toAbsoluteUrl(sut.getMeasureUrl(outputMock.id)),

@@ -13,18 +13,40 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import {
   IRequirementInput,
   Requirement,
   RequirementService,
 } from '../shared/services/requirement.service';
 
+@Injectable({
+  providedIn: 'root',
+})
+export class ComplianceDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openComplianceDialog(
+    requirement: Requirement
+  ): MatDialogRef<ComplianceDialogComponent, Requirement> {
+    const dialogRef = this._dialog.open(ComplianceDialogComponent, {
+      width: '500px',
+      data: requirement,
+    });
+    return dialogRef;
+  }
+}
+
 @Component({
   selector: 'mvtool-compliance-dialog',
   templateUrl: './compliance-dialog.component.html',
+  styleUrls: ['../shared/styles/flex.css'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class ComplianceDialogComponent {
@@ -54,13 +76,11 @@ export class ComplianceDialogComponent {
     return this.requirementInput.compliance_status;
   }
 
-  async onSave(form: NgForm): Promise<void> {
+  onSave(form: NgForm): void {
     if (form.valid) {
-      const requirement = await this._requirementService.updateRequirement(
-        this._requirement.id,
-        this.requirementInput
-      );
-      this._dialogRef.close(requirement);
+      this._requirementService
+        .updateRequirement(this._requirement.id, this.requirementInput)
+        .subscribe((requirement) => this._dialogRef.close(requirement));
     }
   }
 

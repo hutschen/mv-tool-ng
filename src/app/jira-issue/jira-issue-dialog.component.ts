@@ -13,9 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, Injectable, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import {
   IJiraIssueType,
   JiraIssueTypeService,
@@ -29,9 +33,27 @@ export interface IJiraIssueDialogData {
   measure: Measure;
 }
 
+@Injectable({
+  providedIn: 'root',
+})
+export class JiraIssueDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openJiraIssueDialog(
+    jiraProject: IJiraProject,
+    measure: Measure
+  ): MatDialogRef<JiraIssueDialogComponent, IJiraIssueInput> {
+    return this._dialog.open(JiraIssueDialogComponent, {
+      width: '500px',
+      data: { jiraProject, measure },
+    });
+  }
+}
+
 @Component({
   selector: 'mvtool-jira-issue-dialog',
   templateUrl: './jira-issue-dialog.component.html',
+  styleUrls: ['../shared/styles/flex.css'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class JiraIssueDialogComponent implements OnInit {
@@ -69,10 +91,12 @@ export class JiraIssueDialogComponent implements OnInit {
     return description;
   }
 
-  async ngOnInit(): Promise<void> {
-    this.jiraIssueTypes = await this._jiraIssueTypeService.getJiraIssueTypes(
-      this.jiraProject.id
-    );
+  ngOnInit(): void {
+    this._jiraIssueTypeService
+      .getJiraIssueTypes(this.jiraProject.id)
+      .subscribe((jiraIssueTypes) => {
+        this.jiraIssueTypes = jiraIssueTypes;
+      });
   }
 
   onSave(form: NgForm): void {

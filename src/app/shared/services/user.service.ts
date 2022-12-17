@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
+import { firstValueFrom, Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 
 export interface IUser {
@@ -31,7 +32,7 @@ export class UserService {
     return 'jira-user';
   }
 
-  async getUser(): Promise<IUser> {
+  getUser(): Observable<IUser> {
     return this._crud.read(this.getUserUrl());
   }
 }

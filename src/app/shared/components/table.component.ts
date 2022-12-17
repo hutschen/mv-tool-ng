@@ -28,84 +28,48 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import {
   MatColumnDef,
-  MatHeaderRowDef,
-  MatRowDef,
   MatTable,
   MatTableDataSource,
 } from '@angular/material/table';
-
-export interface ITableColumn {
-  name: string;
-  optional: boolean;
-}
+import {
+  BehaviorSubject,
+  combineLatest,
+  firstValueFrom,
+  Observable,
+  ReplaySubject,
+} from 'rxjs';
+import { ITableRow, TableColumn, TableColumns } from '../table-columns';
+import { FilterDialogService } from './filter-dialog.component';
 
 @Component({
   selector: 'mvtool-table',
-  template: `
-    <div fxLayout="column" class="mat-elevation-z3">
-      <table mat-table [dataSource]="_dataSource">
-        <ng-content></ng-content>
-        <tr
-          mat-header-row
-          *matHeaderRowDef="displayedColumns; sticky: true"
-        ></tr>
-        <tr
-          mat-row
-          [class.clickable-row]="rowClicked.observed"
-          *matRowDef="let row; columns: displayedColumns"
-          (click)="rowClicked.emit(row)"
-        ></tr>
-
-        <tr class="mat-row" *matNoDataRow>
-          <!-- Shown when there is no matching data -->
-          <td *ngIf="filterValue" class="mat-cell" colspan="100">
-            No data matching the filter:
-            <strong>{{ filterValue }}</strong>
-          </td>
-          <!-- Shown when the table is empty -->
-          <td *ngIf="!filterValue" class="mat-cell" colspan="100">
-            <div
-              *ngIf="dataLoaded"
-              fxLayout="row"
-              fxLayoutAlign="space-between center"
-            >
-              <div>{{ noContentText }}</div>
-              <button
-                *ngIf="create.observed"
-                mat-raised-button
-                (click)="create.emit()"
-                color="accent"
-              >
-                <mat-icon>add</mat-icon>
-                {{ createLabel }}
-              </button>
-            </div>
-            <div *ngIf="!dataLoaded" fxLayout="row" fxLayoutGap="10px">
-              <mat-spinner diameter="20"></mat-spinner>
-              <div>{{ loadingText }}</div>
-            </div>
-          </td>
-        </tr>
-      </table>
-
-      <!-- Table paginator -->
-      <mat-paginator
-        [pageSize]="pageSize"
-        [pageSizeOptions]="[10, 25, 50, 100, 150]"
-        showFirstLastButtons
-      >
-      </mat-paginator>
-    </div>
-  `,
+  templateUrl: './table.component.html',
+  styleUrls: [
+    '../styles/table.css',
+    '../styles/flex.css',
+    '../styles/truncate.css',
+  ],
   styles: [
     '.clickable-row { cursor: pointer; }',
     '.clickable-row:hover { background: rgba(0,0,0,0.04); }',
   ],
 })
-export class TableComponent<T> implements AfterContentInit, AfterViewInit {
-  // see https://github.com/angular/components/tree/main/src/components-examples/material/table/table-wrapped
+export class TableComponent<T extends object>
+  implements AfterContentInit, AfterViewInit
+{
+  protected _columnsSubject = new ReplaySubject<TableColumns<T>>(1);
+  protected _columns: TableColumns<T> = new TableColumns<T>([]);
+  protected _dataSubject = new BehaviorSubject<T[]>([] as T[]);
+  protected _data: T[] = [];
 
-  @Input() columns: ITableColumn[] = [];
+  dataSource = new MatTableDataSource<ITableRow<T>>([]);
+  columnsToAutoCreate: TableColumn<T>[] = [];
+  idsOfColumnsToDisplay: string[] = [];
+
+  @ViewChild(MatTable, { static: true }) matTable!: MatTable<T>;
+  @ViewChild(MatPaginator) matPaginator!: MatPaginator;
+  @ContentChildren(MatColumnDef) matColumnDefs!: QueryList<MatColumnDef>;
+
   @Input() pageSize: number = 25;
   @Input() dataLoaded: boolean = true;
   @Input() noContentText: string = 'Nothing to display';
@@ -113,83 +77,78 @@ export class TableComponent<T> implements AfterContentInit, AfterViewInit {
   @Input() createLabel: string = 'Create One';
   @Output() rowClicked = new EventEmitter<T>();
   @Output() create = new EventEmitter<void>();
-  protected _dataSource = new MatTableDataSource<T>();
-  protected _filterValue: string = '';
 
-  @ContentChildren(MatHeaderRowDef)
-  headerRowDefs: QueryList<MatHeaderRowDef> | null = null;
-  @ContentChildren(MatRowDef) rowDefs: QueryList<MatRowDef<T>> | null = null;
-  @ContentChildren(MatColumnDef) columnDefs: QueryList<MatColumnDef> | null =
-    null;
-  // Comment out noDataRow because it's defined in the template and must not
-  // be loaded from the content children
-  // @ContentChild(MatNoDataRow) noDataRow: MatNoDataRow | null = null;
-  @ViewChild(MatTable, { static: true }) table: MatTable<T> | null = null;
-  @ViewChild(MatPaginator) paginator: MatPaginator | null = null;
-
-  constructor() {}
-
-  ngAfterContentInit(): void {
-    this.columnDefs?.forEach((columnDef) =>
-      this.table?.addColumnDef(columnDef)
-    );
-    this.rowDefs?.forEach((rowDef) => this.table?.addRowDef(rowDef));
-    this.headerRowDefs?.forEach((headerRowDef) =>
-      this.table?.addHeaderRowDef(headerRowDef)
-    );
-    // this.table?.setNoDataRow(this.noDataRow);
+  @Input()
+  set columns(columns: TableColumns<T>) {
+    this._columnsSubject.next(columns);
   }
 
-  ngAfterViewInit(): void {
-    this._dataSource.paginator = this.paginator;
+  @Input()
+  set columns$(columns$: Observable<TableColumns<T>>) {
+    columns$.subscribe((columns) => this._columnsSubject.next(columns));
   }
 
   @Input()
   set data(data: T[]) {
-    this._dataSource.data = data;
+    this._dataSubject.next(data);
   }
 
-  get displayedColumns(): string[] {
-    // TODO: this should only be recomputed when data changes
-    let displayFlags = new Map<string, boolean>();
-    for (let column of this.columns) {
-      displayFlags.set(column.name, !column.optional);
-    }
-
-    for (let row of this._dataSource.data) {
-      for (let column of this.columns) {
-        // try to get value of property row.column.name
-        const key = column.name;
-        if (key in row) {
-          const value: any = row[key as keyof T];
-          if (value && displayFlags.has(key)) {
-            displayFlags.set(key, true);
-          }
-        }
-      }
-    }
-    let displayedColumns: string[] = [];
-
-    for (let columnName of displayFlags.keys()) {
-      if (displayFlags.get(columnName)) {
-        displayedColumns.push(columnName);
-      }
-    }
-    return displayedColumns;
+  @Input()
+  set data$(data$: Observable<T[]>) {
+    data$.subscribe((data) => this._dataSubject.next(data));
   }
 
   @Input()
   set sort(sort: MatSort) {
-    this._dataSource.sort = sort;
+    this.dataSource.sort = sort;
   }
 
-  @Input()
-  set filterValue(value: string) {
-    this._filterValue = value;
-    this._dataSource.filter = value;
+  @Input('filterValue')
+  set filter(filter: string) {
+    this.dataSource.filter = filter;
   }
 
-  get filterValue(): string {
-    return this._filterValue;
+  get filter(): string {
+    return this.dataSource.filter;
+  }
+
+  constructor(protected _filterDialogService: FilterDialogService<T>) {
+    // update when columns or data change
+    combineLatest([
+      this._columnsSubject.asObservable(),
+      this._dataSubject.asObservable(),
+    ]).subscribe(([columns, data]) => {
+      this._columns = columns;
+      this._data = data;
+      this.idsOfColumnsToDisplay = columns.columnsToShow(data).map((c) => c.id);
+      this.dataSource.data = columns.toRowData(columns.filter(data));
+    });
+  }
+
+  ngAfterContentInit(): void {
+    const idsOfColumnsDefined: string[] = [];
+    this.matColumnDefs.forEach((matColumnDef) => {
+      this.matTable.addColumnDef(matColumnDef);
+      idsOfColumnsDefined.push(matColumnDef.name);
+    });
+    this.columnsToAutoCreate = this._columns.columns.filter(
+      (column) => !idsOfColumnsDefined.includes(column.id)
+    );
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.matPaginator;
+  }
+
+  async onSetFilter(column: TableColumn<T>): Promise<void> {
+    const dialogRef = this._filterDialogService.openFilterDialog(
+      column,
+      this._data
+    );
+    const filters = await firstValueFrom(dialogRef.afterClosed());
+    if (filters) {
+      column.filters = filters;
+      this._columnsSubject.next(this._columns);
+    }
   }
 }

@@ -15,19 +15,13 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<div mat-dialog-title>
-  <h1>
-    <span>Create JIRA Issue</span>
-  </h1>
-</div>
-<!-- Content -->
-<div mat-dialog-content>
-  <form
-    id="jiraIssueForm"
-    #form="ngForm"
-    (submit)="onSave(form)"
-    fxLayout="column"
-  >
+<mvtool-create-edit-dialog
+  [createMode]="true"
+  objectName="Jira Issue"
+  (save)="onSave($event)"
+  (cancel)="onCancel()"
+>
+  <div class="fx-column">
     <!-- Select issue type -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Issue type</mat-label>
@@ -65,23 +59,5 @@
         [(ngModel)]="jiraIssueInput.description"
       ></textarea>
     </mat-form-field>
-  </form>
-</div>
-<!-- Actions -->
-<div mat-dialog-actions align="end">
-  <button mat-button class="form-button" (click)="onCancel()">
-    <mat-icon>cancel</mat-icon>
-    Cancel
-  </button>
-  <button
-    mat-raised-button
-    disabled="{{ form.invalid }}"
-    class="form-button"
-    color="accent"
-    type="submit"
-    form="jiraIssueForm"
-  >
-    <mat-icon>save</mat-icon>
-    Create
-  </button>
-</div>
+  </div>
+</mvtool-create-edit-dialog>

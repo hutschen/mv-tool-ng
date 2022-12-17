@@ -13,9 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import { Project } from '../shared/services/project.service';
 import {
   IRequirementInput,
@@ -25,12 +30,30 @@ import {
 
 export interface IRequirementDialogData {
   project: Project;
-  requirement: Requirement | null;
+  requirement?: Requirement;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class RequirementDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openRequirementDialog(
+    project: Project,
+    requirement?: Requirement
+  ): MatDialogRef<RequirementDialogComponent, Requirement> {
+    return this._dialog.open(RequirementDialogComponent, {
+      width: '500px',
+      data: { project, requirement },
+    });
+  }
 }
 
 @Component({
   selector: 'mvtool-requirement-dialog',
   templateUrl: './requirement-dialog.component.html',
+  styleUrls: ['../shared/styles/flex.css'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class RequirementDialogComponent {
@@ -54,21 +77,23 @@ export class RequirementDialogComponent {
     return !this._dialogData.requirement;
   }
 
-  async onSave(form: NgForm): Promise<void> {
+  onSave(form: NgForm): void {
     if (form.valid) {
-      let requirement: Requirement;
+      let requirement$: Observable<Requirement>;
       if (!this._dialogData.requirement) {
-        requirement = await this._requirementService.createRequirement(
+        requirement$ = this._requirementService.createRequirement(
           this.project.id,
           this.requirementInput
         );
       } else {
-        requirement = await this._requirementService.updateRequirement(
+        requirement$ = this._requirementService.updateRequirement(
           this._dialogData.requirement.id,
           this.requirementInput
         );
       }
-      this._dialogRef.close(requirement);
+      requirement$.subscribe((requirement) =>
+        this._dialogRef.close(requirement)
+      );
     }
   }
 
