@@ -29,12 +29,21 @@ export interface IRequirementInput {
   summary: string;
   description?: string | null;
   target_object?: string | null;
+  milestone?: string | null;
   compliance_status?: string | null;
   compliance_comment?: string | null;
+  catalog_requirement_id?: number | null;
 }
 
-export interface IRequirement extends IRequirementInput {
+export interface IRequirement {
   id: number;
+  reference?: string | null;
+  summary: string;
+  description?: string | null;
+  target_object?: string | null;
+  milestone?: string | null;
+  compliance_status?: string | null;
+  compliance_comment?: string | null;
   project: IProject;
   catalog_requirement?: ICatalogRequirement | null;
   completion?: number | null;
@@ -46,6 +55,7 @@ export class Requirement implements IRequirement {
   summary: string;
   description?: string | null;
   target_object?: string | null;
+  milestone?: string | null;
   compliance_status?: string | null;
   compliance_comment?: string | null;
   project: Project;
