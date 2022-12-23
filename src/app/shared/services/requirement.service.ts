@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import {
   CatalogRequirement,
   ICatalogRequirement,
