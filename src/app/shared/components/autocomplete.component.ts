@@ -13,15 +13,49 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'mvtool-autocomplete',
-  template: ` <p>autocomplete works!</p> `,
+  template: `
+    <div class="fx-column">
+      <mat-form-field appearance="fill">
+        <mat-label *ngIf="label">{{ label }}</mat-label>
+        <input
+          type="text"
+          matInput
+          [(ngModel)]="filterStr"
+          [matAutocomplete]="autocomplete"
+        />
+        <mat-autocomplete #autocomplete="matAutocomplete">
+          <mat-option *ngFor="let option of filteredOptions" [value]="option">
+            {{ option }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+  `,
+  styleUrls: ['../styles/flex.css'],
   styles: [],
 })
-export class AutocompleteComponent implements OnInit {
+export class AutocompleteComponent {
+  filteredOptions: string[] = [];
+  @Input() label: string = '';
+  @Input() options: string[] = [];
+  @Input() value?: string | null;
+  @Output() valueChange = new EventEmitter<string | null>();
+
   constructor() {}
 
-  ngOnInit(): void {}
+  get filterStr(): string {
+    return this.value ?? '';
+  }
+
+  set filterStr(value: string) {
+    this.value = value;
+    this.valueChange.emit(value);
+    this.filteredOptions = this.options.filter((option) =>
+      option.toLowerCase().includes(value.toLowerCase())
+    );
+  }
 }
