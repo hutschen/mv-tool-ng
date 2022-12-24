@@ -68,6 +68,7 @@ export class Requirement implements IRequirement {
     this.summary = requirement.summary;
     this.description = requirement.description;
     this.target_object = requirement.target_object;
+    this.milestone = requirement.milestone;
     this.compliance_status = requirement.compliance_status;
     this.compliance_comment = requirement.compliance_comment;
     this.project = new Project(requirement.project);
@@ -83,8 +84,10 @@ export class Requirement implements IRequirement {
       summary: this.summary,
       description: this.description,
       target_object: this.target_object,
+      milestone: this.milestone,
       compliance_status: this.compliance_status,
       compliance_comment: this.compliance_comment,
+      catalog_requirement_id: this.catalog_requirement?.id || null,
     };
   }
 
