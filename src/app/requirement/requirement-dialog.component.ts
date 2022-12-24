@@ -13,14 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject, Injectable } from '@angular/core';
+import { Component, Inject, Injectable, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import {
   MatDialog,
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
+import { firstValueFrom, map, Observable } from 'rxjs';
 import { Project } from '../shared/services/project.service';
 import {
   IRequirementInput,
@@ -56,8 +56,10 @@ export class RequirementDialogService {
   styleUrls: ['../shared/styles/flex.css'],
   styles: ['textarea { min-height: 100px; }'],
 })
-export class RequirementDialogComponent {
+export class RequirementDialogComponent implements OnInit {
   project: Project;
+  targetObjects!: string[];
+  milestones!: string[];
   requirementInput: IRequirementInput = {
     summary: '',
   };
@@ -71,6 +73,47 @@ export class RequirementDialogComponent {
     if (this._dialogData.requirement) {
       this.requirementInput = this._dialogData.requirement.toRequirementInput();
     }
+  }
+
+  async ngOnInit(): Promise<void> {
+    const requirements$ = this._requirementService.listRequirements(
+      this.project.id
+    );
+
+    // Get target objects
+    this.targetObjects = await firstValueFrom(
+      requirements$.pipe(
+        map(
+          (requirements) =>
+            requirements
+              .map((requirement) => requirement.target_object)
+              .filter(
+                (targetObject) => targetObject // remove undefined, null and empty strings
+              )
+              .filter(
+                (targetObject, index, self) =>
+                  self.indexOf(targetObject) === index // remove duplicates
+              ) as string[]
+        )
+      )
+    );
+
+    // Milestones
+    this.milestones = await firstValueFrom(
+      requirements$.pipe(
+        map(
+          (requirements) =>
+            requirements
+              .map((requirement) => requirement.milestone)
+              .filter(
+                (milestone) => milestone // remove undefined, null and empty strings
+              )
+              .filter(
+                (milestone, index, self) => self.indexOf(milestone) === index // remove duplicates
+              ) as string[]
+        )
+      )
+    );
   }
 
   get createMode(): boolean {
