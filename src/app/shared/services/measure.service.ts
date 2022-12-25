@@ -27,6 +27,7 @@ import {
 import { IUploadState, UploadService } from './upload.service';
 
 export interface IMeasureInput {
+  reference?: string | null;
   summary: string;
   description?: string | null;
   completed: boolean;
@@ -36,6 +37,7 @@ export interface IMeasureInput {
 
 export interface IMeasure {
   id: number;
+  reference?: string | null;
   summary: string;
   description?: string | null;
   completed: boolean;
@@ -47,6 +49,7 @@ export interface IMeasure {
 
 export class Measure implements IMeasure {
   id: number;
+  reference: string | null;
   summary: string;
   description: string | null;
   completed: boolean;
@@ -57,6 +60,7 @@ export class Measure implements IMeasure {
 
   constructor(measure: IMeasure) {
     this.id = measure.id;
+    this.reference = measure.reference ?? null;
     this.summary = measure.summary;
     this.description = measure.description ?? null;
     this.completed = measure.completed;
@@ -68,6 +72,7 @@ export class Measure implements IMeasure {
 
   toMeasureInput(): IMeasureInput {
     return {
+      reference: this.reference,
       summary: this.summary,
       description: this.description,
       completed: this.completed,
