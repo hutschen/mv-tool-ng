@@ -64,9 +64,9 @@
       </td>
     </ng-container>
 
-    <!-- Completed column -->
+    <!-- Verified column -->
     <ng-container
-      *ngIf="columns.getColumn('completed') as column"
+      *ngIf="columns.getColumn('verified') as column"
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>

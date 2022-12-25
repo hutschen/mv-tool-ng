@@ -61,7 +61,7 @@ export class MeasureDialogComponent {
   measureInput: IMeasureInput = {
     summary: '',
     description: null,
-    completed: false,
+    verified: false,
     jira_issue_id: null,
     document_id: null,
   };

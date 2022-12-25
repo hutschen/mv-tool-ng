@@ -37,7 +37,7 @@ describe('Measure', () => {
       id: 1,
       summary: 'A test measure',
       description: 'A test measure description',
-      completed: false,
+      verified: false,
       jira_issue_id: null,
       jira_issue: null,
       document: null,
@@ -122,7 +122,7 @@ describe('MeasureService', () => {
     inputMock = {
       summary: 'A test measure',
       description: 'A test measure description',
-      completed: false,
+      verified: false,
       jira_issue_id: null,
       document_id: null,
     };
@@ -130,7 +130,7 @@ describe('MeasureService', () => {
       id: 1,
       summary: inputMock.summary,
       description: inputMock.description,
-      completed: inputMock.completed,
+      verified: inputMock.verified,
       jira_issue_id: '10000',
       jira_issue: null,
       document: null,

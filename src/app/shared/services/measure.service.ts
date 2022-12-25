@@ -30,7 +30,7 @@ export interface IMeasureInput {
   reference?: string | null;
   summary: string;
   description?: string | null;
-  completed: boolean;
+  verified: boolean;
   jira_issue_id?: string | null;
   document_id?: number | null;
 }
@@ -40,7 +40,7 @@ export interface IMeasure {
   reference?: string | null;
   summary: string;
   description?: string | null;
-  completed: boolean;
+  verified: boolean;
   jira_issue_id?: string | null;
   jira_issue?: IJiraIssue | null;
   requirement: IRequirement;
@@ -52,7 +52,7 @@ export class Measure implements IMeasure {
   reference: string | null;
   summary: string;
   description: string | null;
-  completed: boolean;
+  verified: boolean;
   jira_issue_id: string | null;
   jira_issue: IJiraIssue | null;
   requirement: Requirement;
@@ -63,7 +63,7 @@ export class Measure implements IMeasure {
     this.reference = measure.reference ?? null;
     this.summary = measure.summary;
     this.description = measure.description ?? null;
-    this.completed = measure.completed;
+    this.verified = measure.verified;
     this.jira_issue_id = measure.jira_issue_id ?? null;
     this.jira_issue = measure.jira_issue ?? null;
     this.requirement = new Requirement(measure.requirement);
@@ -75,7 +75,7 @@ export class Measure implements IMeasure {
       reference: this.reference,
       summary: this.summary,
       description: this.description,
-      completed: this.completed,
+      verified: this.verified,
       jira_issue_id: this.jira_issue_id,
       document_id: this.document ? this.document.id : null,
     };
