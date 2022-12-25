@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 import { IDocument, Document } from './document.service';
 import { DownloadService, IDownloadState } from './download.service';
@@ -28,21 +28,21 @@ import { IUploadState, UploadService } from './upload.service';
 
 export interface IMeasureInput {
   summary: string;
-  description: string | null;
+  description?: string | null;
   completed: boolean;
-  jira_issue_id: string | null;
-  document_id: number | null;
+  jira_issue_id?: string | null;
+  document_id?: number | null;
 }
 
 export interface IMeasure {
   id: number;
   summary: string;
-  description: string | null;
+  description?: string | null;
   completed: boolean;
-  jira_issue_id: string | null;
-  jira_issue: IJiraIssue | null;
+  jira_issue_id?: string | null;
+  jira_issue?: IJiraIssue | null;
   requirement: IRequirement;
-  document: IDocument | null;
+  document?: IDocument | null;
 }
 
 export class Measure implements IMeasure {
@@ -58,10 +58,10 @@ export class Measure implements IMeasure {
   constructor(measure: IMeasure) {
     this.id = measure.id;
     this.summary = measure.summary;
-    this.description = measure.description;
+    this.description = measure.description ?? null;
     this.completed = measure.completed;
-    this.jira_issue_id = measure.jira_issue_id;
-    this.jira_issue = measure.jira_issue;
+    this.jira_issue_id = measure.jira_issue_id ?? null;
+    this.jira_issue = measure.jira_issue ?? null;
     this.requirement = new Requirement(measure.requirement);
     this.document = measure.document ? new Document(measure.document) : null;
   }
