@@ -54,7 +54,7 @@ import {
 })
 export class JiraProjectInputComponent implements OnInit {
   @Input() locked: boolean = true;
-  @Input() jiraProjectId: string | null = null;
+  @Input() jiraProjectId?: string | null = null;
   @Output() jiraProjectIdChange = new EventEmitter<string | null>();
   jiraProjects: IJiraProject[] = [];
 
@@ -76,7 +76,7 @@ export class JiraProjectInputComponent implements OnInit {
   }
 
   get jiraProjectId_(): string | null {
-    return this.jiraProjectId;
+    return this.jiraProjectId ?? null;
   }
 
   set jiraProjectId_(jiraProjectId: string | null) {
