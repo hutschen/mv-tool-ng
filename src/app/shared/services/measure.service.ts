@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 import { IDocument, Document } from './document.service';
 import { DownloadService, IDownloadState } from './download.service';
@@ -27,29 +27,38 @@ import {
 import { IUploadState, UploadService } from './upload.service';
 
 export interface IMeasureInput {
+  reference?: string | null;
   summary: string;
-  description: string | null;
-  completed: boolean;
-  jira_issue_id: string | null;
-  document_id: number | null;
+  description?: string | null;
+  verification_method?: string | null;
+  verification_comment?: string | null;
+  verified: boolean;
+  jira_issue_id?: string | null;
+  document_id?: number | null;
 }
 
 export interface IMeasure {
   id: number;
+  reference?: string | null;
   summary: string;
-  description: string | null;
-  completed: boolean;
-  jira_issue_id: string | null;
-  jira_issue: IJiraIssue | null;
+  description?: string | null;
+  verification_method?: string | null;
+  verification_comment?: string | null;
+  verified: boolean;
+  jira_issue_id?: string | null;
+  jira_issue?: IJiraIssue | null;
   requirement: IRequirement;
-  document: IDocument | null;
+  document?: IDocument | null;
 }
 
 export class Measure implements IMeasure {
   id: number;
+  reference: string | null;
   summary: string;
   description: string | null;
-  completed: boolean;
+  verification_method: string | null;
+  verification_comment: string | null;
+  verified: boolean;
   jira_issue_id: string | null;
   jira_issue: IJiraIssue | null;
   requirement: Requirement;
@@ -57,20 +66,26 @@ export class Measure implements IMeasure {
 
   constructor(measure: IMeasure) {
     this.id = measure.id;
+    this.reference = measure.reference ?? null;
     this.summary = measure.summary;
-    this.description = measure.description;
-    this.completed = measure.completed;
-    this.jira_issue_id = measure.jira_issue_id;
-    this.jira_issue = measure.jira_issue;
+    this.description = measure.description ?? null;
+    this.verification_method = measure.verification_method ?? null;
+    this.verification_comment = measure.verification_comment ?? null;
+    this.verified = measure.verified;
+    this.jira_issue_id = measure.jira_issue_id ?? null;
+    this.jira_issue = measure.jira_issue ?? null;
     this.requirement = new Requirement(measure.requirement);
     this.document = measure.document ? new Document(measure.document) : null;
   }
 
   toMeasureInput(): IMeasureInput {
     return {
+      reference: this.reference,
       summary: this.summary,
       description: this.description,
-      completed: this.completed,
+      verification_method: this.verification_method,
+      verification_comment: this.verification_comment,
+      verified: this.verified,
       jira_issue_id: this.jira_issue_id,
       document_id: this.document ? this.document.id : null,
     };

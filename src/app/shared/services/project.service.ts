@@ -21,14 +21,14 @@ import { IJiraProject } from './jira-project.service';
 
 export interface IProjectInput {
   name: string;
-  description: string | null;
-  jira_project_id: string | null;
+  description?: string | null;
+  jira_project_id?: string | null;
 }
 
 export interface IProject extends IProjectInput {
   id: number;
-  jira_project: IJiraProject | null;
-  completion: number | null;
+  jira_project?: IJiraProject | null;
+  completion?: number | null;
 }
 
 export class Project implements IProject {
@@ -42,10 +42,10 @@ export class Project implements IProject {
   constructor(project: IProject) {
     this.id = project.id;
     this.name = project.name;
-    this.description = project.description;
-    this.jira_project_id = project.jira_project_id;
-    this.jira_project = project.jira_project;
-    this.completion = project.completion;
+    this.description = project.description ?? null;
+    this.jira_project_id = project.jira_project_id ?? null;
+    this.jira_project = project.jira_project ?? null;
+    this.completion = project.completion ?? null;
   }
 
   toProjectInput(): IProjectInput {

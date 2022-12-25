@@ -17,7 +17,7 @@
 
 <mvtool-create-edit-dialog
   [createMode]="createMode"
-  objectName="Project"
+  objectName="Requirement"
   (save)="onSave($event)"
   (cancel)="onCancel()"
 >
@@ -53,10 +53,20 @@
       ></textarea>
     </mat-form-field>
 
+    <!-- Milestone input -->
+    <mvtool-autocomplete
+      label="Milestone"
+      [options]="milestones"
+      [(value)]="requirementInput.milestone"
+    >
+    </mvtool-autocomplete>
+
     <!-- Target object input -->
-    <mvtool-target-object-input
-      [project]="project"
-      [(targetObject)]="requirementInput.target_object"
-    ></mvtool-target-object-input>
+    <mvtool-autocomplete
+      label="Target object"
+      [options]="targetObjects"
+      [(value)]="requirementInput.target_object"
+    >
+    </mvtool-autocomplete>
   </div>
 </mvtool-create-edit-dialog>

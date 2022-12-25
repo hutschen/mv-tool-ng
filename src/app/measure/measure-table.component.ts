@@ -56,10 +56,16 @@ export class MeasureTableComponent implements OnInit {
         }
       },
     },
+    { id: 'verification_method', optional: true, label: 'Verification Method' },
     {
-      id: 'completed',
-      label: 'Completed',
-      toStr: (m) => (m.completed ? 'Completed' : 'Not completed'),
+      id: 'verification_comment',
+      optional: true,
+      label: 'Verification Comment',
+    },
+    {
+      id: 'verified',
+      label: 'Verified',
+      toStr: (m) => (m.verified ? 'Completed' : 'Not completed'),
     },
     { id: 'options' },
   ]);

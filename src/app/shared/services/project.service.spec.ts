@@ -36,10 +36,6 @@ describe('Project', () => {
     sut = new Project({
       id: 1,
       name: 'A test project',
-      description: 'A test project description',
-      jira_project_id: null,
-      jira_project: null,
-      completion: 0,
     });
     jiraProjectMock = {
       id: '10000',

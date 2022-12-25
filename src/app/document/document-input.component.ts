@@ -37,8 +37,8 @@ import { Project } from '../shared/services/project.service';
   styles: [],
 })
 export class DocumentInputComponent implements OnInit {
-  @Input() project: Project | null = null;
-  @Input() documentId: number | null = null;
+  @Input() project?: Project;
+  @Input() documentId?: number | null;
   @Output() documentIdChange = new EventEmitter<number | null>();
   documents: Document[] = [];
 
@@ -55,7 +55,7 @@ export class DocumentInputComponent implements OnInit {
   }
 
   get documentId_(): number | null {
-    return this.documentId;
+    return this.documentId ?? null;
   }
 
   set documentId_(documentId: number | null) {

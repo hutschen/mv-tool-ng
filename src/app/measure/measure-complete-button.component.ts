@@ -21,9 +21,9 @@ import { Measure, MeasureService } from '../shared/services/measure.service';
   selector: 'mvtool-measure-complete-button',
   template: `
     <div *ngIf="measure && !loading">
-      <button mat-button (click)="onToggleComplete()">
-        <mat-icon *ngIf="measure.completed">check</mat-icon>
-        <mat-icon *ngIf="!measure.completed">close</mat-icon>
+      <button mat-button (click)="onToggleVerified()">
+        <mat-icon *ngIf="measure.verified">check</mat-icon>
+        <mat-icon *ngIf="!measure.verified">close</mat-icon>
       </button>
     </div>
 
@@ -46,11 +46,11 @@ export class MeasureCompleteButtonComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  async onToggleComplete(): Promise<void> {
+  async onToggleVerified(): Promise<void> {
     if (this.measure) {
       this.loading = true;
       const measureInput = this.measure.toMeasureInput();
-      measureInput.completed = !this.measure.completed;
+      measureInput.verified = !this.measure.verified;
       this.measure = await firstValueFrom(
         this._measureService.updateMeasure(this.measure.id, measureInput)
       );

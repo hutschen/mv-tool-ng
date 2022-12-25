@@ -36,21 +36,13 @@ describe('Measure', () => {
     sut = new Measure({
       id: 1,
       summary: 'A test measure',
-      description: 'A test measure description',
-      completed: false,
-      jira_issue_id: null,
-      jira_issue: null,
-      document: null,
+      verified: false,
       requirement: {
         id: 1,
         summary: 'A test requirement',
         project: {
           id: 1,
           name: 'A test project',
-          description: 'A test project description',
-          jira_project_id: null,
-          jira_project: null,
-          completion: 0,
         },
       },
     });
@@ -122,7 +114,7 @@ describe('MeasureService', () => {
     inputMock = {
       summary: 'A test measure',
       description: 'A test measure description',
-      completed: false,
+      verified: false,
       jira_issue_id: null,
       document_id: null,
     };
@@ -130,7 +122,7 @@ describe('MeasureService', () => {
       id: 1,
       summary: inputMock.summary,
       description: inputMock.description,
-      completed: inputMock.completed,
+      verified: inputMock.verified,
       jira_issue_id: '10000',
       jira_issue: null,
       document: null,

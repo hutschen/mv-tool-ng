@@ -19,7 +19,6 @@ import { RequirementTableComponent } from './requirement-table.component';
 import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
 import { RequirementDialogComponent } from './requirement-dialog.component';
-import { TargetObjectInputComponent } from './target-object-input.component';
 import { ComplianceDialogComponent } from './compliance-dialog.component';
 import { RequirementDetailsComponent } from './requirement-details.component';
 import { RequirementImportDialogComponent } from './requirement-import-dialog.component';
@@ -28,7 +27,6 @@ import { RequirementImportDialogComponent } from './requirement-import-dialog.co
   declarations: [
     RequirementTableComponent,
     RequirementDialogComponent,
-    TargetObjectInputComponent,
     ComplianceDialogComponent,
     RequirementDetailsComponent,
     RequirementImportDialogComponent,
@@ -37,7 +35,6 @@ import { RequirementImportDialogComponent } from './requirement-import-dialog.co
   exports: [
     RequirementTableComponent,
     RequirementDialogComponent,
-    TargetObjectInputComponent,
     RequirementDetailsComponent,
   ],
 })

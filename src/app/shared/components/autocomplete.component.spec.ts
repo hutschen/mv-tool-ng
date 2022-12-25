@@ -15,18 +15,18 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TargetObjectInputComponent } from './target-object-input.component';
+import { AutocompleteComponent } from './autocomplete.component';
 
-describe('TargetObjectInputComponent', () => {
-  let component: TargetObjectInputComponent;
-  let fixture: ComponentFixture<TargetObjectInputComponent>;
+describe('AutocompleteComponent', () => {
+  let component: AutocompleteComponent;
+  let fixture: ComponentFixture<AutocompleteComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TargetObjectInputComponent],
+      declarations: [AutocompleteComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TargetObjectInputComponent);
+    fixture = TestBed.createComponent(AutocompleteComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
