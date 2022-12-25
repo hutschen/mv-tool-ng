@@ -53,29 +53,29 @@ export class Requirement implements IRequirement {
   id: number;
   reference?: string | null;
   summary: string;
-  description?: string | null;
-  target_object?: string | null;
-  milestone?: string | null;
-  compliance_status?: string | null;
-  compliance_comment?: string | null;
+  description: string | null;
+  target_object: string | null;
+  milestone: string | null;
+  compliance_status: string | null;
+  compliance_comment: string | null;
   project: Project;
-  catalog_requirement?: CatalogRequirement | null;
-  completion?: number | null;
+  catalog_requirement: CatalogRequirement | null;
+  completion: number | null;
 
   constructor(requirement: IRequirement) {
     this.id = requirement.id;
     this.reference = requirement.reference;
     this.summary = requirement.summary;
-    this.description = requirement.description;
-    this.target_object = requirement.target_object;
-    this.milestone = requirement.milestone;
-    this.compliance_status = requirement.compliance_status;
-    this.compliance_comment = requirement.compliance_comment;
+    this.description = requirement.description ?? null;
+    this.target_object = requirement.target_object ?? null;
+    this.milestone = requirement.milestone ?? null;
+    this.compliance_status = requirement.compliance_status ?? null;
+    this.compliance_comment = requirement.compliance_comment ?? null;
     this.project = new Project(requirement.project);
     this.catalog_requirement = requirement.catalog_requirement
       ? new CatalogRequirement(requirement.catalog_requirement)
       : null;
-    this.completion = requirement.completion;
+    this.completion = requirement.completion ?? null;
   }
 
   toRequirementInput(): IRequirementInput {
