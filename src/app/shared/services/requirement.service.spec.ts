@@ -55,10 +55,6 @@ describe('RequirementService', () => {
       project: {
         id: 1,
         name: 'A test project',
-        description: 'A test project description',
-        jira_project_id: null,
-        jira_project: null,
-        completion: 0,
       },
     };
   });

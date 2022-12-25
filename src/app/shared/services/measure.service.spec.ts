@@ -36,21 +36,13 @@ describe('Measure', () => {
     sut = new Measure({
       id: 1,
       summary: 'A test measure',
-      description: 'A test measure description',
       verified: false,
-      jira_issue_id: null,
-      jira_issue: null,
-      document: null,
       requirement: {
         id: 1,
         summary: 'A test requirement',
         project: {
           id: 1,
           name: 'A test project',
-          description: 'A test project description',
-          jira_project_id: null,
-          jira_project: null,
-          completion: 0,
         },
       },
     });
