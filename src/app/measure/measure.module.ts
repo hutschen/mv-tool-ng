@@ -22,12 +22,14 @@ import { MaterialModule } from '../material/material.module';
 import { DocumentModule } from '../document/document.module';
 import { JiraIssueModule } from '../jira-issue/jira-issue.module';
 import { MeasureCompleteButtonComponent } from './measure-complete-button.component';
+import { VerificationDialogComponent } from './verification-dialog.component';
 
 @NgModule({
   declarations: [
     MeasureTableComponent,
     MeasureDialogComponent,
     MeasureCompleteButtonComponent,
+    VerificationDialogComponent,
   ],
   imports: [
     CommonModule,
