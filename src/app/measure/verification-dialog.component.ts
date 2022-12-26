@@ -45,8 +45,52 @@ export class VerificationDialogService {
 
 @Component({
   selector: 'mvtool-verification-dialog',
-  template: ` <p>verification-dialog works!</p> `,
-  styles: [],
+  template: `
+    <mvtool-create-edit-dialog
+      [createMode]="false"
+      objectName="Verification Status"
+      (save)="onSave($event)"
+      (cancel)="onCancel()"
+    >
+      <div class="fx-column">
+        <!-- Verification method -->
+        <mat-form-field appearance="fill">
+          <mat-label>Verification method</mat-label>
+          <mat-select
+            name="verificationMethod"
+            [(ngModel)]="measureInput.verification_method"
+          >
+            <mat-option [value]="null">None</mat-option>
+            <mat-option
+              *ngFor="let method of verificationMethods"
+              [value]="method"
+            >
+              {{ method }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Verification comment -->
+        <mat-form-field appearance="fill">
+          <mat-label>Verification comment</mat-label>
+          <textarea
+            matInput
+            name="verificationComment"
+            [(ngModel)]="measureInput.verification_comment"
+          ></textarea>
+        </mat-form-field>
+
+        <!-- Vefification status -->
+        <p>
+          <mat-checkbox name="verified" [(ngModel)]="measureInput.verified">
+            Verified
+          </mat-checkbox>
+        </p>
+      </div>
+    </mvtool-create-edit-dialog>
+  `,
+  styleUrls: ['../shared/styles/flex.css'],
+  styles: ['textarea { min-height: 100px; }'],
 })
 export class VerificationDialogComponent {
   verificationMethods = ['I', 'T', 'R'];
