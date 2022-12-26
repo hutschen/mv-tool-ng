@@ -13,15 +13,61 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import {
+  IMeasureInput,
+  Measure,
+  MeasureService,
+} from '../shared/services/measure.service';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class VerificationDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openVerificationDialog(
+    measure: Measure
+  ): MatDialogRef<VerificationDialogComponent, Measure> {
+    const dialogRef = this._dialog.open(VerificationDialogComponent, {
+      width: '500px',
+      data: measure,
+    });
+    return dialogRef;
+  }
+}
 
 @Component({
   selector: 'mvtool-verification-dialog',
   template: ` <p>verification-dialog works!</p> `,
   styles: [],
 })
-export class VerificationDialogComponent implements OnInit {
-  constructor() {}
+export class VerificationDialogComponent {
+  verificationMethods = ['I', 'T', 'R'];
+  measureInput: IMeasureInput;
 
-  ngOnInit(): void {}
+  constructor(
+    protected _dialogRef: MatDialogRef<VerificationDialogComponent>,
+    protected _measureService: MeasureService,
+    @Inject(MAT_DIALOG_DATA) protected _measure: Measure
+  ) {
+    this.measureInput = this._measure.toMeasureInput();
+  }
+
+  onSave(form: NgForm): void {
+    if (form.valid) {
+      this._measureService
+        .updateMeasure(this._measure.id, this.measureInput)
+        .subscribe((measure) => this._dialogRef.close(measure));
+    }
+  }
+  onCancel(): void {
+    this._dialogRef.close();
+  }
 }
