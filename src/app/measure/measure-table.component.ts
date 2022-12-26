@@ -22,6 +22,7 @@ import { UploadDialogService } from '../shared/components/upload-dialog.componen
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Requirement } from '../shared/services/requirement.service';
 import { MeasureDialogService } from './measure-dialog.component';
+import { VerificationDialogService } from './verification-dialog.component';
 
 @Component({
   selector: 'mvtool-measure-table',
@@ -77,6 +78,7 @@ export class MeasureTableComponent implements OnInit {
   constructor(
     protected _measureService: MeasureService,
     protected _measureDialogService: MeasureDialogService,
+    protected _verificationDialogService: VerificationDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _confirmDialogService: ConfirmDialogService
@@ -107,6 +109,15 @@ export class MeasureTableComponent implements OnInit {
 
   async onEditMeasure(measure: Measure): Promise<void> {
     await this._createOrEditMeasure(measure);
+  }
+
+  async onEditVerification(measure: Measure): Promise<void> {
+    const dialogRef =
+      this._verificationDialogService.openVerificationDialog(measure);
+    const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
+    if (updatedMeasure) {
+      await this.onReloadMeasures();
+    }
   }
 
   async onDeleteMeasure(measure: Measure): Promise<void> {

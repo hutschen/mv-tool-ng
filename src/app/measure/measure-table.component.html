@@ -76,12 +76,15 @@
         ></mvtool-table-filter-header>
       </th>
       <td mat-cell *matCellDef="let row">
-        <mvtool-measure-complete-button
-          [measure]="row.data"
-          (measureChange)="onReloadMeasures()"
-          (click)="$event.stopPropagation()"
+        <button
+          mat-button
+          (click)="
+            onEditVerification(row.data); $event.stopImmediatePropagation()
+          "
         >
-        </mvtool-measure-complete-button>
+          <mat-icon *ngIf="row.data.verified">check</mat-icon>
+          <mat-icon *ngIf="!row.data.verified">close</mat-icon>
+        </button>
       </td>
     </ng-container>
 
