@@ -81,6 +81,7 @@
           (click)="
             onEditVerification(row.data); $event.stopImmediatePropagation()
           "
+          matTooltip="Click to edit verification status"
         >
           <mat-icon *ngIf="row.data.verified">check</mat-icon>
           <mat-icon *ngIf="!row.data.verified">close</mat-icon>
