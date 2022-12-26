@@ -15,18 +15,18 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MeasureCompleteButtonComponent } from './measure-complete-button.component';
+import { VerificationDialogComponent } from './verification-dialog.component';
 
-describe('MeasureCompleteButtonComponent', () => {
-  let component: MeasureCompleteButtonComponent;
-  let fixture: ComponentFixture<MeasureCompleteButtonComponent>;
+describe('VerificationDialogComponent', () => {
+  let component: VerificationDialogComponent;
+  let fixture: ComponentFixture<VerificationDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [MeasureCompleteButtonComponent],
+      declarations: [VerificationDialogComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(MeasureCompleteButtonComponent);
+    fixture = TestBed.createComponent(VerificationDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
