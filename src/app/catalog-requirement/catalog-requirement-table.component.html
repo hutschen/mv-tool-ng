@@ -21,8 +21,8 @@
     (refresh)="onReloadCatalogRequirements()"
     (create)="onCreateCatalogRequirement()"
     [showFilter]="true"
-    filterLabel="Filter Requirements"
-    createLabel="Create Requirement"
+    filterLabel="Filter Catalog Requirements"
+    createLabel="Create Catalog Requirement"
     #tableToolbar
   >
   </mvtool-table-toolbar>
@@ -34,8 +34,8 @@
     [dataLoaded]="dataLoaded"
     [filterValue]="tableToolbar.filterValue"
     (create)="onCreateCatalogRequirement()"
-    noContentText="No requirements found."
-    loadingText="Loading requirements..."
+    noContentText="No catalog requirements found."
+    loadingText="Loading catalog requirements..."
     matSort
     #sort="matSort"
     [sort]="sort"
