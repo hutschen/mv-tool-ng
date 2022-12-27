@@ -36,6 +36,7 @@ import { VerificationDialogService } from './verification-dialog.component';
 })
 export class MeasureTableComponent implements OnInit {
   columns = new TableColumns<Measure>([
+    { id: 'reference', label: 'Reference', optional: true },
     { id: 'summary', label: 'Summary' },
     { id: 'description', optional: true, label: 'Description' },
     {

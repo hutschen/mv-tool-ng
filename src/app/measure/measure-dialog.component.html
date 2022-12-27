@@ -22,6 +22,12 @@
   (cancel)="onCancel()"
 >
   <div class="fx-column">
+    <!-- Reference input -->
+    <mat-form-field appearance="fill">
+      <mat-label>Measure reference</mat-label>
+      <input name="reference" matInput [(ngModel)]="measureInput.reference" />
+    </mat-form-field>
+
     <!-- Summary input -->
     <mat-form-field appearance="fill">
       <mat-label>Measure summary</mat-label>
