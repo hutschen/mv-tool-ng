@@ -47,10 +47,18 @@ export class RequirementTableComponent implements OnInit {
       toValue: (r) => r.catalog_requirement?.gs_anforderung_reference,
     },
     {
+      id: 'catalog',
+      label: 'Catalog',
+      optional: true,
+      toValue: (r) => r.catalog_requirement?.catalog_module.catalog,
+      toStr: (r) => r.catalog_requirement?.catalog_module.catalog.title ?? '',
+    },
+    {
       id: 'catalog_module',
       label: 'Catalog Module',
       optional: true,
-      toValue: (r) => r.catalog_requirement?.catalog_module.title,
+      toValue: (r) => r.catalog_requirement?.catalog_module,
+      toStr: (r) => r.catalog_requirement?.catalog_module.title ?? '',
     },
     { id: 'summary', label: 'Summary' },
     { id: 'description', label: 'Description', optional: true },
@@ -72,6 +80,7 @@ export class RequirementTableComponent implements OnInit {
       label: 'Compliance',
       toStr: (r) => (r.compliance_status ? r.compliance_status : 'Not set'),
     },
+    { id: 'milestone', label: 'Milestone', optional: true },
     { id: 'compliance_comment', label: 'Compliance Comment', optional: true },
     {
       id: 'completion',

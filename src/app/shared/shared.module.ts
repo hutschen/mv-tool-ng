@@ -29,6 +29,7 @@ import { CreateEditDialogComponent } from './components/create-edit-dialog.compo
 import { ConfirmDialogComponent } from './components/confirm-dialog.component';
 import { FilterDialogComponent } from './components/filter-dialog.component';
 import { TableFilterHeaderComponent } from './components/table-filter-header.component';
+import { AutocompleteComponent } from './components/autocomplete.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { TableFilterHeaderComponent } from './components/table-filter-header.com
     ConfirmDialogComponent,
     FilterDialogComponent,
     TableFilterHeaderComponent,
+    AutocompleteComponent,
   ],
   imports: [CommonModule, MaterialModule],
   exports: [
@@ -56,6 +58,7 @@ import { TableFilterHeaderComponent } from './components/table-filter-header.com
     ErrorDialogComponent,
     CreateEditDialogComponent,
     TableFilterHeaderComponent,
+    AutocompleteComponent,
   ],
 })
 export class SharedModule {}

@@ -52,8 +52,6 @@ export class ProjectDialogService {
 export class ProjectDialogComponent {
   projectInput: IProjectInput = {
     name: '',
-    description: null,
-    jira_project_id: null,
   };
 
   constructor(

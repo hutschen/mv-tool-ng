@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import {
   CatalogRequirement,
   ICatalogRequirement,
@@ -29,12 +29,21 @@ export interface IRequirementInput {
   summary: string;
   description?: string | null;
   target_object?: string | null;
+  milestone?: string | null;
   compliance_status?: string | null;
   compliance_comment?: string | null;
+  catalog_requirement_id?: number | null;
 }
 
-export interface IRequirement extends IRequirementInput {
+export interface IRequirement {
   id: number;
+  reference?: string | null;
+  summary: string;
+  description?: string | null;
+  target_object?: string | null;
+  milestone?: string | null;
+  compliance_status?: string | null;
+  compliance_comment?: string | null;
   project: IProject;
   catalog_requirement?: ICatalogRequirement | null;
   completion?: number | null;
@@ -44,27 +53,29 @@ export class Requirement implements IRequirement {
   id: number;
   reference?: string | null;
   summary: string;
-  description?: string | null;
-  target_object?: string | null;
-  compliance_status?: string | null;
-  compliance_comment?: string | null;
+  description: string | null;
+  target_object: string | null;
+  milestone: string | null;
+  compliance_status: string | null;
+  compliance_comment: string | null;
   project: Project;
-  catalog_requirement?: CatalogRequirement | null;
-  completion?: number | null;
+  catalog_requirement: CatalogRequirement | null;
+  completion: number | null;
 
   constructor(requirement: IRequirement) {
     this.id = requirement.id;
     this.reference = requirement.reference;
     this.summary = requirement.summary;
-    this.description = requirement.description;
-    this.target_object = requirement.target_object;
-    this.compliance_status = requirement.compliance_status;
-    this.compliance_comment = requirement.compliance_comment;
+    this.description = requirement.description ?? null;
+    this.target_object = requirement.target_object ?? null;
+    this.milestone = requirement.milestone ?? null;
+    this.compliance_status = requirement.compliance_status ?? null;
+    this.compliance_comment = requirement.compliance_comment ?? null;
     this.project = new Project(requirement.project);
     this.catalog_requirement = requirement.catalog_requirement
       ? new CatalogRequirement(requirement.catalog_requirement)
       : null;
-    this.completion = requirement.completion;
+    this.completion = requirement.completion ?? null;
   }
 
   toRequirementInput(): IRequirementInput {
@@ -73,8 +84,10 @@ export class Requirement implements IRequirement {
       summary: this.summary,
       description: this.description,
       target_object: this.target_object,
+      milestone: this.milestone,
       compliance_status: this.compliance_status,
       compliance_comment: this.compliance_comment,
+      catalog_requirement_id: this.catalog_requirement?.id || null,
     };
   }
 
