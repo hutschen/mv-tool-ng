@@ -30,6 +30,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog.component';
 import { FilterDialogComponent } from './components/filter-dialog.component';
 import { TableFilterHeaderComponent } from './components/table-filter-header.component';
 import { AutocompleteComponent } from './components/autocomplete.component';
+import { ShowHideDialogComponent } from './components/show-hide-dialog.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { AutocompleteComponent } from './components/autocomplete.component';
     FilterDialogComponent,
     TableFilterHeaderComponent,
     AutocompleteComponent,
+    ShowHideDialogComponent,
   ],
   imports: [CommonModule, MaterialModule],
   exports: [
