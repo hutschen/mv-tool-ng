@@ -122,4 +122,12 @@ export class TableColumns<T extends object> {
       (c) => (!c.optional || data.some((d) => c.toBool(d))) && !c.hidden
     );
   }
+
+  get idsOfColumnsToHide(): string[] {
+    return this._columns.filter((c) => c.hidden).map((c) => c.id);
+  }
+
+  set idsOfColumnsToHide(ids: string[]) {
+    this._columns.forEach((c) => (c.hidden = ids.includes(c.id)));
+  }
 }
