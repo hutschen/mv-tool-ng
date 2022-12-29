@@ -13,15 +13,31 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { TableColumn } from '../table-columns';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ShowHideDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openShowHideDialog(
+    columns: TableColumn<any>[]
+  ): MatDialogRef<ShowHideDialogComponent, string[]> {
+    return this._dialog.open(ShowHideDialogComponent, {
+      width: '500px',
+      data: columns,
+    });
+  }
+}
 
 @Component({
   selector: 'mvtool-show-hide-dialog',
   template: ` <p>show-hide-dialog works!</p> `,
   styles: [],
 })
-export class ShowHideDialogComponent implements OnInit {
+export class ShowHideDialogComponent {
   constructor() {}
-
-  ngOnInit(): void {}
 }
