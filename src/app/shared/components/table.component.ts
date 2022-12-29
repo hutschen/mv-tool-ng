@@ -158,7 +158,7 @@ export class TableComponent<T extends object>
 
   async onShowHideColumns(): Promise<void> {
     const dialogRef = this._showHideDialogService.openShowHideDialog(
-      this._columns.columns
+      this._columns.columnsToShow(this._data, true, true)
     );
     const idsOfColumnsToHide = await firstValueFrom(dialogRef.afterClosed());
     if (idsOfColumnsToHide) {
