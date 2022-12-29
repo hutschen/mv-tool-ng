@@ -105,7 +105,14 @@
 
     <!-- Options column -->
     <ng-container matColumnDef="options">
-      <th mat-header-cell *matHeaderCellDef></th>
+      <th mat-header-cell *matHeaderCellDef>
+        <!-- TODO: Move to seperate table options component -->
+        <div class="fx-row fx-end-center">
+          <button mat-icon-button (click)="table.onShowHideColumns()">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+        </div>
+      </th>
       <td mat-cell *matCellDef="let row">
         <mvtool-table-options
           (edit)="onEditRequirement(row.data)"
