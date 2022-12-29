@@ -117,9 +117,16 @@ export class TableColumns<T extends object> {
     return column;
   }
 
-  columnsToShow(data: T[] = []): TableColumn<T>[] {
+  columnsToShow(
+    data: T[] = [],
+    includeHidden: boolean = false,
+    onlyOptional: boolean = false
+  ): TableColumn<T>[] {
     return this._columns.filter(
-      (c) => (!c.optional || data.some((d) => c.toBool(d))) && !c.hidden
+      (c) =>
+        (!c.optional || data.some((d) => c.toBool(d))) &&
+        (!c.hidden || includeHidden) &&
+        (c.optional || !onlyOptional)
     );
   }
 
