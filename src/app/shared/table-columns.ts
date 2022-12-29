@@ -20,6 +20,7 @@ export interface ITableRow<T extends object> {
 export interface ITableColumn<T extends object> {
   id: string;
   optional?: boolean;
+  hidden?: boolean;
   label?: string;
   filterable?: boolean;
   filters?: string[];
@@ -31,6 +32,7 @@ export interface ITableColumn<T extends object> {
 export class TableColumn<T extends object> implements ITableColumn<T> {
   id: string;
   optional: boolean;
+  hidden: boolean;
   label: string;
   filterable: boolean;
   filters: string[];
@@ -41,6 +43,7 @@ export class TableColumn<T extends object> implements ITableColumn<T> {
   constructor(tableColumn: ITableColumn<T>) {
     this.id = tableColumn.id;
     this.optional = tableColumn.optional ?? false;
+    this.hidden = tableColumn.hidden ?? false;
     this.label = tableColumn.label ?? this.id;
     this.filterable = tableColumn.filterable ?? true;
     this.filters = tableColumn.filters ?? [];
@@ -116,7 +119,7 @@ export class TableColumns<T extends object> {
 
   columnsToShow(data: T[] = []): TableColumn<T>[] {
     return this._columns.filter(
-      (c) => !c.optional || data.some((d) => c.toBool(d))
+      (c) => (!c.optional || data.some((d) => c.toBool(d))) && !c.hidden
     );
   }
 }
