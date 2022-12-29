@@ -13,8 +13,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Injectable } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, Injectable } from '@angular/core';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { TableColumn } from '../table-columns';
 
 @Injectable({
@@ -33,11 +37,105 @@ export class ShowHideDialogService {
   }
 }
 
+class ColumnOption {
+  selected: boolean;
+
+  constructor(public column: TableColumn<any>) {
+    this.selected = !column.hidden;
+  }
+
+  toggleSelected() {
+    this.selected = !this.selected;
+  }
+}
+
+class ColumnSelection {
+  options: ColumnOption[];
+
+  constructor(columns: TableColumn<any>[]) {
+    this.options = columns.map((c) => new ColumnOption(c));
+  }
+
+  get allSelected(): boolean {
+    return this.options.every((o) => o.selected);
+  }
+
+  get nothingSelected(): boolean {
+    return this.options.every((o) => !o.selected);
+  }
+
+  get partlySelected(): boolean {
+    return !this.allSelected && !this.nothingSelected;
+  }
+
+  toggleAllSelected() {
+    const selected = !this.allSelected;
+    this.options.forEach((o) => (o.selected = selected));
+  }
+
+  get unselectedColumns(): TableColumn<any>[] {
+    return this.options.filter((o) => !o.selected).map((o) => o.column);
+  }
+}
+
 @Component({
   selector: 'mvtool-show-hide-dialog',
-  template: ` <p>show-hide-dialog works!</p> `,
-  styles: [],
+  template: `
+    <div mat-dialog-title>Show / Hide Columns</div>
+    <div mat-dialog-content>
+      <ul>
+        <li>
+          <mat-checkbox
+            [checked]="selection.allSelected"
+            [indeterminate]="selection.partlySelected"
+            (change)="selection.toggleAllSelected()"
+          >
+            Show all columns
+          </mat-checkbox>
+        </li>
+        <li *ngFor="let option of selection.options">
+          <mat-checkbox
+            [checked]="option.selected"
+            (change)="option.toggleSelected()"
+          >
+            Show {{ option.column.label }}</mat-checkbox
+          >
+        </li>
+      </ul>
+    </div>
+    <div mat-dialog-actions align="end">
+      <button mat-button (click)="onCancel()">
+        <mat-icon>cancel</mat-icon>
+        Cancel
+      </button>
+      <button
+        mat-raised-button
+        color="accent"
+        [disabled]="selection.nothingSelected"
+        (click)="onSave()"
+      >
+        <mat-icon>save</mat-icon>
+        Save
+      </button>
+    </div>
+  `,
+  styles: ['ul { list-style-type: none; padding-left: 0;}'],
 })
 export class ShowHideDialogComponent {
-  constructor() {}
+  selection: ColumnSelection;
+
+  constructor(
+    protected _dialogRef: MatDialogRef<ShowHideDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public columns: TableColumn<any>[]
+  ) {
+    this.selection = new ColumnSelection(columns);
+  }
+
+  onSave() {
+    this._dialogRef.close(this.selection.unselectedColumns.map((c) => c.id));
+  }
+
+  onCancel() {
+    this._dialogRef.close();
+  }
 }
