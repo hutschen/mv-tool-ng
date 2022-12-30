@@ -28,6 +28,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
+        <ng-content></ng-content>
         <button *ngIf="edit.observed" mat-menu-item (click)="edit.emit()">
           <mat-icon>edit_note</mat-icon>
           Edit
