@@ -35,7 +35,15 @@ import { TableComponent } from './table.component';
           [disabled]="!table.hasColumnsToShowHide"
         >
           <mat-icon>visibility_off</mat-icon>
-          Show/Hide Columns
+          Show/hide columns
+        </button>
+        <button
+          mat-menu-item
+          (click)="table.onClearFilters()"
+          [disabled]="!table.isFiltered"
+        >
+          <mat-icon>filter_alt_off</mat-icon>
+          Clear all filters
         </button>
       </mat-menu>
     </div>
