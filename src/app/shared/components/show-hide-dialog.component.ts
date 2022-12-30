@@ -21,6 +21,11 @@ import {
 } from '@angular/material/dialog';
 import { TableColumn } from '../table-columns';
 
+interface IShowHideDialogData {
+  columns: TableColumn<any>[];
+  allowHideAll: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -28,11 +33,12 @@ export class ShowHideDialogService {
   constructor(protected _dialog: MatDialog) {}
 
   openShowHideDialog(
-    columns: TableColumn<any>[]
+    columns: TableColumn<any>[],
+    allowHideAll: boolean = false
   ): MatDialogRef<ShowHideDialogComponent, string[]> {
     return this._dialog.open(ShowHideDialogComponent, {
       width: '500px',
-      data: columns,
+      data: { columns, allowHideAll } as IShowHideDialogData,
     });
   }
 }
@@ -111,7 +117,7 @@ class ColumnSelection {
       <button
         mat-raised-button
         color="accent"
-        [disabled]="selection.nothingSelected"
+        [disabled]="selection.nothingSelected && !allowHideAll"
         (click)="onSave()"
       >
         <mat-icon>save</mat-icon>
@@ -123,12 +129,14 @@ class ColumnSelection {
 })
 export class ShowHideDialogComponent {
   selection: ColumnSelection;
+  allowHideAll: boolean;
 
   constructor(
     protected _dialogRef: MatDialogRef<ShowHideDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public columns: TableColumn<any>[]
+    @Inject(MAT_DIALOG_DATA) dialogData: IShowHideDialogData
   ) {
-    this.selection = new ColumnSelection(columns);
+    this.selection = new ColumnSelection(dialogData.columns);
+    this.allowHideAll = dialogData.allowHideAll;
   }
 
   onSave() {
