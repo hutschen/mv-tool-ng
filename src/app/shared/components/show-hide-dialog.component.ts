@@ -87,7 +87,7 @@ class ColumnSelection {
 @Component({
   selector: 'mvtool-show-hide-dialog',
   template: `
-    <div mat-dialog-title>Show / Hide Columns</div>
+    <div mat-dialog-title>Show/Hide Columns</div>
     <div mat-dialog-content>
       <ul>
         <li>
