@@ -78,6 +78,7 @@ export class RequirementTableComponent implements OnInit {
     {
       id: 'compliance_status',
       label: 'Compliance',
+      optional: true,
       toStr: (r) => (r.compliance_status ? r.compliance_status : 'Not set'),
     },
     { id: 'milestone', label: 'Milestone', optional: true },
