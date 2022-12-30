@@ -55,6 +55,7 @@ import { TableOptionsComponent } from './components/table-options.component';
   exports: [
     HttpClientModule,
     TruncatePipe,
+    TableOptionsComponent,
     TableRowOptionsComponent,
     TableToolbarComponent,
     TableComponent,
