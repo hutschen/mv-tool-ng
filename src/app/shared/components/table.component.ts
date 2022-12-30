@@ -40,6 +40,7 @@ import {
 } from 'rxjs';
 import { ITableRow, TableColumn, TableColumns } from '../table-columns';
 import { FilterDialogService } from './filter-dialog.component';
+import { ShowHideDialogService } from './show-hide-dialog.component';
 
 @Component({
   selector: 'mvtool-table',
@@ -112,7 +113,10 @@ export class TableComponent<T extends object>
     return this.dataSource.filter;
   }
 
-  constructor(protected _filterDialogService: FilterDialogService<T>) {
+  constructor(
+    protected _filterDialogService: FilterDialogService<T>,
+    protected _showHideDialogService: ShowHideDialogService
+  ) {
     // update when columns or data change
     combineLatest([
       this._columnsSubject.asObservable(),
@@ -148,6 +152,22 @@ export class TableComponent<T extends object>
     const filters = await firstValueFrom(dialogRef.afterClosed());
     if (filters) {
       column.filters = filters;
+      this._columnsSubject.next(this._columns);
+    }
+  }
+
+  get hasColumnsToShowHide(): boolean {
+    return this._columns.columnsToShow(this._data, true, true).length > 0;
+  }
+
+  async onShowHideColumns(): Promise<void> {
+    const dialogRef = this._showHideDialogService.openShowHideDialog(
+      this._columns.columnsToShow(this._data, true, true),
+      true // allow hiding all columns
+    );
+    const idsOfColumnsToHide = await firstValueFrom(dialogRef.afterClosed());
+    if (idsOfColumnsToHide) {
+      this._columns.idsOfColumnsToHide = idsOfColumnsToHide;
       this._columnsSubject.next(this._columns);
     }
   }

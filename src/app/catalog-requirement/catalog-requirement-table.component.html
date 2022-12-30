@@ -39,16 +39,19 @@
     matSort
     #sort="matSort"
     [sort]="sort"
+    #table
   >
     <!-- Options column -->
     <ng-container matColumnDef="options">
-      <th mat-header-cell *matHeaderCellDef></th>
+      <th mat-header-cell *matHeaderCellDef>
+        <mvtool-table-options [table]="table"></mvtool-table-options>
+      </th>
       <td mat-cell *matCellDef="let row">
-        <mvtool-table-options
+        <mvtool-table-row-options
           (edit)="onEditCatalogRequirement(row.data)"
           (delete)="onDeleteCatalogRequirement(row.data)"
         >
-        </mvtool-table-options>
+        </mvtool-table-row-options>
       </td>
     </ng-container>
   </mvtool-table>

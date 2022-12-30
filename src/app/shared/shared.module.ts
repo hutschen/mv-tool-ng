@@ -17,7 +17,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TruncatePipe } from './pipes';
 import { HttpClientModule } from '@angular/common/http';
-import { TableOptionsComponent } from './components/table-options.component';
+import { TableRowOptionsComponent } from './components/table-row-options.component';
 import { MaterialModule } from '../material/material.module';
 import { TableToolbarComponent } from './components/table-toolbar.component';
 import { TableComponent } from './components/table.component';
@@ -30,11 +30,13 @@ import { ConfirmDialogComponent } from './components/confirm-dialog.component';
 import { FilterDialogComponent } from './components/filter-dialog.component';
 import { TableFilterHeaderComponent } from './components/table-filter-header.component';
 import { AutocompleteComponent } from './components/autocomplete.component';
+import { ShowHideDialogComponent } from './components/show-hide-dialog.component';
+import { TableOptionsComponent } from './components/table-options.component';
 
 @NgModule({
   declarations: [
     TruncatePipe,
-    TableOptionsComponent,
+    TableRowOptionsComponent,
     TableToolbarComponent,
     TableComponent,
     DownloadDialogComponent,
@@ -46,12 +48,15 @@ import { AutocompleteComponent } from './components/autocomplete.component';
     FilterDialogComponent,
     TableFilterHeaderComponent,
     AutocompleteComponent,
+    ShowHideDialogComponent,
+    TableOptionsComponent,
   ],
   imports: [CommonModule, MaterialModule],
   exports: [
     HttpClientModule,
     TruncatePipe,
     TableOptionsComponent,
+    TableRowOptionsComponent,
     TableToolbarComponent,
     TableComponent,
     DetailComponent,

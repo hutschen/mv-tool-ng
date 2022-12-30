@@ -13,29 +13,33 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Input } from '@angular/core';
-import { TableComponent } from './table.component';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
-  selector: 'mvtool-table-options',
+  selector: 'mvtool-table-row-options',
   template: `
     <div class="fx-row fx-end-center">
       <button
         mat-icon-button
         [matMenuTriggerFor]="menu"
         (click)="$event.stopPropagation()"
-        aria-label="Show table options"
+        aria-label="Show options"
       >
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
+        <button *ngIf="edit.observed" mat-menu-item (click)="edit.emit()">
+          <mat-icon>edit_note</mat-icon>
+          Edit
+        </button>
         <button
+          *ngIf="delete.observed"
           mat-menu-item
-          (click)="table.onShowHideColumns()"
-          [disabled]="!table.hasColumnsToShowHide"
+          color="warn"
+          (click)="delete.emit()"
         >
-          <mat-icon>visibility_off</mat-icon>
-          Show/Hide Columns
+          <mat-icon>delete</mat-icon>
+          Delete
         </button>
       </mat-menu>
     </div>
@@ -43,8 +47,9 @@ import { TableComponent } from './table.component';
   styleUrls: ['../styles/flex.css'],
   styles: [],
 })
-export class TableOptionsComponent {
-  @Input() table!: TableComponent<any>;
+export class TableRowOptionsComponent {
+  @Output() edit = new EventEmitter<void>();
+  @Output() delete = new EventEmitter<void>();
 
   constructor() {}
 }
