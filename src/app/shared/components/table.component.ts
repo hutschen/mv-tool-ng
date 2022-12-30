@@ -156,6 +156,15 @@ export class TableComponent<T extends object>
     }
   }
 
+  get isFiltered(): boolean {
+    return this._columns.columns.some((column) => column.filters.length > 0);
+  }
+
+  onClearFilters(): void {
+    this._columns.columns.forEach((column) => (column.filters = []));
+    this._columnsSubject.next(this._columns);
+  }
+
   get hasColumnsToShowHide(): boolean {
     return this._columns.columnsToShow(this._data, true, true).length > 0;
   }
