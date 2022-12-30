@@ -16,7 +16,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
-  selector: 'mvtool-table-options',
+  selector: 'mvtool-table-row-options',
   template: `
     <div class="fx-row fx-end-center">
       <button
@@ -47,7 +47,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
   styleUrls: ['../styles/flex.css'],
   styles: [],
 })
-export class TableOptionsComponent {
+export class TableRowOptionsComponent {
   @Output() edit = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
 

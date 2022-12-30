@@ -93,11 +93,11 @@
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let row">
-        <mvtool-table-options
+        <mvtool-table-row-options
           (edit)="onEditMeasure(row.data)"
           (delete)="onDeleteMeasure(row.data)"
         >
-        </mvtool-table-options>
+        </mvtool-table-row-options>
       </td>
     </ng-container>
   </mvtool-table>

@@ -17,7 +17,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TruncatePipe } from './pipes';
 import { HttpClientModule } from '@angular/common/http';
-import { TableOptionsComponent } from './components/table-options.component';
+import { TableRowOptionsComponent } from './components/table-row-options.component';
 import { MaterialModule } from '../material/material.module';
 import { TableToolbarComponent } from './components/table-toolbar.component';
 import { TableComponent } from './components/table.component';
@@ -35,7 +35,7 @@ import { ShowHideDialogComponent } from './components/show-hide-dialog.component
 @NgModule({
   declarations: [
     TruncatePipe,
-    TableOptionsComponent,
+    TableRowOptionsComponent,
     TableToolbarComponent,
     TableComponent,
     DownloadDialogComponent,
@@ -53,7 +53,7 @@ import { ShowHideDialogComponent } from './components/show-hide-dialog.component
   exports: [
     HttpClientModule,
     TruncatePipe,
-    TableOptionsComponent,
+    TableRowOptionsComponent,
     TableToolbarComponent,
     TableComponent,
     DetailComponent,

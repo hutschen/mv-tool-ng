@@ -53,11 +53,11 @@
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let row">
-        <mvtool-table-options
+        <mvtool-table-row-options
           (edit)="onEditCatalogModule(row.data)"
           (delete)="onDeleteCatalogModule(row.data)"
         >
-        </mvtool-table-options>
+        </mvtool-table-row-options>
       </td>
     </ng-container>
   </mvtool-table>
