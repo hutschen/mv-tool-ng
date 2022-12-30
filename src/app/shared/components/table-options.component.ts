@@ -29,7 +29,11 @@ import { TableComponent } from './table.component';
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="table.onShowHideColumns()">
+        <button
+          mat-menu-item
+          (click)="table.onShowHideColumns()"
+          [disabled]="!table.hasColumnsToShowHide"
+        >
           <mat-icon>visibility_off</mat-icon>
           Show/Hide Columns
         </button>

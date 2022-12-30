@@ -156,6 +156,10 @@ export class TableComponent<T extends object>
     }
   }
 
+  get hasColumnsToShowHide(): boolean {
+    return this._columns.columnsToShow(this._data, true, true).length > 0;
+  }
+
   async onShowHideColumns(): Promise<void> {
     const dialogRef = this._showHideDialogService.openShowHideDialog(
       this._columns.columnsToShow(this._data, true, true),
