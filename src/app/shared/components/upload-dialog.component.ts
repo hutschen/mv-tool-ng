@@ -117,18 +117,18 @@ export class UploadDialogComponent {
   onUpload(): void {
     if (this.file) {
       // handle upload
-      const subscription = this._callback(this.file).subscribe(
-        (uploadState) => {
+      const subscription = this._callback(this.file).subscribe({
+        next: (uploadState) => {
           this.uploadState = uploadState;
           if (uploadState.state === 'done') {
             this.onClose();
           }
         },
-        (error: any) => {
+        error: (error: any) => {
           this.onClose();
           throw error;
-        }
-      );
+        },
+      });
 
       // handle when dialog is closed
       this._dialogRef.afterClosed().subscribe(() => {

@@ -105,13 +105,20 @@
 
     <!-- Options column -->
     <ng-container matColumnDef="options">
-      <th mat-header-cell *matHeaderCellDef></th>
+      <th mat-header-cell *matHeaderCellDef>
+        <mvtool-table-options [table]="table"></mvtool-table-options>
+      </th>
       <td mat-cell *matCellDef="let row">
-        <mvtool-table-options
+        <mvtool-table-row-options
           (edit)="onEditRequirement(row.data)"
           (delete)="onDeleteRequirement(row.data)"
         >
-        </mvtool-table-options>
+          <button mat-menu-item (click)="onEditCompliance(row.data)">
+            <mat-icon>assured_workload</mat-icon>
+            Set compliance status
+          </button>
+          <mat-divider></mat-divider>
+        </mvtool-table-row-options>
       </td>
     </ng-container>
   </mvtool-table>
