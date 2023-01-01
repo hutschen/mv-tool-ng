@@ -17,7 +17,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'mvtool-login-view',
+  selector: 'mvtool-user-login-view',
   template: `
     <div class="content fx-column fx-center-center">
       <mat-card class="user-login-card">
@@ -28,7 +28,7 @@ import { Router } from '@angular/router';
   styleUrls: ['../shared/styles/flex.css'],
   styles: ['.user-login-card { width: 500px; margin: 20px; }'],
 })
-export class LoginViewComponent implements OnInit {
+export class UserLoginViewComponent implements OnInit {
   constructor(protected _router: Router) {}
 
   onLoggedIn(): void {

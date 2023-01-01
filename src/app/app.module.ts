@@ -22,7 +22,7 @@ import { ProjectModule } from './project/project.module';
 import { MaterialModule } from './material/material.module';
 import { UserModule } from './user/user.module';
 import { AppToolbarComponent } from './app-toolbar.component';
-import { LoginViewComponent } from './views/login-view.component';
+import { UserLoginViewComponent } from './views/login-view.component';
 import { ProjectsViewComponent } from './views/projects-view.component';
 import { AuthGuard } from './auth.guard';
 import { JiraProjectModule } from './jira-project/jira-project.module';
@@ -85,7 +85,7 @@ const routes = [
     canActivate: [AuthGuard, RequirementIdGuard],
     component: MeasureViewComponent,
   },
-  { path: 'login', component: LoginViewComponent },
+  { path: 'login', component: UserLoginViewComponent },
   { path: '**', redirectTo: 'projects' },
 ];
 
@@ -93,7 +93,7 @@ const routes = [
   declarations: [
     AppComponent,
     AppToolbarComponent,
-    LoginViewComponent,
+    UserLoginViewComponent,
     ProjectsViewComponent,
     RequirementViewComponent,
     DocumentViewComponent,
