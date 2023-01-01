@@ -18,10 +18,14 @@ import { CommonModule } from '@angular/common';
 import { MaterialModule } from '../material/material.module';
 import { UserMenuComponent } from './user-menu.component';
 import { UserLoginComponent } from './user-login.component';
+import { UserLoginViewComponent } from './user-login-view.component';
+import { RouterModule } from '@angular/router';
+
+const routes = [{ path: 'login', component: UserLoginViewComponent }];
 
 @NgModule({
-  declarations: [UserMenuComponent, UserLoginComponent],
-  imports: [CommonModule, MaterialModule],
-  exports: [UserMenuComponent, UserLoginComponent],
+  declarations: [UserMenuComponent, UserLoginComponent, UserLoginViewComponent],
+  imports: [CommonModule, MaterialModule, RouterModule.forChild(routes)],
+  exports: [UserMenuComponent],
 })
 export class UserModule {}
