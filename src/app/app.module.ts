@@ -22,7 +22,6 @@ import { ProjectModule } from './project/project.module';
 import { MaterialModule } from './material/material.module';
 import { UserModule } from './user/user.module';
 import { AppToolbarComponent } from './app-toolbar.component';
-import { ProjectsViewComponent } from './views/projects-view.component';
 import { AuthGuard } from './auth.guard';
 import { JiraProjectModule } from './jira-project/jira-project.module';
 import { RequirementViewComponent } from './views/requirement-view.component';
@@ -65,11 +64,6 @@ const routes = [
     component: CatalogRequirementViewComponent,
   },
   {
-    path: 'projects',
-    canActivate: [AuthGuard],
-    component: ProjectsViewComponent,
-  },
-  {
     path: 'projects/:projectId/requirements',
     canActivate: [AuthGuard, ProjectIdGuard],
     component: RequirementViewComponent,
@@ -91,7 +85,6 @@ const routes = [
   declarations: [
     AppComponent,
     AppToolbarComponent,
-    ProjectsViewComponent,
     RequirementViewComponent,
     DocumentViewComponent,
     MeasureViewComponent,
