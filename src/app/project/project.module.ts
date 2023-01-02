@@ -21,7 +21,7 @@ import { SharedModule } from '../shared/shared.module';
 import { ProjectDialogComponent } from './project-dialog.component';
 import { JiraProjectModule } from '../jira-project/jira-project.module';
 import { ProjectDetailsComponent } from './project-details.component';
-import { ProjectsViewComponent } from './projects-view.component';
+import { ProjectViewComponent } from './project-view.component';
 import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../shared/guards/auth.guard';
 
@@ -29,7 +29,7 @@ const routes = [
   {
     path: 'projects',
     canActivate: [AuthGuard],
-    component: ProjectsViewComponent,
+    component: ProjectViewComponent,
   },
 ];
 
@@ -38,7 +38,7 @@ const routes = [
     ProjectTableComponent,
     ProjectDialogComponent,
     ProjectDetailsComponent,
-    ProjectsViewComponent,
+    ProjectViewComponent,
   ],
   imports: [
     CommonModule,
