@@ -29,7 +29,6 @@ import { SharedModule } from './shared/shared.module';
 import { CatalogIdGuard, CatalogModuleIdGuard } from './shared/guards/id.guard';
 import { DocumentModule } from './document/document.module';
 import { MeasureModule } from './measure/measure.module';
-import { CatalogViewComponent } from './views/catalog-view.component';
 import { AppNavbarComponent } from './app-navbar.component';
 import { CatalogModule } from './catalog/catalog.module';
 import { BreadcrumbTrailComponent } from './breadcrumb-trail.component';
@@ -40,11 +39,6 @@ import { CatalogRequirementModule } from './catalog-requirement/catalog-requirem
 import { ErrorService } from './shared/services/error.service';
 
 const routes = [
-  {
-    path: 'catalogs',
-    canActivate: [AuthGuard],
-    component: CatalogViewComponent,
-  },
   {
     path: 'catalogs/:catalogId/catalog-modules',
     canActivate: [AuthGuard, CatalogIdGuard],
@@ -62,7 +56,6 @@ const routes = [
   declarations: [
     AppComponent,
     AppToolbarComponent,
-    CatalogViewComponent,
     AppNavbarComponent,
     BreadcrumbTrailComponent,
     CatalogModuleViewComponent,
