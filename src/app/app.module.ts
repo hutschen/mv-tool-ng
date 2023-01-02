@@ -25,14 +25,12 @@ import { AppToolbarComponent } from './app-toolbar.component';
 import { AuthGuard } from './shared/guards/auth.guard';
 import { JiraProjectModule } from './jira-project/jira-project.module';
 import { DocumentViewComponent } from './views/document-view.component';
-import { MeasureViewComponent } from './views/measure-view.component';
 import { RequirementModule } from './requirement/requirement.module';
 import { SharedModule } from './shared/shared.module';
 import {
   CatalogIdGuard,
   CatalogModuleIdGuard,
   ProjectIdGuard,
-  RequirementIdGuard,
 } from './shared/guards/id.guard';
 import { DocumentModule } from './document/document.module';
 import { MeasureModule } from './measure/measure.module';
@@ -67,11 +65,6 @@ const routes = [
     canActivate: [AuthGuard, ProjectIdGuard],
     component: DocumentViewComponent,
   },
-  {
-    path: 'requirements/:requirementId/measures',
-    canActivate: [AuthGuard, RequirementIdGuard],
-    component: MeasureViewComponent,
-  },
   { path: '**', redirectTo: 'projects' },
 ];
 
@@ -80,7 +73,6 @@ const routes = [
     AppComponent,
     AppToolbarComponent,
     DocumentViewComponent,
-    MeasureViewComponent,
     CatalogViewComponent,
     AppNavbarComponent,
     BreadcrumbTrailComponent,
