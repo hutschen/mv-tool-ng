@@ -23,7 +23,7 @@ import { JiraProjectModule } from '../jira-project/jira-project.module';
 import { ProjectDetailsComponent } from './project-details.component';
 import { ProjectsViewComponent } from './projects-view.component';
 import { RouterModule } from '@angular/router';
-import { AuthGuard } from '../auth.guard';
+import { AuthGuard } from '../shared/guards/auth.guard';
 
 const routes = [
   {

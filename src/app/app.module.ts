@@ -22,7 +22,7 @@ import { ProjectModule } from './project/project.module';
 import { MaterialModule } from './material/material.module';
 import { UserModule } from './user/user.module';
 import { AppToolbarComponent } from './app-toolbar.component';
-import { AuthGuard } from './auth.guard';
+import { AuthGuard } from './shared/guards/auth.guard';
 import { JiraProjectModule } from './jira-project/jira-project.module';
 import { RequirementViewComponent } from './views/requirement-view.component';
 import { DocumentViewComponent } from './views/document-view.component';
@@ -34,7 +34,7 @@ import {
   CatalogModuleIdGuard,
   ProjectIdGuard,
   RequirementIdGuard,
-} from './shared/id.guard';
+} from './shared/guards/id.guard';
 import { DocumentModule } from './document/document.module';
 import { MeasureModule } from './measure/measure.module';
 import { CatalogViewComponent } from './views/catalog-view.component';

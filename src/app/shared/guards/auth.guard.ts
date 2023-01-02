@@ -20,9 +20,8 @@ import {
   Router,
   RouterStateSnapshot,
 } from '@angular/router';
-import { AuthService } from './shared/services/auth.service';
+import { AuthService } from '../services/auth.service';
 
-// TODO: Move auth guard to shared module
 @Injectable({
   providedIn: 'root',
 })
