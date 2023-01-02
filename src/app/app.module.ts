@@ -32,18 +32,12 @@ import { MeasureModule } from './measure/measure.module';
 import { AppNavbarComponent } from './app-navbar.component';
 import { CatalogModule } from './catalog/catalog.module';
 import { BreadcrumbTrailComponent } from './breadcrumb-trail.component';
-import { CatalogModuleViewComponent } from './views/catalog-module-view.component';
 import { CatalogModuleModule } from './catalog-module/catalog-module.module';
 import { CatalogRequirementViewComponent } from './views/catalog-requirement-view.component';
 import { CatalogRequirementModule } from './catalog-requirement/catalog-requirement.module';
 import { ErrorService } from './shared/services/error.service';
 
 const routes = [
-  {
-    path: 'catalogs/:catalogId/catalog-modules',
-    canActivate: [AuthGuard, CatalogIdGuard],
-    component: CatalogModuleViewComponent,
-  },
   {
     path: 'catalog-modules/:catalogModuleId/catalog-requirements',
     canActivate: [AuthGuard, CatalogModuleIdGuard],
@@ -58,7 +52,6 @@ const routes = [
     AppToolbarComponent,
     AppNavbarComponent,
     BreadcrumbTrailComponent,
-    CatalogModuleViewComponent,
     CatalogRequirementViewComponent,
   ],
   imports: [
