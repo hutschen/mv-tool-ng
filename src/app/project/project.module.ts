@@ -21,14 +21,32 @@ import { SharedModule } from '../shared/shared.module';
 import { ProjectDialogComponent } from './project-dialog.component';
 import { JiraProjectModule } from '../jira-project/jira-project.module';
 import { ProjectDetailsComponent } from './project-details.component';
+import { ProjectViewComponent } from './project-view.component';
+import { RouterModule } from '@angular/router';
+import { AuthGuard } from '../shared/guards/auth.guard';
+
+const routes = [
+  {
+    path: 'projects',
+    canActivate: [AuthGuard],
+    component: ProjectViewComponent,
+  },
+];
 
 @NgModule({
   declarations: [
     ProjectTableComponent,
     ProjectDialogComponent,
     ProjectDetailsComponent,
+    ProjectViewComponent,
   ],
-  imports: [CommonModule, SharedModule, MaterialModule, JiraProjectModule],
-  exports: [ProjectTableComponent, ProjectDetailsComponent],
+  imports: [
+    CommonModule,
+    SharedModule,
+    MaterialModule,
+    JiraProjectModule,
+    RouterModule.forChild(routes),
+  ],
+  exports: [ProjectDetailsComponent],
 })
 export class ProjectModule {}

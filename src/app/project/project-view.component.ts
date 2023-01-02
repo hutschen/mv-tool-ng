@@ -18,14 +18,14 @@ import { Router } from '@angular/router';
 import { Project } from '../shared/services/project.service';
 
 @Component({
-  selector: 'mvtool-projects-view',
+  selector: 'mvtool-project-view',
   template: `
     <mvtool-project-table (projectClicked)="onProjectClicked($event)">
     </mvtool-project-table>
   `,
   styles: [],
 })
-export class ProjectsViewComponent implements OnInit {
+export class ProjectViewComponent implements OnInit {
   constructor(protected _router: Router) {}
 
   ngOnInit(): void {}

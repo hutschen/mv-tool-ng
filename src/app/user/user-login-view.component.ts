@@ -13,25 +13,27 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
-import { CatalogViewComponent } from './catalog-view.component';
+@Component({
+  selector: 'mvtool-user-login-view',
+  template: `
+    <div class="content fx-column fx-center-center">
+      <mat-card class="user-login-card">
+        <mvtool-user-login (loggedIn)="onLoggedIn()"></mvtool-user-login>
+      </mat-card>
+    </div>
+  `,
+  styleUrls: ['../shared/styles/flex.css'],
+  styles: ['.user-login-card { width: 500px; margin: 20px; }'],
+})
+export class UserLoginViewComponent implements OnInit {
+  constructor(protected _router: Router) {}
 
-describe('CatalogViewComponent', () => {
-  let component: CatalogViewComponent;
-  let fixture: ComponentFixture<CatalogViewComponent>;
+  onLoggedIn(): void {
+    this._router.navigate(['/']);
+  }
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [CatalogViewComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(CatalogViewComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  xit('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+  ngOnInit(): void {}
+}

@@ -13,25 +13,30 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Injectable } from '@angular/core';
+import {
+  ActivatedRouteSnapshot,
+  CanActivate,
+  Router,
+  RouterStateSnapshot,
+} from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
-import { CatalogModuleViewComponent } from './catalog-module-view.component';
+@Injectable({
+  providedIn: 'root',
+})
+export class AuthGuard implements CanActivate {
+  constructor(protected _auth: AuthService, protected _router: Router) {}
 
-describe('CatalogModuleViewComponent', () => {
-  let component: CatalogModuleViewComponent;
-  let fixture: ComponentFixture<CatalogModuleViewComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [CatalogModuleViewComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(CatalogModuleViewComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  xit('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): boolean {
+    if (this._auth.isLoggedIn) {
+      return true;
+    } else {
+      this._router.navigate(['/login']);
+      return false;
+    }
+  }
+}

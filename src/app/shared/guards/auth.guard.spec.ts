@@ -21,7 +21,7 @@ import {
 } from '@angular/router';
 
 import { AuthGuard } from './auth.guard';
-import { AuthService, IAccessToken } from './shared/services/auth.service';
+import { AuthService, IAccessToken } from '../services/auth.service';
 
 describe('AuthGuard', () => {
   let sut: AuthGuard;
