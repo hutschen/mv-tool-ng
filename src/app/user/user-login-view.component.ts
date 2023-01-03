@@ -25,7 +25,7 @@ import { Router } from '@angular/router';
       </mat-card>
     </div>
   `,
-  styleUrls: ['../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: ['.user-login-card { width: 500px; margin: 20px; }'],
 })
 export class UserLoginViewComponent implements OnInit {

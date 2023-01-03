@@ -53,7 +53,7 @@ export class DocumentDialogService {
 @Component({
   selector: 'mvtool-document-dialog',
   templateUrl: './document-dialog.component.html',
-  styleUrls: ['../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class DocumentDialogComponent {

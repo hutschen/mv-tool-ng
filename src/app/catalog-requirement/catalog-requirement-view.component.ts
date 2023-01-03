@@ -35,7 +35,7 @@ import {
       ></mvtool-catalog-requirement-table>
     </div>
   `,
-  styleUrls: ['../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: [],
 })
 export class CatalogRequirementViewComponent implements OnInit {

@@ -31,7 +31,7 @@ import { Catalog, CatalogService } from '../shared/services/catalog.service';
       ></mvtool-catalog-module-table>
     </div>
   `,
-  styleUrls: ['../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: [],
 })
 export class CatalogModuleViewComponent implements OnInit {

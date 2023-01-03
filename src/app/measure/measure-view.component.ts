@@ -39,7 +39,7 @@ import {
       <mat-spinner></mat-spinner>
     </div>
   `,
-  styleUrls: ['../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: [],
 })
 export class MeasureViewComponent implements OnInit {

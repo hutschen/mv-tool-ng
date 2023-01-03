@@ -89,7 +89,7 @@ export class VerificationDialogService {
       </div>
     </mvtool-create-edit-dialog>
   `,
-  styleUrls: ['../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class VerificationDialogComponent {

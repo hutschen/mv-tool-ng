@@ -53,7 +53,7 @@ export class CatalogModuleDialogService {
 @Component({
   selector: 'mvtool-catalog-module-dialog',
   templateUrl: './catalog-module-dialog.component.html',
-  styleUrls: ['../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class CatalogModuleDialogComponent {

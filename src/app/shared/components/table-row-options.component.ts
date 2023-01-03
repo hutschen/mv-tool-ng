@@ -45,7 +45,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
       </mat-menu>
     </div>
   `,
-  styleUrls: ['../styles/flex.css'],
+  styleUrls: ['../styles/flex.scss'],
   styles: [],
 })
 export class TableRowOptionsComponent {

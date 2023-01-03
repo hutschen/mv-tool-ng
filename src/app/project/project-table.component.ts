@@ -23,7 +23,7 @@ import { ProjectDialogService } from './project-dialog.component';
 @Component({
   selector: 'mvtool-project-table',
   templateUrl: './project-table.component.html',
-  styleUrls: ['../shared/styles/table.css', '../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/table.scss', '../shared/styles/flex.scss'],
   styles: [],
 })
 export class ProjectTableComponent implements OnInit {

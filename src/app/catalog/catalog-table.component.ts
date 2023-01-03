@@ -24,9 +24,9 @@ import { CatalogDialogService } from './catalog-dialog.component';
   selector: 'mvtool-catalog-table',
   templateUrl: './catalog-table.component.html',
   styleUrls: [
-    '../shared/styles/table.css',
-    '../shared/styles/flex.css',
-    '../shared/styles/truncate.css',
+    '../shared/styles/table.scss',
+    '../shared/styles/flex.scss',
+    '../shared/styles/truncate.scss',
   ],
   styles: [],
 })

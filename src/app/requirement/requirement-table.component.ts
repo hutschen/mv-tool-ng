@@ -32,9 +32,9 @@ import { RequirementImportDialogService } from './requirement-import-dialog.comp
   selector: 'mvtool-requirement-table',
   templateUrl: './requirement-table.component.html',
   styleUrls: [
-    '../shared/styles/table.css',
-    '../shared/styles/flex.css',
-    '../shared/styles/truncate.css',
+    '../shared/styles/table.scss',
+    '../shared/styles/flex.scss',
+    '../shared/styles/truncate.scss',
   ],
 })
 export class RequirementTableComponent implements OnInit {

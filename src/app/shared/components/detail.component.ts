@@ -16,7 +16,7 @@ import { Subject, takeUntil } from 'rxjs';
       </div>
     </div>
   `,
-  styleUrls: ['../styles/flex.css'],
+  styleUrls: ['../styles/flex.scss'],
   styles: [],
 })
 export class DetailComponent implements OnDestroy {

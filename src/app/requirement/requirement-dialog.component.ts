@@ -53,7 +53,7 @@ export class RequirementDialogService {
 @Component({
   selector: 'mvtool-requirement-dialog',
   templateUrl: './requirement-dialog.component.html',
-  styleUrls: ['../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class RequirementDialogComponent implements OnInit {

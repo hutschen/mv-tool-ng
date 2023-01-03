@@ -46,7 +46,7 @@ export class ComplianceDialogService {
 @Component({
   selector: 'mvtool-compliance-dialog',
   templateUrl: './compliance-dialog.component.html',
-  styleUrls: ['../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class ComplianceDialogComponent {

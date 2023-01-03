@@ -38,7 +38,7 @@ import { ProjectDialogComponent } from './project-dialog.component';
       </div>
     </div>
   `,
-  styleUrls: ['../shared/styles/flex.css', '../shared/styles/truncate.css'],
+  styleUrls: ['../shared/styles/flex.scss', '../shared/styles/truncate.scss'],
   styles: ['h1 { margin: 0; }', '.project-card { margin: 20px; }'],
 })
 export class ProjectDetailsComponent {

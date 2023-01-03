@@ -39,7 +39,7 @@ import { Requirement } from '../shared/services/requirement.service';
       <mat-spinner></mat-spinner>
     </div>
   `,
-  styleUrls: ['../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: [],
 })
 export class RequirementViewComponent implements OnInit {
