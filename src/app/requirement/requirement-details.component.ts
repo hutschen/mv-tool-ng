@@ -34,10 +34,11 @@ import {
           <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="onEditRequirement()">
               <mat-icon>edit_note</mat-icon>
-              Edit Requirement
+              Edit requirement
             </button>
             <button mat-menu-item (click)="onEditCompliance()">
-              <mat-icon>edit_note</mat-icon>Set Compliance
+              <mat-icon>assured_workload</mat-icon>
+              Set compliance status
             </button>
           </mat-menu>
         </button>
