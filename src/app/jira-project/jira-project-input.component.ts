@@ -61,18 +61,14 @@ export class JiraProjectInputComponent implements OnInit {
   constructor(protected _jiraProjectService: JiraProjectService) {}
 
   ngOnInit() {
-    if (!this.locked) {
-      this._jiraProjectService.getJiraProjects().subscribe((jiraProjects) => {
-        this.jiraProjects = jiraProjects;
-      });
-    }
+    this._jiraProjectService.getJiraProjects().subscribe((jiraProjects) => {
+      this.jiraProjects = jiraProjects;
+    });
   }
 
   unlock() {
-    this._jiraProjectService.getJiraProjects().subscribe((jiraProjects) => {
-      this.jiraProjects = jiraProjects;
-      this.locked = false;
-    });
+    this.locked = false;
+    this.jiraProjectId_ = null;
   }
 
   get jiraProjectId_(): string | null {
