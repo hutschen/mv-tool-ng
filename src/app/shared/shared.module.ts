@@ -32,6 +32,7 @@ import { TableFilterHeaderComponent } from './components/table-filter-header.com
 import { AutocompleteComponent } from './components/autocomplete.component';
 import { ShowHideDialogComponent } from './components/show-hide-dialog.component';
 import { TableOptionsComponent } from './components/table-options.component';
+import { ComplianceDialogComponent } from './components/compliance-dialog.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { TableOptionsComponent } from './components/table-options.component';
     AutocompleteComponent,
     ShowHideDialogComponent,
     TableOptionsComponent,
+    ComplianceDialogComponent,
   ],
   imports: [CommonModule, MaterialModule],
   exports: [
