@@ -24,7 +24,7 @@ import {
   Requirement,
   RequirementService,
 } from '../shared/services/requirement.service';
-import { ComplianceDialogService } from './compliance-dialog.component';
+import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
 import { RequirementDialogService } from './requirement-dialog.component';
 import { RequirementImportDialogService } from './requirement-import-dialog.component';
 
