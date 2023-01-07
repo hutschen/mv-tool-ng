@@ -74,6 +74,7 @@ export class RequirementTableComponent implements OnInit {
       optional: true,
       toValue: (r) => r.catalog_requirement?.gs_verantwortliche,
     },
+    { id: 'milestone', label: 'Milestone', optional: true },
     { id: 'target_object', label: 'Target Object', optional: true },
     {
       id: 'compliance_status',
@@ -81,7 +82,6 @@ export class RequirementTableComponent implements OnInit {
       optional: true,
       toStr: (r) => (r.compliance_status ? r.compliance_status : 'Not set'),
     },
-    { id: 'milestone', label: 'Milestone', optional: true },
     { id: 'compliance_comment', label: 'Compliance Comment', optional: true },
     {
       id: 'completion',
