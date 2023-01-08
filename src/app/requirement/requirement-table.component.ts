@@ -94,6 +94,23 @@ export class RequirementTableComponent implements OnInit {
           : 'Nothing to be completed',
       toBool: (r) => r.percentComplete !== null,
     },
+    {
+      id: 'alert',
+      label: 'Alert',
+      optional: true,
+      toValue: (r) =>
+        !!(
+          r.compliance_status &&
+          r.compliance_status_hint !== r.compliance_status
+        ),
+      toStr: (r) =>
+        !!(
+          r.compliance_status &&
+          r.compliance_status_hint !== r.compliance_status
+        )
+          ? `Compliance status should be ${r.compliance_status_hint}.`
+          : '',
+    },
     { id: 'options' },
   ]);
   protected _dataSubject = new ReplaySubject<Requirement[]>(1);
