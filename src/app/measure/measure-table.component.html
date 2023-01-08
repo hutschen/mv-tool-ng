@@ -127,6 +127,10 @@
             <mat-icon>assured_workload</mat-icon>
             Set compliance status
           </button>
+          <button mat-menu-item (click)="onEditVerification(row.data)">
+            <mat-icon>verified</mat-icon>
+            Set verification status
+          </button>
           <mat-divider></mat-divider>
         </mvtool-table-row-options>
       </td>
