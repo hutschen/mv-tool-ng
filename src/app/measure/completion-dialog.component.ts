@@ -45,8 +45,43 @@ export class CompletionDialogService {
 
 @Component({
   selector: 'mvtool-completion-dialog',
-  template: ` <p>completion-dialog works!</p> `,
-  styles: [],
+  template: `
+    <mvtool-create-edit-dialog
+      [createMode]="false"
+      objectName="Completion"
+      (save)="onSave($event)"
+      (cancel)="onCancel()"
+    >
+      <div class="fx-column">
+        <!-- Completion status -->
+        <mat-form-field appearance="fill">
+          <mat-label>Select completion status</mat-label>
+          <mat-select name="completionStatus" [(ngModel)]="completionStatus">
+            <mat-option [value]="null">None</mat-option>
+            <mat-option
+              *ngFor="let completionStatus of completionStates"
+              [value]="completionStatus"
+            >
+              {{ completionStatus | titlecase }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Completion comment -->
+        <mat-form-field appearance="fill">
+          <mat-label>Completion comment</mat-label>
+          <textarea
+            name="completionComment"
+            matInput
+            [(ngModel)]="measureInput.completion_comment"
+            [disabled]="completionCommentDisabled"
+          ></textarea>
+        </mat-form-field>
+      </div>
+    </mvtool-create-edit-dialog>
+  `,
+  styleUrls: ['../shared/styles/flex.scss'],
+  styles: ['textarea { min-height: 100px; }'],
 })
 export class CompletionDialogComponent {
   completionStates = ['open', 'in progress', 'complete'];
