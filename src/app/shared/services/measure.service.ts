@@ -91,6 +91,8 @@ export class Measure implements IMeasure {
       reference: this.reference,
       summary: this.summary,
       description: this.description,
+      compliance_status: this.compliance_status,
+      compliance_comment: this.compliance_comment,
       verification_method: this.verification_method,
       verification_comment: this.verification_comment,
       verified: this.verified,
