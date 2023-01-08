@@ -64,6 +64,30 @@
       </td>
     </ng-container>
 
+    <!-- Compliance column -->
+    <ng-container
+      *ngIf="columns.getColumn('compliance_status') as column"
+      [matColumnDef]="column.id"
+    >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mvtool-table-filter-header
+          [column]="column"
+          [table]="table"
+        ></mvtool-table-filter-header>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <button
+          mat-button
+          matTooltip="Click to set compliance status"
+          (click)="
+            onEditCompliance(row.data); $event.stopImmediatePropagation()
+          "
+        >
+          {{ column.toStr(row.data) }}
+        </button>
+      </td>
+    </ng-container>
+
     <!-- Verified column -->
     <ng-container
       *ngIf="columns.getColumn('verified') as column"
@@ -99,6 +123,11 @@
           (edit)="onEditMeasure(row.data)"
           (delete)="onDeleteMeasure(row.data)"
         >
+          <button mat-menu-item (click)="onEditCompliance(row.data)">
+            <mat-icon>assured_workload</mat-icon>
+            Set compliance status
+          </button>
+          <mat-divider></mat-divider>
         </mvtool-table-row-options>
       </td>
     </ng-container>
