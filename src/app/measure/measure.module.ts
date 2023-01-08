@@ -27,6 +27,7 @@ import { RouterModule } from '@angular/router';
 import { AuthGuard } from '../shared/guards/auth.guard';
 import { RequirementIdGuard } from '../shared/guards/id.guard';
 import { RequirementModule } from '../requirement/requirement.module';
+import { CompletionDialogComponent } from './completion-dialog.component';
 
 const routes = [
   {
@@ -42,6 +43,7 @@ const routes = [
     MeasureDialogComponent,
     VerificationDialogComponent,
     MeasureViewComponent,
+    CompletionDialogComponent,
   ],
   imports: [
     CommonModule,

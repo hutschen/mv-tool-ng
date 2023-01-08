@@ -32,6 +32,8 @@ export interface IMeasureInput {
   description?: string | null;
   compliance_status?: string | null;
   compliance_comment?: string | null;
+  completion_status?: string | null;
+  completion_comment?: string | null;
   verification_method?: string | null;
   verification_comment?: string | null;
   verified: boolean;
@@ -46,6 +48,8 @@ export interface IMeasure {
   description?: string | null;
   compliance_status?: string | null;
   compliance_comment?: string | null;
+  completion_status?: string | null;
+  completion_comment?: string | null;
   verification_method?: string | null;
   verification_comment?: string | null;
   verified: boolean;
@@ -62,6 +66,8 @@ export class Measure implements IMeasure {
   description: string | null;
   compliance_status: string | null;
   compliance_comment: string | null;
+  completion_status: string | null;
+  completion_comment: string | null;
   verification_method: string | null;
   verification_comment: string | null;
   verified: boolean;
@@ -77,6 +83,8 @@ export class Measure implements IMeasure {
     this.description = measure.description ?? null;
     this.compliance_status = measure.compliance_status ?? null;
     this.compliance_comment = measure.compliance_comment ?? null;
+    this.completion_status = measure.completion_status ?? null;
+    this.completion_comment = measure.completion_comment ?? null;
     this.verification_method = measure.verification_method ?? null;
     this.verification_comment = measure.verification_comment ?? null;
     this.verified = measure.verified;
@@ -93,12 +101,18 @@ export class Measure implements IMeasure {
       description: this.description,
       compliance_status: this.compliance_status,
       compliance_comment: this.compliance_comment,
+      completion_status: this.completion_status,
+      completion_comment: this.completion_comment,
       verification_method: this.verification_method,
       verification_comment: this.verification_comment,
       verified: this.verified,
       jira_issue_id: this.jira_issue_id,
       document_id: this.document ? this.document.id : null,
     };
+  }
+
+  get completed(): boolean {
+    return this.completion_status === 'completed';
   }
 
   get hasLinkedJiraIssue(): boolean {

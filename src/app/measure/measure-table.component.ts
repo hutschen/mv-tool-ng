@@ -24,6 +24,7 @@ import { Requirement } from '../shared/services/requirement.service';
 import { MeasureDialogService } from './measure-dialog.component';
 import { VerificationDialogService } from './verification-dialog.component';
 import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
+import { CompletionDialogService } from './completion-dialog.component';
 
 @Component({
   selector: 'mvtool-measure-table',
@@ -66,6 +67,13 @@ export class MeasureTableComponent implements OnInit {
       toStr: (r) => (r.compliance_status ? r.compliance_status : 'Not set'),
     },
     { id: 'compliance_comment', label: 'Compliance Comment', optional: true },
+    {
+      id: 'completion_status',
+      label: 'Completion',
+      optional: true,
+      toStr: (r) => (r.completion_status ? r.completion_status : 'Not set'),
+    },
+    { id: 'completion_comment', label: 'Completion Comment', optional: true },
     { id: 'verification_method', optional: true, label: 'Verification Method' },
     {
       id: 'verification_comment',
@@ -76,7 +84,7 @@ export class MeasureTableComponent implements OnInit {
       id: 'verified',
       optional: true,
       label: 'Verified',
-      toStr: (m) => (m.verified ? 'Completed' : 'Not completed'),
+      toStr: (m) => (m.verified ? 'Verified' : 'Not verified'),
     },
     { id: 'options' },
   ]);
@@ -89,6 +97,7 @@ export class MeasureTableComponent implements OnInit {
     protected _measureService: MeasureService,
     protected _measureDialogService: MeasureDialogService,
     protected _complianceDialogService: ComplianceDialogService,
+    protected _completionDialogService: CompletionDialogService,
     protected _verificationDialogService: VerificationDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
@@ -125,6 +134,15 @@ export class MeasureTableComponent implements OnInit {
   async onEditCompliance(measure: Measure): Promise<void> {
     const dialogRef =
       this._complianceDialogService.openComplianceDialog(measure);
+    const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
+    if (updatedMeasure) {
+      await this.onReloadMeasures();
+    }
+  }
+
+  async onEditCompletion(measure: Measure): Promise<void> {
+    const dialogRef =
+      this._completionDialogService.openCompletionDialog(measure);
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
       await this.onReloadMeasures();
