@@ -19,7 +19,6 @@ import { RequirementTableComponent } from './requirement-table.component';
 import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
 import { RequirementDialogComponent } from './requirement-dialog.component';
-import { ComplianceDialogComponent } from './compliance-dialog.component';
 import { RequirementDetailsComponent } from './requirement-details.component';
 import { RequirementImportDialogComponent } from './requirement-import-dialog.component';
 import { RequirementViewComponent } from './requirement-view.component';
@@ -40,7 +39,6 @@ const routes = [
   declarations: [
     RequirementTableComponent,
     RequirementDialogComponent,
-    ComplianceDialogComponent,
     RequirementDetailsComponent,
     RequirementImportDialogComponent,
     RequirementViewComponent,

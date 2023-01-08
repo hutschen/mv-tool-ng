@@ -30,6 +30,8 @@ export interface IMeasureInput {
   reference?: string | null;
   summary: string;
   description?: string | null;
+  compliance_status?: string | null;
+  compliance_comment?: string | null;
   verification_method?: string | null;
   verification_comment?: string | null;
   verified: boolean;
@@ -42,6 +44,8 @@ export interface IMeasure {
   reference?: string | null;
   summary: string;
   description?: string | null;
+  compliance_status?: string | null;
+  compliance_comment?: string | null;
   verification_method?: string | null;
   verification_comment?: string | null;
   verified: boolean;
@@ -56,6 +60,8 @@ export class Measure implements IMeasure {
   reference: string | null;
   summary: string;
   description: string | null;
+  compliance_status: string | null;
+  compliance_comment: string | null;
   verification_method: string | null;
   verification_comment: string | null;
   verified: boolean;
@@ -69,6 +75,8 @@ export class Measure implements IMeasure {
     this.reference = measure.reference ?? null;
     this.summary = measure.summary;
     this.description = measure.description ?? null;
+    this.compliance_status = measure.compliance_status ?? null;
+    this.compliance_comment = measure.compliance_comment ?? null;
     this.verification_method = measure.verification_method ?? null;
     this.verification_comment = measure.verification_comment ?? null;
     this.verified = measure.verified;
@@ -83,6 +91,8 @@ export class Measure implements IMeasure {
       reference: this.reference,
       summary: this.summary,
       description: this.description,
+      compliance_status: this.compliance_status,
+      compliance_comment: this.compliance_comment,
       verification_method: this.verification_method,
       verification_comment: this.verification_comment,
       verified: this.verified,

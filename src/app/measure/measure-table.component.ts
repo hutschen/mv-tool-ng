@@ -23,6 +23,7 @@ import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Requirement } from '../shared/services/requirement.service';
 import { MeasureDialogService } from './measure-dialog.component';
 import { VerificationDialogService } from './verification-dialog.component';
+import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
 
 @Component({
   selector: 'mvtool-measure-table',
@@ -58,6 +59,13 @@ export class MeasureTableComponent implements OnInit {
         }
       },
     },
+    {
+      id: 'compliance_status',
+      label: 'Compliance',
+      optional: true,
+      toStr: (r) => (r.compliance_status ? r.compliance_status : 'Not set'),
+    },
+    { id: 'compliance_comment', label: 'Compliance Comment', optional: true },
     { id: 'verification_method', optional: true, label: 'Verification Method' },
     {
       id: 'verification_comment',
@@ -66,6 +74,7 @@ export class MeasureTableComponent implements OnInit {
     },
     {
       id: 'verified',
+      optional: true,
       label: 'Verified',
       toStr: (m) => (m.verified ? 'Completed' : 'Not completed'),
     },
@@ -79,6 +88,7 @@ export class MeasureTableComponent implements OnInit {
   constructor(
     protected _measureService: MeasureService,
     protected _measureDialogService: MeasureDialogService,
+    protected _complianceDialogService: ComplianceDialogService,
     protected _verificationDialogService: VerificationDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
@@ -110,6 +120,15 @@ export class MeasureTableComponent implements OnInit {
 
   async onEditMeasure(measure: Measure): Promise<void> {
     await this._createOrEditMeasure(measure);
+  }
+
+  async onEditCompliance(measure: Measure): Promise<void> {
+    const dialogRef =
+      this._complianceDialogService.openComplianceDialog(measure);
+    const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
+    if (updatedMeasure) {
+      await this.onReloadMeasures();
+    }
   }
 
   async onEditVerification(measure: Measure): Promise<void> {

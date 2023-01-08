@@ -16,7 +16,7 @@
 import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Requirement } from '../shared/services/requirement.service';
-import { ComplianceDialogComponent } from './compliance-dialog.component';
+import { ComplianceDialogComponent } from '../shared/components/compliance-dialog.component';
 import {
   IRequirementDialogData,
   RequirementDialogComponent,

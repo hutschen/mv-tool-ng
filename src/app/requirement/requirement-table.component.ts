@@ -24,7 +24,7 @@ import {
   Requirement,
   RequirementService,
 } from '../shared/services/requirement.service';
-import { ComplianceDialogService } from './compliance-dialog.component';
+import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
 import { RequirementDialogService } from './requirement-dialog.component';
 import { RequirementImportDialogService } from './requirement-import-dialog.component';
 
@@ -74,6 +74,7 @@ export class RequirementTableComponent implements OnInit {
       optional: true,
       toValue: (r) => r.catalog_requirement?.gs_verantwortliche,
     },
+    { id: 'milestone', label: 'Milestone', optional: true },
     { id: 'target_object', label: 'Target Object', optional: true },
     {
       id: 'compliance_status',
@@ -81,7 +82,6 @@ export class RequirementTableComponent implements OnInit {
       optional: true,
       toStr: (r) => (r.compliance_status ? r.compliance_status : 'Not set'),
     },
-    { id: 'milestone', label: 'Milestone', optional: true },
     { id: 'compliance_comment', label: 'Compliance Comment', optional: true },
     {
       id: 'completion',
@@ -93,6 +93,23 @@ export class RequirementTableComponent implements OnInit {
           ? `${r.percentComplete}% complete`
           : 'Nothing to be completed',
       toBool: (r) => r.percentComplete !== null,
+    },
+    {
+      id: 'alert',
+      label: 'Alert',
+      optional: true,
+      toValue: (r) =>
+        !!(
+          r.compliance_status &&
+          r.compliance_status_hint !== r.compliance_status
+        ),
+      toStr: (r) =>
+        !!(
+          r.compliance_status &&
+          r.compliance_status_hint !== r.compliance_status
+        )
+          ? `Compliance status should be ${r.compliance_status_hint}.`
+          : '',
     },
     { id: 'options' },
   ]);
