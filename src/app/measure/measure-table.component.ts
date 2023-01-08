@@ -25,6 +25,7 @@ import { MeasureDialogService } from './measure-dialog.component';
 import { VerificationDialogService } from './verification-dialog.component';
 import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
 import { capitalizeFirstLetter } from '../shared/utils';
+import { CompletionDialogService } from './completion-dialog.component';
 
 @Component({
   selector: 'mvtool-measure-table',
@@ -100,6 +101,7 @@ export class MeasureTableComponent implements OnInit {
     protected _measureService: MeasureService,
     protected _measureDialogService: MeasureDialogService,
     protected _complianceDialogService: ComplianceDialogService,
+    protected _completionDialogService: CompletionDialogService,
     protected _verificationDialogService: VerificationDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
@@ -136,6 +138,15 @@ export class MeasureTableComponent implements OnInit {
   async onEditCompliance(measure: Measure): Promise<void> {
     const dialogRef =
       this._complianceDialogService.openComplianceDialog(measure);
+    const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
+    if (updatedMeasure) {
+      await this.onReloadMeasures();
+    }
+  }
+
+  async onEditCompletion(measure: Measure): Promise<void> {
+    const dialogRef =
+      this._completionDialogService.openCompletionDialog(measure);
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
       await this.onReloadMeasures();
