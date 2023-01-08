@@ -84,7 +84,7 @@ export class CompletionDialogService {
   styles: ['textarea { min-height: 100px; }'],
 })
 export class CompletionDialogComponent {
-  completionStates = ['open', 'in progress', 'complete'];
+  completionStates = ['open', 'in progress', 'completed'];
   measureInput: IMeasureInput;
 
   constructor(
