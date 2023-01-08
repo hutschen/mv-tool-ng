@@ -64,6 +64,32 @@
       </td>
     </ng-container>
 
+    <!-- Completion column -->
+    <ng-container
+      *ngIf="columns.getColumn('completion_status') as column"
+      [matColumnDef]="column.id"
+    >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mvtool-table-filter-header
+          [column]="column"
+          [table]="table"
+        ></mvtool-table-filter-header>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <button
+          mat-button
+          matTooltip="Click to set completion status"
+          (click)="
+            onEditCompletion(row.data); $event.stopImmediatePropagation()
+          "
+        >
+          <mat-icon *ngIf="row.data.completed">check</mat-icon>
+          <mat-icon *ngIf="!row.data.completed">close</mat-icon>
+          {{ column.toStr(row.data) | titlecase }}
+        </button>
+      </td>
+    </ng-container>
+
     <!-- Compliance column -->
     <ng-container
       *ngIf="columns.getColumn('compliance_status') as column"
