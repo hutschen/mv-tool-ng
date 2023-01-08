@@ -22,6 +22,19 @@
   (cancel)="onCancel()"
 >
   <div class="fx-column">
+    <!-- Display compliance status hint -->
+    <div
+      *ngIf="complianceStatusHint && complianceStatusHint !== complianceStatus"
+      class="fx-row fx-gap-5"
+    >
+      <p><mat-icon>warning</mat-icon></p>
+      <p>
+        The automatically inferred compliance status is
+        <strong>{{ complianceStatusHint }}</strong
+        >.
+      </p>
+    </div>
+
     <!-- Compliance Status Input -->
     <mat-form-field appearance="fill">
       <mat-label>Select compliance status</mat-label>

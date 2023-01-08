@@ -86,6 +86,14 @@ export class ComplianceDialogComponent {
     return this.itemInput.compliance_status;
   }
 
+  get complianceStatusHint(): string | null {
+    if (this._item instanceof Requirement) {
+      return this._item.compliance_status_hint;
+    } else {
+      return null;
+    }
+  }
+
   onSave(form: NgForm): void {
     if (form.valid) {
       if (this._item instanceof Requirement) {
