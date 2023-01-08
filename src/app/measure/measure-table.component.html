@@ -127,6 +127,10 @@
             <mat-icon>assured_workload</mat-icon>
             Set compliance status
           </button>
+          <button mat-menu-item (click)="onEditCompletion(row.data)">
+            <mat-icon>check_circle</mat-icon>
+            Set completion status
+          </button>
           <button mat-menu-item (click)="onEditVerification(row.data)">
             <mat-icon>verified</mat-icon>
             Set verification status
