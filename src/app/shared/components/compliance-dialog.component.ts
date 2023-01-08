@@ -69,6 +69,11 @@ export class ComplianceDialogComponent {
     } else {
       this.itemInput = _item.toMeasureInput();
     }
+
+    // Initially set the compliance status the inferred value
+    if (!this.complianceStatus && this.complianceStatusHint) {
+      this.complianceStatus = this.complianceStatusHint;
+    }
   }
 
   get complianceCommentDisabled(): boolean {
