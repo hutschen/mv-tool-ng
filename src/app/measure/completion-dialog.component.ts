@@ -13,15 +13,77 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import {
+  IMeasureInput,
+  Measure,
+  MeasureService,
+} from '../shared/services/measure.service';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class CompletionDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openCompletionDialog(
+    measure: Measure
+  ): MatDialogRef<CompletionDialogComponent, Measure> {
+    const dialogRef = this._dialog.open(CompletionDialogComponent, {
+      width: '500px',
+      data: measure,
+    });
+    return dialogRef;
+  }
+}
 
 @Component({
   selector: 'mvtool-completion-dialog',
   template: ` <p>completion-dialog works!</p> `,
   styles: [],
 })
-export class CompletionDialogComponent implements OnInit {
-  constructor() {}
+export class CompletionDialogComponent {
+  completionStates = ['open', 'in progress', 'complete'];
+  measureInput: IMeasureInput;
 
-  ngOnInit(): void {}
+  constructor(
+    protected _dialogRef: MatDialogRef<CompletionDialogComponent>,
+    protected _measureService: MeasureService,
+    @Inject(MAT_DIALOG_DATA) protected _measure: Measure
+  ) {
+    this.measureInput = this._measure.toMeasureInput();
+  }
+
+  get completionCommentDisabled(): boolean {
+    return !this.measureInput.completion_status;
+  }
+
+  get completionStatus(): string | null {
+    return this.measureInput.completion_status ?? null;
+  }
+
+  set completionStatus(value: string | null) {
+    this.measureInput.completion_status = value;
+    if (this.completionCommentDisabled) {
+      this.measureInput.completion_comment = null;
+    }
+  }
+
+  onSave(form: NgForm) {
+    if (form.valid) {
+      this._measureService
+        .updateMeasure(this._measure.id, this.measureInput)
+        .subscribe((measure) => this._dialogRef.close(measure));
+    }
+  }
+
+  onCancel(): void {
+    this._dialogRef.close();
+  }
 }
