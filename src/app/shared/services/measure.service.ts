@@ -111,6 +111,10 @@ export class Measure implements IMeasure {
     };
   }
 
+  get completed(): boolean {
+    return this.completion_status === 'completed';
+  }
+
   get hasLinkedJiraIssue(): boolean {
     return this.jira_issue !== null || this.jira_issue_id !== null;
   }
