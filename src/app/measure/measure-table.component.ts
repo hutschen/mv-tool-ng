@@ -24,7 +24,6 @@ import { Requirement } from '../shared/services/requirement.service';
 import { MeasureDialogService } from './measure-dialog.component';
 import { VerificationDialogService } from './verification-dialog.component';
 import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
-import { capitalizeFirstLetter } from '../shared/utils';
 import { CompletionDialogService } from './completion-dialog.component';
 
 @Component({
@@ -72,10 +71,7 @@ export class MeasureTableComponent implements OnInit {
       id: 'completion_status',
       label: 'Completion',
       optional: true,
-      toStr: (r) =>
-        r.completion_status
-          ? capitalizeFirstLetter(r.completion_status)
-          : 'Not set',
+      toStr: (r) => (r.completion_status ? r.completion_status : 'Not set'),
     },
     { id: 'completion_comment', label: 'Completion Comment', optional: true },
     { id: 'verification_method', optional: true, label: 'Verification Method' },
