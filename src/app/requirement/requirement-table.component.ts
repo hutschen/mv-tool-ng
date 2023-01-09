@@ -163,14 +163,15 @@ export class RequirementTableComponent implements OnInit {
     },
     { id: 'options' },
   ]);
-  protected _dataSubject = new ReplaySubject<Requirement[]>(1);
-  data$: Observable<Requirement[]> = this._dataSubject.asObservable();
+  protected _dataSubject!: BehaviorSubject<Requirement[]>;
+  data$!: Observable<Requirement[]>;
   dataLoaded: boolean = false;
-  @Input() project: Project | null = null;
+  @Input() project?: Project;
   @Output() requirementClicked = new EventEmitter<Requirement>();
 
   constructor(
     protected _requirementService: RequirementService,
+    protected _requirementCachingService: RequirementCachingService,
     protected _requirementDialogService: RequirementDialogService,
     protected _complianceDialogService: ComplianceDialogService,
     protected _downloadDialogService: DownloadDialogService,
@@ -180,7 +181,15 @@ export class RequirementTableComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    await this.onReloadRequirements();
+    if (this.project) {
+      this._dataSubject = this._requirementCachingService.getSubject(
+        this.project.id
+      );
+      this.data$ = this._dataSubject.asObservable();
+      await this.onReloadRequirements();
+    } else {
+      throw new Error('Project is undefined');
+    }
   }
 
   protected async _createOrEditRequirement(
@@ -195,7 +204,10 @@ export class RequirementTableComponent implements OnInit {
         dialogRef.afterClosed()
       );
       if (resultingRequirement) {
-        await this.onReloadRequirements();
+        this._requirementCachingService.createOrUpdateRequirement(
+          this.project.id,
+          resultingRequirement
+        );
       }
     } else {
       throw new Error('Project is undefined');
@@ -214,8 +226,11 @@ export class RequirementTableComponent implements OnInit {
     const dialogRef =
       this._complianceDialogService.openComplianceDialog(requirement);
     const updatedRequirement = await firstValueFrom(dialogRef.afterClosed());
-    if (updatedRequirement) {
-      await this.onReloadRequirements();
+    if (updatedRequirement && this.project) {
+      this._requirementCachingService.createOrUpdateRequirement(
+        this.project.id,
+        updatedRequirement as Requirement
+      );
     }
   }
 
@@ -225,11 +240,14 @@ export class RequirementTableComponent implements OnInit {
       `Do you really want to delete requirement "${requirement.summary}"?`
     );
     const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
-    if (confirmed) {
+    if (confirmed && this.project) {
       await firstValueFrom(
         this._requirementService.deleteRequirement(requirement.id)
       );
-      await this.onReloadRequirements();
+      this._requirementCachingService.deleteRequirement(
+        this.project.id,
+        requirement
+      );
     }
   }
 
