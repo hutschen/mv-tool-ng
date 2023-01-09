@@ -13,8 +13,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import {
+  Component,
+  EventEmitter,
+  Injectable,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
+import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { TableColumns } from '../shared/table-columns';
@@ -27,6 +34,49 @@ import {
 import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
 import { RequirementDialogService } from './requirement-dialog.component';
 import { RequirementImportDialogService } from './requirement-import-dialog.component';
+
+// FIXME: This service is only a temporary, quick and dirty solution to increase the loading speed.
+@Injectable({
+  providedIn: 'root',
+})
+export class RequirementCachingService {
+  protected _cache = new Map<number, BehaviorSubject<Requirement[]>>();
+
+  getSubject(projectId: number): BehaviorSubject<Requirement[]> {
+    let subject = this._cache.get(projectId);
+    if (!subject) {
+      subject = new BehaviorSubject<Requirement[]>([]);
+      this._cache.set(projectId, subject);
+    }
+    return subject;
+  }
+
+  createOrUpdateRequirement(projectId: number, requirement: Requirement) {
+    const subject = this.getSubject(projectId);
+    const requirements = subject.getValue();
+    if (requirements) {
+      const index = requirements.findIndex((r) => r.id === requirement.id);
+      if (index >= 0) {
+        requirements[index] = requirement;
+      } else {
+        requirements.push(requirement);
+      }
+      subject.next(requirements);
+    }
+  }
+
+  deleteRequirement(projectId: number, requirement: Requirement) {
+    const subject = this.getSubject(projectId);
+    const requirements = subject.getValue();
+    if (requirements) {
+      const index = requirements.findIndex((r) => r.id === requirement.id);
+      if (index >= 0) {
+        requirements.splice(index, 1);
+        subject.next(requirements);
+      }
+    }
+  }
+}
 
 @Component({
   selector: 'mvtool-requirement-table',
