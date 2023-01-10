@@ -13,24 +13,30 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Project } from '../shared/services/project.service';
+import { Injectable } from '@angular/core';
+import {
+  ActivatedRouteSnapshot,
+  CanActivate,
+  Router,
+  RouterStateSnapshot,
+} from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
-@Component({
-  selector: 'mvtool-projects-view',
-  template: `
-    <mvtool-project-table (projectClicked)="onProjectClicked($event)">
-    </mvtool-project-table>
-  `,
-  styles: [],
+@Injectable({
+  providedIn: 'root',
 })
-export class ProjectsViewComponent implements OnInit {
-  constructor(protected _router: Router) {}
+export class AuthGuard implements CanActivate {
+  constructor(protected _auth: AuthService, protected _router: Router) {}
 
-  ngOnInit(): void {}
-
-  onProjectClicked(project: Project) {
-    this._router.navigate(['/projects', project.id, 'requirements']);
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): boolean {
+    if (this._auth.isLoggedIn) {
+      return true;
+    } else {
+      this._router.navigate(['/login']);
+      return false;
+    }
   }
 }

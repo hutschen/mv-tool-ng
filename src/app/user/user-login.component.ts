@@ -22,7 +22,7 @@ import { AuthService } from '../shared/services/auth.service';
 @Component({
   selector: 'mvtool-user-login',
   templateUrl: './user-login.component.html',
-  styleUrls: ['../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: [],
 })
 export class UserLoginComponent {

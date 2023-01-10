@@ -57,7 +57,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
       </div>
     </div>
   `,
-  styleUrls: ['../styles/flex.css'],
+  styleUrls: ['../styles/flex.scss'],
   styles: [],
 })
 export class TableToolbarComponent {

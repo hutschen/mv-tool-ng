@@ -16,7 +16,7 @@
 import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Requirement } from '../shared/services/requirement.service';
-import { ComplianceDialogComponent } from './compliance-dialog.component';
+import { ComplianceDialogComponent } from '../shared/components/compliance-dialog.component';
 import {
   IRequirementDialogData,
   RequirementDialogComponent,
@@ -34,10 +34,11 @@ import {
           <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="onEditRequirement()">
               <mat-icon>edit_note</mat-icon>
-              Edit Requirement
+              Edit requirement
             </button>
             <button mat-menu-item (click)="onEditCompliance()">
-              <mat-icon>edit_note</mat-icon>Set Compliance
+              <mat-icon>assured_workload</mat-icon>
+              Set compliance status
             </button>
           </mat-menu>
         </button>
@@ -117,7 +118,7 @@ import {
       </div>
     </div>
   `,
-  styleUrls: ['../shared/styles/flex.css', '../shared/styles/truncate.css'],
+  styleUrls: ['../shared/styles/flex.scss', '../shared/styles/truncate.scss'],
   styles: ['h1 { margin: 0; }', '.requirement-card { margin: 20px; }'],
 })
 export class RequirementDetailsComponent {

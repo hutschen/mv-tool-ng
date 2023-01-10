@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Helmar Hutschenreuter
+// Copyright (C) 2023 Helmar Hutschenreuter
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -15,18 +15,18 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CatalogModuleViewComponent } from './catalog-module-view.component';
+import { CompletionDialogComponent } from './completion-dialog.component';
 
-describe('CatalogModuleViewComponent', () => {
-  let component: CatalogModuleViewComponent;
-  let fixture: ComponentFixture<CatalogModuleViewComponent>;
+describe('CompletionDialogComponent', () => {
+  let component: CompletionDialogComponent;
+  let fixture: ComponentFixture<CompletionDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CatalogModuleViewComponent],
+      declarations: [CompletionDialogComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(CatalogModuleViewComponent);
+    fixture = TestBed.createComponent(CompletionDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

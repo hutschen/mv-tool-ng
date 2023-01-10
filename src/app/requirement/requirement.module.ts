@@ -19,23 +19,37 @@ import { RequirementTableComponent } from './requirement-table.component';
 import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
 import { RequirementDialogComponent } from './requirement-dialog.component';
-import { ComplianceDialogComponent } from './compliance-dialog.component';
 import { RequirementDetailsComponent } from './requirement-details.component';
 import { RequirementImportDialogComponent } from './requirement-import-dialog.component';
+import { RequirementViewComponent } from './requirement-view.component';
+import { RouterModule } from '@angular/router';
+import { AuthGuard } from '../shared/guards/auth.guard';
+import { ProjectIdGuard } from '../shared/guards/id.guard';
+import { ProjectModule } from '../project/project.module';
+
+const routes = [
+  {
+    path: 'projects/:projectId/requirements',
+    canActivate: [AuthGuard, ProjectIdGuard],
+    component: RequirementViewComponent,
+  },
+];
 
 @NgModule({
   declarations: [
     RequirementTableComponent,
     RequirementDialogComponent,
-    ComplianceDialogComponent,
     RequirementDetailsComponent,
     RequirementImportDialogComponent,
+    RequirementViewComponent,
   ],
-  imports: [CommonModule, SharedModule, MaterialModule],
-  exports: [
-    RequirementTableComponent,
-    RequirementDialogComponent,
-    RequirementDetailsComponent,
+  imports: [
+    CommonModule,
+    SharedModule,
+    MaterialModule,
+    ProjectModule,
+    RouterModule.forChild(routes),
   ],
+  exports: [RequirementDetailsComponent],
 })
 export class RequirementModule {}

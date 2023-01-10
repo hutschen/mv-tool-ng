@@ -1,5 +1,5 @@
 <!--
- Copyright (C) 2022 Helmar Hutschenreuter
+ Copyright (C) 2023 Helmar Hutschenreuter
  
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU Affero General Public License as
@@ -22,6 +22,19 @@
   (cancel)="onCancel()"
 >
   <div class="fx-column">
+    <!-- Display compliance status hint -->
+    <div
+      *ngIf="complianceStatusHint && complianceStatusHint !== complianceStatus"
+      class="fx-row fx-gap-5"
+    >
+      <p><mat-icon>warning</mat-icon></p>
+      <p>
+        The automatically inferred compliance status is
+        <strong>{{ complianceStatusHint }}</strong
+        >.
+      </p>
+    </div>
+
     <!-- Compliance Status Input -->
     <mat-form-field appearance="fill">
       <mat-label>Select compliance status</mat-label>
@@ -41,7 +54,7 @@
       <textarea
         name="complianceComment"
         matInput
-        [(ngModel)]="requirementInput.compliance_comment"
+        [(ngModel)]="itemInput.compliance_comment"
         [disabled]="complianceCommentDisabled"
       ></textarea>
     </mat-form-field>

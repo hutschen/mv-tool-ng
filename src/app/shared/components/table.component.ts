@@ -46,9 +46,9 @@ import { ShowHideDialogService } from './show-hide-dialog.component';
   selector: 'mvtool-table',
   templateUrl: './table.component.html',
   styleUrls: [
-    '../styles/table.css',
-    '../styles/flex.css',
-    '../styles/truncate.css',
+    '../styles/table.scss',
+    '../styles/flex.scss',
+    '../styles/truncate.scss',
   ],
   styles: [
     '.clickable-row { cursor: pointer; }',

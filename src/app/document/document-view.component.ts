@@ -34,7 +34,7 @@ import { Project, ProjectService } from '../shared/services/project.service';
       <mat-spinner></mat-spinner>
     </div>
   `,
-  styleUrls: ['../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: [],
 })
 export class DocumentViewComponent implements OnInit {

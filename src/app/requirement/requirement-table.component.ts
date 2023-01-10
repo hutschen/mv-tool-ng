@@ -13,8 +13,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import {
+  Component,
+  EventEmitter,
+  Injectable,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
+import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { TableColumns } from '../shared/table-columns';
@@ -24,17 +31,60 @@ import {
   Requirement,
   RequirementService,
 } from '../shared/services/requirement.service';
-import { ComplianceDialogService } from './compliance-dialog.component';
+import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
 import { RequirementDialogService } from './requirement-dialog.component';
 import { RequirementImportDialogService } from './requirement-import-dialog.component';
+
+// FIXME: This service is only a temporary, quick and dirty solution to increase the loading speed.
+@Injectable({
+  providedIn: 'root',
+})
+export class RequirementCachingService {
+  protected _cache = new Map<number, BehaviorSubject<Requirement[]>>();
+
+  getSubject(projectId: number): BehaviorSubject<Requirement[]> {
+    let subject = this._cache.get(projectId);
+    if (!subject) {
+      subject = new BehaviorSubject<Requirement[]>([]);
+      this._cache.set(projectId, subject);
+    }
+    return subject;
+  }
+
+  createOrUpdateRequirement(projectId: number, requirement: Requirement) {
+    const subject = this.getSubject(projectId);
+    const requirements = subject.getValue();
+    if (requirements) {
+      const index = requirements.findIndex((r) => r.id === requirement.id);
+      if (index >= 0) {
+        requirements[index] = requirement;
+      } else {
+        requirements.push(requirement);
+      }
+      subject.next(requirements);
+    }
+  }
+
+  deleteRequirement(projectId: number, requirement: Requirement) {
+    const subject = this.getSubject(projectId);
+    const requirements = subject.getValue();
+    if (requirements) {
+      const index = requirements.findIndex((r) => r.id === requirement.id);
+      if (index >= 0) {
+        requirements.splice(index, 1);
+        subject.next(requirements);
+      }
+    }
+  }
+}
 
 @Component({
   selector: 'mvtool-requirement-table',
   templateUrl: './requirement-table.component.html',
   styleUrls: [
-    '../shared/styles/table.css',
-    '../shared/styles/flex.css',
-    '../shared/styles/truncate.css',
+    '../shared/styles/table.scss',
+    '../shared/styles/flex.scss',
+    '../shared/styles/truncate.scss',
   ],
 })
 export class RequirementTableComponent implements OnInit {
@@ -74,6 +124,7 @@ export class RequirementTableComponent implements OnInit {
       optional: true,
       toValue: (r) => r.catalog_requirement?.gs_verantwortliche,
     },
+    { id: 'milestone', label: 'Milestone', optional: true },
     { id: 'target_object', label: 'Target Object', optional: true },
     {
       id: 'compliance_status',
@@ -81,7 +132,6 @@ export class RequirementTableComponent implements OnInit {
       optional: true,
       toStr: (r) => (r.compliance_status ? r.compliance_status : 'Not set'),
     },
-    { id: 'milestone', label: 'Milestone', optional: true },
     { id: 'compliance_comment', label: 'Compliance Comment', optional: true },
     {
       id: 'completion',
@@ -94,16 +144,34 @@ export class RequirementTableComponent implements OnInit {
           : 'Nothing to be completed',
       toBool: (r) => r.percentComplete !== null,
     },
+    {
+      id: 'alert',
+      label: 'Alert',
+      optional: true,
+      toValue: (r) =>
+        !!(
+          r.compliance_status &&
+          r.compliance_status_hint !== r.compliance_status
+        ),
+      toStr: (r) =>
+        !!(
+          r.compliance_status &&
+          r.compliance_status_hint !== r.compliance_status
+        )
+          ? `Compliance status should be ${r.compliance_status_hint}.`
+          : '',
+    },
     { id: 'options' },
   ]);
-  protected _dataSubject = new ReplaySubject<Requirement[]>(1);
-  data$: Observable<Requirement[]> = this._dataSubject.asObservable();
+  protected _dataSubject!: BehaviorSubject<Requirement[]>;
+  data$!: Observable<Requirement[]>;
   dataLoaded: boolean = false;
-  @Input() project: Project | null = null;
+  @Input() project?: Project;
   @Output() requirementClicked = new EventEmitter<Requirement>();
 
   constructor(
     protected _requirementService: RequirementService,
+    protected _requirementCachingService: RequirementCachingService,
     protected _requirementDialogService: RequirementDialogService,
     protected _complianceDialogService: ComplianceDialogService,
     protected _downloadDialogService: DownloadDialogService,
@@ -113,7 +181,15 @@ export class RequirementTableComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    await this.onReloadRequirements();
+    if (this.project) {
+      this._dataSubject = this._requirementCachingService.getSubject(
+        this.project.id
+      );
+      this.data$ = this._dataSubject.asObservable();
+      await this.onReloadRequirements();
+    } else {
+      throw new Error('Project is undefined');
+    }
   }
 
   protected async _createOrEditRequirement(
@@ -128,7 +204,10 @@ export class RequirementTableComponent implements OnInit {
         dialogRef.afterClosed()
       );
       if (resultingRequirement) {
-        await this.onReloadRequirements();
+        this._requirementCachingService.createOrUpdateRequirement(
+          this.project.id,
+          resultingRequirement
+        );
       }
     } else {
       throw new Error('Project is undefined');
@@ -147,8 +226,11 @@ export class RequirementTableComponent implements OnInit {
     const dialogRef =
       this._complianceDialogService.openComplianceDialog(requirement);
     const updatedRequirement = await firstValueFrom(dialogRef.afterClosed());
-    if (updatedRequirement) {
-      await this.onReloadRequirements();
+    if (updatedRequirement && this.project) {
+      this._requirementCachingService.createOrUpdateRequirement(
+        this.project.id,
+        updatedRequirement as Requirement
+      );
     }
   }
 
@@ -158,11 +240,14 @@ export class RequirementTableComponent implements OnInit {
       `Do you really want to delete requirement "${requirement.summary}"?`
     );
     const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
-    if (confirmed) {
+    if (confirmed && this.project) {
       await firstValueFrom(
         this._requirementService.deleteRequirement(requirement.id)
       );
-      await this.onReloadRequirements();
+      this._requirementCachingService.deleteRequirement(
+        this.project.id,
+        requirement
+      );
     }
   }
 

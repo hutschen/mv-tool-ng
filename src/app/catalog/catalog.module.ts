@@ -20,14 +20,31 @@ import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
 import { CatalogDialogComponent } from './catalog-dialog.component';
 import { CatalogDetailsComponent } from './catalog-details.component';
+import { RouterModule } from '@angular/router';
+import { AuthGuard } from '../shared/guards/auth.guard';
+import { CatalogViewComponent } from './catalog-view.component';
+
+const routes = [
+  {
+    path: 'catalogs',
+    canActivate: [AuthGuard],
+    component: CatalogViewComponent,
+  },
+];
 
 @NgModule({
   declarations: [
     CatalogTableComponent,
     CatalogDialogComponent,
     CatalogDetailsComponent,
+    CatalogViewComponent,
   ],
-  imports: [CommonModule, SharedModule, MaterialModule],
-  exports: [CatalogTableComponent, CatalogDetailsComponent],
+  imports: [
+    CommonModule,
+    SharedModule,
+    MaterialModule,
+    RouterModule.forChild(routes),
+  ],
+  exports: [CatalogDetailsComponent],
 })
 export class CatalogModule {}

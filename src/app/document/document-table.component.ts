@@ -27,9 +27,9 @@ import { DocumentDialogService } from './document-dialog.component';
   selector: 'mvtool-document-table',
   templateUrl: './document-table.component.html',
   styleUrls: [
-    '../shared/styles/table.css',
-    '../shared/styles/flex.css',
-    '../shared/styles/truncate.css',
+    '../shared/styles/table.scss',
+    '../shared/styles/flex.scss',
+    '../shared/styles/truncate.scss',
   ],
   styles: [],
 })

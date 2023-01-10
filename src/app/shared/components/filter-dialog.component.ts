@@ -121,7 +121,7 @@ class FilterSelection {
 @Component({
   selector: 'mvtool-filter-dialog',
   templateUrl: './filter-dialog.component.html',
-  styleUrls: ['../styles/flex.css', '../styles/truncate.css'],
+  styleUrls: ['../styles/flex.scss', '../styles/truncate.scss'],
   styles: [
     'ul { list-style-type: none; padding-left: 0;}',
     '.checkbox-label { width: 420px; }',

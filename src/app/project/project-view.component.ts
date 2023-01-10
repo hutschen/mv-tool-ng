@@ -15,25 +15,22 @@
 
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Project } from '../shared/services/project.service';
 
 @Component({
-  selector: 'mvtool-login-view',
+  selector: 'mvtool-project-view',
   template: `
-    <div class="content fx-column fx-center-center">
-      <mat-card class="user-login-card">
-        <mvtool-user-login (loggedIn)="onLoggedIn()"></mvtool-user-login>
-      </mat-card>
-    </div>
+    <mvtool-project-table (projectClicked)="onProjectClicked($event)">
+    </mvtool-project-table>
   `,
-  styleUrls: ['../shared/styles/flex.css'],
-  styles: ['.user-login-card { width: 500px; margin: 20px; }'],
+  styles: [],
 })
-export class LoginViewComponent implements OnInit {
+export class ProjectViewComponent implements OnInit {
   constructor(protected _router: Router) {}
 
-  onLoggedIn(): void {
-    this._router.navigate(['/']);
-  }
-
   ngOnInit(): void {}
+
+  onProjectClicked(project: Project) {
+    this._router.navigate(['/projects', project.id, 'requirements']);
+  }
 }

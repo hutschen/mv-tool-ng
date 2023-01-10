@@ -22,87 +22,26 @@ import { ProjectModule } from './project/project.module';
 import { MaterialModule } from './material/material.module';
 import { UserModule } from './user/user.module';
 import { AppToolbarComponent } from './app-toolbar.component';
-import { LoginViewComponent } from './views/login-view.component';
-import { ProjectsViewComponent } from './views/projects-view.component';
-import { AuthGuard } from './auth.guard';
 import { JiraProjectModule } from './jira-project/jira-project.module';
-import { RequirementViewComponent } from './views/requirement-view.component';
-import { DocumentViewComponent } from './views/document-view.component';
-import { MeasureViewComponent } from './views/measure-view.component';
 import { RequirementModule } from './requirement/requirement.module';
 import { SharedModule } from './shared/shared.module';
-import {
-  CatalogIdGuard,
-  CatalogModuleIdGuard,
-  ProjectIdGuard,
-  RequirementIdGuard,
-} from './shared/id.guard';
 import { DocumentModule } from './document/document.module';
 import { MeasureModule } from './measure/measure.module';
-import { CatalogViewComponent } from './views/catalog-view.component';
 import { AppNavbarComponent } from './app-navbar.component';
 import { CatalogModule } from './catalog/catalog.module';
 import { BreadcrumbTrailComponent } from './breadcrumb-trail.component';
-import { CatalogModuleViewComponent } from './views/catalog-module-view.component';
 import { CatalogModuleModule } from './catalog-module/catalog-module.module';
-import { CatalogRequirementViewComponent } from './views/catalog-requirement-view.component';
 import { CatalogRequirementModule } from './catalog-requirement/catalog-requirement.module';
 import { ErrorService } from './shared/services/error.service';
 
-const routes = [
-  {
-    path: 'catalogs',
-    canActivate: [AuthGuard],
-    component: CatalogViewComponent,
-  },
-  {
-    path: 'catalogs/:catalogId/catalog-modules',
-    canActivate: [AuthGuard, CatalogIdGuard],
-    component: CatalogModuleViewComponent,
-  },
-  {
-    path: 'catalog-modules/:catalogModuleId/catalog-requirements',
-    canActivate: [AuthGuard, CatalogModuleIdGuard],
-    component: CatalogRequirementViewComponent,
-  },
-  {
-    path: 'projects',
-    canActivate: [AuthGuard],
-    component: ProjectsViewComponent,
-  },
-  {
-    path: 'projects/:projectId/requirements',
-    canActivate: [AuthGuard, ProjectIdGuard],
-    component: RequirementViewComponent,
-  },
-  {
-    path: 'projects/:projectId/documents',
-    canActivate: [AuthGuard, ProjectIdGuard],
-    component: DocumentViewComponent,
-  },
-  {
-    path: 'requirements/:requirementId/measures',
-    canActivate: [AuthGuard, RequirementIdGuard],
-    component: MeasureViewComponent,
-  },
-  { path: 'login', component: LoginViewComponent },
-  { path: '**', redirectTo: 'projects' },
-];
+const routes = [{ path: '**', redirectTo: 'projects' }];
 
 @NgModule({
   declarations: [
     AppComponent,
     AppToolbarComponent,
-    LoginViewComponent,
-    ProjectsViewComponent,
-    RequirementViewComponent,
-    DocumentViewComponent,
-    MeasureViewComponent,
-    CatalogViewComponent,
     AppNavbarComponent,
     BreadcrumbTrailComponent,
-    CatalogModuleViewComponent,
-    CatalogRequirementViewComponent,
   ],
   imports: [
     BrowserModule,

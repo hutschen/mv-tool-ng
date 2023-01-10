@@ -19,13 +19,33 @@ import { CatalogRequirementTableComponent } from './catalog-requirement-table.co
 import { CatalogRequirementDialogComponent } from './catalog-requirement-dialog.component';
 import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
+import { CatalogRequirementViewComponent } from './catalog-requirement-view.component';
+import { CatalogModuleModule } from '../catalog-module/catalog-module.module';
+import { RouterModule } from '@angular/router';
+import { AuthGuard } from '../shared/guards/auth.guard';
+import { CatalogModuleIdGuard } from '../shared/guards/id.guard';
+
+const routes = [
+  {
+    path: 'catalog-modules/:catalogModuleId/catalog-requirements',
+    canActivate: [AuthGuard, CatalogModuleIdGuard],
+    component: CatalogRequirementViewComponent,
+  },
+];
 
 @NgModule({
   declarations: [
     CatalogRequirementTableComponent,
     CatalogRequirementDialogComponent,
+    CatalogRequirementViewComponent,
   ],
-  imports: [CommonModule, SharedModule, MaterialModule],
-  exports: [CatalogRequirementTableComponent],
+  imports: [
+    CommonModule,
+    SharedModule,
+    MaterialModule,
+    CatalogModuleModule,
+    RouterModule.forChild(routes),
+  ],
+  exports: [],
 })
 export class CatalogRequirementModule {}

@@ -48,7 +48,7 @@ import { TableComponent } from './table.component';
       </mat-menu>
     </div>
   `,
-  styleUrls: ['../styles/flex.css'],
+  styleUrls: ['../styles/flex.scss'],
   styles: [],
 })
 export class TableOptionsComponent {

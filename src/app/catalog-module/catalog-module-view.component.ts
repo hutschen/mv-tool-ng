@@ -16,46 +16,38 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Project, ProjectService } from '../shared/services/project.service';
-import { Requirement } from '../shared/services/requirement.service';
+import { CatalogModule } from '../shared/services/catalog-module.service';
+import { Catalog, CatalogService } from '../shared/services/catalog.service';
 
 @Component({
-  selector: 'mvtool-requirement-view',
+  selector: 'mvtool-catalog-module-view',
   template: `
-    <div *ngIf="project" class="fx-column">
-      <mvtool-project-details [project]="project"></mvtool-project-details>
+    <div *ngIf="catalog" class="fx-column">
+      <mvtool-catalog-details [catalog]="catalog"></mvtool-catalog-details>
       <mat-divider></mat-divider>
-      <mvtool-requirement-table
-        [project]="project"
-        (requirementClicked)="onRequirementClicked($event)"
-      >
-      </mvtool-requirement-table>
-    </div>
-    <div
-      *ngIf="!project"
-      class="fx-column fx-center-center"
-      style="height: 50%"
-    >
-      <mat-spinner></mat-spinner>
+      <mvtool-catalog-module-table
+        [catalog]="catalog"
+        (catalogModuleClicked)="onCatalogModuleClicked($event)"
+      ></mvtool-catalog-module-table>
     </div>
   `,
-  styleUrls: ['../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: [],
 })
-export class RequirementViewComponent implements OnInit {
-  project: Project | null = null;
+export class CatalogModuleViewComponent implements OnInit {
+  catalog: Catalog | null = null;
 
   constructor(
     protected _route: ActivatedRoute,
     protected _router: Router,
-    protected _projectService: ProjectService
+    protected _catalogService: CatalogService
   ) {}
 
   ngOnInit(): void {
-    const projectId = Number(this._route.snapshot.paramMap.get('projectId'));
-    this._projectService.getProject(projectId).subscribe({
-      next: (project) => {
-        this.project = project;
+    const catalogId = Number(this._route.snapshot.paramMap.get('catalogId'));
+    this._catalogService.getCatalog(catalogId).subscribe({
+      next: (catalog) => {
+        this.catalog = catalog;
       },
       error: (error) => {
         if (error instanceof HttpErrorResponse && error.status === 404) {
@@ -67,7 +59,11 @@ export class RequirementViewComponent implements OnInit {
     });
   }
 
-  onRequirementClicked(requirement: Requirement) {
-    this._router.navigate(['/requirements', requirement.id, 'measures']);
+  onCatalogModuleClicked(catalogModule: CatalogModule): void {
+    this._router.navigate([
+      '/catalog-modules',
+      catalogModule.id,
+      'catalog-requirements',
+    ]);
   }
 }

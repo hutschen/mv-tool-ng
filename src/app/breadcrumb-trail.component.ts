@@ -62,7 +62,7 @@ interface IBreadcrumb {
       <mat-divider></mat-divider>
     </div>
   `,
-  styleUrls: ['./shared/styles/flex.css'],
+  styleUrls: ['./shared/styles/flex.scss'],
   styles: ['.breadcrumb-trail { padding: 5px 2px; }'],
 })
 export class BreadcrumbTrailComponent {

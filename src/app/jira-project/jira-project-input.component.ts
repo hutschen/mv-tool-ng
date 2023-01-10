@@ -49,7 +49,7 @@ import {
       </mat-form-field>
     </div>
   `,
-  styleUrls: ['../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: [],
 })
 export class JiraProjectInputComponent implements OnInit {

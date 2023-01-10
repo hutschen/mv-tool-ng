@@ -22,12 +22,28 @@ import { MaterialModule } from '../material/material.module';
 import { DocumentModule } from '../document/document.module';
 import { JiraIssueModule } from '../jira-issue/jira-issue.module';
 import { VerificationDialogComponent } from './verification-dialog.component';
+import { MeasureViewComponent } from './measure-view.component';
+import { RouterModule } from '@angular/router';
+import { AuthGuard } from '../shared/guards/auth.guard';
+import { RequirementIdGuard } from '../shared/guards/id.guard';
+import { RequirementModule } from '../requirement/requirement.module';
+import { CompletionDialogComponent } from './completion-dialog.component';
+
+const routes = [
+  {
+    path: 'requirements/:requirementId/measures',
+    canActivate: [AuthGuard, RequirementIdGuard],
+    component: MeasureViewComponent,
+  },
+];
 
 @NgModule({
   declarations: [
     MeasureTableComponent,
     MeasureDialogComponent,
     VerificationDialogComponent,
+    MeasureViewComponent,
+    CompletionDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -35,7 +51,9 @@ import { VerificationDialogComponent } from './verification-dialog.component';
     MaterialModule,
     DocumentModule,
     JiraIssueModule,
+    RequirementModule,
+    RouterModule.forChild(routes),
   ],
-  exports: [MeasureTableComponent],
+  exports: [],
 })
 export class MeasureModule {}

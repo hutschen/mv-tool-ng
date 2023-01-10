@@ -35,7 +35,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
       </mat-form-field>
     </div>
   `,
-  styleUrls: ['../styles/flex.css'],
+  styleUrls: ['../styles/flex.scss'],
   styles: [],
 })
 export class AutocompleteComponent {

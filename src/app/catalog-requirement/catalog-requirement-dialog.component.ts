@@ -53,7 +53,7 @@ export class CatalogRequirementDialogService {
 @Component({
   selector: 'mvtool-catalog-requirement-dialog',
   templateUrl: './catalog-requirement-dialog.component.html',
-  styleUrls: ['../shared/styles/flex.css'],
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: ['textarea { min-height: 100px; }'],
 })
 export class CatalogRequirementDialogComponent {

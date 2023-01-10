@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Helmar Hutschenreuter
+// Copyright (C) 2023 Helmar Hutschenreuter
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -29,13 +29,13 @@ import {
 @Injectable({
   providedIn: 'root',
 })
-export class VerificationDialogService {
+export class CompletionDialogService {
   constructor(protected _dialog: MatDialog) {}
 
-  openVerificationDialog(
+  openCompletionDialog(
     measure: Measure
-  ): MatDialogRef<VerificationDialogComponent, Measure> {
-    const dialogRef = this._dialog.open(VerificationDialogComponent, {
+  ): MatDialogRef<CompletionDialogComponent, Measure> {
+    const dialogRef = this._dialog.open(CompletionDialogComponent, {
       width: '500px',
       data: measure,
     });
@@ -44,73 +44,80 @@ export class VerificationDialogService {
 }
 
 @Component({
-  selector: 'mvtool-verification-dialog',
+  selector: 'mvtool-completion-dialog',
   template: `
     <mvtool-create-edit-dialog
       [createMode]="false"
-      objectName="Verification Status"
+      objectName="Completion"
       (save)="onSave($event)"
       (cancel)="onCancel()"
     >
       <div class="fx-column">
-        <!-- Verification method -->
+        <!-- Completion status -->
         <mat-form-field appearance="fill">
-          <mat-label>Verification method</mat-label>
-          <mat-select
-            name="verificationMethod"
-            [(ngModel)]="measureInput.verification_method"
-          >
+          <mat-label>Select completion status</mat-label>
+          <mat-select name="completionStatus" [(ngModel)]="completionStatus">
             <mat-option [value]="null">None</mat-option>
             <mat-option
-              *ngFor="let method of verificationMethods"
-              [value]="method"
+              *ngFor="let completionStatus of completionStates"
+              [value]="completionStatus"
             >
-              {{ method }}
+              {{ completionStatus | titlecase }}
             </mat-option>
           </mat-select>
         </mat-form-field>
 
-        <!-- Verification comment -->
+        <!-- Completion comment -->
         <mat-form-field appearance="fill">
-          <mat-label>Verification comment</mat-label>
+          <mat-label>Completion comment</mat-label>
           <textarea
+            name="completionComment"
             matInput
-            name="verificationComment"
-            [(ngModel)]="measureInput.verification_comment"
+            [(ngModel)]="measureInput.completion_comment"
+            [disabled]="completionCommentDisabled"
           ></textarea>
         </mat-form-field>
-
-        <!-- Vefification status -->
-        <p>
-          <mat-checkbox name="verified" [(ngModel)]="measureInput.verified">
-            Verified
-          </mat-checkbox>
-        </p>
       </div>
     </mvtool-create-edit-dialog>
   `,
   styleUrls: ['../shared/styles/flex.scss'],
   styles: ['textarea { min-height: 100px; }'],
 })
-export class VerificationDialogComponent {
-  verificationMethods = ['I', 'T', 'R'];
+export class CompletionDialogComponent {
+  completionStates = ['open', 'in progress', 'completed'];
   measureInput: IMeasureInput;
 
   constructor(
-    protected _dialogRef: MatDialogRef<VerificationDialogComponent>,
+    protected _dialogRef: MatDialogRef<CompletionDialogComponent>,
     protected _measureService: MeasureService,
     @Inject(MAT_DIALOG_DATA) protected _measure: Measure
   ) {
     this.measureInput = this._measure.toMeasureInput();
   }
 
-  onSave(form: NgForm): void {
+  get completionCommentDisabled(): boolean {
+    return !this.measureInput.completion_status;
+  }
+
+  get completionStatus(): string | null {
+    return this.measureInput.completion_status ?? null;
+  }
+
+  set completionStatus(value: string | null) {
+    this.measureInput.completion_status = value;
+    if (this.completionCommentDisabled) {
+      this.measureInput.completion_comment = null;
+    }
+  }
+
+  onSave(form: NgForm) {
     if (form.valid) {
       this._measureService
         .updateMeasure(this._measure.id, this.measureInput)
         .subscribe((measure) => this._dialogRef.close(measure));
     }
   }
+
   onCancel(): void {
     this._dialogRef.close();
   }

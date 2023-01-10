@@ -20,14 +20,34 @@ import { DocumentDialogComponent } from './document-dialog.component';
 import { MaterialModule } from '../material/material.module';
 import { SharedModule } from '../shared/shared.module';
 import { DocumentInputComponent } from './document-input.component';
+import { ProjectModule } from '../project/project.module';
+import { RouterModule } from '@angular/router';
+import { DocumentViewComponent } from './document-view.component';
+import { AuthGuard } from '../shared/guards/auth.guard';
+import { ProjectIdGuard } from '../shared/guards/id.guard';
+
+const routes = [
+  {
+    path: 'projects/:projectId/documents',
+    canActivate: [AuthGuard, ProjectIdGuard],
+    component: DocumentViewComponent,
+  },
+];
 
 @NgModule({
   declarations: [
     DocumentTableComponent,
     DocumentDialogComponent,
     DocumentInputComponent,
+    DocumentViewComponent,
   ],
-  imports: [CommonModule, MaterialModule, SharedModule],
-  exports: [DocumentTableComponent, DocumentInputComponent],
+  imports: [
+    CommonModule,
+    MaterialModule,
+    SharedModule,
+    ProjectModule,
+    RouterModule.forChild(routes),
+  ],
+  exports: [DocumentInputComponent],
 })
 export class DocumentModule {}

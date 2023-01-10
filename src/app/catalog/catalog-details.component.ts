@@ -34,7 +34,7 @@ import { CatalogDialogComponent } from './catalog-dialog.component';
       </div>
     </div>
   `,
-  styleUrls: ['../shared/styles/flex.css', '../shared/styles/truncate.css'],
+  styleUrls: ['../shared/styles/flex.scss', '../shared/styles/truncate.scss'],
   styles: ['h1 { margin: 0; }', '.details { margin: 20px; }'],
 })
 export class CatalogDetailsComponent {
