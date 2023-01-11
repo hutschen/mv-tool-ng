@@ -114,6 +114,30 @@
       </td>
     </ng-container>
 
+    <!-- Verification status column -->
+    <ng-container
+      *ngIf="columns.getColumn('verification_method') as column"
+      [matColumnDef]="column.id"
+    >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mvtool-table-filter-header
+          [column]="column"
+          [table]="table"
+        ></mvtool-table-filter-header>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <button
+          mat-button
+          matTooltip="Click to set verification status"
+          (click)="
+            onEditVerification(row.data); $event.stopImmediatePropagation()
+          "
+        >
+          {{ column.toStr(row.data) }}
+        </button>
+      </td>
+    </ng-container>
+
     <!-- Verified column -->
     <ng-container
       *ngIf="columns.getColumn('verified') as column"
