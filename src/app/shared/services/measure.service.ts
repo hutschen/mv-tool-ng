@@ -148,7 +148,7 @@ export class MeasureService {
 
   listMeasures(requirementId: number): Observable<Measure[]> {
     return this._crud
-      .list(this.getMeasuresUrl(requirementId))
+      .list('measures', { requirement_ids: [requirementId] })
       .pipe(map((measures) => measures.map((m) => new Measure(m))));
   }
 

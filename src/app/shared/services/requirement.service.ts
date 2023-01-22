@@ -136,7 +136,7 @@ export class RequirementService {
 
   listRequirements(projectId: number): Observable<Requirement[]> {
     return this._crud
-      .list(this.getRequirementsUrl(projectId))
+      .list('requirements', { project_ids: [projectId] })
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }
 
