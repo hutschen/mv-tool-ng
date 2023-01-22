@@ -15,7 +15,7 @@
 
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { CRUDService } from './crud.service';
+import { CRUDService, IQueryParams } from './crud.service';
 import { IDocument, Document } from './document.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IJiraIssue } from './jira-issue.service';
@@ -127,6 +127,10 @@ export class Measure implements IMeasure {
   }
 }
 
+export interface IMeasureQueryParams {
+  requirement_ids?: number[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -146,9 +150,9 @@ export class MeasureService {
     return `measures/${measureId}`;
   }
 
-  listMeasures(requirementId: number): Observable<Measure[]> {
+  listMeasures(params: IMeasureQueryParams): Observable<Measure[]> {
     return this._crud
-      .list(this.getMeasuresUrl(requirementId))
+      .list('measures', params as IQueryParams)
       .pipe(map((measures) => measures.map((m) => new Measure(m))));
   }
 

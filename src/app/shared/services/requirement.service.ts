@@ -19,7 +19,7 @@ import {
   CatalogRequirement,
   ICatalogRequirement,
 } from './catalog-requirement.service';
-import { CRUDService } from './crud.service';
+import { CRUDService, IQueryParams } from './crud.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
 import { IUploadState, UploadService } from './upload.service';
@@ -115,6 +115,10 @@ export class Requirement implements IRequirement {
   }
 }
 
+export interface IRequirementQueryParams {
+  project_ids?: number[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -134,9 +138,9 @@ export class RequirementService {
     return `requirements/${requirementId}`;
   }
 
-  listRequirements(projectId: number): Observable<Requirement[]> {
+  listRequirements(params: IRequirementQueryParams): Observable<Requirement[]> {
     return this._crud
-      .list(this.getRequirementsUrl(projectId))
+      .list('requirements', params as IQueryParams)
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }
 

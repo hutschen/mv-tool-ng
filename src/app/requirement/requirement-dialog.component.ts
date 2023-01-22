@@ -21,12 +21,14 @@ import {
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import { firstValueFrom, map, Observable } from 'rxjs';
+import { MilestoneService } from '../shared/services/milestone.service';
 import { Project } from '../shared/services/project.service';
 import {
   IRequirementInput,
   Requirement,
   RequirementService,
 } from '../shared/services/requirement.service';
+import { TargetObjectService } from '../shared/services/target-object.service';
 
 export interface IRequirementDialogData {
   project: Project;
@@ -67,6 +69,8 @@ export class RequirementDialogComponent implements OnInit {
   constructor(
     protected _dialogRef: MatDialogRef<RequirementDialogComponent>,
     protected _requirementService: RequirementService,
+    protected _targetObjectService: TargetObjectService,
+    protected _milestoneService: MilestoneService,
     @Inject(MAT_DIALOG_DATA) protected _dialogData: IRequirementDialogData
   ) {
     this.project = this._dialogData.project;
@@ -76,43 +80,16 @@ export class RequirementDialogComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    const requirements$ = this._requirementService.listRequirements(
-      this.project.id
-    );
-
-    // Get target objects
     this.targetObjects = await firstValueFrom(
-      requirements$.pipe(
-        map(
-          (requirements) =>
-            requirements
-              .map((requirement) => requirement.target_object)
-              .filter(
-                (targetObject) => targetObject // remove undefined, null and empty strings
-              )
-              .filter(
-                (targetObject, index, self) =>
-                  self.indexOf(targetObject) === index // remove duplicates
-              ) as string[]
-        )
-      )
+      this._targetObjectService.getTargetObjects({
+        project_ids: [this.project.id],
+      })
     );
 
-    // Milestones
     this.milestones = await firstValueFrom(
-      requirements$.pipe(
-        map(
-          (requirements) =>
-            requirements
-              .map((requirement) => requirement.milestone)
-              .filter(
-                (milestone) => milestone // remove undefined, null and empty strings
-              )
-              .filter(
-                (milestone, index, self) => self.indexOf(milestone) === index // remove duplicates
-              ) as string[]
-        )
-      )
+      this._milestoneService.getMilestones({
+        project_ids: [this.project.id],
+      })
     );
   }
 

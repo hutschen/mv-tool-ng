@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Helmar Hutschenreuter
+// Copyright (C) 2023 Helmar Hutschenreuter
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -15,34 +15,16 @@
 
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CRUDService } from './crud.service';
-
-export interface IJiraProject {
-  id: string;
-  key: string;
-  name: string;
-  url: string;
-}
+import { CRUDService, IQueryParams } from './crud.service';
+import { IRequirementQueryParams } from './requirement.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class JiraProjectService {
-  constructor(protected _crud: CRUDService<IJiraProject, IJiraProject>) {}
+export class TargetObjectService {
+  constructor(protected _crud: CRUDService<string, string>) {}
 
-  getJiraProjectsUrl(): string {
-    return 'jira-projects';
-  }
-
-  getJiraProjectUrl(jiraProjectId: string) {
-    return `${this.getJiraProjectsUrl()}/${jiraProjectId}`;
-  }
-
-  getJiraProjects(): Observable<IJiraProject[]> {
-    return this._crud.list(this.getJiraProjectsUrl());
-  }
-
-  getJiraProject(jiraProjectId: string): Observable<IJiraProject> {
-    return this._crud.read(this.getJiraProjectUrl(jiraProjectId));
+  getTargetObjects(params: IRequirementQueryParams): Observable<string[]> {
+    return this._crud.list('target-objects', params as IQueryParams);
   }
 }
