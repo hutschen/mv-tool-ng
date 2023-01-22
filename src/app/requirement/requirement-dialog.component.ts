@@ -27,6 +27,7 @@ import {
   Requirement,
   RequirementService,
 } from '../shared/services/requirement.service';
+import { TargetObjectService } from '../shared/services/target-object.service';
 
 export interface IRequirementDialogData {
   project: Project;
@@ -67,6 +68,7 @@ export class RequirementDialogComponent implements OnInit {
   constructor(
     protected _dialogRef: MatDialogRef<RequirementDialogComponent>,
     protected _requirementService: RequirementService,
+    protected _targetObjectService: TargetObjectService,
     @Inject(MAT_DIALOG_DATA) protected _dialogData: IRequirementDialogData
   ) {
     this.project = this._dialogData.project;
@@ -76,27 +78,15 @@ export class RequirementDialogComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    this.targetObjects = await firstValueFrom(
+      this._targetObjectService.getTargetObjects({
+        project_ids: [this.project.id],
+      })
+    );
+
     const requirements$ = this._requirementService.listRequirements({
       project_ids: [this.project.id],
     });
-
-    // Get target objects
-    this.targetObjects = await firstValueFrom(
-      requirements$.pipe(
-        map(
-          (requirements) =>
-            requirements
-              .map((requirement) => requirement.target_object)
-              .filter(
-                (targetObject) => targetObject // remove undefined, null and empty strings
-              )
-              .filter(
-                (targetObject, index, self) =>
-                  self.indexOf(targetObject) === index // remove duplicates
-              ) as string[]
-        )
-      )
-    );
 
     // Milestones
     this.milestones = await firstValueFrom(
