@@ -76,9 +76,9 @@ export class RequirementDialogComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    const requirements$ = this._requirementService.listRequirements(
-      this.project.id
-    );
+    const requirements$ = this._requirementService.listRequirements({
+      project_ids: [this.project.id],
+    });
 
     // Get target objects
     this.targetObjects = await firstValueFrom(
