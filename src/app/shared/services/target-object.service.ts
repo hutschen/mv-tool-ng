@@ -14,10 +14,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { CRUDService, IQueryParams } from './crud.service';
+import { IRequirementQueryParams } from './requirement.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TargetObjectService {
-  constructor() {}
+  constructor(protected _crud: CRUDService<string, string>) {}
+
+  getTargetObjects(params: IRequirementQueryParams): Observable<string[]> {
+    return this._crud.list('target-objects', params as IQueryParams);
+  }
 }
