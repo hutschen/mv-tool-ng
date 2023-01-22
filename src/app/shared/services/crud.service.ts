@@ -16,9 +16,16 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { firstValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
+
+export type QueryParams = {
+  [param: string]:
+    | string
+    | number
+    | boolean
+    | ReadonlyArray<string | number | boolean>;
+};
 
 @Injectable({
   providedIn: 'root',
@@ -42,11 +49,14 @@ export class CRUDService<InputType, OutputType> {
     };
   }
 
-  list(relativeUrl: string): Observable<OutputType[]> {
-    return this._httpClient.get<OutputType[]>(
-      this.toAbsoluteUrl(relativeUrl),
-      this._httpOptions
-    );
+  list(
+    relativeUrl: string,
+    params: QueryParams = {}
+  ): Observable<OutputType[]> {
+    return this._httpClient.get<OutputType[]>(this.toAbsoluteUrl(relativeUrl), {
+      params,
+      ...this._httpOptions,
+    });
   }
 
   create(relativeUrl: string, itemInput: InputType): Observable<OutputType> {
