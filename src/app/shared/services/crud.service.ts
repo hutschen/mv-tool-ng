@@ -19,13 +19,13 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
 
-export type QueryParams = {
+export interface IQueryParams {
   [param: string]:
     | string
     | number
     | boolean
     | ReadonlyArray<string | number | boolean>;
-};
+}
 
 @Injectable({
   providedIn: 'root',
@@ -51,7 +51,7 @@ export class CRUDService<InputType, OutputType> {
 
   list(
     relativeUrl: string,
-    params: QueryParams = {}
+    params: IQueryParams = {}
   ): Observable<OutputType[]> {
     return this._httpClient.get<OutputType[]>(this.toAbsoluteUrl(relativeUrl), {
       params,
