@@ -21,6 +21,7 @@ import {
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import { firstValueFrom, map, Observable } from 'rxjs';
+import { MilestoneService } from '../shared/services/milestone.service';
 import { Project } from '../shared/services/project.service';
 import {
   IRequirementInput,
@@ -69,6 +70,7 @@ export class RequirementDialogComponent implements OnInit {
     protected _dialogRef: MatDialogRef<RequirementDialogComponent>,
     protected _requirementService: RequirementService,
     protected _targetObjectService: TargetObjectService,
+    protected _milestoneService: MilestoneService,
     @Inject(MAT_DIALOG_DATA) protected _dialogData: IRequirementDialogData
   ) {
     this.project = this._dialogData.project;
@@ -84,25 +86,10 @@ export class RequirementDialogComponent implements OnInit {
       })
     );
 
-    const requirements$ = this._requirementService.listRequirements({
-      project_ids: [this.project.id],
-    });
-
-    // Milestones
     this.milestones = await firstValueFrom(
-      requirements$.pipe(
-        map(
-          (requirements) =>
-            requirements
-              .map((requirement) => requirement.milestone)
-              .filter(
-                (milestone) => milestone // remove undefined, null and empty strings
-              )
-              .filter(
-                (milestone, index, self) => self.indexOf(milestone) === index // remove duplicates
-              ) as string[]
-        )
-      )
+      this._milestoneService.getMilestones({
+        project_ids: [this.project.id],
+      })
     );
   }
 
