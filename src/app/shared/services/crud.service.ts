@@ -27,6 +27,11 @@ export interface IQueryParams {
     | ReadonlyArray<string | number | boolean>;
 }
 
+export interface IPage<T> {
+  items: T[];
+  total_count: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -57,6 +62,21 @@ export class CRUDService<InputType, OutputType> {
       params,
       ...this._httpOptions,
     });
+  }
+
+  getPage(
+    relativeUrl: string,
+    page: number = 1,
+    page_size: number = 10,
+    params: IQueryParams = {}
+  ): Observable<IPage<OutputType>> {
+    return this._httpClient.get<IPage<OutputType>>(
+      this.toAbsoluteUrl(relativeUrl),
+      {
+        params: { page, page_size, ...params },
+        ...this._httpOptions,
+      }
+    );
   }
 
   create(relativeUrl: string, itemInput: InputType): Observable<OutputType> {
