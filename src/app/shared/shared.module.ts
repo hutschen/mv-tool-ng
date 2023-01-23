@@ -20,7 +20,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { TableRowOptionsComponent } from './components/table-row-options.component';
 import { MaterialModule } from '../material/material.module';
 import { TableToolbarComponent } from './components/table-toolbar.component';
-import { TableComponent } from './components/table.component';
+import { LegacyTableComponent } from './components/legacy-table.component';
 import { DownloadDialogComponent } from './components/download-dialog.component';
 import { UploadDialogComponent } from './components/upload-dialog.component';
 import { DetailComponent } from './components/detail.component';
@@ -39,7 +39,7 @@ import { ComplianceDialogComponent } from './components/compliance-dialog.compon
     TruncatePipe,
     TableRowOptionsComponent,
     TableToolbarComponent,
-    TableComponent,
+    LegacyTableComponent,
     DownloadDialogComponent,
     UploadDialogComponent,
     DetailComponent,
@@ -60,7 +60,7 @@ import { ComplianceDialogComponent } from './components/compliance-dialog.compon
     TableOptionsComponent,
     TableRowOptionsComponent,
     TableToolbarComponent,
-    TableComponent,
+    LegacyTableComponent,
     DetailComponent,
     ErrorDialogComponent,
     CreateEditDialogComponent,

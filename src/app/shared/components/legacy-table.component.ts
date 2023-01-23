@@ -43,8 +43,8 @@ import { FilterDialogService } from './filter-dialog.component';
 import { ShowHideDialogService } from './show-hide-dialog.component';
 
 @Component({
-  selector: 'mvtool-table',
-  templateUrl: './table.component.html',
+  selector: 'mvtool-legacy-table',
+  templateUrl: './legacy-table.component.html',
   styleUrls: [
     '../styles/table.scss',
     '../styles/flex.scss',
@@ -55,7 +55,7 @@ import { ShowHideDialogService } from './show-hide-dialog.component';
     '.clickable-row:hover { background: rgba(0,0,0,0.04); }',
   ],
 })
-export class TableComponent<T extends object>
+export class LegacyTableComponent<T extends object>
   implements AfterContentInit, AfterViewInit
 {
   protected _columnsSubject = new ReplaySubject<TableColumns<T>>(1);

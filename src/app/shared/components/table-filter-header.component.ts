@@ -15,7 +15,7 @@
 
 import { Component, Input } from '@angular/core';
 import { TableColumn } from '../table-columns';
-import { TableComponent } from './table.component';
+import { LegacyTableComponent } from './legacy-table.component';
 
 @Component({
   selector: 'mvtool-table-filter-header',
@@ -34,7 +34,7 @@ import { TableComponent } from './table.component';
 })
 export class TableFilterHeaderComponent<T extends object> {
   @Input() column!: TableColumn<T>;
-  @Input() table!: TableComponent<T>;
+  @Input() table!: LegacyTableComponent<T>;
 
   constructor() {}
 }
