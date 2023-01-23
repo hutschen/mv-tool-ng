@@ -1,0 +1,48 @@
+<!--
+ Copyright (C) 2023 Helmar Hutschenreuter
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+ 
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<div class="mat-elevation-z3 fx-column">
+  <table mat-table [dataSource]="data" matSort>
+    <!-- Number Column -->
+    <ng-container matColumnDef="reference">
+      <th mat-header-cell *matHeaderCellDef>Reference</th>
+      <td mat-cell *matCellDef="let row">{{ row.reference }}</td>
+    </ng-container>
+
+    <!-- Title Column -->
+    <ng-container matColumnDef="summary">
+      <th mat-header-cell *matHeaderCellDef>Summary</th>
+      <td mat-cell *matCellDef="let row">{{ row.summary }}</td>
+    </ng-container>
+
+    <!-- State Column -->
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef>Description</th>
+      <td mat-cell *matCellDef="let row">{{ row.description }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  <mat-paginator
+    [length]="resultsLength"
+    [pageSize]="25"
+    [pageSizeOptions]="[25, 50, 100]"
+    showFirstLastButtons
+  ></mat-paginator>
+</div>

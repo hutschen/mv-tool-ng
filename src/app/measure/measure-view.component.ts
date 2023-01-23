@@ -29,7 +29,8 @@ import {
         [requirement]="requirement"
       ></mvtool-requirement-details>
       <mat-divider></mat-divider>
-      <mvtool-measure-table [requirement]="requirement"> </mvtool-measure-table>
+      <!-- <mvtool-measure-table [requirement]="requirement"> </mvtool-measure-table> -->
+      <mvtool-http-measure-table></mvtool-http-measure-table>
     </div>
     <div
       *ngIf="!requirement"
