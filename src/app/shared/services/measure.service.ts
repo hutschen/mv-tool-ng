@@ -128,6 +128,7 @@ export class Measure implements IMeasure {
 }
 
 export interface IMeasureQueryParams {
+  project_ids?: number[];
   requirement_ids?: number[];
 }
 

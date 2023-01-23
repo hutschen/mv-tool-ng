@@ -13,11 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { map, merge, startWith, switchMap } from 'rxjs';
 import { Measure, MeasureService } from '../shared/services/measure.service';
+import { Project } from '../shared/services/project.service';
+import { Requirement } from '../shared/services/requirement.service';
 
 @Component({
   selector: 'mvtool-http-measure-table',
@@ -30,6 +32,9 @@ import { Measure, MeasureService } from '../shared/services/measure.service';
   styles: [],
 })
 export class HttpMeasureTableComponent implements AfterViewInit {
+  @Input() requirement?: Requirement;
+  @Input() project?: Project;
+
   displayedColumns: string[] = ['reference', 'summary', 'description'];
   data: Measure[] = [];
 
@@ -55,7 +60,11 @@ export class HttpMeasureTableComponent implements AfterViewInit {
             // this.sort.active,
             // this.sort.direction,
             this.paginator.pageIndex + 1,
-            this.paginator.pageSize
+            this.paginator.pageSize,
+            {
+              project_ids: this.project ? [this.project.id] : [],
+              requirement_ids: this.requirement ? [this.requirement.id] : [],
+            }
           );
         }),
         map((data) => {
