@@ -33,6 +33,7 @@ import { AutocompleteComponent } from './components/autocomplete.component';
 import { ShowHideDialogComponent } from './components/show-hide-dialog.component';
 import { TableOptionsComponent } from './components/table-options.component';
 import { ComplianceDialogComponent } from './components/compliance-dialog.component';
+import { TableComponent } from './components/table.component';
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import { ComplianceDialogComponent } from './components/compliance-dialog.compon
     ShowHideDialogComponent,
     TableOptionsComponent,
     ComplianceDialogComponent,
+    TableComponent,
   ],
   imports: [CommonModule, MaterialModule],
   exports: [
