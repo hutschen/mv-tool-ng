@@ -44,11 +44,12 @@
 
     <!-- Shown when the table is empty -->
     <tr class="mat-row" *matNoDataRow>
-      <div *ngIf="isLoadingData" class="fx-row fx-gap-10">
-        <mat-spinner diameter="20"></mat-spinner>
-        <div>{{ loadingText }}</div>
-      </div>
       <td class="mat-cell" colspan="100">
+        <div *ngIf="isLoadingData" class="fx-row fx-gap-10">
+          <mat-spinner diameter="20"></mat-spinner>
+          <div>{{ loadingText }}</div>
+        </div>
+
         <div *ngIf="!isLoadingData" class="fx-row fx-space-between-center">
           <div>{{ noContentText }}</div>
           <button
