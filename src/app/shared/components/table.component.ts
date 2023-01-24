@@ -24,17 +24,21 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatColumnDef, MatTable } from '@angular/material/table';
-import { ITableRow, TableColumn, TableColumns } from '../table-columns';
+import { DataColumn, DataFrame } from '../data';
 
 @Component({
   selector: 'mvtool-table',
   templateUrl: './table.component.html',
+  styleUrls: [
+    '../styles/table.scss',
+    '../styles/flex.scss',
+    '../styles/truncate.scss',
+  ],
   styles: [],
 })
 export class TableComponent<T extends object> implements AfterContentInit {
-  @Input() columns: TableColumn<T>[] = [];
-  @Input() data: T[] = [];
-  @Input() isLoadingData = true;
+  @Input() dataFrame!: DataFrame<T>;
+  @Input() isLoadingData = false;
   @Input() noContentText = 'Nothing to display.';
   @Input() loadingText = 'Loading...';
   @Input() createLabel = 'Create One';
@@ -44,36 +48,23 @@ export class TableComponent<T extends object> implements AfterContentInit {
   @ViewChild(MatTable, { static: true }) matTable!: MatTable<T>;
   @ContentChildren(MatColumnDef) matColumnDefs!: QueryList<MatColumnDef>;
 
-  columnsToAutoCreate: TableColumn<T>[] = [];
+  columnsToAutoCreate: DataColumn<T>[] = [];
 
   constructor() {}
 
   ngAfterContentInit(): void {
-    const idsOfColumnsDefined: string[] = this.matColumnDefs.map(
+    const columnNamesDefined: string[] = this.matColumnDefs.map(
       (matColumnDef) => {
         this.matTable.addColumnDef(matColumnDef);
         return matColumnDef.name;
       }
     );
-    this.columnsToAutoCreate = this.columns.filter(
-      (column) => !idsOfColumnsDefined.includes(column.id)
+    this.columnsToAutoCreate = this.dataFrame.columns.filter(
+      (column) => !columnNamesDefined.includes(column.name)
     );
   }
 
-  get idsOfColumnsToShow(): string[] {
-    return new TableColumns(this.columns)
-      .columnsToShow(this.data)
-      .map((column) => column.id);
-  }
-
-  get rows(): ITableRow<T>[] {
-    return this.data.map((data) => {
-      return {
-        data: data,
-        ...Object.fromEntries(
-          this.columns.map((column) => [column.id, column.toStr(data)])
-        ),
-      } as ITableRow<T>;
-    });
+  get columnNames(): string[] {
+    return this.dataFrame.shownColumns.map((column) => column.name);
   }
 }

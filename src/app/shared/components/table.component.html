@@ -16,29 +16,29 @@
 -->
 
 <div class="mat-elevation-z3 fx-column">
-  <table mat-table [dataSource]="rows">
+  <table mat-table [dataSource]="dataFrame.data">
     <!-- Auto create columns -->
     <ng-container
       *ngFor="let column of columnsToAutoCreate"
-      [matColumnDef]="column.id"
+      [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
         {{ column.label }}
       </th>
       <td mat-cell *matCellDef="let row">
-        <span *ngIf="column.toBool(row.data)" class="expandable-lines">
-          {{ column.toStr(row.data) }}
+        <span *ngIf="column.dataField.toBool(row)" class="expandable-lines">
+          {{ column.dataField.toStr(row) }}
         </span>
       </td>
     </ng-container>
 
     <ng-content></ng-content>
 
-    <tr mat-header-row *matHeaderRowDef="idsOfColumnsToShow; sticky: true"></tr>
+    <tr mat-header-row *matHeaderRowDef="columnNames; sticky: true"></tr>
     <tr
       mat-row
       [class.clickable-row]="clickRow.observed"
-      *matRowDef="let row; columns: idsOfColumnsToShow"
+      *matRowDef="let row; columns: columnNames"
       (click)="clickRow.emit(row.data)"
     ></tr>
 
