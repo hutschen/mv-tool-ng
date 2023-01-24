@@ -17,9 +17,22 @@ import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { map, merge, startWith, switchMap } from 'rxjs';
+import {
+  DataColumn,
+  DataField,
+  DataFrame,
+  PlaceholderField,
+} from '../shared/data';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
 import { Requirement } from '../shared/services/requirement.service';
+import { ITableColumn, TableColumn } from '../shared/table-columns';
+import {
+  DocumentField,
+  JiraIssueField,
+  StatusField,
+  VerifiedField,
+} from './measure-fields';
 
 @Component({
   selector: 'mvtool-http-measure-table',
@@ -35,9 +48,32 @@ export class HttpMeasureTableComponent implements AfterViewInit {
   @Input() requirement?: Requirement;
   @Input() project?: Project;
 
-  displayedColumns: string[] = ['reference', 'summary', 'description'];
-  data: Measure[] = [];
-
+  dataFrame: DataFrame<Measure> = new DataFrame<Measure>(
+    [
+      new DataField<Measure, string>('reference', 'Reference'),
+      new DataField<Measure, string>('summary', 'Summary', false),
+      new DataField<Measure, string>('description', 'Description'),
+      new DocumentField(),
+      new JiraIssueField(),
+      new StatusField('compliance_status', 'Compliance'),
+      new DataField<Measure, string>(
+        'compliance_comment',
+        'Compliance Comment'
+      ),
+      new StatusField('completion_status', 'Completion'),
+      new DataField<Measure, string>(
+        'completion_comment',
+        'Completion Comment'
+      ),
+      new VerifiedField(),
+      new StatusField('verification_method', 'Verification Method'),
+      new DataField<Measure, string>(
+        'verification_comment',
+        'Verification Comment'
+      ),
+      new PlaceholderField<Measure>('options', 'Options'),
+    ].map((dataField) => new DataColumn(dataField))
+  );
   resultsLength = 0;
   isLoadingData = true;
   isRateLimitReached = false;
@@ -73,6 +109,6 @@ export class HttpMeasureTableComponent implements AfterViewInit {
           return data.items;
         })
       )
-      .subscribe((data) => (this.data = data));
+      .subscribe((data) => (this.dataFrame.data = data));
   }
 }
