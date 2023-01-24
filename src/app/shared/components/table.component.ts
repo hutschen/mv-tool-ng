@@ -34,8 +34,9 @@ import { ITableRow, TableColumn, TableColumns } from '../table-columns';
 export class TableComponent<T extends object> implements AfterContentInit {
   @Input() columns: TableColumn<T>[] = [];
   @Input() data: T[] = [];
-  @Input() noContentLabel = 'Nothing to display.';
-  @Input() loadingLabel = 'Loading...';
+  @Input() isLoadingData = true;
+  @Input() noContentText = 'Nothing to display.';
+  @Input() loadingText = 'Loading...';
   @Input() createLabel = 'Create One';
   @Output() clickRow = new EventEmitter<T>();
   @Output() create = new EventEmitter<void>();
