@@ -56,7 +56,6 @@ export class PlaceholderField<D extends object> extends DataField<D, any> {
 export class DataColumn<D extends object> {
   constructor(
     public dataField: DataField<D, any>,
-    public optional: boolean = true,
     public hide: boolean = false
   ) {}
 
@@ -66,6 +65,14 @@ export class DataColumn<D extends object> {
 
   get label(): string {
     return this.dataField.label;
+  }
+
+  set optional(optional: boolean) {
+    this.dataField.optional = optional;
+  }
+
+  get optional(): boolean {
+    return this.dataField.optional;
   }
 
   isShown(dataArray: D[]): boolean {
@@ -80,7 +87,7 @@ export class PlaceholderColumn<D extends object> extends DataColumn<D> {
     label: string | null = null,
     hide: boolean = false
   ) {
-    super(new PlaceholderField(name, label), false, hide);
+    super(new PlaceholderField(name, label), hide);
   }
 }
 
