@@ -39,7 +39,7 @@ export class HttpMeasureTableComponent implements AfterViewInit {
   data: Measure[] = [];
 
   resultsLength = 0;
-  isLoadingResults = true;
+  isLoadingData = true;
   isRateLimitReached = false;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -55,7 +55,7 @@ export class HttpMeasureTableComponent implements AfterViewInit {
       .pipe(
         startWith({}),
         switchMap(() => {
-          this.isLoadingResults = true;
+          this.isLoadingData = true;
           return this._measureService.getMeasuresPage(
             // this.sort.active,
             // this.sort.direction,
@@ -68,7 +68,7 @@ export class HttpMeasureTableComponent implements AfterViewInit {
           );
         }),
         map((data) => {
-          this.isLoadingResults = false;
+          this.isLoadingData = false;
           this.resultsLength = data.total_count;
           return data.items;
         })
