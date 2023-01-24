@@ -68,6 +68,7 @@ import { TableComponent } from './components/table.component';
     CreateEditDialogComponent,
     TableFilterHeaderComponent,
     AutocompleteComponent,
+    TableComponent,
   ],
 })
 export class SharedModule {}
