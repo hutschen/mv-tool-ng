@@ -24,7 +24,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatColumnDef, MatTable } from '@angular/material/table';
-import { DataColumn, DataFrame } from '../data';
+import { DataColumn, DataFrame, IDataItem } from '../data';
 
 @Component({
   selector: 'mvtool-table',
@@ -36,7 +36,7 @@ import { DataColumn, DataFrame } from '../data';
   ],
   styles: [],
 })
-export class TableComponent<T extends object> implements AfterContentInit {
+export class TableComponent<T extends IDataItem> implements AfterContentInit {
   @Input() dataFrame!: DataFrame<T>;
   @Input() isLoadingData = false;
   @Input() noContentText = 'Nothing to display.';

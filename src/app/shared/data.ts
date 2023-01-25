@@ -13,7 +13,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-export class DataField<D extends object, V> {
+export interface IDataItem {
+  id: number | string;
+}
+
+export class DataField<D extends IDataItem, V> {
   public label: string;
 
   constructor(
@@ -43,7 +47,7 @@ export class DataField<D extends object, V> {
   }
 }
 
-export class PlaceholderField<D extends object> extends DataField<D, any> {
+export class PlaceholderField<D extends IDataItem> extends DataField<D, any> {
   constructor(name: string, label: string | null = null) {
     super(name, label, false);
   }
@@ -53,7 +57,7 @@ export class PlaceholderField<D extends object> extends DataField<D, any> {
   }
 }
 
-export class DataColumn<D extends object> {
+export class DataColumn<D extends IDataItem> {
   constructor(
     public dataField: DataField<D, any>,
     public hide: boolean = false
@@ -81,7 +85,7 @@ export class DataColumn<D extends object> {
   }
 }
 
-export class PlaceholderColumn<D extends object> extends DataColumn<D> {
+export class PlaceholderColumn<D extends IDataItem> extends DataColumn<D> {
   constructor(
     name: string,
     label: string | null = null,
@@ -91,7 +95,7 @@ export class PlaceholderColumn<D extends object> extends DataColumn<D> {
   }
 }
 
-export class DataFrame<D extends object> {
+export class DataFrame<D extends IDataItem> {
   constructor(public columns: DataColumn<D>[], public data: D[] = []) {}
 
   getColumn(name: string): DataColumn<D> {
