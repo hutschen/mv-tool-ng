@@ -13,6 +13,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { BehaviorSubject, Observable } from 'rxjs';
+
 export interface IDataItem {
   id: number | string;
 }
@@ -96,13 +98,56 @@ export class PlaceholderColumn<D extends IDataItem> extends DataColumn<D> {
 }
 
 export class DataFrame<D extends IDataItem> {
-  constructor(public columns: DataColumn<D>[], public data: D[] = []) {}
+  protected _dataSubject: BehaviorSubject<D[]>;
+  data$: Observable<D[]>;
+
+  constructor(public columns: DataColumn<D>[], data: D[] = []) {
+    this._dataSubject = new BehaviorSubject(data);
+    this.data$ = this._dataSubject.asObservable();
+  }
+
+  get data(): D[] {
+    return this._dataSubject.getValue();
+  }
+
+  set data(data: D[]) {
+    this._dataSubject.next(data);
+  }
+
+  addItem(item: D, max_item_count: number = 0): D | void {
+    if (max_item_count <= 0 || this.data.length < max_item_count) {
+      this.data.push(item);
+      this._dataSubject.next(this.data);
+      return item;
+    }
+  }
+
+  updateItem(item: D): D | void {
+    const index = this.data.findIndex((i) => i.id === item.id);
+    if (index >= 0) {
+      this.data[index] = item;
+      this._dataSubject.next(this.data);
+      return item;
+    }
+  }
+
+  addOrUpdateItem(item: D, max_item_count: number = 0): D | void {
+    if (this.updateItem(item)) return item;
+    else return this.addItem(item, max_item_count);
+  }
+
+  removeItem(item: D): void {
+    const index = this.data.findIndex((i) => i.id === item.id);
+    if (index >= 0) {
+      this.data.splice(index, 1);
+      this._dataSubject.next(this.data);
+    }
+  }
 
   getColumn(name: string): DataColumn<D> {
     const column = this.columns.find((column) => column.name === name);
-    if (column) {
-      return column;
-    } else throw new Error(`Column ${name} not found`);
+    if (column) return column;
+    else throw new Error(`Column ${name} not found`);
   }
 
   get shownColumns(): DataColumn<D>[] {
