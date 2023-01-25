@@ -77,8 +77,8 @@ export class HttpMeasureTableComponent implements AfterViewInit {
         'completion_comment',
         'Completion Comment'
       ),
-      new VerifiedField(),
       new StatusField('verification_method', 'Verification Method'),
+      new VerifiedField(),
       new DataField<Measure, string>(
         'verification_comment',
         'Verification Comment'
@@ -142,6 +142,10 @@ export class HttpMeasureTableComponent implements AfterViewInit {
       );
       const resultingMeasure = await firstValueFrom(dialogRef.afterClosed());
       if (resultingMeasure) {
+        this.dataFrame.addOrUpdateItem(
+          resultingMeasure,
+          this.paginator.pageSize
+        );
         this.onReloadMeasures();
       }
     } else {
@@ -162,6 +166,7 @@ export class HttpMeasureTableComponent implements AfterViewInit {
       this._complianceDialogService.openComplianceDialog(measure);
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
+      this.dataFrame.updateItem(updatedMeasure as Measure);
       this.onReloadMeasures();
     }
   }
@@ -171,6 +176,7 @@ export class HttpMeasureTableComponent implements AfterViewInit {
       this._completionDialogService.openCompletionDialog(measure);
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
+      this.dataFrame.updateItem(updatedMeasure as Measure);
       this.onReloadMeasures();
     }
   }
@@ -180,6 +186,7 @@ export class HttpMeasureTableComponent implements AfterViewInit {
       this._verificationDialogService.openVerificationDialog(measure);
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
+      this.dataFrame.updateItem(updatedMeasure as Measure);
       this.onReloadMeasures();
     }
   }
@@ -192,6 +199,7 @@ export class HttpMeasureTableComponent implements AfterViewInit {
     const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
     if (confirmed) {
       await firstValueFrom(this._measureService.deleteMeasure(measure.id));
+      this.dataFrame.removeItem(measure);
       this.onReloadMeasures();
     }
   }

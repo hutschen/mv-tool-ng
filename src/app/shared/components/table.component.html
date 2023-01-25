@@ -16,7 +16,7 @@
 -->
 
 <div class="fx-column">
-  <table mat-table [dataSource]="dataFrame.data">
+  <table mat-table [dataSource]="dataFrame.data$">
     <!-- Auto create columns -->
     <ng-container
       *ngFor="let column of columnsToAutoCreate"
