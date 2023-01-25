@@ -160,10 +160,19 @@ export class MeasureService {
   getMeasuresPage(
     page: number = 1,
     pageSize: number = 10,
+    sort_by?: string,
+    sort_order: 'asc' | 'desc' | '' = '',
     params: IMeasureQueryParams = {}
   ): Observable<IPage<Measure>> {
     return this._crud
-      .getPage('measures', page, pageSize, params as IQueryParams)
+      .getPage(
+        'measures',
+        page,
+        pageSize,
+        sort_by,
+        sort_order,
+        params as IQueryParams
+      )
       .pipe(
         map((page) => {
           return {

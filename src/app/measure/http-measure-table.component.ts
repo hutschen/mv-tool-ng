@@ -115,10 +115,10 @@ export class HttpMeasureTableComponent implements AfterViewInit {
         switchMap(() => {
           this.isLoadingData = true;
           return this._measureService.getMeasuresPage(
-            // this.sort.active,
-            // this.sort.direction,
             this.paginator.pageIndex + 1,
             this.paginator.pageSize,
+            this.sort.active,
+            this.sort.direction,
             {
               project_ids: this.project ? [this.project.id] : [],
               requirement_ids: this.requirement ? [this.requirement.id] : [],
