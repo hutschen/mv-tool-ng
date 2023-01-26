@@ -137,7 +137,8 @@ export interface IMeasureQueryParams {
 })
 export class MeasureService {
   constructor(
-    protected _crud: CRUDService<IMeasureInput, IMeasure>,
+    protected _crud_measure: CRUDService<IMeasureInput, IMeasure>,
+    protected _crud_str: CRUDService<string, string>,
     protected _download: DownloadService,
     protected _upload: UploadService,
     protected _requirements: RequirementService
@@ -152,7 +153,7 @@ export class MeasureService {
   }
 
   listMeasures(params: IMeasureQueryParams = {}): Observable<Measure[]> {
-    return this._crud
+    return this._crud_measure
       .list('measures', params as IQueryParams)
       .pipe(map((measures) => measures.map((m) => new Measure(m))));
   }
@@ -164,7 +165,7 @@ export class MeasureService {
     sort_order: 'asc' | 'desc' | '' = '',
     params: IMeasureQueryParams = {}
   ): Observable<IPage<Measure>> {
-    return this._crud
+    return this._crud_measure
       .getPage(
         'measures',
         page,
@@ -187,13 +188,13 @@ export class MeasureService {
     requirementId: number,
     measureInput: IMeasureInput
   ): Observable<Measure> {
-    return this._crud
+    return this._crud_measure
       .create(this.getMeasuresUrl(requirementId), measureInput)
       .pipe(map((measure) => new Measure(measure)));
   }
 
   getMeasure(measureId: number): Observable<Measure> {
-    return this._crud
+    return this._crud_measure
       .read(this.getMeasureUrl(measureId))
       .pipe(map((measure) => new Measure(measure)));
   }
@@ -202,13 +203,17 @@ export class MeasureService {
     measureId: number,
     measureInput: IMeasureInput
   ): Observable<Measure> {
-    return this._crud
+    return this._crud_measure
       .update(this.getMeasureUrl(measureId), measureInput)
       .pipe(map((measure) => new Measure(measure)));
   }
 
   deleteMeasure(measureId: number): Observable<null> {
-    return this._crud.delete(this.getMeasureUrl(measureId));
+    return this._crud_measure.delete(this.getMeasureUrl(measureId));
+  }
+
+  getMeasureFieldNames(params: IMeasureQueryParams = {}): Observable<string[]> {
+    return this._crud_str.list('measure/field-names', params as IQueryParams);
   }
 
   downloadMeasureExcel(requirementId: number): Observable<IDownloadState> {
