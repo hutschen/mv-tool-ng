@@ -22,6 +22,7 @@
     (upload)="onImportMeasures()"
     (download)="onExportMeasures()"
     [showFilter]="true"
+    (filter)="onSearchMeasures($event)"
     filterLabel="Filter Measures"
     createLabel="Create Measure"
     #tableToolbar

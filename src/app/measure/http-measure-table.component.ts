@@ -33,7 +33,11 @@ import {
   DataFrame,
   PlaceholderField,
 } from '../shared/data';
-import { Measure, MeasureService } from '../shared/services/measure.service';
+import {
+  Measure,
+  MeasureService,
+  IMeasureQueryParams,
+} from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
 import { Requirement } from '../shared/services/requirement.service';
 import { CompletionDialogService } from './completion-dialog.component';
@@ -89,6 +93,7 @@ export class HttpMeasureTableComponent implements AfterViewInit {
   resultsLength = 0;
   isLoadingData = true;
   isRateLimitReached = false;
+  searchStr?: string;
   reload = new EventEmitter<void>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -145,15 +150,19 @@ export class HttpMeasureTableComponent implements AfterViewInit {
       .pipe(
         switchMap(() => {
           this.isLoadingData = true;
+          const queryParams: IMeasureQueryParams = {
+            project_ids: this.project ? [this.project.id] : [],
+            requirement_ids: this.requirement ? [this.requirement.id] : [],
+          };
+          if (this.searchStr) {
+            queryParams.search = this.searchStr;
+          }
           return this._measureService.getMeasuresPage(
             this.paginator.pageIndex + 1,
             this.paginator.pageSize,
             this.sort.active,
             this.sort.direction,
-            {
-              project_ids: this.project ? [this.project.id] : [],
-              requirement_ids: this.requirement ? [this.requirement.id] : [],
-            }
+            queryParams
           );
         }),
         map((data) => {
@@ -182,6 +191,11 @@ export class HttpMeasureTableComponent implements AfterViewInit {
     } else {
       throw new Error('Requirement is undefined');
     }
+  }
+
+  onSearchMeasures(searchStr: string): void {
+    this.searchStr = searchStr;
+    this.onReloadMeasures();
   }
 
   async onCreateMeasure(): Promise<void> {
