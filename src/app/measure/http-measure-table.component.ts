@@ -109,20 +109,40 @@ export class HttpMeasureTableComponent implements AfterViewInit {
     // When the user changes the sort order, reset to the first page
     this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
-    // Set the used fields for the current project as non-optional
-    this._measureService
-      .getMeasureFieldNames({
-        project_ids: [this.project?.id ?? this.requirement!.project.id],
-      })
+    // Load and reload table data
+    const reload$ = merge(
+      this.sort.sortChange,
+      this.paginator.page,
+      this.reload
+    ).pipe(startWith({}));
+
+    // Load names of columns to set as non-optional
+    const namesOfRequiredColumns = this.dataFrame.columns
+      .filter((column) => !column.optional)
+      .map((column) => column.name);
+    reload$
+      .pipe(
+        switchMap(() => {
+          return this._measureService.getMeasureFieldNames({
+            project_ids: [this.project?.id ?? this.requirement!.project.id],
+          });
+        })
+      )
       .subscribe((fieldNames) => {
+        // set original required columns
+        this.dataFrame.columns.forEach((column) => {
+          column.optional = !namesOfRequiredColumns.includes(column.name);
+        });
+
+        // set required columns for current project
         this.dataFrame.columns
           .filter((column) => fieldNames.includes(column.name))
           .forEach((column) => (column.optional = false));
       });
 
-    merge(this.sort.sortChange, this.paginator.page, this.reload)
+    // Load table data
+    reload$
       .pipe(
-        startWith({}),
         switchMap(() => {
           this.isLoadingData = true;
           return this._measureService.getMeasuresPage(
