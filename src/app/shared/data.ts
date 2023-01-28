@@ -109,7 +109,7 @@ export class PlaceholderColumn<D extends IDataItem> extends DataColumn<D> {
   }
 }
 
-export class DataFrame<D extends IDataItem> {
+export class DataPage<D extends IDataItem> {
   protected _dataSubject: BehaviorSubject<D[]>;
   data$: Observable<D[]>;
 

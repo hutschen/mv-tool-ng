@@ -37,7 +37,7 @@ import { UploadDialogService } from '../shared/components/upload-dialog.componen
 import {
   DataColumn,
   DataField,
-  DataFrame,
+  DataPage,
   PlaceholderField,
 } from '../shared/data';
 import {
@@ -71,7 +71,7 @@ export class HttpMeasureTableComponent implements AfterViewInit {
   @Input() requirement?: Requirement;
   @Input() project?: Project;
 
-  dataFrame: DataFrame<Measure> = new DataFrame<Measure>(
+  dataFrame: DataPage<Measure> = new DataPage<Measure>(
     [
       new DataField<Measure, string>('reference', 'Reference'),
       new DataField<Measure, string>('summary', 'Summary', false),
