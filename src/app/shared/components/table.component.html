@@ -34,6 +34,22 @@
 
     <ng-content></ng-content>
 
+    <!-- Header loading indicator -->
+    <ng-container matColumnDef="loading-indicator">
+      <th mat-header-cell *matHeaderCellDef colspan="100">
+        <mat-progress-bar
+          *ngIf="isLoadingData"
+          mode="buffer"
+          color="primary"
+        ></mat-progress-bar>
+      </th>
+    </ng-container>
+
+    <tr
+      mat-header-row
+      class="loading-indicator-header-row"
+      *matHeaderRowDef="['loading-indicator']; sticky: true"
+    ></tr>
     <tr mat-header-row *matHeaderRowDef="columnNames; sticky: true"></tr>
     <tr
       mat-row
@@ -45,8 +61,7 @@
     <!-- Shown when the table is empty -->
     <tr class="mat-row" *matNoDataRow>
       <td class="mat-cell" colspan="100">
-        <div *ngIf="isLoadingData" class="fx-row fx-gap-10">
-          <mat-spinner diameter="20"></mat-spinner>
+        <div *ngIf="isLoadingData">
           <div>{{ loadingText }}</div>
         </div>
 
