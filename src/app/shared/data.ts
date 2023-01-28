@@ -65,6 +65,7 @@ export class DataColumn<D extends IDataItem> {
   constructor(
     public dataField: DataField<D, any>,
     public hide: boolean = false,
+    public sortable: boolean = true,
     public filter?: Filter
   ) {}
 
