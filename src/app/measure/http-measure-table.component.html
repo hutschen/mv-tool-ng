@@ -21,9 +21,8 @@
     (create)="onCreateMeasure()"
     (upload)="onImportMeasures()"
     (download)="onExportMeasures()"
-    [showFilter]="true"
-    (filter)="onSearchMeasures($event)"
-    filterLabel="Filter Measures"
+    (search)="onSearchMeasures($event)"
+    searchLabel="Filter Measures"
     createLabel="Create Measure"
     #tableToolbar
   >
