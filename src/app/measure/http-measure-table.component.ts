@@ -22,7 +22,14 @@ import {
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { firstValueFrom, map, merge, startWith, switchMap } from 'rxjs';
+import {
+  debounceTime,
+  firstValueFrom,
+  map,
+  merge,
+  startWith,
+  switchMap,
+} from 'rxjs';
 import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
@@ -95,6 +102,7 @@ export class HttpMeasureTableComponent implements AfterViewInit {
   isRateLimitReached = false;
   searchStr?: string;
   reload = new EventEmitter<void>();
+  search = new EventEmitter<string>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -118,7 +126,8 @@ export class HttpMeasureTableComponent implements AfterViewInit {
     const reload$ = merge(
       this.sort.sortChange,
       this.paginator.page,
-      this.reload
+      this.reload,
+      this.search.pipe(debounceTime(500))
     ).pipe(startWith({}));
 
     // Load names of columns to set as non-optional
@@ -195,7 +204,7 @@ export class HttpMeasureTableComponent implements AfterViewInit {
 
   onSearchMeasures(searchStr: string): void {
     this.searchStr = searchStr;
-    this.onReloadMeasures();
+    this.search.emit(searchStr);
   }
 
   async onCreateMeasure(): Promise<void> {
