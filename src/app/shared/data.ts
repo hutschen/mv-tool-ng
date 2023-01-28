@@ -14,6 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Filter } from './filter';
+import { IQueryParams } from './services/crud.service';
 
 export interface IDataItem {
   id: number | string;
@@ -62,7 +64,8 @@ export class PlaceholderField<D extends IDataItem> extends DataField<D, any> {
 export class DataColumn<D extends IDataItem> {
   constructor(
     public dataField: DataField<D, any>,
-    public hide: boolean = false
+    public hide: boolean = false,
+    public filter?: Filter
   ) {}
 
   get name(): string {
@@ -79,6 +82,14 @@ export class DataColumn<D extends IDataItem> {
 
   get optional(): boolean {
     return this.dataField.optional;
+  }
+
+  get filterable(): boolean {
+    return this.filter !== undefined;
+  }
+
+  get queryParams(): IQueryParams {
+    return this.filter?.queryParams ?? {};
   }
 
   isShown(dataArray: D[]): boolean {
@@ -112,6 +123,14 @@ export class DataFrame<D extends IDataItem> {
 
   set data(data: D[]) {
     this._dataSubject.next(data);
+  }
+
+  get queryParams(): IQueryParams {
+    const queryParams: IQueryParams = {};
+    for (const column of this.columns) {
+      Object.assign(queryParams, column.queryParams);
+    }
+    return queryParams;
   }
 
   addItem(item: D, max_item_count: number = 0): D | void {
