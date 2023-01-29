@@ -64,7 +64,7 @@ export class FilterForExistence {
   }
 }
 
-export class Filter {
+export class Filterable {
   constructor(
     public filterByPattern?: FilterByPattern,
     public filterByValues?: FilterByValues,
@@ -89,5 +89,17 @@ export class Filter {
       ...this.filterByValues?.queryParams,
       ...this.filterForExistence?.queryParams,
     };
+  }
+
+  setPatternFilter(name: string): void {
+    this.filterByPattern = new FilterByPattern(name);
+  }
+
+  setValuesFilter(name: string, selectableValues: IFilterOption[]): void {
+    this.filterByValues = new FilterByValues(name, selectableValues);
+  }
+
+  setExistenceFilter(name: string): void {
+    this.filterForExistence = new FilterForExistence(name);
   }
 }
