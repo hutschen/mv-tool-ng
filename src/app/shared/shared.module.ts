@@ -35,7 +35,7 @@ import { TableOptionsComponent } from './components/table-options.component';
 import { ComplianceDialogComponent } from './components/compliance-dialog.component';
 import { TableComponent } from './components/table.component';
 import { FilterDialogComponent } from './components/filter-dialog.component';
-import { TableFilterHeaderComponent } from './components/table-filter-header.component';
+import { FilterHeaderComponent } from './components/filter-header.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +57,7 @@ import { TableFilterHeaderComponent } from './components/table-filter-header.com
     ComplianceDialogComponent,
     TableComponent,
     FilterDialogComponent,
-    TableFilterHeaderComponent,
+    FilterHeaderComponent,
   ],
   imports: [CommonModule, MaterialModule],
   exports: [
