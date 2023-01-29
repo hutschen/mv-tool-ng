@@ -13,7 +13,29 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, Injectable, OnInit } from '@angular/core';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import { Filterable } from '../filter';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class FilterDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openFilterDialog(
+    filterable: Filterable
+  ): MatDialogRef<FilterDialogComponent> {
+    return this._dialog.open(FilterDialogComponent, {
+      width: '500px',
+      data: filterable,
+    });
+  }
+}
 
 @Component({
   selector: 'mvtool-filter-dialog',
@@ -21,7 +43,12 @@ import { Component, OnInit } from '@angular/core';
   styles: [],
 })
 export class FilterDialogComponent implements OnInit {
-  constructor() {}
+  constructor(
+    protected _dialogRef: MatDialogRef<FilterDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public filterable: Filterable
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // TODO: get filter options if a values filter is used
+  }
 }
