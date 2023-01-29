@@ -83,6 +83,14 @@ export class Filterable {
     return this.filterForExistence !== undefined;
   }
 
+  get filterable(): boolean {
+    return (
+      this.filterableByPattern ||
+      this.filterableByValues ||
+      this.filterableForExistence
+    );
+  }
+
   get queryParams(): IQueryParams {
     return {
       ...this.filterByPattern?.queryParams,
