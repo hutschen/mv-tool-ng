@@ -15,6 +15,7 @@
 
 import { Component, Input } from '@angular/core';
 import { Filterable } from '../filter';
+import { FilterDialogService } from './filter-dialog.component';
 
 @Component({
   selector: 'mvtool-filter-header',
@@ -31,10 +32,10 @@ import { Filterable } from '../filter';
 export class FilterHeaderComponent {
   @Input() filterable!: Filterable;
 
-  constructor() {}
+  constructor(protected _filterDialogService: FilterDialogService) {}
 
   onFilter($event: Event) {
     $event.stopPropagation();
-    // TODO: implement open filter dialog
+    this._filterDialogService.openFilterDialog(this.filterable);
   }
 }
