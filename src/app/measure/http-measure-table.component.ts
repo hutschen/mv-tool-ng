@@ -144,7 +144,7 @@ export class HttpMeasureTableComponent implements AfterViewInit {
           if (this.searchStr) {
             queryParams.search = this.searchStr;
           }
-          return this._measureService.getMeasuresPage(
+          return this._measureService.getMeasuresPage_legacy(
             this.paginator.pageIndex + 1,
             this.paginator.pageSize,
             this.sort.active,
@@ -169,10 +169,7 @@ export class HttpMeasureTableComponent implements AfterViewInit {
       );
       const resultingMeasure = await firstValueFrom(dialogRef.afterClosed());
       if (resultingMeasure) {
-        this.dataFrame.addOrUpdateItem(
-          resultingMeasure,
-          this.paginator.pageSize
-        );
+        this.dataFrame.addOrUpdateItem(resultingMeasure);
         this.onReloadMeasures();
       }
     } else {

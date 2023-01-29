@@ -153,13 +153,13 @@ export class MeasureService {
     return `measures/${measureId}`;
   }
 
-  listMeasures(params: IMeasureQueryParams = {}): Observable<Measure[]> {
+  listMeasures_legacy(params: IMeasureQueryParams = {}): Observable<Measure[]> {
     return this._crud_measure
       .list('measures', params as IQueryParams)
       .pipe(map((measures) => measures.map((m) => new Measure(m))));
   }
 
-  getMeasuresPage(
+  getMeasuresPage_legacy(
     page: number = 1,
     pageSize: number = 10,
     sort_by?: string,

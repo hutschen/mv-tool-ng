@@ -204,7 +204,7 @@ export class MeasureTableComponent implements OnInit {
   async onReloadMeasures(): Promise<void> {
     if (this.requirement) {
       const data = await firstValueFrom(
-        this._measureService.listMeasures({
+        this._measureService.listMeasures_legacy({
           requirement_ids: [this.requirement.id],
         })
       );
