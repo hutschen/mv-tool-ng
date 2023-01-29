@@ -153,6 +153,21 @@ export class MeasureService {
     return `measures/${measureId}`;
   }
 
+  queryMeasures(params: IQueryParams = {}) {
+    return this._crud_measure.query('measures', params).pipe(
+      map((measures) => {
+        if (Array.isArray(measures)) {
+          return measures.map((m) => new Measure(m));
+        } else {
+          return {
+            ...measures,
+            items: measures.items.map((m) => new Measure(m)),
+          } as IPage<Measure>;
+        }
+      })
+    );
+  }
+
   listMeasures_legacy(params: IMeasureQueryParams = {}): Observable<Measure[]> {
     return this._crud_measure
       .list_legacy('measures', params as IQueryParams)

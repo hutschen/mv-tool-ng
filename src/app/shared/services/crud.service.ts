@@ -54,6 +54,16 @@ export class CRUDService<InputType, OutputType> {
     };
   }
 
+  query(
+    relativeUrl: string,
+    params: IQueryParams = {}
+  ): Observable<OutputType[] | IPage<OutputType>> {
+    return this._httpClient.get<OutputType[]>(this.toAbsoluteUrl(relativeUrl), {
+      params,
+      ...this._httpOptions,
+    });
+  }
+
   list_legacy(
     relativeUrl: string,
     params: IQueryParams = {}
