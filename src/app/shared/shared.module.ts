@@ -34,6 +34,7 @@ import { ShowHideDialogComponent } from './components/show-hide-dialog.component
 import { TableOptionsComponent } from './components/table-options.component';
 import { ComplianceDialogComponent } from './components/compliance-dialog.component';
 import { TableComponent } from './components/table.component';
+import { FilterDialogComponent } from './components/filter-dialog.component';
 
 @NgModule({
   declarations: [
@@ -54,6 +55,7 @@ import { TableComponent } from './components/table.component';
     TableOptionsComponent,
     ComplianceDialogComponent,
     TableComponent,
+    FilterDialogComponent,
   ],
   imports: [CommonModule, MaterialModule],
   exports: [
