@@ -71,16 +71,8 @@ export class Filterable {
     public filterForExistence?: FilterForExistence
   ) {}
 
-  get filterableByPattern(): boolean {
-    return this.filterByPattern !== undefined;
-  }
-
-  get filterableByValues(): boolean {
-    return this.filterByValues !== undefined;
-  }
-
-  get filterableForExistence(): boolean {
-    return this.filterForExistence !== undefined;
+  get label(): string {
+    throw new Error('Not implemented');
   }
 
   get filtered(): boolean {
@@ -92,10 +84,8 @@ export class Filterable {
   }
 
   get filterable(): boolean {
-    return (
-      this.filterableByPattern ||
-      this.filterableByValues ||
-      this.filterableForExistence
+    return Boolean(
+      this.filterByPattern || this.filterByValues || this.filterForExistence
     );
   }
 
