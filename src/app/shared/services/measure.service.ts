@@ -155,7 +155,7 @@ export class MeasureService {
 
   listMeasures_legacy(params: IMeasureQueryParams = {}): Observable<Measure[]> {
     return this._crud_measure
-      .list('measures', params as IQueryParams)
+      .list_legacy('measures', params as IQueryParams)
       .pipe(map((measures) => measures.map((m) => new Measure(m))));
   }
 
@@ -214,7 +214,10 @@ export class MeasureService {
   }
 
   getMeasureFieldNames(params: IMeasureQueryParams = {}): Observable<string[]> {
-    return this._crud_str.list('measure/field-names', params as IQueryParams);
+    return this._crud_str.list_legacy(
+      'measure/field-names',
+      params as IQueryParams
+    );
   }
 
   downloadMeasureExcel(requirementId: number): Observable<IDownloadState> {

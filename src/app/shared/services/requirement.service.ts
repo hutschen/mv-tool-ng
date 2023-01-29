@@ -140,7 +140,7 @@ export class RequirementService {
 
   listRequirements(params: IRequirementQueryParams): Observable<Requirement[]> {
     return this._crud
-      .list('requirements', params as IQueryParams)
+      .list_legacy('requirements', params as IQueryParams)
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }
 

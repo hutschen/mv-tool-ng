@@ -54,7 +54,7 @@ export class CRUDService<InputType, OutputType> {
     };
   }
 
-  list(
+  list_legacy(
     relativeUrl: string,
     params: IQueryParams = {}
   ): Observable<OutputType[]> {

@@ -25,6 +25,6 @@ export class TargetObjectService {
   constructor(protected _crud: CRUDService<string, string>) {}
 
   getTargetObjects(params: IRequirementQueryParams): Observable<string[]> {
-    return this._crud.list('target-objects', params as IQueryParams);
+    return this._crud.list_legacy('target-objects', params as IQueryParams);
   }
 }

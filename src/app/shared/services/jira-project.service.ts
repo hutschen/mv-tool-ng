@@ -39,7 +39,7 @@ export class JiraProjectService {
   }
 
   getJiraProjects(): Observable<IJiraProject[]> {
-    return this._crud.list(this.getJiraProjectsUrl());
+    return this._crud.list_legacy(this.getJiraProjectsUrl());
   }
 
   getJiraProject(jiraProjectId: string): Observable<IJiraProject> {

@@ -37,6 +37,6 @@ export class JiraIssueTypeService {
   }
 
   getJiraIssueTypes(jiraProjectId: string): Observable<IJiraIssueType[]> {
-    return this._crud.list(this.getJiraIssueTypesUrl(jiraProjectId));
+    return this._crud.list_legacy(this.getJiraIssueTypesUrl(jiraProjectId));
   }
 }
