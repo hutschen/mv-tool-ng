@@ -83,6 +83,14 @@ export class Filterable {
     return this.filterForExistence !== undefined;
   }
 
+  get filtered(): boolean {
+    return Boolean(
+      this.filterByPattern?.isSet ||
+        this.filterByValues?.isSet ||
+        this.filterForExistence?.isSet
+    );
+  }
+
   get filterable(): boolean {
     return (
       this.filterableByPattern ||
