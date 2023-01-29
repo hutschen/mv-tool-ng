@@ -105,7 +105,7 @@ export class DataPage<D extends IDataItem> {
   protected _dataSubject: BehaviorSubject<D[]>;
   data$: Observable<D[]>;
 
-  constructor(public columns: DataColumn<D>[], data: D[] = []) {
+  constructor(public columns: DataColumn<D>[] = [], data: D[] = []) {
     this._dataSubject = new BehaviorSubject(data);
     this.data$ = this._dataSubject.asObservable();
   }
@@ -124,6 +124,12 @@ export class DataPage<D extends IDataItem> {
       Object.assign(queryParams, column.queryParams);
     }
     return queryParams;
+  }
+
+  addColumn(field: DataField<D, any>, hide: boolean = false): DataColumn<D> {
+    const column = new DataColumn(field, hide);
+    this.columns.push(column);
+    return column;
   }
 
   addItem(item: D, max_item_count: number = 0): D | void {
