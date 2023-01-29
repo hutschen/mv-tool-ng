@@ -47,6 +47,8 @@ export class JiraIssueField extends DataField<Measure, IJiraIssue | null> {
   }
 }
 
+export class StrField extends DataField<Measure, string> {}
+
 export class StatusField extends DataField<Measure, string> {
   override toStr(data: Measure): string {
     const status = this.toValue(data);
