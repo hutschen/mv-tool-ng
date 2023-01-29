@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { MatSort } from '@angular/material/sort';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Filterable } from './filter';
 import { IQueryParams } from './services/crud.service';
@@ -101,11 +102,38 @@ export class PlaceholderColumn<D extends IDataItem> extends DataColumn<D> {
   }
 }
 
-export class DataPage<D extends IDataItem> {
+export class Sortable {
+  private __matSort?: MatSort;
+
+  set matSort(matSort: MatSort | undefined) {
+    this.__matSort = matSort;
+  }
+
+  get sortBy(): string | void {
+    return this.__matSort?.active;
+  }
+
+  get sortOrder(): 'asc' | 'desc' | void {
+    const sortOrder = this.__matSort?.direction;
+    return sortOrder !== '' ? sortOrder : undefined;
+  }
+
+  get queryParams(): IQueryParams {
+    const queryParams: IQueryParams = {};
+    if (this.sortOrder && this.sortBy) {
+      queryParams['sort_by'] = this.sortBy;
+      queryParams['sort_order'] = this.sortOrder;
+    }
+    return queryParams;
+  }
+}
+
+export class DataFrame<D extends IDataItem> extends Sortable {
   protected _dataSubject: BehaviorSubject<D[]>;
   data$: Observable<D[]>;
 
   constructor(public columns: DataColumn<D>[] = [], data: D[] = []) {
+    super();
     this._dataSubject = new BehaviorSubject(data);
     this.data$ = this._dataSubject.asObservable();
   }
@@ -118,11 +146,12 @@ export class DataPage<D extends IDataItem> {
     this._dataSubject.next(data);
   }
 
-  get queryParams(): IQueryParams {
+  override get queryParams(): IQueryParams {
     const queryParams: IQueryParams = {};
     for (const column of this.columns) {
       Object.assign(queryParams, column.queryParams);
     }
+    Object.assign(super.queryParams, this.queryParams);
     return queryParams;
   }
 
