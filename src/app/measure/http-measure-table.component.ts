@@ -143,11 +143,9 @@ export class HttpMeasureTableComponent implements AfterViewInit {
             project_ids: this.project ? [this.project.id] : [],
             requirement_ids: this.requirement ? [this.requirement.id] : [],
           };
-          if (this.searchStr) {
-            queryParams['search'] = this.searchStr;
-          }
           this.dataFrame.matPaginator = this.paginator;
           this.dataFrame.matSort = this.sort;
+          this.dataFrame.searchStr = this.searchStr;
           return this._measureService.queryMeasures({
             ...queryParams,
             ...this.dataFrame.queryParams,

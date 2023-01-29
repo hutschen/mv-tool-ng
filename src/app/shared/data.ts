@@ -132,6 +132,7 @@ export class Sortable {
 export class DataFrame<D extends IDataItem> extends Sortable {
   protected _dataSubject: BehaviorSubject<D[]>;
   data$: Observable<D[]>;
+  searchStr?: string;
 
   constructor(public columns: DataColumn<D>[] = [], data: D[] = []) {
     super();
@@ -151,6 +152,9 @@ export class DataFrame<D extends IDataItem> extends Sortable {
     const queryParams: IQueryParams = {};
     for (const column of this.columns) {
       Object.assign(queryParams, column.queryParams);
+    }
+    if (this.searchStr) {
+      queryParams['search'] = this.searchStr;
     }
     Object.assign(queryParams, super.queryParams);
     return queryParams;
