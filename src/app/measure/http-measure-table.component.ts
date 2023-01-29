@@ -55,6 +55,7 @@ import {
   StatusField,
   VerifiedField,
 } from './measure-fields';
+import { MeasureDataPage } from './measure-page';
 import { VerificationDialogService } from './verification-dialog.component';
 
 @Component({
@@ -71,32 +72,7 @@ export class HttpMeasureTableComponent implements AfterViewInit {
   @Input() requirement?: Requirement;
   @Input() project?: Project;
 
-  dataFrame: DataPage<Measure> = new DataPage<Measure>(
-    [
-      new DataField<Measure, string>('reference', 'Reference'),
-      new DataField<Measure, string>('summary', 'Summary', false),
-      new DataField<Measure, string>('description', 'Description'),
-      new DocumentField(),
-      new JiraIssueField(),
-      new StatusField('compliance_status', 'Compliance'),
-      new DataField<Measure, string>(
-        'compliance_comment',
-        'Compliance Comment'
-      ),
-      new StatusField('completion_status', 'Completion'),
-      new DataField<Measure, string>(
-        'completion_comment',
-        'Completion Comment'
-      ),
-      new StatusField('verification_method', 'Verification Method'),
-      new VerifiedField(),
-      new DataField<Measure, string>(
-        'verification_comment',
-        'Verification Comment'
-      ),
-      new PlaceholderField<Measure>('options', 'Options'),
-    ].map((dataField) => new DataColumn(dataField))
-  );
+  dataFrame: MeasureDataPage;
   resultsLength = 0;
   isLoadingData = true;
   isRateLimitReached = false;
@@ -116,7 +92,9 @@ export class HttpMeasureTableComponent implements AfterViewInit {
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _confirmDialogService: ConfirmDialogService
-  ) {}
+  ) {
+    this.dataFrame = new MeasureDataPage(this._measureService);
+  }
 
   ngAfterViewInit(): void {
     // When the user changes the sort order, reset to the first page
