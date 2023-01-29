@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { IQueryParams } from './services/crud.service';
 
 export class FilterByPattern {
@@ -28,8 +28,15 @@ export class FilterByPattern {
   }
 }
 
+export interface IFilterOption {
+  label: string;
+  value: string | number;
+}
+
 export class FilterByValues {
-  constructor(public name: string, public values: string[] | number[] = []) {}
+  values: string[] | number[] = [];
+
+  constructor(public name: string, protected _options?: IFilterOption[]) {}
 
   get isSet(): boolean {
     return this.values.length > 0;
@@ -39,8 +46,9 @@ export class FilterByValues {
     return this.isSet ? { [this.name]: this.values } : {};
   }
 
-  get selectableValues(): Observable<string[] | number[]> {
-    throw new Error('Not implemented');
+  get selectableValues(): Observable<IFilterOption[]> {
+    if (this._options) return of(this._options);
+    else throw new Error('No selectable values defined');
   }
 }
 
