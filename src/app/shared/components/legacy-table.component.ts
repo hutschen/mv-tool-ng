@@ -39,7 +39,7 @@ import {
   ReplaySubject,
 } from 'rxjs';
 import { ITableRow, TableColumn, TableColumns } from '../table-columns';
-import { FilterDialogService } from './filter-dialog.component';
+import { LegacyFilterDialogService } from './legacy-filter-dialog.component';
 import { ShowHideDialogService } from './show-hide-dialog.component';
 
 @Component({
@@ -114,7 +114,7 @@ export class LegacyTableComponent<T extends object>
   }
 
   constructor(
-    protected _filterDialogService: FilterDialogService<T>,
+    protected _filterDialogService: LegacyFilterDialogService<T>,
     protected _showHideDialogService: ShowHideDialogService
   ) {
     // update when columns or data change

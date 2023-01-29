@@ -21,7 +21,7 @@ import {
 } from '@angular/material/dialog';
 import { TableColumn } from '../table-columns';
 
-interface IFilterDialogData<T extends object> {
+interface ILegacyFilterDialogData<T extends object> {
   column: TableColumn<T>;
   data: T[];
 }
@@ -29,16 +29,16 @@ interface IFilterDialogData<T extends object> {
 @Injectable({
   providedIn: 'root',
 })
-export class FilterDialogService<T extends object> {
+export class LegacyFilterDialogService<T extends object> {
   constructor(protected _dialog: MatDialog) {}
 
   openFilterDialog(
     column: TableColumn<T>,
     data: T[]
-  ): MatDialogRef<FilterDialogComponent<T>, string[]> {
-    return this._dialog.open(FilterDialogComponent, {
+  ): MatDialogRef<LegacyFilterDialogComponent<T>, string[]> {
+    return this._dialog.open(LegacyFilterDialogComponent, {
       width: '500px',
-      data: { column, data } as IFilterDialogData<T>,
+      data: { column, data } as ILegacyFilterDialogData<T>,
     });
   }
 }
@@ -120,22 +120,22 @@ class FilterSelection {
 
 @Component({
   selector: 'mvtool-filter-dialog',
-  templateUrl: './filter-dialog.component.html',
+  templateUrl: './legacy-filter-dialog.component.html',
   styleUrls: ['../styles/flex.scss', '../styles/truncate.scss'],
   styles: [
     'ul { list-style-type: none; padding-left: 0;}',
     '.checkbox-label { width: 420px; }',
   ],
 })
-export class FilterDialogComponent<T extends object> {
+export class LegacyFilterDialogComponent<T extends object> {
   column: TableColumn<T>;
   protected _texts: string[];
   filterSelection: FilterSelection;
   protected _searchStr = '';
 
   constructor(
-    protected _dialogRef: MatDialogRef<FilterDialogComponent<T>>,
-    @Inject(MAT_DIALOG_DATA) dialogData: IFilterDialogData<T>
+    protected _dialogRef: MatDialogRef<LegacyFilterDialogComponent<T>>,
+    @Inject(MAT_DIALOG_DATA) dialogData: ILegacyFilterDialogData<T>
   ) {
     this.column = dialogData.column;
     this._texts = dialogData.data.map((data) => this.column.toStr(data));
