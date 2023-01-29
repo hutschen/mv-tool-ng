@@ -23,7 +23,12 @@
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        {{ column.label }}
+        <mvtool-filter-header *ngIf="column.filterable" [filterable]="column">
+          {{ column.label }}
+        </mvtool-filter-header>
+        <span *ngIf="!column.filterable">
+          {{ column.label }}
+        </span>
       </th>
       <td mat-cell *matCellDef="let row">
         <span *ngIf="column.dataField.toBool(row)" class="expandable-lines">
