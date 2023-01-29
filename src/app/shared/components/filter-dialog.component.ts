@@ -40,6 +40,7 @@ export class FilterDialogService {
 @Component({
   selector: 'mvtool-filter-dialog',
   templateUrl: './filter-dialog.component.html',
+  styleUrls: ['../styles/flex.scss'],
   styles: [],
 })
 export class FilterDialogComponent implements OnInit {
