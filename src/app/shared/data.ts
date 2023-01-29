@@ -75,7 +75,7 @@ export class DataColumn<D extends IDataItem> extends Filterable {
     return this.dataField.name;
   }
 
-  get label(): string {
+  override get label(): string {
     return this.dataField.label;
   }
 
