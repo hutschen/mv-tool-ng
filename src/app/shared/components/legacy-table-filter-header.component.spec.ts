@@ -15,18 +15,18 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TableFilterHeaderComponent } from './table-filter-header.component';
+import { LegacyTableFilterHeaderComponent } from './legacy-table-filter-header.component';
 
 describe('TableFilterHeaderComponent', () => {
-  let component: TableFilterHeaderComponent<any>;
-  let fixture: ComponentFixture<TableFilterHeaderComponent<any>>;
+  let component: LegacyTableFilterHeaderComponent<any>;
+  let fixture: ComponentFixture<LegacyTableFilterHeaderComponent<any>>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TableFilterHeaderComponent],
+      declarations: [LegacyTableFilterHeaderComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TableFilterHeaderComponent);
+    fixture = TestBed.createComponent(LegacyTableFilterHeaderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -64,10 +64,10 @@
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-table-filter-header
+        <mvtool-legacy-table-filter-header
           [column]="column"
           [table]="table"
-        ></mvtool-table-filter-header>
+        ></mvtool-legacy-table-filter-header>
       </th>
       <td mat-cell *matCellDef="let row">
         <button
@@ -88,10 +88,10 @@
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-table-filter-header
+        <mvtool-legacy-table-filter-header
           [column]="column"
           [table]="table"
-        ></mvtool-table-filter-header>
+        ></mvtool-legacy-table-filter-header>
       </th>
       <td mat-cell *matCellDef="let row" [matTooltip]="column.toStr(row.data)">
         <mat-progress-bar
@@ -109,10 +109,10 @@
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-table-filter-header
+        <mvtool-legacy-table-filter-header
           [column]="column"
           [table]="table"
-        ></mvtool-table-filter-header>
+        ></mvtool-legacy-table-filter-header>
       </th>
       <td mat-cell *matCellDef="let row" [matTooltip]="column.toStr(row.data)">
         <div *ngIf="column.toBool(row.data)" class="fx-row fx-center-center">

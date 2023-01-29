@@ -28,7 +28,7 @@ import { ErrorDialogComponent } from './components/error-dialog.component';
 import { CreateEditDialogComponent } from './components/create-edit-dialog.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog.component';
 import { LegacyFilterDialogComponent } from './components/legacy-filter-dialog.component';
-import { TableFilterHeaderComponent } from './components/table-filter-header.component';
+import { LegacyTableFilterHeaderComponent } from './components/legacy-table-filter-header.component';
 import { AutocompleteComponent } from './components/autocomplete.component';
 import { ShowHideDialogComponent } from './components/show-hide-dialog.component';
 import { TableOptionsComponent } from './components/table-options.component';
@@ -48,7 +48,7 @@ import { TableComponent } from './components/table.component';
     CreateEditDialogComponent,
     ConfirmDialogComponent,
     LegacyFilterDialogComponent,
-    TableFilterHeaderComponent,
+    LegacyTableFilterHeaderComponent,
     AutocompleteComponent,
     ShowHideDialogComponent,
     TableOptionsComponent,
@@ -66,7 +66,7 @@ import { TableComponent } from './components/table.component';
     DetailComponent,
     ErrorDialogComponent,
     CreateEditDialogComponent,
-    TableFilterHeaderComponent,
+    LegacyTableFilterHeaderComponent,
     AutocompleteComponent,
     TableComponent,
   ],

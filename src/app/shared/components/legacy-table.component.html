@@ -23,10 +23,10 @@
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-table-filter-header
+        <mvtool-legacy-table-filter-header
           [column]="column"
           [table]="this"
-        ></mvtool-table-filter-header>
+        ></mvtool-legacy-table-filter-header>
       </th>
       <td mat-cell *matCellDef="let row">
         <span *ngIf="column.toBool(row.data)" class="expandable-lines">

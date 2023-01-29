@@ -18,7 +18,7 @@ import { TableColumn } from '../table-columns';
 import { LegacyTableComponent } from './legacy-table.component';
 
 @Component({
-  selector: 'mvtool-table-filter-header',
+  selector: 'mvtool-legacy-table-filter-header',
   template: `
     <span
       (click)="table.onSetFilter(column); $event.stopPropagation()"
@@ -32,7 +32,7 @@ import { LegacyTableComponent } from './legacy-table.component';
   `,
   styles: ['.filter-icon {   width: 12px; height: 12px; font-size: 12px;}'],
 })
-export class TableFilterHeaderComponent<T extends object> {
+export class LegacyTableFilterHeaderComponent<T extends object> {
   @Input() column!: TableColumn<T>;
   @Input() table!: LegacyTableComponent<T>;
 
