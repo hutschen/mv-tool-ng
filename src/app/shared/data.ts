@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Filter } from './filter';
+import { Filterable } from './filter';
 import { IQueryParams } from './services/crud.service';
 
 export interface IDataItem {
@@ -61,13 +61,13 @@ export class PlaceholderField<D extends IDataItem> extends DataField<D, any> {
   }
 }
 
-export class DataColumn<D extends IDataItem> {
+export class DataColumn<D extends IDataItem> extends Filterable {
   constructor(
     public dataField: DataField<D, any>,
-    public hide: boolean = false,
-    public sortable: boolean = true,
-    public filter?: Filter
-  ) {}
+    public hide: boolean = false
+  ) {
+    super();
+  }
 
   get name(): string {
     return this.dataField.name;
@@ -83,14 +83,6 @@ export class DataColumn<D extends IDataItem> {
 
   get optional(): boolean {
     return this.dataField.optional;
-  }
-
-  get filterable(): boolean {
-    return this.filter !== undefined;
-  }
-
-  get queryParams(): IQueryParams {
-    return this.filter?.queryParams ?? {};
   }
 
   isShown(dataArray: D[]): boolean {
