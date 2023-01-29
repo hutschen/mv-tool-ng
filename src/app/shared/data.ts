@@ -152,7 +152,7 @@ export class DataFrame<D extends IDataItem> extends Sortable {
     for (const column of this.columns) {
       Object.assign(queryParams, column.queryParams);
     }
-    Object.assign(super.queryParams, this.queryParams);
+    Object.assign(queryParams, super.queryParams);
     return queryParams;
   }
 
@@ -204,7 +204,7 @@ export class DataFrame<D extends IDataItem> extends Sortable {
 export class DataPage<D extends IDataItem> extends DataFrame<D> {
   private __matPaginator?: MatPaginator;
 
-  set paginator(paginator: MatPaginator) {
+  set matPaginator(paginator: MatPaginator) {
     this.__matPaginator = paginator;
   }
 
