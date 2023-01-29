@@ -27,6 +27,7 @@ import {
   firstValueFrom,
   map,
   merge,
+  Observable,
   startWith,
   switchMap,
 } from 'rxjs';
@@ -40,6 +41,7 @@ import {
   DataPage,
   PlaceholderField,
 } from '../shared/data';
+import { IPage, IQueryParams } from '../shared/services/crud.service';
 import {
   Measure,
   MeasureService,
@@ -137,20 +139,19 @@ export class HttpMeasureTableComponent implements AfterViewInit {
       .pipe(
         switchMap(() => {
           this.isLoadingData = true;
-          const queryParams: IMeasureQueryParams = {
+          const queryParams: IQueryParams = {
             project_ids: this.project ? [this.project.id] : [],
             requirement_ids: this.requirement ? [this.requirement.id] : [],
           };
           if (this.searchStr) {
-            queryParams.search = this.searchStr;
+            queryParams['search'] = this.searchStr;
           }
-          return this._measureService.getMeasuresPage_legacy(
-            this.paginator.pageIndex + 1,
-            this.paginator.pageSize,
-            this.sort.active,
-            this.sort.direction,
-            queryParams
-          );
+          this.dataFrame.matPaginator = this.paginator;
+          this.dataFrame.matSort = this.sort;
+          return this._measureService.queryMeasures({
+            ...queryParams,
+            ...this.dataFrame.queryParams,
+          }) as Observable<IPage<Measure>>;
         }),
         map((data) => {
           this.isLoadingData = false;
