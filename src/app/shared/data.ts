@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Filterable } from './filter';
@@ -161,26 +162,24 @@ export class DataFrame<D extends IDataItem> extends Sortable {
     return column;
   }
 
-  addItem(item: D, max_item_count: number = 0): D | void {
-    if (max_item_count <= 0 || this.data.length < max_item_count) {
-      this.data.push(item);
-      this._dataSubject.next(this.data);
-      return item;
-    }
+  addItem(item: D): boolean {
+    this.data.push(item);
+    this._dataSubject.next(this.data);
+    return true;
   }
 
-  updateItem(item: D): D | void {
+  updateItem(item: D): boolean {
     const index = this.data.findIndex((i) => i.id === item.id);
     if (index >= 0) {
       this.data[index] = item;
       this._dataSubject.next(this.data);
-      return item;
+      return true;
     }
+    return false;
   }
 
-  addOrUpdateItem(item: D, max_item_count: number = 0): D | void {
-    if (this.updateItem(item)) return item;
-    else return this.addItem(item, max_item_count);
+  addOrUpdateItem(item: D): boolean {
+    return this.updateItem(item) ?? this.addItem(item);
   }
 
   removeItem(item: D): void {
@@ -199,5 +198,39 @@ export class DataFrame<D extends IDataItem> extends Sortable {
 
   get shownColumns(): DataColumn<D>[] {
     return this.columns.filter((column) => column.isShown(this.data));
+  }
+}
+
+export class DataPage<D extends IDataItem> extends DataFrame<D> {
+  private __matPaginator?: MatPaginator;
+
+  set paginator(paginator: MatPaginator) {
+    this.__matPaginator = paginator;
+  }
+
+  get page(): number {
+    if (this.__matPaginator) {
+      return this.__matPaginator.pageIndex + 1;
+    } else throw new Error('Paginator not set');
+  }
+
+  get pageSize(): number {
+    if (this.__matPaginator) {
+      return this.__matPaginator.pageSize;
+    } else throw new Error('Paginator not set');
+  }
+
+  override get queryParams(): IQueryParams {
+    const queryParams = super.queryParams;
+    queryParams['page'] = this.page;
+    queryParams['page_size'] = this.pageSize;
+    return queryParams;
+  }
+
+  override addItem(item: D): boolean {
+    if (this.data.length < this.pageSize) {
+      return super.addItem(item);
+    }
+    return false;
   }
 }
