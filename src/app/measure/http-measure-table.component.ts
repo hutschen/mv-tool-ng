@@ -99,6 +99,8 @@ export class HttpMeasureTableComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this.dataFrame.initialize(this.requirement!);
+
     // When the user changes the sort order, reset to the first page
     this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 

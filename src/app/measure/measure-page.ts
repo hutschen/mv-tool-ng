@@ -13,16 +13,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Observable, of } from 'rxjs';
-import { DataColumn, DataPage, PlaceholderField } from '../shared/data';
-import {
-  Filterable,
-  FilterByPattern,
-  FilterByValues,
-  FilterForExistence,
-  IFilterOption,
-} from '../shared/filter';
+import { map, Observable, of } from 'rxjs';
+import { DataPage, PlaceholderField } from '../shared/data';
+import { FilterByValues, IFilterOption } from '../shared/filter';
 import { Measure, MeasureService } from '../shared/services/measure.service';
+import { Project } from '../shared/services/project.service';
+import { Requirement } from '../shared/services/requirement.service';
 import {
   DocumentField,
   JiraIssueField,
@@ -32,16 +28,33 @@ import {
 } from './measure-fields';
 
 class ReferenceValuesFilter extends FilterByValues {
-  constructor(page: MeasureDataPage, measureService: MeasureService) {
+  constructor(
+    protected _measurePage: MeasureDataPage,
+    protected _measureService: MeasureService
+  ) {
     super('references');
   }
 
   override get selectableOptions(): Observable<IFilterOption[]> {
-    return of([]);
+    return (
+      this._measureService.getMeasureReferences({
+        project_ids: this._measurePage.project.id,
+      }) as Observable<string[]>
+    ).pipe(
+      map((references) =>
+        references.map((reference) => ({
+          value: reference,
+          label: reference,
+        }))
+      )
+    );
   }
 }
 
 export class MeasureDataPage extends DataPage<Measure> {
+  public requirement!: Requirement;
+  public project!: Project;
+
   constructor(measureService: MeasureService) {
     super();
 
@@ -131,5 +144,12 @@ export class MeasureDataPage extends DataPage<Measure> {
 
     // Options column
     this.addColumn(new PlaceholderField<Measure>('options', 'Options'));
+  }
+
+  initialize(requirement: Requirement) {
+    this.requirement = requirement;
+    this.project = requirement.project;
+
+    // TODO: initialize fetching data
   }
 }
