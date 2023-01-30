@@ -235,6 +235,12 @@ export class MeasureService {
     );
   }
 
+  getMeasureReferences(
+    params: IQueryParams = {}
+  ): Observable<string[] | IPage<string>> {
+    return this._crud_str.query('measure/references', params);
+  }
+
   downloadMeasureExcel(requirementId: number): Observable<IDownloadState> {
     const url = `${this.getMeasuresUrl(requirementId)}/excel`;
     return this._download.download(url);
