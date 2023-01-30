@@ -60,7 +60,13 @@ export class FilterDialogService {
         [filter]="filterable.filterForExistence"
       ></mvtool-filter-for-existence>
     </div>
-    <div mat-dialog-actions align="end"></div>
+    <div mat-dialog-actions align="end">
+      <button mat-button (click)="onClearFilter()">
+        <mat-icon>filter_alt_off</mat-icon>
+        Clear Filter
+      </button>
+      <button mat-raised-button color="accent" (click)="onClose()">OK</button>
+    </div>
   `,
   styleUrls: ['../styles/flex.scss'],
   styles: ['.mat-divider { margin-bottom: 10px; }'],
@@ -70,4 +76,13 @@ export class FilterDialogComponent {
     protected _dialogRef: MatDialogRef<FilterDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public filterable: Filterable
   ) {}
+
+  onClearFilter() {
+    this.filterable.clearFilters();
+    this._dialogRef.close();
+  }
+
+  onClose(): void {
+    this._dialogRef.close();
+  }
 }
