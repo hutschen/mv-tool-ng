@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject, Injectable, OnInit } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import {
   MatDialog,
   MatDialogRef,
@@ -39,17 +39,35 @@ export class FilterDialogService {
 
 @Component({
   selector: 'mvtool-filter-dialog',
-  templateUrl: './filter-dialog.component.html',
+  template: `
+    <div mat-dialog-title>Filter {{ filterable.label }}</div>
+    <div mat-dialog-content>
+      <!-- Filter by pattern -->
+      <mvtool-filter-by-pattern
+        *ngIf="filterable.filterByPattern"
+        [filter]="filterable.filterByPattern"
+      ></mvtool-filter-by-pattern>
+
+      <!-- Filter by values -->
+      <mvtool-filter-by-values
+        *ngIf="filterable.filterByValues"
+        [filter]="filterable.filterByValues"
+      ></mvtool-filter-by-values>
+
+      <!-- Filter for existence -->
+      <mvtool-filter-for-existence
+        *ngIf="filterable.filterForExistence"
+        [filter]="filterable.filterForExistence"
+      ></mvtool-filter-for-existence>
+    </div>
+    <div mat-dialog-actions align="end"></div>
+  `,
   styleUrls: ['../styles/flex.scss'],
-  styles: [],
+  styles: ['.mat-divider { margin-bottom: 10px; }'],
 })
-export class FilterDialogComponent implements OnInit {
+export class FilterDialogComponent {
   constructor(
     protected _dialogRef: MatDialogRef<FilterDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public filterable: Filterable
   ) {}
-
-  ngOnInit(): void {
-    // TODO: get filter options if a values filter is used
-  }
 }
