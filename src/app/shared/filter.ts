@@ -109,6 +109,12 @@ export class Filterable {
     };
   }
 
+  clearFilters(): void {
+    this.filterByPattern?.clear();
+    this.filterByValues?.clear();
+    this.filterForExistence?.clear();
+  }
+
   setPatternFilter(name: string): void {
     this.filterByPattern = new FilterByPattern(name);
   }
