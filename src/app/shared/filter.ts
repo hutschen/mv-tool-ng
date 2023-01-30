@@ -26,6 +26,10 @@ export class FilterByPattern {
   get queryParams(): IQueryParams {
     return this.isSet ? { [this.name]: this.pattern } : {};
   }
+
+  clear(): void {
+    this.pattern = '';
+  }
 }
 
 export interface IFilterOption {

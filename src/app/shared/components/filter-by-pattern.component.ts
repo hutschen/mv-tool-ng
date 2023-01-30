@@ -13,15 +13,39 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { FilterByPattern } from '../filter';
 
 @Component({
   selector: 'mvtool-filter-by-pattern',
-  template: ` <p>filter-by-pattern works!</p> `,
+  template: `
+    <div class="fx-column">
+      <p>
+        Enter a filter pattern. The wildcards
+        <code matTooltip="matches zero or more characters">*</code> and
+        <code matTooltip="matches exactly one character">?</code> can be used.
+        Unlike a search, the data is filtered for exact matches.
+      </p>
+      <mat-form-field appearance="fill">
+        <mat-label>Pattern</mat-label>
+        <input name="pattern" matInput [(ngModel)]="filter.pattern" />
+        <button
+          *ngIf="filter.pattern"
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="filter.clear()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  `,
+  styleUrls: ['../styles/flex.scss'],
   styles: [],
 })
-export class FilterByPatternComponent implements OnInit {
-  constructor() {}
+export class FilterByPatternComponent {
+  @Input() filter!: FilterByPattern;
 
-  ngOnInit(): void {}
+  constructor() {}
 }
