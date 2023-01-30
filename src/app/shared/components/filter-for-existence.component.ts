@@ -13,15 +13,29 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { FilterForExistence } from '../filter';
 
 @Component({
   selector: 'mvtool-filter-for-existence',
-  template: ` <p>filter-for-existence works!</p> `,
+  template: `
+    <div class="fx-column">
+      <p>Filter for the existence and non-existence of values.</p>
+      <mat-form-field appearance="fill">
+        <mat-label>Select filter criterion</mat-label>
+        <mat-select name="existence" [(ngModel)]="filter.exists">
+          <mat-option [value]="null">None</mat-option>
+          <mat-option [value]="true">Non-Empty</mat-option>
+          <mat-option [value]="false">Empty</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  `,
+  styleUrls: ['../styles/flex.scss'],
   styles: [],
 })
-export class FilterForExistenceComponent implements OnInit {
-  constructor() {}
+export class FilterForExistenceComponent {
+  @Input() filter!: FilterForExistence;
 
-  ngOnInit(): void {}
+  constructor() {}
 }

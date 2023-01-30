@@ -66,6 +66,10 @@ export class FilterForExistence {
   get queryParams(): IQueryParams {
     return this.isSet ? { [this.name]: this.exists as boolean } : {};
   }
+
+  clear(): void {
+    this.exists = null;
+  }
 }
 
 export class Filterable {
