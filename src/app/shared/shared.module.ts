@@ -36,6 +36,9 @@ import { ComplianceDialogComponent } from './components/compliance-dialog.compon
 import { TableComponent } from './components/table.component';
 import { FilterDialogComponent } from './components/filter-dialog.component';
 import { FilterHeaderComponent } from './components/filter-header.component';
+import { FilterByPatternComponent } from './components/filter-by-pattern.component';
+import { FilterByValuesComponent } from './components/filter-by-values.component';
+import { FilterForExistenceComponent } from './components/filter-for-existence.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +61,9 @@ import { FilterHeaderComponent } from './components/filter-header.component';
     TableComponent,
     FilterDialogComponent,
     FilterHeaderComponent,
+    FilterByPatternComponent,
+    FilterByValuesComponent,
+    FilterForExistenceComponent,
   ],
   imports: [CommonModule, MaterialModule],
   exports: [
