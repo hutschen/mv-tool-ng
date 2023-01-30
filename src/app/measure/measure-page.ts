@@ -36,7 +36,7 @@ class ReferenceValuesFilter extends FilterByValues {
     super('references');
   }
 
-  override get selectableValues(): Observable<IFilterOption[]> {
+  override get selectableOptions(): Observable<IFilterOption[]> {
     return of([]);
   }
 }

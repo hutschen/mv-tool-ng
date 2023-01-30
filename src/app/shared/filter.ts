@@ -50,9 +50,13 @@ export class FilterByValues {
     return this.isSet ? { [this.name]: this.values } : {};
   }
 
-  get selectableValues(): Observable<IFilterOption[]> {
+  get selectableOptions(): Observable<IFilterOption[]> {
     if (this._options) return of(this._options);
-    else throw new Error('No selectable values defined');
+    else throw new Error('No selectable options defined');
+  }
+
+  clear(): void {
+    this.values = [];
   }
 }
 
