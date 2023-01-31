@@ -13,9 +13,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { map, Observable, of } from 'rxjs';
+import { debounce, debounceTime, map, Observable, of } from 'rxjs';
 import { DataPage, PlaceholderField } from '../shared/data';
 import { FilterByValues, IFilterOption } from '../shared/filter';
+import { IQueryParams } from '../shared/services/crud.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
 import { Requirement } from '../shared/services/requirement.service';
@@ -35,18 +36,29 @@ class ReferenceValuesFilter extends FilterByValues {
     super('references');
   }
 
-  override get selectableOptions(): Observable<IFilterOption[]> {
-    return (
-      this._measureService.getMeasureReferences({
-        project_ids: this._measurePage.project.id,
-      }) as Observable<string[]>
-    ).pipe(
-      map((references) =>
-        references.map((reference) => ({
+  override getOptions(
+    searchStr: string = '',
+    limit: number = -1
+  ): Observable<IFilterOption[]> {
+    // Build query params to request measure references
+    const queryParams: IQueryParams = {
+      project_ids: this._measurePage.project.id,
+    };
+    if (searchStr) queryParams['local_search'] = searchStr;
+    if (limit) {
+      queryParams['page'] = 1;
+      queryParams['page_size'] = limit;
+    }
+
+    // Request measure references and convert them to filter options
+    return this._measureService.getMeasureReferences(queryParams).pipe(
+      map((references) => {
+        if (!Array.isArray(references)) references = references.items;
+        return references.map((reference) => ({
           value: reference,
           label: reference,
-        }))
-      )
+        }));
+      })
     );
   }
 }
