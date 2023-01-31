@@ -13,15 +13,64 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
+import { MatAutocomplete } from '@angular/material/autocomplete';
+import { BehaviorSubject, debounceTime } from 'rxjs';
+import { FilterByValues, IFilterOption } from '../filter';
 
 @Component({
   selector: 'mvtool-filter-by-values',
-  template: ` <p>filter-by-values works!</p> `,
+  template: `
+    <div class="fx-column">
+      <mat-form-field appearance="fill">
+        <mat-label>Search term</mat-label>
+        <input
+          type="text"
+          matInput
+          [(ngModel)]="searchStr"
+          [matAutocomplete]="autocomplete"
+        />
+        <mat-autocomplete #autocomplete="matAutocomplete">
+          <mat-option *ngFor="let option of options" [value]="option">
+            {{ option.label }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+  `,
+  styleUrls: ['../styles/flex.scss'],
   styles: [],
 })
-export class FilterByValuesComponent implements OnInit {
-  constructor() {}
+export class FilterByValuesComponent implements AfterViewInit {
+  @Input() filter!: FilterByValues;
+  @ViewChild(MatInput) input!: MatInput;
+  @ViewChild(MatAutocomplete) autocomplete!: MatAutocomplete;
 
-  ngOnInit(): void {}
+  options: IFilterOption[] = [];
+  protected _searchSubject = new BehaviorSubject<string>('');
+
+  constructor() {
+    this._searchSubject.pipe(debounceTime(250)).subscribe((searchStr) => {
+      this.filter.getOptions(searchStr, 10).subscribe((options) => {
+        this.options = options;
+      });
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.autocomplete.optionActivated.subscribe((event) => {
+      console.log('selected option', event.option?.value);
+      // deselect option
+      this.input.value = '';
+      event.option?.deselect();
+    });
+  }
+
+  get searchStr(): string {
+    return this._searchSubject.value;
+  }
+
+  set searchStr(searchStr: string) {
+    this._searchSubject.next(searchStr);
+  }
 }
