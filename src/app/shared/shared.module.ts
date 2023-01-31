@@ -80,6 +80,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     LegacyTableFilterHeaderComponent,
     AutocompleteComponent,
     TableComponent,
+    FilterHeaderComponent,
   ],
 })
 export class SharedModule {}

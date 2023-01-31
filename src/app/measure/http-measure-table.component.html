@@ -37,7 +37,9 @@
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        {{ column.label }}
+        <mvtool-filter-header *ngIf="column.filterable" [filterable]="column">
+          {{ column.label }}
+        </mvtool-filter-header>
       </th>
       <td mat-cell *matCellDef="let measure">
         <mvtool-jira-issue-input
@@ -55,7 +57,9 @@
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        {{ column.label }}
+        <mvtool-filter-header *ngIf="column.filterable" [filterable]="column">
+          {{ column.label }}
+        </mvtool-filter-header>
       </th>
       <td mat-cell *matCellDef="let measure">
         <button
@@ -76,7 +80,9 @@
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        {{ column.label }}
+        <mvtool-filter-header *ngIf="column.filterable" [filterable]="column">
+          {{ column.label }}
+        </mvtool-filter-header>
       </th>
       <td mat-cell *matCellDef="let measure">
         <button
@@ -95,7 +101,9 @@
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        {{ column.label }}
+        <mvtool-filter-header *ngIf="column.filterable" [filterable]="column">
+          {{ column.label }}
+        </mvtool-filter-header>
       </th>
       <td mat-cell *matCellDef="let measure">
         <button
@@ -116,7 +124,9 @@
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        {{ column.label }}
+        <mvtool-filter-header *ngIf="column.filterable" [filterable]="column">
+          {{ column.label }}
+        </mvtool-filter-header>
       </th>
       <td mat-cell *matCellDef="let measure">
         <button

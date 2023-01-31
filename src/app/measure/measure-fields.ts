@@ -33,7 +33,7 @@ export class DocumentField extends DataField<Measure, Document> {
 
 export class JiraIssueField extends DataField<Measure, IJiraIssue | null> {
   constructor(optional: boolean = false) {
-    super('jira_issue', 'Jira issue', optional);
+    super('jira_issue', 'Jira Issue', optional);
   }
 
   override toStr(data: Measure): string {

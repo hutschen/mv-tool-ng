@@ -88,9 +88,12 @@ export class MeasureDataPage extends DataPage<Measure> {
     description.setPatternFilter('description');
     description.setExistenceFilter('has_description');
 
-    // Document and Jira Issue column
+    // Document column
     this.addColumn(new DocumentField());
-    this.addColumn(new JiraIssueField());
+
+    // Jira Issue column
+    const jiraIssue = this.addColumn(new JiraIssueField());
+    jiraIssue.setExistenceFilter('has_jira_issue');
 
     // Compliance status column
     const compliance = this.addColumn(
