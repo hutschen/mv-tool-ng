@@ -39,6 +39,7 @@ import { FilterHeaderComponent } from './components/filter-header.component';
 import { FilterByPatternComponent } from './components/filter-by-pattern.component';
 import { FilterByValuesComponent } from './components/filter-by-values.component';
 import { FilterForExistenceComponent } from './components/filter-for-existence.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -65,7 +66,7 @@ import { FilterForExistenceComponent } from './components/filter-for-existence.c
     FilterByValuesComponent,
     FilterForExistenceComponent,
   ],
-  imports: [CommonModule, MaterialModule],
+  imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
     HttpClientModule,
     TruncatePipe,

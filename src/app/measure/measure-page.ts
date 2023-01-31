@@ -37,7 +37,7 @@ class ReferenceValuesFilter extends FilterByValues {
   }
 
   override getOptions(
-    searchStr: string = '',
+    searchStr: string | null = null,
     limit: number = -1
   ): Observable<IFilterOption[]> {
     // Build query params to request measure references
