@@ -14,12 +14,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { ENTER } from '@angular/cdk/keycodes';
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { Observable } from 'rxjs';
-import { debounceTime, startWith, switchMap } from 'rxjs/operators';
+import { debounceTime, startWith, switchMap, tap } from 'rxjs/operators';
 import { FilterByValues, IFilterOption } from '../filter';
 
 @Component({
@@ -28,10 +28,13 @@ import { FilterByValues, IFilterOption } from '../filter';
     <div class="fx-column">
       <p>
         Define a list of specific values. Entries containing these values will
-        be filtered out. The wildcards
-        <code matTooltip="matches zero or more characters">*</code> and
-        <code matTooltip="matches exactly one character">?</code> can be used to
-        search for values.
+        be filtered out.
+        <span *ngIf="filter.hasToLoadOptions">
+          The wildcards
+          <code matTooltip="matches zero or more characters">*</code> and
+          <code matTooltip="matches exactly one character">?</code> can be used
+          to search for values.
+        </span>
       </p>
       <mat-form-field class="example-chip-list" appearance="fill">
         <mat-label>Selected values</mat-label>
@@ -64,25 +67,35 @@ import { FilterByValues, IFilterOption } from '../filter';
             {{ option.label }}
           </mat-option>
         </mat-autocomplete>
+        <mat-spinner
+          *ngIf="isLoadingOptions"
+          matSuffix
+          diameter="20"
+        ></mat-spinner>
       </mat-form-field>
     </div>
   `,
   styleUrls: ['../styles/flex.scss'],
   styles: [],
 })
-export class FilterByValuesComponent {
+export class FilterByValuesComponent implements OnInit {
   @Input() filter!: FilterByValues;
   separatorKeysCodes: number[] = [ENTER];
   valueCtrl = new FormControl('');
-  options$: Observable<IFilterOption[]>;
+  isLoadingOptions = false;
+  options$!: Observable<IFilterOption[]>;
 
   @ViewChild('valueInput') valueInput!: ElementRef<HTMLInputElement>;
 
-  constructor() {
+  constructor() {}
+
+  ngOnInit(): void {
     this.options$ = this.valueCtrl.valueChanges.pipe(
       startWith(null),
-      debounceTime(250),
-      switchMap((value) => this.filter.getOptions(value, 10))
+      debounceTime(this.filter.hasToLoadOptions ? 250 : 0),
+      tap(() => (this.isLoadingOptions = true && this.filter.hasToLoadOptions)),
+      switchMap((value) => this.filter.getOptions(value, 10)),
+      tap(() => (this.isLoadingOptions = false))
     );
   }
 

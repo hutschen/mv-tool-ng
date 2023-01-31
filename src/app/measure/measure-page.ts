@@ -29,6 +29,8 @@ import {
 } from './measure-fields';
 
 class ReferenceValuesFilter extends FilterByValues {
+  override hasToLoadOptions: boolean = true;
+
   constructor(
     protected _measurePage: MeasureDataPage,
     protected _measureService: MeasureService

@@ -39,6 +39,7 @@ export interface IFilterOption {
 
 export class FilterByValues {
   protected _selectedOptions: IFilterOption[] = [];
+  hasToLoadOptions: boolean = false;
 
   constructor(public name: string, private __options?: IFilterOption[]) {}
 
