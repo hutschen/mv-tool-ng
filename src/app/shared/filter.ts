@@ -38,33 +38,76 @@ export interface IFilterOption {
 }
 
 export class FilterByValues {
-  values: string[] | number[] = [];
+  protected _selectedOptions: IFilterOption[] = [];
 
-  constructor(public name: string, protected _options?: IFilterOption[]) {}
+  constructor(public name: string, private __options?: IFilterOption[]) {}
 
   get isSet(): boolean {
-    return this.values.length > 0;
+    return this._selectedOptions.length > 0;
   }
 
   get queryParams(): IQueryParams {
     return this.isSet ? { [this.name]: this.values } : {};
   }
 
+  set values(values: (string | number)[]) {
+    this.getOptionsByValues(values).subscribe((options) => {
+      this._selectedOptions = options;
+    });
+  }
+
+  get values(): (string | number)[] {
+    return this._selectedOptions.map((option) => option.value);
+  }
+
+  get selectedOptions(): IFilterOption[] {
+    return this._selectedOptions;
+  }
+
+  selectOption(option: IFilterOption): boolean {
+    if (!this._selectedOptions.some((o) => o.value === option.value)) {
+      this._selectedOptions.push(option);
+      return true;
+    }
+    return false;
+  }
+
+  deselectOption(option: IFilterOption): boolean {
+    const index = this._selectedOptions.findIndex(
+      (o) => o.value === option.value
+    );
+    if (index >= 0) {
+      this._selectedOptions.splice(index, 1);
+      return true;
+    }
+    return false;
+  }
+
   getOptions(
-    searchStr: string = '',
+    searchStr: string | null = null,
     limit: number = -1
   ): Observable<IFilterOption[]> {
-    if (this._options) {
+    if (this.__options) {
+      if (searchStr) {
+        return of(
+          this.__options.filter((option) =>
+            option.label.toLowerCase().includes(searchStr.toLowerCase())
+          )
+        );
+      } else return of(this.__options);
+    } else throw new Error('No selectable options defined');
+  }
+
+  getOptionsByValues(values: (string | number)[]): Observable<IFilterOption[]> {
+    if (this.__options) {
       return of(
-        this._options.filter((option) =>
-          option.label.toLowerCase().includes(searchStr.toLowerCase())
-        )
+        this.__options.filter((option) => values.includes(option.value))
       );
     } else throw new Error('No selectable options defined');
   }
 
   clear(): void {
-    this.values = [];
+    this._selectedOptions = [];
   }
 }
 
