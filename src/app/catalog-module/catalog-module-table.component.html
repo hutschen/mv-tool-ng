@@ -20,8 +20,8 @@
   <mvtool-table-toolbar
     (refresh)="onReloadCatalogModules()"
     (create)="onCreateCatalogModule()"
-    [showFilter]="true"
-    filterLabel="Filter Catalog Modules"
+    [showSearch]="true"
+    searchLabel="Filter Catalog Modules"
     createLabel="Create Catalog Module"
     #tableToolbar
   >
@@ -36,11 +36,11 @@
   </mvtool-table-toolbar>
 
   <!-- Catalog Modules table -->
-  <mvtool-table
+  <mvtool-legacy-table
     [columns]="columns"
     [data$]="data$"
     [dataLoaded]="dataLoaded"
-    [filterValue]="tableToolbar.filterValue"
+    [filterValue]="tableToolbar.searchStr"
     (create)="onCreateCatalogModule()"
     noContentText="No catalog modules found."
     loadingText="Loading catalog modules..."
@@ -63,5 +63,5 @@
         </mvtool-table-row-options>
       </td>
     </ng-container>
-  </mvtool-table>
+  </mvtool-legacy-table>
 </div>

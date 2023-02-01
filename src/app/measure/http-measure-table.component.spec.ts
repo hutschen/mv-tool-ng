@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Helmar Hutschenreuter
+// Copyright (C) 2023 Helmar Hutschenreuter
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -15,18 +15,18 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FilterDialogComponent } from './filter-dialog.component';
+import { HttpMeasureTableComponent } from './http-measure-table.component';
 
-describe('FilterDialogComponent', () => {
-  let component: FilterDialogComponent<any>;
-  let fixture: ComponentFixture<FilterDialogComponent<any>>;
+describe('HttpMeasureTableComponent', () => {
+  let component: HttpMeasureTableComponent;
+  let fixture: ComponentFixture<HttpMeasureTableComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [FilterDialogComponent],
+      declarations: [HttpMeasureTableComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(FilterDialogComponent);
+    fixture = TestBed.createComponent(HttpMeasureTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

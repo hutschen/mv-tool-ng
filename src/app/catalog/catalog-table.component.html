@@ -20,18 +20,18 @@
   <mvtool-table-toolbar
     (refresh)="onReloadCatalogs()"
     (create)="onCreateCatalog()"
-    [showFilter]="true"
-    filterLabel="Filter Catalogs"
+    [showSearch]="true"
+    searchLabel="Filter Catalogs"
     createLabel="Create Catalog"
     #tableToolbar
   ></mvtool-table-toolbar>
 
   <!-- Catalogs table -->
-  <mvtool-table
+  <mvtool-legacy-table
     [columns]="columns"
     [data$]="data$"
     [dataLoaded]="dataLoaded"
-    [filterValue]="tableToolbar.filterValue"
+    [filterValue]="tableToolbar.searchStr"
     (create)="onCreateCatalog()"
     noContentText="No catalogs found."
     loadingText="Loading catalogs..."
@@ -54,5 +54,5 @@
         </mvtool-table-row-options>
       </td>
     </ng-container>
-  </mvtool-table>
+  </mvtool-legacy-table>
 </div>

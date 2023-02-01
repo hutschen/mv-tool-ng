@@ -15,7 +15,7 @@
 
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { CRUDService, IQueryParams } from './crud.service';
+import { CRUDService, IPage, IQueryParams } from './crud.service';
 import { IDocument, Document } from './document.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IJiraIssue } from './jira-issue.service';
@@ -128,7 +128,9 @@ export class Measure implements IMeasure {
 }
 
 export interface IMeasureQueryParams {
+  project_ids?: number[];
   requirement_ids?: number[];
+  search?: string;
 }
 
 @Injectable({
@@ -136,7 +138,8 @@ export interface IMeasureQueryParams {
 })
 export class MeasureService {
   constructor(
-    protected _crud: CRUDService<IMeasureInput, IMeasure>,
+    protected _crud_measure: CRUDService<IMeasureInput, IMeasure>,
+    protected _crud_str: CRUDService<string, string>,
     protected _download: DownloadService,
     protected _upload: UploadService,
     protected _requirements: RequirementService
@@ -150,23 +153,64 @@ export class MeasureService {
     return `measures/${measureId}`;
   }
 
-  listMeasures(params: IMeasureQueryParams): Observable<Measure[]> {
-    return this._crud
-      .list('measures', params as IQueryParams)
+  queryMeasures(params: IQueryParams = {}) {
+    return this._crud_measure.query('measures', params).pipe(
+      map((measures) => {
+        if (Array.isArray(measures)) {
+          return measures.map((m) => new Measure(m));
+        } else {
+          return {
+            ...measures,
+            items: measures.items.map((m) => new Measure(m)),
+          } as IPage<Measure>;
+        }
+      })
+    );
+  }
+
+  listMeasures_legacy(params: IMeasureQueryParams = {}): Observable<Measure[]> {
+    return this._crud_measure
+      .list_legacy('measures', params as IQueryParams)
       .pipe(map((measures) => measures.map((m) => new Measure(m))));
+  }
+
+  getMeasuresPage_legacy(
+    page: number = 1,
+    pageSize: number = 10,
+    sort_by?: string,
+    sort_order: 'asc' | 'desc' | '' = '',
+    params: IMeasureQueryParams = {}
+  ): Observable<IPage<Measure>> {
+    return this._crud_measure
+      .getPage(
+        'measures',
+        page,
+        pageSize,
+        sort_by,
+        sort_order,
+        params as IQueryParams
+      )
+      .pipe(
+        map((page) => {
+          return {
+            ...page,
+            items: page.items.map((m) => new Measure(m)),
+          };
+        })
+      );
   }
 
   createMeasure(
     requirementId: number,
     measureInput: IMeasureInput
   ): Observable<Measure> {
-    return this._crud
+    return this._crud_measure
       .create(this.getMeasuresUrl(requirementId), measureInput)
       .pipe(map((measure) => new Measure(measure)));
   }
 
   getMeasure(measureId: number): Observable<Measure> {
-    return this._crud
+    return this._crud_measure
       .read(this.getMeasureUrl(measureId))
       .pipe(map((measure) => new Measure(measure)));
   }
@@ -175,13 +219,26 @@ export class MeasureService {
     measureId: number,
     measureInput: IMeasureInput
   ): Observable<Measure> {
-    return this._crud
+    return this._crud_measure
       .update(this.getMeasureUrl(measureId), measureInput)
       .pipe(map((measure) => new Measure(measure)));
   }
 
   deleteMeasure(measureId: number): Observable<null> {
-    return this._crud.delete(this.getMeasureUrl(measureId));
+    return this._crud_measure.delete(this.getMeasureUrl(measureId));
+  }
+
+  getMeasureFieldNames(params: IMeasureQueryParams = {}): Observable<string[]> {
+    return this._crud_str.list_legacy(
+      'measure/field-names',
+      params as IQueryParams
+    );
+  }
+
+  getMeasureReferences(
+    params: IQueryParams = {}
+  ): Observable<string[] | IPage<string>> {
+    return this._crud_str.query('measure/references', params);
   }
 
   downloadMeasureExcel(requirementId: number): Observable<IDownloadState> {

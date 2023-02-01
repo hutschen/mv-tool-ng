@@ -20,8 +20,8 @@
   <mvtool-table-toolbar
     (refresh)="onReloadRequirements()"
     (create)="onCreateRequirement()"
-    [showFilter]="true"
-    filterLabel="Filter Requirements"
+    [showSearch]="true"
+    searchLabel="Filter Requirements"
     createLabel="Create Requirement"
     #tableToolbar
   >
@@ -44,11 +44,11 @@
   </mvtool-table-toolbar>
 
   <!-- Requirements table -->
-  <mvtool-table
+  <mvtool-legacy-table
     [columns]="columns"
     [data$]="data$"
     [dataLoaded]="dataLoaded"
-    [filterValue]="tableToolbar.filterValue"
+    [filterValue]="tableToolbar.searchStr"
     (create)="onCreateRequirement()"
     noContentText="No requirements found."
     loadingText="Loading requirements..."
@@ -64,10 +64,10 @@
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-table-filter-header
+        <mvtool-legacy-table-filter-header
           [column]="column"
           [table]="table"
-        ></mvtool-table-filter-header>
+        ></mvtool-legacy-table-filter-header>
       </th>
       <td mat-cell *matCellDef="let row">
         <button
@@ -88,10 +88,10 @@
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-table-filter-header
+        <mvtool-legacy-table-filter-header
           [column]="column"
           [table]="table"
-        ></mvtool-table-filter-header>
+        ></mvtool-legacy-table-filter-header>
       </th>
       <td mat-cell *matCellDef="let row" [matTooltip]="column.toStr(row.data)">
         <mat-progress-bar
@@ -109,10 +109,10 @@
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-table-filter-header
+        <mvtool-legacy-table-filter-header
           [column]="column"
           [table]="table"
-        ></mvtool-table-filter-header>
+        ></mvtool-legacy-table-filter-header>
       </th>
       <td mat-cell *matCellDef="let row" [matTooltip]="column.toStr(row.data)">
         <div *ngIf="column.toBool(row.data)" class="fx-row fx-center-center">
@@ -147,5 +147,5 @@
         </mvtool-table-row-options>
       </td>
     </ng-container>
-  </mvtool-table>
+  </mvtool-legacy-table>
 </div>

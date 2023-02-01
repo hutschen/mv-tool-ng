@@ -20,19 +20,19 @@
   <mvtool-table-toolbar
     (refresh)="onReloadCatalogRequirements()"
     (create)="onCreateCatalogRequirement()"
-    [showFilter]="true"
-    filterLabel="Filter Catalog Requirements"
+    [showSearch]="true"
+    searchLabel="Filter Catalog Requirements"
     createLabel="Create Catalog Requirement"
     #tableToolbar
   >
   </mvtool-table-toolbar>
 
   <!-- Catalog requirements table -->
-  <mvtool-table
+  <mvtool-legacy-table
     [columns]="columns"
     [data$]="data$"
     [dataLoaded]="dataLoaded"
-    [filterValue]="tableToolbar.filterValue"
+    [filterValue]="tableToolbar.searchStr"
     (create)="onCreateCatalogRequirement()"
     noContentText="No catalog requirements found."
     loadingText="Loading catalog requirements..."
@@ -54,5 +54,5 @@
         </mvtool-table-row-options>
       </td>
     </ng-container>
-  </mvtool-table>
+  </mvtool-legacy-table>
 </div>

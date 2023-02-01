@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Helmar Hutschenreuter
+// Copyright (C) 2023 Helmar Hutschenreuter
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -13,22 +13,56 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Input, OnInit } from '@angular/core';
-import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  ViewChild,
+} from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import {
+  debounceTime,
+  firstValueFrom,
+  map,
+  merge,
+  Observable,
+  startWith,
+  switchMap,
+} from 'rxjs';
+import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
-import { TableColumns } from '../shared/table-columns';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
-import { Measure, MeasureService } from '../shared/services/measure.service';
+import {
+  DataColumn,
+  DataField,
+  DataPage,
+  PlaceholderField,
+} from '../shared/data';
+import { IPage, IQueryParams } from '../shared/services/crud.service';
+import {
+  Measure,
+  MeasureService,
+  IMeasureQueryParams,
+} from '../shared/services/measure.service';
+import { Project } from '../shared/services/project.service';
 import { Requirement } from '../shared/services/requirement.service';
-import { MeasureDialogService } from './measure-dialog.component';
-import { VerificationDialogService } from './verification-dialog.component';
-import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
 import { CompletionDialogService } from './completion-dialog.component';
+import { MeasureDialogService } from './measure-dialog.component';
+import {
+  DocumentField,
+  JiraIssueField,
+  StatusField,
+  VerifiedField,
+} from './measure-fields';
+import { MeasureDataPage } from './measure-page';
+import { VerificationDialogService } from './verification-dialog.component';
 
 @Component({
-  selector: 'mvtool-measure-table',
-  templateUrl: './measure-table.component.html',
+  selector: 'mvtool-http-measure-table',
+  templateUrl: './http-measure-table.component.html',
   styleUrls: [
     '../shared/styles/table.scss',
     '../shared/styles/flex.scss',
@@ -36,62 +70,20 @@ import { CompletionDialogService } from './completion-dialog.component';
   ],
   styles: [],
 })
-export class MeasureTableComponent implements OnInit {
-  columns = new TableColumns<Measure>([
-    { id: 'reference', label: 'Reference', optional: true },
-    { id: 'summary', label: 'Summary' },
-    { id: 'description', optional: true, label: 'Description' },
-    {
-      id: 'document',
-      optional: true,
-      label: 'Document',
-      toValue: (m) => m.document?.title,
-    },
-    {
-      id: 'jira_issue',
-      label: 'Jira Issue',
-      toStr: (m) => {
-        if (m.jira_issue) {
-          return m.jira_issue.key;
-        } else if (m.jira_issue_id) {
-          return 'No permission on Jira issue';
-        } else {
-          return 'No Jira issue assigned';
-        }
-      },
-    },
-    {
-      id: 'compliance_status',
-      label: 'Compliance',
-      optional: true,
-      toStr: (r) => (r.compliance_status ? r.compliance_status : 'Not set'),
-    },
-    { id: 'compliance_comment', label: 'Compliance Comment', optional: true },
-    {
-      id: 'completion_status',
-      label: 'Completion',
-      optional: true,
-      toStr: (r) => (r.completion_status ? r.completion_status : 'Not set'),
-    },
-    { id: 'completion_comment', label: 'Completion Comment', optional: true },
-    { id: 'verification_method', optional: true, label: 'Verification Method' },
-    {
-      id: 'verification_comment',
-      optional: true,
-      label: 'Verification Comment',
-    },
-    {
-      id: 'verified',
-      optional: true,
-      label: 'Verified',
-      toStr: (m) => (m.verified ? 'Verified' : 'Not verified'),
-    },
-    { id: 'options' },
-  ]);
-  protected _dataSubject = new ReplaySubject<Measure[]>(1);
-  data$: Observable<Measure[]> = this._dataSubject.asObservable();
-  dataLoaded: boolean = false;
-  @Input() requirement: Requirement | null = null;
+export class HttpMeasureTableComponent implements AfterViewInit {
+  @Input() requirement?: Requirement;
+  @Input() project?: Project;
+
+  dataFrame: MeasureDataPage;
+  resultsLength = 0;
+  isLoadingData = true;
+  isRateLimitReached = false;
+  searchStr?: string;
+  reload = new EventEmitter<void>();
+  search = new EventEmitter<string>();
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     protected _measureService: MeasureService,
@@ -102,10 +94,72 @@ export class MeasureTableComponent implements OnInit {
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _confirmDialogService: ConfirmDialogService
-  ) {}
+  ) {
+    this.dataFrame = new MeasureDataPage(this._measureService);
+  }
 
-  async ngOnInit(): Promise<void> {
-    await this.onReloadMeasures();
+  ngAfterViewInit(): void {
+    this.dataFrame.initialize(this.requirement!);
+
+    // When the user changes the sort order, reset to the first page
+    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+
+    // Load and reload table data
+    const reload$ = merge(
+      this.sort.sortChange,
+      this.paginator.page,
+      this.reload,
+      this.search.pipe(debounceTime(500))
+    ).pipe(startWith({}));
+
+    // Load names of columns to set as non-optional
+    const namesOfRequiredColumns = this.dataFrame.columns
+      .filter((column) => !column.optional)
+      .map((column) => column.name);
+    reload$
+      .pipe(
+        switchMap(() => {
+          return this._measureService.getMeasureFieldNames({
+            project_ids: [this.project?.id ?? this.requirement!.project.id],
+          });
+        })
+      )
+      .subscribe((fieldNames) => {
+        // set original required columns
+        this.dataFrame.columns.forEach((column) => {
+          column.optional = !namesOfRequiredColumns.includes(column.name);
+        });
+
+        // set required columns for current project
+        this.dataFrame.columns
+          .filter((column) => fieldNames.includes(column.name))
+          .forEach((column) => (column.optional = false));
+      });
+
+    // Load table data
+    reload$
+      .pipe(
+        switchMap(() => {
+          this.isLoadingData = true;
+          const queryParams: IQueryParams = {
+            project_ids: this.project ? [this.project.id] : [],
+            requirement_ids: this.requirement ? [this.requirement.id] : [],
+          };
+          this.dataFrame.matPaginator = this.paginator;
+          this.dataFrame.matSort = this.sort;
+          this.dataFrame.searchStr = this.searchStr;
+          return this._measureService.queryMeasures({
+            ...queryParams,
+            ...this.dataFrame.queryParams,
+          }) as Observable<IPage<Measure>>;
+        }),
+        map((data) => {
+          this.isLoadingData = false;
+          this.resultsLength = data.total_count;
+          return data.items;
+        })
+      )
+      .subscribe((data) => (this.dataFrame.data = data));
   }
 
   protected async _createOrEditMeasure(measure?: Measure): Promise<void> {
@@ -116,11 +170,17 @@ export class MeasureTableComponent implements OnInit {
       );
       const resultingMeasure = await firstValueFrom(dialogRef.afterClosed());
       if (resultingMeasure) {
-        await this.onReloadMeasures();
+        this.dataFrame.addOrUpdateItem(resultingMeasure);
+        this.onReloadMeasures();
       }
     } else {
       throw new Error('Requirement is undefined');
     }
+  }
+
+  onSearchMeasures(searchStr: string): void {
+    this.searchStr = searchStr;
+    this.search.emit(searchStr);
   }
 
   async onCreateMeasure(): Promise<void> {
@@ -136,7 +196,8 @@ export class MeasureTableComponent implements OnInit {
       this._complianceDialogService.openComplianceDialog(measure);
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
-      await this.onReloadMeasures();
+      this.dataFrame.updateItem(updatedMeasure as Measure);
+      this.onReloadMeasures();
     }
   }
 
@@ -145,7 +206,8 @@ export class MeasureTableComponent implements OnInit {
       this._completionDialogService.openCompletionDialog(measure);
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
-      await this.onReloadMeasures();
+      this.dataFrame.updateItem(updatedMeasure as Measure);
+      this.onReloadMeasures();
     }
   }
 
@@ -154,7 +216,8 @@ export class MeasureTableComponent implements OnInit {
       this._verificationDialogService.openVerificationDialog(measure);
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
-      await this.onReloadMeasures();
+      this.dataFrame.updateItem(updatedMeasure as Measure);
+      this.onReloadMeasures();
     }
   }
 
@@ -166,7 +229,8 @@ export class MeasureTableComponent implements OnInit {
     const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
     if (confirmed) {
       await firstValueFrom(this._measureService.deleteMeasure(measure.id));
-      await this.onReloadMeasures();
+      this.dataFrame.removeItem(measure);
+      this.onReloadMeasures();
     }
   }
 
@@ -197,21 +261,11 @@ export class MeasureTableComponent implements OnInit {
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());
     if (uploadState && uploadState.state == 'done') {
-      await this.onReloadMeasures();
+      this.onReloadMeasures();
     }
   }
 
-  async onReloadMeasures(): Promise<void> {
-    if (this.requirement) {
-      const data = await firstValueFrom(
-        this._measureService.listMeasures_legacy({
-          requirement_ids: [this.requirement.id],
-        })
-      );
-      this._dataSubject.next(data);
-      this.dataLoaded = true;
-    } else {
-      throw new Error('Requirement is undefined');
-    }
+  onReloadMeasures(): void {
+    this.reload.emit();
   }
 }

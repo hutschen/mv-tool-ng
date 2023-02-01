@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
-import { TableComponent } from './table.component';
+import { LegacyTableComponent } from './legacy-table.component';
 
 @Component({
   selector: 'mvtool-table-options',
@@ -52,7 +52,7 @@ import { TableComponent } from './table.component';
   styles: [],
 })
 export class TableOptionsComponent {
-  @Input() table!: TableComponent<any>;
+  @Input() table!: LegacyTableComponent<any>;
 
   constructor() {}
 }

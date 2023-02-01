@@ -25,6 +25,6 @@ export class MilestoneService {
   constructor(protected _crud: CRUDService<string, string>) {}
 
   getMilestones(params: IRequirementQueryParams): Observable<string[]> {
-    return this._crud.list('milestones', params as IQueryParams);
+    return this._crud.list_legacy('milestones', params as IQueryParams);
   }
 }

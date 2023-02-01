@@ -76,7 +76,7 @@ export class DocumentService {
 
   listDocuments(projectId: number): Observable<Document[]> {
     return this._crud
-      .list(this.getDocumentsUrl(projectId))
+      .list_legacy(this.getDocumentsUrl(projectId))
       .pipe(map((documents) => documents.map((d) => new Document(d))));
   }
 

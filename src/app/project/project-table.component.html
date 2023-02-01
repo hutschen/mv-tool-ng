@@ -20,19 +20,19 @@
   <mvtool-table-toolbar
     (refresh)="onReloadProjects()"
     (create)="onCreateProject()"
-    [showFilter]="true"
-    filterLabel="Filter Projects"
+    [showSearch]="true"
+    searchLabel="Filter Projects"
     createLabel="Create Project"
     #tableToolbar
   >
   </mvtool-table-toolbar>
 
   <!-- Projects table -->
-  <mvtool-table
+  <mvtool-legacy-table
     [columns]="columns"
     [data$]="data$"
     [dataLoaded]="dataLoaded"
-    [filterValue]="tableToolbar.filterValue"
+    [filterValue]="tableToolbar.searchStr"
     (create)="onCreateProject()"
     noContentText="No projects found."
     loadingText="Loading projects..."
@@ -48,10 +48,10 @@
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-table-filter-header
+        <mvtool-legacy-table-filter-header
           [column]="column"
           [table]="table"
-        ></mvtool-table-filter-header>
+        ></mvtool-legacy-table-filter-header>
       </th>
       <td mat-cell *matCellDef="let row">
         <mvtool-jira-project-label
@@ -68,10 +68,10 @@
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-table-filter-header
+        <mvtool-legacy-table-filter-header
           [column]="column"
           [table]="table"
-        ></mvtool-table-filter-header>
+        ></mvtool-legacy-table-filter-header>
       </th>
       <td mat-cell *matCellDef="let row" [matTooltip]="column.toStr(row.data)">
         <mat-progress-bar
@@ -95,5 +95,5 @@
         </mvtool-table-row-options>
       </td>
     </ng-container>
-  </mvtool-table>
+  </mvtool-legacy-table>
 </div>

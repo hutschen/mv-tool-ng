@@ -27,6 +27,11 @@ export interface IQueryParams {
     | ReadonlyArray<string | number | boolean>;
 }
 
+export interface IPage<T> {
+  items: T[];
+  total_count: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -49,7 +54,17 @@ export class CRUDService<InputType, OutputType> {
     };
   }
 
-  list(
+  query(
+    relativeUrl: string,
+    params: IQueryParams = {}
+  ): Observable<OutputType[] | IPage<OutputType>> {
+    return this._httpClient.get<OutputType[]>(this.toAbsoluteUrl(relativeUrl), {
+      params,
+      ...this._httpOptions,
+    });
+  }
+
+  list_legacy(
     relativeUrl: string,
     params: IQueryParams = {}
   ): Observable<OutputType[]> {
@@ -57,6 +72,26 @@ export class CRUDService<InputType, OutputType> {
       params,
       ...this._httpOptions,
     });
+  }
+
+  getPage(
+    relativeUrl: string,
+    page: number = 1,
+    page_size: number = 10,
+    sort_by?: string,
+    sort_order: 'asc' | 'desc' | '' = '',
+    params: IQueryParams = {}
+  ): Observable<IPage<OutputType>> {
+    if (sort_by && sort_order !== '') {
+      params = { sort_by, sort_order, ...params };
+    }
+    return this._httpClient.get<IPage<OutputType>>(
+      this.toAbsoluteUrl(relativeUrl),
+      {
+        params: { page, page_size, ...params },
+        ...this._httpOptions,
+      }
+    );
   }
 
   create(relativeUrl: string, itemInput: InputType): Observable<OutputType> {

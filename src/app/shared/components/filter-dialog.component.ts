@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Helmar Hutschenreuter
+// Copyright (C) 2023 Helmar Hutschenreuter
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -19,155 +19,70 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { TableColumn } from '../table-columns';
-
-interface IFilterDialogData<T extends object> {
-  column: TableColumn<T>;
-  data: T[];
-}
+import { Filterable } from '../filter';
 
 @Injectable({
   providedIn: 'root',
 })
-export class FilterDialogService<T extends object> {
+export class FilterDialogService {
   constructor(protected _dialog: MatDialog) {}
 
   openFilterDialog(
-    column: TableColumn<T>,
-    data: T[]
-  ): MatDialogRef<FilterDialogComponent<T>, string[]> {
+    filterable: Filterable
+  ): MatDialogRef<FilterDialogComponent> {
     return this._dialog.open(FilterDialogComponent, {
       width: '500px',
-      data: { column, data } as IFilterDialogData<T>,
+      data: filterable,
     });
-  }
-}
-
-class FilterOption {
-  text: string;
-  selected: boolean;
-
-  constructor(text: string, selected?: boolean) {
-    this.text = text;
-    this.selected = selected ?? true;
-  }
-
-  toggleSelected() {
-    this.selected = !this.selected;
-  }
-}
-
-class FilterSelection {
-  filterOptions: FilterOption[];
-
-  constructor(
-    searchStr: string,
-    filters: string[],
-    selectedFilters: string[] = []
-  ) {
-    searchStr = searchStr.toLowerCase();
-    filters = filters
-      .filter((filter, index) => filters.indexOf(filter) === index) // remove duplicates
-      .filter((filter) => filter.toLowerCase().includes(searchStr));
-    selectedFilters = selectedFilters.map((filter) => filter.toLowerCase());
-    selectedFilters = selectedFilters.filter(
-      (filter, index) => selectedFilters.indexOf(filter) === index
-    );
-
-    if (selectedFilters.length) {
-      this.filterOptions = filters.map(
-        (filter) =>
-          new FilterOption(
-            filter,
-            selectedFilters.includes(filter.toLowerCase())
-          )
-      );
-    } else {
-      this.filterOptions = filters.map((filter) => new FilterOption(filter));
-    }
-  }
-
-  get isEmpty(): boolean {
-    return this.filterOptions.length === 0;
-  }
-
-  get allSelected(): boolean {
-    return this.filterOptions.every((filter) => filter.selected);
-  }
-
-  get nothingSelected(): boolean {
-    return this.filterOptions.every((filter) => !filter.selected);
-  }
-
-  get partlySelected(): boolean {
-    return !this.allSelected && !this.nothingSelected;
-  }
-
-  toggleSelectAll() {
-    if (this.allSelected) {
-      this.filterOptions.forEach((filter) => (filter.selected = false));
-    } else {
-      this.filterOptions.forEach((filter) => (filter.selected = true));
-    }
-  }
-
-  get selectedFilters(): string[] {
-    return this.filterOptions
-      .filter((filter) => filter.selected)
-      .map((filter) => filter.text);
   }
 }
 
 @Component({
   selector: 'mvtool-filter-dialog',
-  templateUrl: './filter-dialog.component.html',
-  styleUrls: ['../styles/flex.scss', '../styles/truncate.scss'],
-  styles: [
-    'ul { list-style-type: none; padding-left: 0;}',
-    '.checkbox-label { width: 420px; }',
-  ],
+  template: `
+    <div mat-dialog-title>Filter {{ filterable.label }}</div>
+    <div mat-dialog-content>
+      <!-- Filter by pattern -->
+      <mvtool-filter-by-pattern
+        *ngIf="filterable.filterByPattern"
+        [filter]="filterable.filterByPattern"
+      ></mvtool-filter-by-pattern>
+
+      <!-- Filter by values -->
+      <mvtool-filter-by-values
+        *ngIf="filterable.filterByValues"
+        [filter]="filterable.filterByValues"
+      ></mvtool-filter-by-values>
+
+      <!-- Filter for existence -->
+      <mvtool-filter-for-existence
+        *ngIf="filterable.filterForExistence"
+        [filter]="filterable.filterForExistence"
+      ></mvtool-filter-for-existence>
+    </div>
+    <div mat-dialog-actions align="end">
+      <button mat-button (click)="onClearFilter()">
+        <mat-icon>filter_alt_off</mat-icon>
+        Clear Filter
+      </button>
+      <button mat-raised-button color="accent" (click)="onClose()">OK</button>
+    </div>
+  `,
+  styleUrls: ['../styles/flex.scss'],
+  styles: ['.mat-divider { margin-bottom: 10px; }'],
 })
-export class FilterDialogComponent<T extends object> {
-  column: TableColumn<T>;
-  protected _texts: string[];
-  filterSelection: FilterSelection;
-  protected _searchStr = '';
-
+export class FilterDialogComponent {
   constructor(
-    protected _dialogRef: MatDialogRef<FilterDialogComponent<T>>,
-    @Inject(MAT_DIALOG_DATA) dialogData: IFilterDialogData<T>
-  ) {
-    this.column = dialogData.column;
-    this._texts = dialogData.data.map((data) => this.column.toStr(data));
-    this.filterSelection = new FilterSelection(
-      this._searchStr,
-      this._texts,
-      this.column.filters
-    );
+    protected _dialogRef: MatDialogRef<FilterDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public filterable: Filterable
+  ) {}
+
+  onClearFilter() {
+    this.filterable.clearFilters();
+    this._dialogRef.close();
   }
 
-  get searchStr(): string {
-    return this._searchStr;
-  }
-
-  set searchStr(searchStr: string) {
-    this._searchStr = searchStr;
-    this.filterSelection = new FilterSelection(this._searchStr, this._texts);
-  }
-
-  onApplyFilter(): void {
-    if (!this.searchStr && this.filterSelection.allSelected) {
-      this._dialogRef.close([]);
-    } else {
-      this._dialogRef.close(this.filterSelection.selectedFilters);
-    }
-  }
-
-  onRemoveFilter(): void {
-    this._dialogRef.close([]);
-  }
-
-  onCancel(): void {
+  onClose(): void {
     this._dialogRef.close();
   }
 }

@@ -21,19 +21,19 @@
     (create)="onCreateDocument()"
     (upload)="onImportDocuments()"
     (download)="onExportDocuments()"
-    [showFilter]="true"
-    filterLabel="Filter Documents"
+    [showSearch]="true"
+    searchLabel="Filter Documents"
     createLabel="Create Document"
     #tableToolbar
   >
   </mvtool-table-toolbar>
 
   <!-- Documents table -->
-  <mvtool-table
+  <mvtool-legacy-table
     [columns]="columns"
     [data$]="data$"
     [dataLoaded]="dataLoaded"
-    [filterValue]="tableToolbar.filterValue"
+    [filterValue]="tableToolbar.searchStr"
     (create)="onCreateDocument()"
     noContentText="No documents found."
     loadingText="Loading documents..."
@@ -55,5 +55,5 @@
         </mvtool-table-row-options>
       </td>
     </ng-container>
-  </mvtool-table>
+  </mvtool-legacy-table>
 </div>

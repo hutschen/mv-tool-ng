@@ -78,7 +78,7 @@ export class CatalogModuleService {
 
   listCatalogModules(catalogId: number): Observable<CatalogModule[]> {
     return this._crud
-      .list(this.getCatalogModulesUrl(catalogId))
+      .list_legacy(this.getCatalogModulesUrl(catalogId))
       .pipe(
         map((catalogModules) =>
           catalogModules.map((cm) => new CatalogModule(cm))

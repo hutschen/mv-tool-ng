@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Helmar Hutschenreuter
+// Copyright (C) 2023 Helmar Hutschenreuter
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -15,7 +15,6 @@
 
 import {
   AfterContentInit,
-  AfterViewInit,
   Component,
   ContentChildren,
   EventEmitter,
@@ -24,23 +23,8 @@ import {
   QueryList,
   ViewChild,
 } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import {
-  MatColumnDef,
-  MatTable,
-  MatTableDataSource,
-} from '@angular/material/table';
-import {
-  BehaviorSubject,
-  combineLatest,
-  firstValueFrom,
-  Observable,
-  ReplaySubject,
-} from 'rxjs';
-import { ITableRow, TableColumn, TableColumns } from '../table-columns';
-import { FilterDialogService } from './filter-dialog.component';
-import { ShowHideDialogService } from './show-hide-dialog.component';
+import { MatColumnDef, MatTable } from '@angular/material/table';
+import { DataColumn, DataPage, IDataItem } from '../data';
 
 @Component({
   selector: 'mvtool-table',
@@ -50,134 +34,37 @@ import { ShowHideDialogService } from './show-hide-dialog.component';
     '../styles/flex.scss',
     '../styles/truncate.scss',
   ],
-  styles: [
-    '.clickable-row { cursor: pointer; }',
-    '.clickable-row:hover { background: rgba(0,0,0,0.04); }',
-  ],
+  styles: [],
 })
-export class TableComponent<T extends object>
-  implements AfterContentInit, AfterViewInit
-{
-  protected _columnsSubject = new ReplaySubject<TableColumns<T>>(1);
-  protected _columns: TableColumns<T> = new TableColumns<T>([]);
-  protected _dataSubject = new BehaviorSubject<T[]>([] as T[]);
-  protected _data: T[] = [];
-
-  dataSource = new MatTableDataSource<ITableRow<T>>([]);
-  columnsToAutoCreate: TableColumn<T>[] = [];
-  idsOfColumnsToDisplay: string[] = [];
-
-  @ViewChild(MatTable, { static: true }) matTable!: MatTable<T>;
-  @ViewChild(MatPaginator) matPaginator!: MatPaginator;
-  @ContentChildren(MatColumnDef) matColumnDefs!: QueryList<MatColumnDef>;
-
-  @Input() pageSize: number = 25;
-  @Input() dataLoaded: boolean = true;
-  @Input() noContentText: string = 'Nothing to display';
-  @Input() loadingText: string = 'Loading...';
-  @Input() createLabel: string = 'Create One';
-  @Output() rowClicked = new EventEmitter<T>();
+export class TableComponent<T extends IDataItem> implements AfterContentInit {
+  @Input() dataFrame!: DataPage<T>;
+  @Input() isLoadingData = false;
+  @Input() noContentText = 'Nothing to display.';
+  @Input() loadingText = 'Loading...';
+  @Input() createLabel = 'Create One';
+  @Output() clickRow = new EventEmitter<T>();
   @Output() create = new EventEmitter<void>();
 
-  @Input()
-  set columns(columns: TableColumns<T>) {
-    this._columnsSubject.next(columns);
-  }
+  @ViewChild(MatTable, { static: true }) matTable!: MatTable<T>;
+  @ContentChildren(MatColumnDef) matColumnDefs!: QueryList<MatColumnDef>;
 
-  @Input()
-  set columns$(columns$: Observable<TableColumns<T>>) {
-    columns$.subscribe((columns) => this._columnsSubject.next(columns));
-  }
+  columnsToAutoCreate: DataColumn<T>[] = [];
 
-  @Input()
-  set data(data: T[]) {
-    this._dataSubject.next(data);
-  }
-
-  @Input()
-  set data$(data$: Observable<T[]>) {
-    data$.subscribe((data) => this._dataSubject.next(data));
-  }
-
-  @Input()
-  set sort(sort: MatSort) {
-    this.dataSource.sort = sort;
-  }
-
-  @Input('filterValue')
-  set filter(filter: string) {
-    this.dataSource.filter = filter;
-  }
-
-  get filter(): string {
-    return this.dataSource.filter;
-  }
-
-  constructor(
-    protected _filterDialogService: FilterDialogService<T>,
-    protected _showHideDialogService: ShowHideDialogService
-  ) {
-    // update when columns or data change
-    combineLatest([
-      this._columnsSubject.asObservable(),
-      this._dataSubject.asObservable(),
-    ]).subscribe(([columns, data]) => {
-      this._columns = columns;
-      this._data = data;
-      this.idsOfColumnsToDisplay = columns.columnsToShow(data).map((c) => c.id);
-      this.dataSource.data = columns.toRowData(columns.filter(data));
-    });
-  }
+  constructor() {}
 
   ngAfterContentInit(): void {
-    const idsOfColumnsDefined: string[] = [];
-    this.matColumnDefs.forEach((matColumnDef) => {
-      this.matTable.addColumnDef(matColumnDef);
-      idsOfColumnsDefined.push(matColumnDef.name);
-    });
-    this.columnsToAutoCreate = this._columns.columns.filter(
-      (column) => !idsOfColumnsDefined.includes(column.id)
+    const columnNamesDefined: string[] = this.matColumnDefs.map(
+      (matColumnDef) => {
+        this.matTable.addColumnDef(matColumnDef);
+        return matColumnDef.name;
+      }
+    );
+    this.columnsToAutoCreate = this.dataFrame.columns.filter(
+      (column) => !columnNamesDefined.includes(column.name)
     );
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.paginator = this.matPaginator;
-  }
-
-  async onSetFilter(column: TableColumn<T>): Promise<void> {
-    const dialogRef = this._filterDialogService.openFilterDialog(
-      column,
-      this._data
-    );
-    const filters = await firstValueFrom(dialogRef.afterClosed());
-    if (filters) {
-      column.filters = filters;
-      this._columnsSubject.next(this._columns);
-    }
-  }
-
-  get isFiltered(): boolean {
-    return this._columns.columns.some((column) => column.filters.length > 0);
-  }
-
-  onClearFilters(): void {
-    this._columns.columns.forEach((column) => (column.filters = []));
-    this._columnsSubject.next(this._columns);
-  }
-
-  get hasColumnsToShowHide(): boolean {
-    return this._columns.columnsToShow(this._data, true, true).length > 0;
-  }
-
-  async onShowHideColumns(): Promise<void> {
-    const dialogRef = this._showHideDialogService.openShowHideDialog(
-      this._columns.columnsToShow(this._data, true, true),
-      true // allow hiding all columns
-    );
-    const idsOfColumnsToHide = await firstValueFrom(dialogRef.afterClosed());
-    if (idsOfColumnsToHide) {
-      this._columns.idsOfColumnsToHide = idsOfColumnsToHide;
-      this._columnsSubject.next(this._columns);
-    }
+  get columnNames(): string[] {
+    return this.dataFrame.shownColumns.map((column) => column.name);
   }
 }

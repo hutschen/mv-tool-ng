@@ -100,7 +100,7 @@ export class CatalogRequirementService {
     catalogModuleId: number
   ): Observable<CatalogRequirement[]> {
     return this._crud
-      .list(this.getCatalogRequirementsUrl(catalogModuleId))
+      .list_legacy(this.getCatalogRequirementsUrl(catalogModuleId))
       .pipe(
         map((catalogRequirements) =>
           catalogRequirements.map((cr) => new CatalogRequirement(cr))

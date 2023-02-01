@@ -20,52 +20,67 @@ import { HttpClientModule } from '@angular/common/http';
 import { TableRowOptionsComponent } from './components/table-row-options.component';
 import { MaterialModule } from '../material/material.module';
 import { TableToolbarComponent } from './components/table-toolbar.component';
-import { TableComponent } from './components/table.component';
+import { LegacyTableComponent } from './components/legacy-table.component';
 import { DownloadDialogComponent } from './components/download-dialog.component';
 import { UploadDialogComponent } from './components/upload-dialog.component';
 import { DetailComponent } from './components/detail.component';
 import { ErrorDialogComponent } from './components/error-dialog.component';
 import { CreateEditDialogComponent } from './components/create-edit-dialog.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog.component';
-import { FilterDialogComponent } from './components/filter-dialog.component';
-import { TableFilterHeaderComponent } from './components/table-filter-header.component';
+import { LegacyFilterDialogComponent } from './components/legacy-filter-dialog.component';
+import { LegacyTableFilterHeaderComponent } from './components/legacy-table-filter-header.component';
 import { AutocompleteComponent } from './components/autocomplete.component';
 import { ShowHideDialogComponent } from './components/show-hide-dialog.component';
 import { TableOptionsComponent } from './components/table-options.component';
 import { ComplianceDialogComponent } from './components/compliance-dialog.component';
+import { TableComponent } from './components/table.component';
+import { FilterDialogComponent } from './components/filter-dialog.component';
+import { FilterHeaderComponent } from './components/filter-header.component';
+import { FilterByPatternComponent } from './components/filter-by-pattern.component';
+import { FilterByValuesComponent } from './components/filter-by-values.component';
+import { FilterForExistenceComponent } from './components/filter-for-existence.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     TruncatePipe,
     TableRowOptionsComponent,
     TableToolbarComponent,
-    TableComponent,
+    LegacyTableComponent,
     DownloadDialogComponent,
     UploadDialogComponent,
     DetailComponent,
     ErrorDialogComponent,
     CreateEditDialogComponent,
     ConfirmDialogComponent,
-    FilterDialogComponent,
-    TableFilterHeaderComponent,
+    LegacyFilterDialogComponent,
+    LegacyTableFilterHeaderComponent,
     AutocompleteComponent,
     ShowHideDialogComponent,
     TableOptionsComponent,
     ComplianceDialogComponent,
+    TableComponent,
+    FilterDialogComponent,
+    FilterHeaderComponent,
+    FilterByPatternComponent,
+    FilterByValuesComponent,
+    FilterForExistenceComponent,
   ],
-  imports: [CommonModule, MaterialModule],
+  imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
     HttpClientModule,
     TruncatePipe,
     TableOptionsComponent,
     TableRowOptionsComponent,
     TableToolbarComponent,
-    TableComponent,
+    LegacyTableComponent,
     DetailComponent,
     ErrorDialogComponent,
     CreateEditDialogComponent,
-    TableFilterHeaderComponent,
+    LegacyTableFilterHeaderComponent,
     AutocompleteComponent,
+    TableComponent,
+    FilterHeaderComponent,
   ],
 })
 export class SharedModule {}

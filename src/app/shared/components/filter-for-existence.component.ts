@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Helmar Hutschenreuter
+// Copyright (C) 2023 Helmar Hutschenreuter
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -14,27 +14,28 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
-import { TableColumn } from '../table-columns';
-import { TableComponent } from './table.component';
+import { FilterForExistence } from '../filter';
 
 @Component({
-  selector: 'mvtool-table-filter-header',
+  selector: 'mvtool-filter-for-existence',
   template: `
-    <span
-      (click)="table.onSetFilter(column); $event.stopPropagation()"
-      matTooltip="Click to filter"
-    >
-      {{ column.label }}
-      <mat-icon class="filter-icon" *ngIf="column.filtered"
-        >filter_alt
-      </mat-icon>
-    </span>
+    <div class="fx-column">
+      <p>Filter for the existence and non-existence of values.</p>
+      <mat-form-field appearance="fill">
+        <mat-label>Select filter criterion</mat-label>
+        <mat-select name="existence" [(ngModel)]="filter.exists">
+          <mat-option [value]="null">None</mat-option>
+          <mat-option [value]="true">Non-Empty</mat-option>
+          <mat-option [value]="false">Empty</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
   `,
-  styles: ['.filter-icon {   width: 12px; height: 12px; font-size: 12px;}'],
+  styleUrls: ['../styles/flex.scss'],
+  styles: [],
 })
-export class TableFilterHeaderComponent<T extends object> {
-  @Input() column!: TableColumn<T>;
-  @Input() table!: TableComponent<T>;
+export class FilterForExistenceComponent {
+  @Input() filter!: FilterForExistence;
 
   constructor() {}
 }

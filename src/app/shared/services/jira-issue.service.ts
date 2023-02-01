@@ -58,7 +58,7 @@ export class JiraIssueService {
   }
 
   getJiraIssues(jiraProjectId: string): Observable<IJiraIssue[]> {
-    return this._crud.list(this.getJiraIssuesUrl(jiraProjectId));
+    return this._crud.list_legacy(this.getJiraIssuesUrl(jiraProjectId));
   }
 
   createAndLinkJiraIssue(

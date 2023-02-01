@@ -22,19 +22,19 @@
     (create)="onCreateMeasure()"
     (upload)="onImportMeasures()"
     (download)="onExportMeasures()"
-    [showFilter]="true"
-    filterLabel="Filter Measures"
+    [showSearch]="true"
+    searchLabel="Filter Measures"
     createLabel="Create Measure"
     #tableToolbar
   >
   </mvtool-table-toolbar>
 
   <!-- Measures table -->
-  <mvtool-table
+  <mvtool-legacy-table
     [columns]="columns"
     [data$]="data$"
     [dataLoaded]="dataLoaded"
-    [filterValue]="tableToolbar.filterValue"
+    [filterValue]="tableToolbar.searchStr"
     (create)="onCreateMeasure()"
     noContentText="No measures found."
     loadingText="Loading measures..."
@@ -49,10 +49,10 @@
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-table-filter-header
+        <mvtool-legacy-table-filter-header
           [column]="column"
           [table]="table"
-        ></mvtool-table-filter-header>
+        ></mvtool-legacy-table-filter-header>
       </th>
       <td mat-cell *matCellDef="let row">
         <mvtool-jira-issue-input
@@ -70,10 +70,10 @@
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-table-filter-header
+        <mvtool-legacy-table-filter-header
           [column]="column"
           [table]="table"
-        ></mvtool-table-filter-header>
+        ></mvtool-legacy-table-filter-header>
       </th>
       <td mat-cell *matCellDef="let row">
         <button
@@ -96,10 +96,10 @@
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-table-filter-header
+        <mvtool-legacy-table-filter-header
           [column]="column"
           [table]="table"
-        ></mvtool-table-filter-header>
+        ></mvtool-legacy-table-filter-header>
       </th>
       <td mat-cell *matCellDef="let row">
         <button
@@ -120,10 +120,10 @@
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-table-filter-header
+        <mvtool-legacy-table-filter-header
           [column]="column"
           [table]="table"
-        ></mvtool-table-filter-header>
+        ></mvtool-legacy-table-filter-header>
       </th>
       <td mat-cell *matCellDef="let row">
         <button
@@ -144,10 +144,10 @@
       [matColumnDef]="column.id"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-table-filter-header
+        <mvtool-legacy-table-filter-header
           [column]="column"
           [table]="table"
-        ></mvtool-table-filter-header>
+        ></mvtool-legacy-table-filter-header>
       </th>
       <td mat-cell *matCellDef="let row">
         <button
@@ -189,5 +189,5 @@
         </mvtool-table-row-options>
       </td>
     </ng-container>
-  </mvtool-table>
+  </mvtool-legacy-table>
 </div>
