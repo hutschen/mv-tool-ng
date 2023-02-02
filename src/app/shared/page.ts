@@ -42,6 +42,13 @@ export class Paginator {
     return this._pageSubject.value;
   }
 
+  toFirstPage(): void {
+    this._pageSubject.next({
+      pageSize: this.page.pageSize,
+      pageIndex: 0,
+    });
+  }
+
   setPage(page: IPage): void {
     this._pageSubject.next(page);
   }

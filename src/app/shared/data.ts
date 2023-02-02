@@ -140,10 +140,14 @@ export class DataFrame<D extends IDataItem> {
 
     // Combine all query parameters
     this.queryParams$ = combineLatest([
-      this.search.queryParams$,
-      this.sort.queryParams$,
+      this.search.queryParams$.pipe(tap(() => this.pagination.toFirstPage())),
+      this.sort.queryParams$.pipe(tap(() => this.pagination.toFirstPage())),
       this.pagination.queryParams$,
-      ...this.columns.map((column) => column.filters.queryParams$),
+      ...this.columns.map((column) =>
+        column.filters.queryParams$.pipe(
+          tap(() => this.pagination.toFirstPage())
+        )
+      ),
     ]).pipe(
       map((queryParams) =>
         queryParams.reduce((acc, val) => ({ ...acc, ...val }), {})
