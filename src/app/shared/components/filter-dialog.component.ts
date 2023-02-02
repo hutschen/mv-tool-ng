@@ -19,7 +19,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { Filterable } from '../filter';
+import { Filters } from '../filter';
 
 @Injectable({
   providedIn: 'root',
@@ -27,9 +27,7 @@ import { Filterable } from '../filter';
 export class FilterDialogService {
   constructor(protected _dialog: MatDialog) {}
 
-  openFilterDialog(
-    filterable: Filterable
-  ): MatDialogRef<FilterDialogComponent> {
+  openFilterDialog(filterable: Filters): MatDialogRef<FilterDialogComponent> {
     return this._dialog.open(FilterDialogComponent, {
       width: '500px',
       data: filterable,
@@ -74,11 +72,11 @@ export class FilterDialogService {
 export class FilterDialogComponent {
   constructor(
     protected _dialogRef: MatDialogRef<FilterDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public filterable: Filterable
+    @Inject(MAT_DIALOG_DATA) public filterable: Filters
   ) {}
 
   onClearFilter() {
-    this.filterable.clearFilters();
+    this.filterable.clear();
     this._dialogRef.close();
   }
 

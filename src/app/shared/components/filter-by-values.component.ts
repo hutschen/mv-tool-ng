@@ -40,7 +40,7 @@ import { FilterByValues, IFilterOption } from '../filter';
         <mat-label>Selected values</mat-label>
         <mat-chip-list #chipList aria-label="Value selection">
           <mat-chip
-            *ngFor="let option of filter.selectedOptions"
+            *ngFor="let option of filter.selection$ | async"
             (removed)="filter.deselectOption(option)"
           >
             {{ option.label }}
