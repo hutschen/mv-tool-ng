@@ -13,11 +13,23 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Filterable } from './filter';
+import {
+  BehaviorSubject,
+  combineLatest,
+  map,
+  merge,
+  Observable,
+  of,
+  startWith,
+  Subject,
+  switchMap,
+  tap,
+} from 'rxjs';
+import { Filters } from './filter';
+import { Paginator } from './page';
+import { Search } from './search';
 import { IQueryParams } from './services/crud.service';
+import { Sort } from './sort';
 
 export interface IDataItem {
   id: number | string;
@@ -63,32 +75,31 @@ export class PlaceholderField<D extends IDataItem> extends DataField<D, any> {
   }
 }
 
-export class DataColumn<D extends IDataItem> extends Filterable {
+export class DataColumn<D extends IDataItem> {
+  public readonly name: string;
+  public readonly label: string;
+  public readonly filters: Filters;
+
   constructor(
-    public dataField: DataField<D, any>,
+    public readonly field: DataField<D, any>,
+    filters: Filters | null = null,
     public hide: boolean = false
   ) {
-    super();
-  }
-
-  get name(): string {
-    return this.dataField.name;
-  }
-
-  override get label(): string {
-    return this.dataField.label;
+    this.name = field.name;
+    this.label = field.label;
+    this.filters = filters ?? new Filters(this.field.label);
   }
 
   set optional(optional: boolean) {
-    this.dataField.optional = optional;
+    this.field.optional = optional;
   }
 
   get optional(): boolean {
-    return this.dataField.optional;
+    return this.field.optional;
   }
 
   isShown(dataArray: D[]): boolean {
-    const fieldIsShown = dataArray.some((data) => this.dataField.isShown(data));
+    const fieldIsShown = dataArray.some((data) => this.field.isShown(data));
     return !this.hide && (!this.optional || fieldIsShown);
   }
 }
@@ -99,99 +110,131 @@ export class PlaceholderColumn<D extends IDataItem> extends DataColumn<D> {
     label: string | null = null,
     hide: boolean = false
   ) {
-    super(new PlaceholderField(name, label), hide);
+    super(new PlaceholderField(name, label), null, hide);
   }
 }
 
-export class Sortable {
-  private __matSort?: MatSort;
+export class DataFrame<D extends IDataItem> {
+  protected _isLoadingData: boolean = true;
+  protected _isLoadingColumns: boolean = true;
+  protected _reloadSubject: Subject<void> = new Subject();
+  protected _dataSubject: BehaviorSubject<D[]> = new BehaviorSubject<D[]>([]);
+  readonly data$: Observable<D[]> = this._dataSubject.asObservable();
+  readonly columnNames$: Observable<string[]>;
+  readonly queryParams$: Observable<IQueryParams>;
+  protected _lengthSubject: BehaviorSubject<number> = new BehaviorSubject(0);
+  readonly length$: Observable<number> = this._lengthSubject.asObservable();
+  readonly search: Search;
+  readonly sort: Sort;
+  readonly pagination: Paginator;
 
-  set matSort(matSort: MatSort | undefined) {
-    this.__matSort = matSort;
+  constructor(
+    public readonly columns: DataColumn<D>[],
+    search: Search | null = null,
+    sort: Sort | null = null,
+    usePagination: boolean = true
+  ) {
+    this.search = search ?? new Search();
+    this.sort = sort ?? new Sort();
+    this.pagination = new Paginator(usePagination);
+
+    // Combine all query parameters
+    this.queryParams$ = combineLatest([
+      this.search.queryParams$,
+      this.sort.queryParams$,
+      this.pagination.queryParams$,
+      ...this.columns.map((column) => column.filters.queryParams$),
+    ]).pipe(
+      map((queryParams) =>
+        queryParams.reduce((acc, val) => ({ ...acc, ...val }), {})
+      )
+    );
+
+    // Get names of columns that are shown
+    this.columnNames$ = this.data$.pipe(
+      map((data) => this.columns.filter((column) => column.isShown(data))),
+      map((columns) => columns.map((column) => column.name))
+    );
+
+    // Define observable to trigger reload
+    const reload$ = combineLatest([
+      this._reloadSubject,
+      this.queryParams$,
+    ]).pipe(map(([, queryParams]) => queryParams));
+
+    // Reload and set names of required columns
+    const initialNames = this.columns
+      .filter((column) => !column.optional)
+      .map((column) => column.name);
+    reload$
+      .pipe(
+        tap(() => (this._isLoadingColumns = true)),
+        switchMap(() => this.getColumnNames()),
+        tap(() => (this._isLoadingColumns = false)),
+        map((names) => [...initialNames, ...names])
+      )
+      .subscribe((names) => {
+        this.columns.forEach((column) => {
+          column.optional = !names.includes(column.name);
+        });
+      });
+
+    // Reload data
+    reload$
+      .pipe(
+        tap(() => (this._isLoadingData = true)),
+        switchMap((queryParams) => this.getData(queryParams)),
+        tap(() => (this._isLoadingData = false))
+      )
+      .subscribe((data) => this._dataSubject.next(data));
   }
 
-  get sortBy(): string | void {
-    return this.__matSort?.active;
+  get isLoading(): boolean {
+    return this._isLoadingData || this._isLoadingColumns;
   }
 
-  get sortOrder(): 'asc' | 'desc' | void {
-    const sortOrder = this.__matSort?.direction;
-    return sortOrder !== '' ? sortOrder : undefined;
-  }
-
-  get queryParams(): IQueryParams {
-    const queryParams: IQueryParams = {};
-    if (this.sortOrder && this.sortBy) {
-      queryParams['sort_by'] = this.sortBy;
-      queryParams['sort_order'] = this.sortOrder;
-    }
-    return queryParams;
-  }
-}
-
-export class DataFrame<D extends IDataItem> extends Sortable {
-  protected _dataSubject: BehaviorSubject<D[]>;
-  data$: Observable<D[]>;
-  searchStr?: string;
-
-  constructor(public columns: DataColumn<D>[] = [], data: D[] = []) {
-    super();
-    this._dataSubject = new BehaviorSubject(data);
-    this.data$ = this._dataSubject.asObservable();
-  }
-
-  get data(): D[] {
-    return this._dataSubject.getValue();
-  }
-
-  set data(data: D[]) {
-    this._dataSubject.next(data);
-  }
-
-  override get queryParams(): IQueryParams {
-    const queryParams: IQueryParams = {};
-    for (const column of this.columns) {
-      Object.assign(queryParams, column.queryParams);
-    }
-    if (this.searchStr) {
-      queryParams['search'] = this.searchStr;
-    }
-    Object.assign(queryParams, super.queryParams);
-    return queryParams;
-  }
-
-  addColumn(field: DataField<D, any>, hide: boolean = false): DataColumn<D> {
-    const column = new DataColumn(field, hide);
-    this.columns.push(column);
-    return column;
+  set length(length: number) {
+    this._lengthSubject.next(length);
   }
 
   addItem(item: D): boolean {
-    this.data.push(item);
-    this._dataSubject.next(this.data);
-    return true;
+    const data = this._dataSubject.value;
+    if (
+      !this.pagination.enabled ||
+      data.length < this.pagination.page.pageSize
+    ) {
+      data.push(item);
+      this._dataSubject.next(data);
+      return true;
+    }
+    return false;
   }
 
   updateItem(item: D): boolean {
-    const index = this.data.findIndex((i) => i.id === item.id);
+    const data = this._dataSubject.value;
+    const index = data.findIndex((i) => i.id === item.id);
     if (index >= 0) {
-      this.data[index] = item;
-      this._dataSubject.next(this.data);
+      data[index] = item;
+      this._dataSubject.next(data);
       return true;
     }
     return false;
   }
 
   addOrUpdateItem(item: D): boolean {
-    return this.updateItem(item) ?? this.addItem(item);
+    return this.updateItem(item) || this.addItem(item);
   }
 
-  removeItem(item: D): void {
-    const index = this.data.findIndex((i) => i.id === item.id);
+  removeItem(item: D): boolean {
+    // TODO: Trigger reload if page is not the last page
+    const data = this._dataSubject.value;
+    const index = data.findIndex((i) => i.id === item.id);
     if (index >= 0) {
-      this.data.splice(index, 1);
-      this._dataSubject.next(this.data);
+      data.splice(index, 1);
+      this._dataSubject.next(data);
+      return true;
     }
+    return false;
   }
 
   getColumn(name: string): DataColumn<D> {
@@ -200,41 +243,15 @@ export class DataFrame<D extends IDataItem> extends Sortable {
     else throw new Error(`Column ${name} not found`);
   }
 
-  get shownColumns(): DataColumn<D>[] {
-    return this.columns.filter((column) => column.isShown(this.data));
-  }
-}
-
-export class DataPage<D extends IDataItem> extends DataFrame<D> {
-  private __matPaginator?: MatPaginator;
-
-  set matPaginator(paginator: MatPaginator) {
-    this.__matPaginator = paginator;
+  reload(): void {
+    this._reloadSubject.next();
   }
 
-  get page(): number {
-    if (this.__matPaginator) {
-      return this.__matPaginator.pageIndex + 1;
-    } else throw new Error('Paginator not set');
+  getColumnNames(): Observable<string[]> {
+    return of([]);
   }
 
-  get pageSize(): number {
-    if (this.__matPaginator) {
-      return this.__matPaginator.pageSize;
-    } else throw new Error('Paginator not set');
-  }
-
-  override get queryParams(): IQueryParams {
-    const queryParams = super.queryParams;
-    queryParams['page'] = this.page;
-    queryParams['page_size'] = this.pageSize;
-    return queryParams;
-  }
-
-  override addItem(item: D): boolean {
-    if (this.data.length < this.pageSize) {
-      return super.addItem(item);
-    }
-    return false;
+  getData(queryParams: IQueryParams): Observable<D[]> {
+    return of([]);
   }
 }
