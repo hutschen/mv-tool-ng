@@ -13,9 +13,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { debounce, debounceTime, map, Observable, of } from 'rxjs';
-import { DataPage, PlaceholderField } from '../shared/data';
-import { FilterByValues, IFilterOption } from '../shared/filter';
+import { map, Observable } from 'rxjs';
+import {
+  DataColumn,
+  DataFrame,
+  PlaceholderColumn,
+  PlaceholderField,
+} from '../shared/data';
+import {
+  FilterByPattern,
+  FilterByValues,
+  FilterForExistence,
+  Filters,
+  IFilterOption,
+} from '../shared/filter';
+import { Paginator } from '../shared/page';
 import { IQueryParams } from '../shared/services/crud.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
@@ -30,12 +42,12 @@ import {
 
 class ReferenceValuesFilter extends FilterByValues {
   override hasToLoadOptions: boolean = true;
+  protected _project!: Project;
+  protected _measureService!: MeasureService;
 
-  constructor(
-    protected _measurePage: MeasureDataPage,
-    protected _measureService: MeasureService
-  ) {
-    super('references');
+  initialize(project: Project, measureService: MeasureService): void {
+    this._project = project;
+    this._measureService = measureService;
   }
 
   override getOptions(
@@ -44,7 +56,7 @@ class ReferenceValuesFilter extends FilterByValues {
   ): Observable<IFilterOption[]> {
     // Build query params to request measure references
     const queryParams: IQueryParams = {
-      project_ids: this._measurePage.project.id,
+      project_ids: this._project.id,
     };
     if (searchStr) queryParams['local_search'] = searchStr;
     if (limit) {
@@ -65,108 +77,210 @@ class ReferenceValuesFilter extends FilterByValues {
   }
 }
 
-export class MeasureDataPage extends DataPage<Measure> {
-  public requirement!: Requirement;
-  public project!: Project;
+export class MeasureDataFrame extends DataFrame<Measure> {
+  protected _requirement!: Requirement;
+  protected _measureService!: MeasureService;
 
-  constructor(measureService: MeasureService) {
-    super();
-
+  constructor() {
     // Reference column
-    const reference = this.addColumn(new StrField('reference', 'Reference'));
-    reference.setPatternFilter('reference');
-    reference.filterByValues = new ReferenceValuesFilter(this, measureService);
-    reference.setExistenceFilter('has_reference');
+    const referenceColumn = new DataColumn(
+      new StrField('reference', 'Reference'),
+      new Filters(
+        'References',
+        new FilterByPattern('reference'),
+        new ReferenceValuesFilter('references'),
+        new FilterForExistence('has_reference')
+      )
+    );
 
     // Summary column
-    const summary = this.addColumn(new StrField('summary', 'Summary', false));
-    summary.setPatternFilter('summary');
-    summary.setExistenceFilter('has_summary');
+    const summaryColumn = new DataColumn(
+      new StrField('summary', 'Summary', false),
+      new Filters(
+        'Summaries',
+        new FilterByPattern('summary'),
+        undefined,
+        new FilterForExistence('has_summary')
+      )
+    );
 
     // Description column
-    const description = this.addColumn(
-      new StrField('description', 'Description')
+    const descriptionColumn = new DataColumn(
+      new StrField('description', 'Description'),
+      new Filters(
+        'Descriptions',
+        new FilterByPattern('description'),
+        undefined,
+        new FilterForExistence('has_description')
+      )
     );
-    description.setPatternFilter('description');
-    description.setExistenceFilter('has_description');
 
     // Document column
-    this.addColumn(new DocumentField());
+    const documentColumn = new DataColumn(
+      new DocumentField(),
+      new Filters(
+        'Documents',
+        undefined,
+        undefined,
+        new FilterForExistence('has_document')
+      )
+    );
 
-    // Jira Issue column
-    const jiraIssue = this.addColumn(new JiraIssueField());
-    jiraIssue.setExistenceFilter('has_jira_issue');
+    // Jira issue column
+    const jiraIssueColumn = new DataColumn(
+      new JiraIssueField(),
+      new Filters(
+        'Jira Issues',
+        undefined,
+        undefined,
+        new FilterForExistence('has_jira_issue')
+      )
+    );
 
     // Compliance status column
-    const compliance = this.addColumn(
-      new StatusField('compliance_status', 'Compliance')
+    const complianceStatusColumn = new DataColumn(
+      new StatusField('compliance_status', 'Compliance'),
+      new Filters(
+        'Compliance Statuses',
+        undefined,
+        new FilterByValues('compliance_statuses', [
+          { value: 'C', label: 'Compliant (C)' },
+          { value: 'PC', label: 'Partially Compliant (PC)' },
+          { value: 'NC', label: 'Not Compliant (NC)' },
+          { value: 'N/A', label: 'Not Applicable (N/A)' },
+        ]),
+        new FilterForExistence('has_compliance_status')
+      )
     );
-    compliance.setPatternFilter('compliance_status');
-    compliance.setValuesFilter('compliance_statuses', [
-      { value: 'C', label: 'Compliant' },
-      { value: 'PC', label: 'Partially Compliant' },
-      { value: 'NC', label: 'Not Compliant' },
-      { value: 'N/A', label: 'Not Applicable' },
-    ]);
-    compliance.setExistenceFilter('has_compliance_status');
 
     // Compliance comment column
-    const compliance_comment = this.addColumn(
-      new StrField('compliance_comment', 'Compliance Comment')
+    const complianceCommentColumn = new DataColumn(
+      new StrField('compliance_comment', 'Compliance Comment'),
+      new Filters(
+        'Compliance Comments',
+        new FilterByPattern('compliance_comment'),
+        undefined,
+        new FilterForExistence('has_compliance_comment')
+      )
     );
-    compliance_comment.setPatternFilter('compliance_comment');
-    compliance_comment.setExistenceFilter('has_compliance_comment');
 
     // Completion status column
-    const completion = this.addColumn(
-      new StatusField('completion_status', 'Completion')
+    const completionStatusColumn = new DataColumn(
+      new StatusField('completion_status', 'Completion'),
+      new Filters(
+        'Completion Statuses',
+        undefined,
+        new FilterByValues('completion_statuses', [
+          { value: 'open', label: 'Open' },
+          { value: 'in progress', label: 'In Progress' },
+          { value: 'completed', label: 'Completed' },
+        ]),
+        new FilterForExistence('has_completion_status')
+      )
     );
-    completion.setPatternFilter('completion_status');
-    completion.setValuesFilter('completion_statuses', [
-      { value: 'open', label: 'Open' },
-      { value: 'in progress', label: 'In Progress' },
-      { value: 'completed', label: 'Completed' },
-    ]);
-    completion.setExistenceFilter('has_completion_status');
 
     // Completion comment column
-    const completion_comment = this.addColumn(
-      new StrField('completion_comment', 'Completion Comment')
+    const completionCommentColumn = new DataColumn(
+      new StrField('completion_comment', 'Completion Comment'),
+      new Filters(
+        'Completion Comments',
+        new FilterByPattern('completion_comment'),
+        undefined,
+        new FilterForExistence('has_completion_comment')
+      )
     );
-    completion_comment.setPatternFilter('completion_comment');
-    completion_comment.setExistenceFilter('has_completion_comment');
 
     // Verification method column
-    const verification_method = this.addColumn(
-      new StatusField('verification_method', 'Verification Method')
+    const verificationMethodColumn = new DataColumn(
+      new StrField('verification_method', 'Verification Method'),
+      new Filters(
+        'Verification Methods',
+        undefined,
+        new FilterByValues('verification_methods', [
+          { value: 'I', label: 'Inspection (I)' },
+          { value: 'T', label: 'Test (T)' },
+          { value: 'R', label: 'Review (R)' },
+        ]),
+        new FilterForExistence('has_verification_method')
+      )
     );
-    verification_method.setPatternFilter('verification_method');
-    verification_method.setValuesFilter('verification_methods', [
-      { value: 'I', label: 'Inspection' },
-      { value: 'T', label: 'Test' },
-      { value: 'R', label: 'Review' },
-    ]);
-    verification_method.setExistenceFilter('has_verification_method');
 
     // Verified column
-    const verified = this.addColumn(new VerifiedField());
-    verified.setExistenceFilter('verified');
+    const verifiedColumn = new DataColumn(
+      new VerifiedField(),
+      new Filters(
+        'Verified',
+        undefined,
+        undefined,
+        new FilterForExistence('has_verified')
+      )
+    );
 
     // Verification comment column
-    const verification_comment = this.addColumn(
-      new StrField('verification_comment', 'Verification Comment')
+    const verificationCommentColumn = new DataColumn(
+      new StrField('verification_comment', 'Verification Comment'),
+      new Filters(
+        'Verification Comments',
+        new FilterByPattern('verification_comment'),
+        undefined,
+        new FilterForExistence('has_verification_comment')
+      )
     );
-    verification_comment.setPatternFilter('verification_comment');
-    verification_comment.setExistenceFilter('has_verification_comment');
 
-    // Options column
-    this.addColumn(new PlaceholderField<Measure>('options', 'Options'));
+    super([
+      referenceColumn,
+      summaryColumn,
+      descriptionColumn,
+      documentColumn,
+      jiraIssueColumn,
+      complianceStatusColumn,
+      complianceCommentColumn,
+      completionStatusColumn,
+      completionCommentColumn,
+      verificationMethodColumn,
+      verifiedColumn,
+      verificationCommentColumn,
+      new PlaceholderColumn('options', 'Options'),
+    ]);
   }
 
-  initialize(requirement: Requirement) {
-    this.requirement = requirement;
-    this.project = requirement.project;
+  initialize(requirement: Requirement, measureService: MeasureService): void {
+    this._requirement = requirement;
+    this._measureService = measureService;
 
-    // TODO: initialize fetching data
+    // Initialize reference values filter
+    (
+      this.getColumn('reference').filters
+        .filterByValues as ReferenceValuesFilter
+    ).initialize(requirement.project, measureService);
+
+    // Load data
+    this.reload();
+  }
+
+  override getColumnNames(): Observable<string[]> {
+    return this._measureService.getMeasureFieldNames({
+      project_ids: [this._requirement.project.id],
+    });
+  }
+
+  override getData(queryParams: IQueryParams): Observable<Measure[]> {
+    // Query measures, and set the length of the data frame
+    return this._measureService
+      .queryMeasures({
+        requirement_ids: this._requirement.id,
+        ...queryParams,
+      })
+      .pipe(
+        map((measures) => {
+          if (Array.isArray(measures)) {
+            this.length = measures.length;
+            return measures;
+          } else {
+            this.length = measures.total_count;
+            return measures.items;
+          }
+        })
+      );
   }
 }
