@@ -30,7 +30,7 @@ import { Filters } from './filter';
 import { Paginator } from './page';
 import { Search } from './search';
 import { IQueryParams } from './services/crud.service';
-import { Sort } from './sort';
+import { Sorting } from './sort';
 
 export interface IDataItem {
   id: number | string;
@@ -126,17 +126,17 @@ export class DataFrame<D extends IDataItem> {
   protected _lengthSubject: BehaviorSubject<number> = new BehaviorSubject(0);
   readonly length$: Observable<number> = this._lengthSubject.asObservable();
   readonly search: Search;
-  readonly sort: Sort;
+  readonly sort: Sorting;
   readonly pagination: Paginator;
 
   constructor(
     public readonly columns: DataColumn<D>[],
     search: Search | null = null,
-    sort: Sort | null = null,
+    sort: Sorting | null = null,
     usePagination: boolean = true
   ) {
     this.search = search ?? new Search();
-    this.sort = sort ?? new Sort();
+    this.sort = sort ?? new Sorting();
     this.pagination = new Paginator(usePagination);
 
     // Combine all query parameters

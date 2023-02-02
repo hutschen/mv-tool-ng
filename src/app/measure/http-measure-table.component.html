@@ -33,7 +33,7 @@
   <mvtool-table
     [dataFrame]="dataFrame"
     matSort
-    (matSortChange)="onSortMeasures($event)"
+    (matSortChange)="dataFrame.sort.setSort($event)"
   >
     <!-- JIRA issue column -->
     <ng-container

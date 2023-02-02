@@ -101,11 +101,6 @@ export class HttpMeasureTableComponent implements OnInit {
     this.dataFrame.search.pattern = searchStr;
   }
 
-  onSortMeasures(sort: Sort): void {
-    this.dataFrame.sort.sortBy = sort.active;
-    this.dataFrame.sort.sortOrder = sort.direction;
-  }
-
   async onCreateMeasure(): Promise<void> {
     await this._createOrEditMeasure();
   }

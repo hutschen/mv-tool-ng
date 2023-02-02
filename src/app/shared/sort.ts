@@ -13,30 +13,29 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 import { IQueryParams } from './services/crud.service';
 
-export class Sort {
-  protected _sortBySubject = new BehaviorSubject<string | undefined>(undefined);
-  protected _sortOrderSubject = new BehaviorSubject<'asc' | 'desc' | ''>('');
-  readonly queryParams$: Observable<IQueryParams> = combineLatest([
-    this._sortBySubject.asObservable(),
-    this._sortOrderSubject.asObservable(),
-  ]).pipe(
-    map(([sortBy, sortOrder]) => {
-      if (sortBy && sortOrder) {
-        return { sort_by: sortBy, sort_order: sortOrder };
-      } else return {} as IQueryParams;
-    })
-  );
+export interface ISort {
+  active: string;
+  direction: 'asc' | 'desc' | '';
+}
+
+export class Sorting {
+  protected _sortSubject = new BehaviorSubject<ISort | null>(null);
+  readonly queryParams$: Observable<IQueryParams> = this._sortSubject
+    .asObservable()
+    .pipe(
+      map((sort) => {
+        if (sort && sort.direction) {
+          return { sort_by: sort.active, sort_order: sort.direction };
+        } else return {} as IQueryParams;
+      })
+    );
 
   constructor() {}
 
-  set sortBy(sortBy: string | undefined) {
-    this._sortBySubject.next(sortBy);
-  }
-
-  set sortOrder(sortOrder: 'asc' | 'desc' | '') {
-    this._sortOrderSubject.next(sortOrder);
+  setSort(sort: ISort): void {
+    this._sortSubject.next(sort);
   }
 }
