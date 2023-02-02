@@ -16,6 +16,7 @@
 import {
   BehaviorSubject,
   combineLatest,
+  debounceTime,
   map,
   merge,
   Observable,
@@ -149,6 +150,7 @@ export class DataFrame<D extends IDataItem> {
         )
       ),
     ]).pipe(
+      debounceTime(250),
       map((queryParams) =>
         queryParams.reduce((acc, val) => ({ ...acc, ...val }), {})
       )
