@@ -226,12 +226,20 @@ export class DataFrame<D extends IDataItem> {
   }
 
   removeItem(item: D): boolean {
-    // TODO: Trigger reload if page is not the last page
     const data = this._dataSubject.value;
     const index = data.findIndex((i) => i.id === item.id);
     if (index >= 0) {
+      // Remove item from data
       data.splice(index, 1);
       this._dataSubject.next(data);
+
+      // Reload if page is not the last page
+      if (
+        !this.pagination.enabled ||
+        data.length + 1 === this.pagination.page.pageSize
+      ) {
+        this.reload();
+      }
       return true;
     }
     return false;
