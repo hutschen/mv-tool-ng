@@ -23,16 +23,19 @@
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-filter-header *ngIf="column.filterable" [filterable]="column">
+        <mvtool-filter-header
+          *ngIf="!column.filters.isEmpty"
+          [filters]="column.filters"
+        >
           {{ column.label }}
         </mvtool-filter-header>
-        <span *ngIf="!column.filterable">
+        <span *ngIf="column.filters.isEmpty">
           {{ column.label }}
         </span>
       </th>
       <td mat-cell *matCellDef="let row">
-        <span *ngIf="column.dataField.toBool(row)" class="expandable-lines">
-          {{ column.dataField.toStr(row) }}
+        <span *ngIf="column.field.toBool(row)" class="expandable-lines">
+          {{ column.field.toStr(row) }}
         </span>
       </td>
     </ng-container>
@@ -43,7 +46,7 @@
     <ng-container matColumnDef="loading-indicator">
       <th mat-header-cell *matHeaderCellDef colspan="100">
         <mat-progress-bar
-          *ngIf="isLoadingData"
+          *ngIf="dataFrame.isLoading"
           mode="buffer"
           color="primary"
         ></mat-progress-bar>
@@ -55,22 +58,28 @@
       class="loading-indicator-header-row"
       *matHeaderRowDef="['loading-indicator']; sticky: true"
     ></tr>
-    <tr mat-header-row *matHeaderRowDef="columnNames; sticky: true"></tr>
+    <tr
+      mat-header-row
+      *matHeaderRowDef="dataFrame.columnNames$ | async; sticky: true"
+    ></tr>
     <tr
       mat-row
       [class.clickable-row]="clickRow.observed"
-      *matRowDef="let row; columns: columnNames"
+      *matRowDef="let row; columns: dataFrame.columnNames$ | async"
       (click)="clickRow.emit(row.data)"
     ></tr>
 
     <!-- Shown when the table is empty -->
     <tr class="mat-row" *matNoDataRow>
       <td class="mat-cell" colspan="100">
-        <div *ngIf="isLoadingData">
+        <div *ngIf="dataFrame.isLoading">
           <div>{{ loadingText }}</div>
         </div>
 
-        <div *ngIf="!isLoadingData" class="fx-row fx-space-between-center">
+        <div
+          *ngIf="!dataFrame.isLoading"
+          class="fx-row fx-space-between-center"
+        >
           <div>{{ noContentText }}</div>
           <button
             *ngIf="create.observed"

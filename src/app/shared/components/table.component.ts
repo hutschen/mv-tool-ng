@@ -24,7 +24,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatColumnDef, MatTable } from '@angular/material/table';
-import { DataColumn, DataPage, IDataItem } from '../data';
+import { DataColumn, DataFrame, IDataItem } from '../data';
 
 @Component({
   selector: 'mvtool-table',
@@ -37,8 +37,7 @@ import { DataColumn, DataPage, IDataItem } from '../data';
   styles: [],
 })
 export class TableComponent<T extends IDataItem> implements AfterContentInit {
-  @Input() dataFrame!: DataPage<T>;
-  @Input() isLoadingData = false;
+  @Input() dataFrame!: DataFrame<T>;
   @Input() noContentText = 'Nothing to display.';
   @Input() loadingText = 'Loading...';
   @Input() createLabel = 'Create One';
@@ -62,9 +61,5 @@ export class TableComponent<T extends IDataItem> implements AfterContentInit {
     this.columnsToAutoCreate = this.dataFrame.columns.filter(
       (column) => !columnNamesDefined.includes(column.name)
     );
-  }
-
-  get columnNames(): string[] {
-    return this.dataFrame.shownColumns.map((column) => column.name);
   }
 }
