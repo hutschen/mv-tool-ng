@@ -18,10 +18,11 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, Sort } from '@angular/material/sort';
 import {
   debounceTime,
   firstValueFrom,
@@ -35,29 +36,14 @@ import { ComplianceDialogService } from '../shared/components/compliance-dialog.
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
-import {
-  DataColumn,
-  DataField,
-  DataPage,
-  PlaceholderField,
-} from '../shared/data';
+
 import { IPage, IQueryParams } from '../shared/services/crud.service';
-import {
-  Measure,
-  MeasureService,
-  IMeasureQueryParams,
-} from '../shared/services/measure.service';
+import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
 import { Requirement } from '../shared/services/requirement.service';
 import { CompletionDialogService } from './completion-dialog.component';
 import { MeasureDialogService } from './measure-dialog.component';
-import {
-  DocumentField,
-  JiraIssueField,
-  StatusField,
-  VerifiedField,
-} from './measure-fields';
-import { MeasureDataPage } from './measure-page';
+import { MeasureDataFrame } from './measure-page';
 import { VerificationDialogService } from './verification-dialog.component';
 
 @Component({
@@ -70,20 +56,14 @@ import { VerificationDialogService } from './verification-dialog.component';
   ],
   styles: [],
 })
-export class HttpMeasureTableComponent implements AfterViewInit {
+export class HttpMeasureTableComponent implements OnInit {
   @Input() requirement?: Requirement;
   @Input() project?: Project;
 
-  dataFrame: MeasureDataPage;
-  resultsLength = 0;
-  isLoadingData = true;
-  isRateLimitReached = false;
-  searchStr?: string;
-  reload = new EventEmitter<void>();
-  search = new EventEmitter<string>();
+  dataFrame: MeasureDataFrame = new MeasureDataFrame();
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
+  // @ViewChild(MatPaginator) paginator!: MatPaginator;
+  // @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     protected _measureService: MeasureService,
@@ -94,72 +74,12 @@ export class HttpMeasureTableComponent implements AfterViewInit {
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _confirmDialogService: ConfirmDialogService
-  ) {
-    this.dataFrame = new MeasureDataPage(this._measureService);
-  }
+  ) {}
 
-  ngAfterViewInit(): void {
-    this.dataFrame.initialize(this.requirement!);
-
-    // When the user changes the sort order, reset to the first page
-    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
-
-    // Load and reload table data
-    const reload$ = merge(
-      this.sort.sortChange,
-      this.paginator.page,
-      this.reload,
-      this.search.pipe(debounceTime(500))
-    ).pipe(startWith({}));
-
-    // Load names of columns to set as non-optional
-    const namesOfRequiredColumns = this.dataFrame.columns
-      .filter((column) => !column.optional)
-      .map((column) => column.name);
-    reload$
-      .pipe(
-        switchMap(() => {
-          return this._measureService.getMeasureFieldNames({
-            project_ids: [this.project?.id ?? this.requirement!.project.id],
-          });
-        })
-      )
-      .subscribe((fieldNames) => {
-        // set original required columns
-        this.dataFrame.columns.forEach((column) => {
-          column.optional = !namesOfRequiredColumns.includes(column.name);
-        });
-
-        // set required columns for current project
-        this.dataFrame.columns
-          .filter((column) => fieldNames.includes(column.name))
-          .forEach((column) => (column.optional = false));
-      });
-
-    // Load table data
-    reload$
-      .pipe(
-        switchMap(() => {
-          this.isLoadingData = true;
-          const queryParams: IQueryParams = {
-            project_ids: this.project ? [this.project.id] : [],
-            requirement_ids: this.requirement ? [this.requirement.id] : [],
-          };
-          this.dataFrame.matPaginator = this.paginator;
-          this.dataFrame.matSort = this.sort;
-          this.dataFrame.searchStr = this.searchStr;
-          return this._measureService.queryMeasures({
-            ...queryParams,
-            ...this.dataFrame.queryParams,
-          }) as Observable<IPage<Measure>>;
-        }),
-        map((data) => {
-          this.isLoadingData = false;
-          this.resultsLength = data.total_count;
-          return data.items;
-        })
-      )
-      .subscribe((data) => (this.dataFrame.data = data));
+  ngOnInit(): void {
+    if (this.requirement) {
+      this.dataFrame.initialize(this.requirement, this._measureService);
+    } else throw new Error('Requirement is undefined');
   }
 
   protected async _createOrEditMeasure(measure?: Measure): Promise<void> {
@@ -171,7 +91,6 @@ export class HttpMeasureTableComponent implements AfterViewInit {
       const resultingMeasure = await firstValueFrom(dialogRef.afterClosed());
       if (resultingMeasure) {
         this.dataFrame.addOrUpdateItem(resultingMeasure);
-        this.onReloadMeasures();
       }
     } else {
       throw new Error('Requirement is undefined');
@@ -179,8 +98,12 @@ export class HttpMeasureTableComponent implements AfterViewInit {
   }
 
   onSearchMeasures(searchStr: string): void {
-    this.searchStr = searchStr;
-    this.search.emit(searchStr);
+    this.dataFrame.search.pattern = searchStr;
+  }
+
+  onSortMeasures(sort: Sort): void {
+    this.dataFrame.sort.sortBy = sort.active;
+    this.dataFrame.sort.sortOrder = sort.direction;
   }
 
   async onCreateMeasure(): Promise<void> {
@@ -197,7 +120,6 @@ export class HttpMeasureTableComponent implements AfterViewInit {
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
       this.dataFrame.updateItem(updatedMeasure as Measure);
-      this.onReloadMeasures();
     }
   }
 
@@ -207,7 +129,6 @@ export class HttpMeasureTableComponent implements AfterViewInit {
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
       this.dataFrame.updateItem(updatedMeasure as Measure);
-      this.onReloadMeasures();
     }
   }
 
@@ -217,7 +138,6 @@ export class HttpMeasureTableComponent implements AfterViewInit {
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
       this.dataFrame.updateItem(updatedMeasure as Measure);
-      this.onReloadMeasures();
     }
   }
 
@@ -230,7 +150,6 @@ export class HttpMeasureTableComponent implements AfterViewInit {
     if (confirmed) {
       await firstValueFrom(this._measureService.deleteMeasure(measure.id));
       this.dataFrame.removeItem(measure);
-      this.onReloadMeasures();
     }
   }
 
@@ -261,11 +180,7 @@ export class HttpMeasureTableComponent implements AfterViewInit {
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());
     if (uploadState && uploadState.state == 'done') {
-      this.onReloadMeasures();
+      this.dataFrame.reload();
     }
-  }
-
-  onReloadMeasures(): void {
-    this.reload.emit();
   }
 }
