@@ -156,7 +156,7 @@ export class FilterForExistence {
 export class Filters {
   readonly queryParams$: Observable<IQueryParams>;
   readonly isSet$: Observable<boolean>;
-  readonly isEmpty: boolean;
+  readonly hasFilters: boolean;
 
   constructor(
     public readonly label: string,
@@ -187,9 +187,13 @@ export class Filters {
       )
     );
 
-    this.isEmpty = !Boolean(
+    this.hasFilters = Boolean(
       this.filterByPattern || this.filterByValues || this.filterForExistence
     );
+  }
+
+  valueOf() {
+    return this.hasFilters;
   }
 
   clear(): void {

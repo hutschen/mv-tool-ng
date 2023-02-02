@@ -23,13 +23,10 @@
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-filter-header
-          *ngIf="!column.filters.isEmpty"
-          [filters]="column.filters"
-        >
+        <mvtool-filter-header *ngIf="column.filters" [filters]="column.filters">
           {{ column.label }}
         </mvtool-filter-header>
-        <span *ngIf="column.filters.isEmpty">
+        <span *ngIf="!column.filters">
           {{ column.label }}
         </span>
       </th>
