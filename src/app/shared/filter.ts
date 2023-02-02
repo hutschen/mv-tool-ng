@@ -13,22 +13,42 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Observable, of } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  map,
+  Observable,
+  of,
+} from 'rxjs';
 import { IQueryParams } from './services/crud.service';
 
 export class FilterByPattern {
-  constructor(public name: string, public pattern: string = '') {}
+  protected _patternSubject = new BehaviorSubject<string>('');
+  readonly pattern$: Observable<string> = this._patternSubject.asObservable();
+  readonly queryParams$: Observable<IQueryParams> = this.pattern$.pipe(
+    debounceTime(this.delay),
+    map((pattern) => (pattern.length > 0 ? { [this.name]: pattern } : {}))
+  );
+  readonly isSet$: Observable<boolean> = this.pattern$.pipe(
+    map((pattern) => pattern.length > 0)
+  );
 
-  get isSet(): boolean {
-    return this.pattern.length > 0;
+  constructor(
+    public readonly name: string,
+    public readonly delay: number = 250
+  ) {}
+
+  set pattern(pattern: string) {
+    this._patternSubject.next(pattern);
   }
 
-  get queryParams(): IQueryParams {
-    return this.isSet ? { [this.name]: this.pattern } : {};
+  get pattern(): string {
+    return this._patternSubject.value;
   }
 
   clear(): void {
-    this.pattern = '';
+    this._patternSubject.next('');
   }
 }
 
@@ -38,50 +58,45 @@ export interface IFilterOption {
 }
 
 export class FilterByValues {
-  protected _selectedOptions: IFilterOption[] = [];
-  hasToLoadOptions: boolean = false;
+  readonly hasToLoadOptions: boolean = false;
+  protected _selectionSubject = new BehaviorSubject<IFilterOption[]>([]);
+  readonly selection$: Observable<IFilterOption[]> =
+    this._selectionSubject.asObservable();
+  readonly queryParams$: Observable<IQueryParams> = this.selection$.pipe(
+    map((selection) =>
+      selection.length > 0 ? { [this.name]: selection.map((o) => o.value) } : {}
+    )
+  );
+  readonly isSet$: Observable<boolean> = this.selection$.pipe(
+    map((selection) => selection.length > 0)
+  );
 
-  constructor(public name: string, private __options?: IFilterOption[]) {}
-
-  get isSet(): boolean {
-    return this._selectedOptions.length > 0;
-  }
-
-  get queryParams(): IQueryParams {
-    return this.isSet ? { [this.name]: this.values } : {};
-  }
+  constructor(
+    public readonly name: string,
+    private __options?: IFilterOption[]
+  ) {}
 
   set values(values: (string | number)[]) {
     this.getOptionsByValues(values).subscribe((options) => {
-      this._selectedOptions = options;
+      this._selectionSubject.next(options);
     });
   }
 
-  get values(): (string | number)[] {
-    return this._selectedOptions.map((option) => option.value);
-  }
-
-  get selectedOptions(): IFilterOption[] {
-    return this._selectedOptions;
-  }
-
-  selectOption(option: IFilterOption): boolean {
-    if (!this._selectedOptions.some((o) => o.value === option.value)) {
-      this._selectedOptions.push(option);
-      return true;
+  selectOption(option: IFilterOption): void {
+    const selection = this._selectionSubject.value;
+    if (!selection.some((o) => o.value === option.value)) {
+      selection.push(option);
+      this._selectionSubject.next(selection);
     }
-    return false;
   }
 
-  deselectOption(option: IFilterOption): boolean {
-    const index = this._selectedOptions.findIndex(
-      (o) => o.value === option.value
-    );
+  deselectOption(option: IFilterOption): void {
+    const selection = this._selectionSubject.value;
+    const index = selection.findIndex((o) => o.value === option.value);
     if (index >= 0) {
-      this._selectedOptions.splice(index, 1);
-      return true;
+      selection.splice(index, 1);
+      this._selectionSubject.next(selection);
     }
-    return false;
   }
 
   getOptions(
@@ -108,74 +123,78 @@ export class FilterByValues {
   }
 
   clear(): void {
-    this._selectedOptions = [];
+    this._selectionSubject.next([]);
   }
 }
 
 export class FilterForExistence {
-  constructor(public name: string, public exists: boolean | null = null) {}
+  protected _existsSubject = new BehaviorSubject<boolean | null>(null);
+  readonly exists$: Observable<boolean | null> =
+    this._existsSubject.asObservable();
+  readonly queryParams$: Observable<IQueryParams> = this.exists$.pipe(
+    map((exists) => (exists !== null ? { [this.name]: exists } : {}))
+  );
+  readonly isSet$: Observable<boolean> = this.exists$.pipe(
+    map((exists) => exists !== null)
+  );
 
-  get isSet(): boolean {
-    return this.exists !== null;
+  constructor(public readonly name: string) {}
+
+  set exists(exists: boolean | null) {
+    this._existsSubject.next(exists);
   }
 
-  get queryParams(): IQueryParams {
-    return this.isSet ? { [this.name]: this.exists as boolean } : {};
+  get exists(): boolean | null {
+    return this._existsSubject.value;
   }
 
   clear(): void {
-    this.exists = null;
+    this._existsSubject.next(null);
   }
 }
 
-export class Filterable {
+export class Filters {
+  readonly queryParams$: Observable<IQueryParams>;
+  readonly isSet$: Observable<boolean>;
+  readonly isEmpty: boolean;
+
   constructor(
-    public filterByPattern?: FilterByPattern,
-    public filterByValues?: FilterByValues,
-    public filterForExistence?: FilterForExistence
-  ) {}
-
-  get label(): string {
-    throw new Error('Not implemented');
-  }
-
-  get filtered(): boolean {
-    return Boolean(
-      this.filterByPattern?.isSet ||
-        this.filterByValues?.isSet ||
-        this.filterForExistence?.isSet
+    public readonly label: string,
+    public readonly filterByPattern?: FilterByPattern,
+    public readonly filterByValues?: FilterByValues,
+    public readonly filterForExistence?: FilterForExistence
+  ) {
+    this.queryParams$ = combineLatest([
+      this.filterByPattern?.queryParams$ ?? of({}),
+      this.filterByValues?.queryParams$ ?? of({}),
+      this.filterForExistence?.queryParams$ ?? of({}),
+    ]).pipe(
+      map(([patternQueryParams, valuesQueryParams, existsQueryParams]) => ({
+        ...patternQueryParams,
+        ...valuesQueryParams,
+        ...existsQueryParams,
+      }))
     );
-  }
 
-  get filterable(): boolean {
-    return Boolean(
+    this.isSet$ = combineLatest([
+      this.filterByPattern?.isSet$ ?? of(false),
+      this.filterByValues?.isSet$ ?? of(false),
+      this.filterForExistence?.isSet$ ?? of(false),
+    ]).pipe(
+      map(
+        ([patternIsSet, valuesIsSet, existsIsSet]) =>
+          patternIsSet || valuesIsSet || existsIsSet
+      )
+    );
+
+    this.isEmpty = !Boolean(
       this.filterByPattern || this.filterByValues || this.filterForExistence
     );
   }
 
-  get queryParams(): IQueryParams {
-    return {
-      ...this.filterByPattern?.queryParams,
-      ...this.filterByValues?.queryParams,
-      ...this.filterForExistence?.queryParams,
-    };
-  }
-
-  clearFilters(): void {
+  clear(): void {
     this.filterByPattern?.clear();
     this.filterByValues?.clear();
     this.filterForExistence?.clear();
-  }
-
-  setPatternFilter(name: string): void {
-    this.filterByPattern = new FilterByPattern(name);
-  }
-
-  setValuesFilter(name: string, selectableValues: IFilterOption[]): void {
-    this.filterByValues = new FilterByValues(name, selectableValues);
-  }
-
-  setExistenceFilter(name: string): void {
-    this.filterForExistence = new FilterForExistence(name);
   }
 }
