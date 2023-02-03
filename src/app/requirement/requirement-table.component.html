@@ -132,7 +132,9 @@
     <!-- Options column -->
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef>
-        <mvtool-table-options [table]="table"></mvtool-table-options>
+        <mvtool-legacy-table-options
+          [table]="table"
+        ></mvtool-legacy-table-options>
       </th>
       <td mat-cell *matCellDef="let row">
         <mvtool-table-row-options

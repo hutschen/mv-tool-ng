@@ -17,7 +17,7 @@ import { Component, Input } from '@angular/core';
 import { LegacyTableComponent } from './legacy-table.component';
 
 @Component({
-  selector: 'mvtool-table-options',
+  selector: 'mvtool-legacy-table-options',
   template: `
     <div class="fx-row fx-end-center">
       <button
@@ -51,7 +51,7 @@ import { LegacyTableComponent } from './legacy-table.component';
   styleUrls: ['../styles/flex.scss'],
   styles: [],
 })
-export class TableOptionsComponent {
+export class LegacyTableOptionsComponent {
   @Input() table!: LegacyTableComponent<any>;
 
   constructor() {}

@@ -31,7 +31,7 @@ import { LegacyFilterDialogComponent } from './components/legacy-filter-dialog.c
 import { LegacyTableFilterHeaderComponent } from './components/legacy-table-filter-header.component';
 import { AutocompleteComponent } from './components/autocomplete.component';
 import { ShowHideDialogComponent } from './components/show-hide-dialog.component';
-import { TableOptionsComponent } from './components/table-options.component';
+import { LegacyTableOptionsComponent } from './components/legacy-table-options.component';
 import { ComplianceDialogComponent } from './components/compliance-dialog.component';
 import { TableComponent } from './components/table.component';
 import { FilterDialogComponent } from './components/filter-dialog.component';
@@ -57,7 +57,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     LegacyTableFilterHeaderComponent,
     AutocompleteComponent,
     ShowHideDialogComponent,
-    TableOptionsComponent,
+    LegacyTableOptionsComponent,
     ComplianceDialogComponent,
     TableComponent,
     FilterDialogComponent,
@@ -70,7 +70,7 @@ import { ReactiveFormsModule } from '@angular/forms';
   exports: [
     HttpClientModule,
     TruncatePipe,
-    TableOptionsComponent,
+    LegacyTableOptionsComponent,
     TableRowOptionsComponent,
     TableToolbarComponent,
     LegacyTableComponent,
