@@ -27,10 +27,10 @@ import { Filters } from '../filter';
 export class FilterDialogService {
   constructor(protected _dialog: MatDialog) {}
 
-  openFilterDialog(filterable: Filters): MatDialogRef<FilterDialogComponent> {
+  openFilterDialog(filters: Filters): MatDialogRef<FilterDialogComponent> {
     return this._dialog.open(FilterDialogComponent, {
       width: '500px',
-      data: filterable,
+      data: filters,
     });
   }
 }
@@ -38,32 +38,40 @@ export class FilterDialogService {
 @Component({
   selector: 'mvtool-filter-dialog',
   template: `
-    <div mat-dialog-title>Filter {{ filterable.label }}</div>
+    <div mat-dialog-title>Filter {{ filters.label }}</div>
     <div mat-dialog-content>
       <!-- Filter by pattern -->
       <mvtool-filter-by-pattern
-        *ngIf="filterable.filterByPattern"
-        [filter]="filterable.filterByPattern"
+        *ngIf="filters.filterByPattern"
+        [filter]="filters.filterByPattern"
       ></mvtool-filter-by-pattern>
 
       <!-- Filter by values -->
       <mvtool-filter-by-values
-        *ngIf="filterable.filterByValues"
-        [filter]="filterable.filterByValues"
+        *ngIf="filters.filterByValues"
+        [filter]="filters.filterByValues"
       ></mvtool-filter-by-values>
 
       <!-- Filter for existence -->
       <mvtool-filter-for-existence
-        *ngIf="filterable.filterForExistence"
-        [filter]="filterable.filterForExistence"
+        *ngIf="filters.filterForExistence"
+        [filter]="filters.filterForExistence"
       ></mvtool-filter-for-existence>
     </div>
     <div mat-dialog-actions align="end">
-      <button mat-button (click)="onClearFilter()">
+      <button
+        mat-button
+        [disabled]="!(filters.isSet$ | async)"
+        (click)="filters.clear()"
+      >
         <mat-icon>filter_alt_off</mat-icon>
         Clear Filter
       </button>
-      <button mat-raised-button color="accent" (click)="onClose()">OK</button>
+      <button mat-raised-button color="accent" (click)="onClose()">
+        <mat-icon *ngIf="filters.isSet$ | async">filter_alt</mat-icon>
+        <mat-icon *ngIf="!(filters.isSet$ | async)">filter_alt_off</mat-icon>
+        Close
+      </button>
     </div>
   `,
   styleUrls: ['../styles/flex.scss'],
@@ -72,13 +80,8 @@ export class FilterDialogService {
 export class FilterDialogComponent {
   constructor(
     protected _dialogRef: MatDialogRef<FilterDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public filterable: Filters
+    @Inject(MAT_DIALOG_DATA) public filters: Filters
   ) {}
-
-  onClearFilter() {
-    this.filterable.clear();
-    this._dialogRef.close();
-  }
 
   onClose(): void {
     this._dialogRef.close();

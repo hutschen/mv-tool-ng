@@ -179,10 +179,8 @@ export class Filters {
       this.filterByValues?.isSet$ ?? of(false),
       this.filterForExistence?.isSet$ ?? of(false),
     ]).pipe(
-      map(
-        ([patternIsSet, valuesIsSet, existsIsSet]) =>
-          patternIsSet || valuesIsSet || existsIsSet
-      )
+      map((isSetFlags) => isSetFlags.some((isSet) => isSet)),
+      distinctUntilChanged((a, b) => a === b)
     );
 
     this.hasFilters = Boolean(
