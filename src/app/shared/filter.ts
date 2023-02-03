@@ -13,10 +13,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { isEqual } from 'radash';
 import {
   BehaviorSubject,
   combineLatest,
-  debounceTime,
+  distinctUntilChanged,
   map,
   Observable,
   of,
@@ -27,17 +28,13 @@ export class FilterByPattern {
   protected _patternSubject = new BehaviorSubject<string>('');
   readonly pattern$: Observable<string> = this._patternSubject.asObservable();
   readonly queryParams$: Observable<IQueryParams> = this.pattern$.pipe(
-    debounceTime(this.delay),
     map((pattern) => (pattern.length > 0 ? { [this.name]: pattern } : {}))
   );
   readonly isSet$: Observable<boolean> = this.pattern$.pipe(
     map((pattern) => pattern.length > 0)
   );
 
-  constructor(
-    public readonly name: string,
-    public readonly delay: number = 250
-  ) {}
+  constructor(public readonly name: string) {}
 
   set pattern(pattern: string) {
     this._patternSubject.next(pattern);
@@ -169,6 +166,7 @@ export class Filters {
       this.filterByValues?.queryParams$ ?? of({}),
       this.filterForExistence?.queryParams$ ?? of({}),
     ]).pipe(
+      distinctUntilChanged(isEqual),
       map(([patternQueryParams, valuesQueryParams, existsQueryParams]) => ({
         ...patternQueryParams,
         ...valuesQueryParams,

@@ -13,10 +13,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { isEqual } from 'radash';
 import {
   BehaviorSubject,
   combineLatest,
   debounceTime,
+  distinctUntilChanged,
   map,
   merge,
   Observable,
@@ -151,6 +153,7 @@ export class DataFrame<D extends IDataItem> {
       ),
     ]).pipe(
       debounceTime(250),
+      distinctUntilChanged(isEqual),
       map((queryParams) =>
         queryParams.reduce((acc, val) => ({ ...acc, ...val }), {})
       )

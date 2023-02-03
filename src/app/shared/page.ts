@@ -13,7 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
+import { isEqual } from 'radash';
+import {
+  BehaviorSubject,
+  combineLatest,
+  distinctUntilChanged,
+  map,
+  Observable,
+} from 'rxjs';
 import { IQueryParams } from './services/crud.service';
 
 export interface IPage {
@@ -29,6 +36,7 @@ export class Paginator {
   });
   readonly page$: Observable<IPage> = this._pageSubject.asObservable();
   readonly queryParams$: Observable<IQueryParams> = this.page$.pipe(
+    distinctUntilChanged(isEqual),
     map((page) => {
       if (this.enabled) {
         return { page_size: page.pageSize, page: page.pageIndex + 1 };

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BehaviorSubject, debounceTime, map, Observable } from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, map, Observable } from 'rxjs';
 import { IQueryParams } from './services/crud.service';
 
 export class Search {
@@ -21,13 +21,13 @@ export class Search {
   readonly queryParams$: Observable<IQueryParams> = this._patternSubject
     .asObservable()
     .pipe(
-      debounceTime(this.delay),
+      distinctUntilChanged((a, b) => a === b),
       map((pattern) =>
         pattern.length > 0 ? { search: pattern } : ({} as IQueryParams)
       )
     );
 
-  constructor(public readonly delay: number = 250) {}
+  constructor() {}
 
   set pattern(pattern: string) {
     this._patternSubject.next(pattern);

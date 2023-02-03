@@ -13,7 +13,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import { isEqual } from 'radash';
+import { BehaviorSubject, distinctUntilChanged, map, Observable } from 'rxjs';
 import { IQueryParams } from './services/crud.service';
 
 export interface ISort {
@@ -26,6 +27,7 @@ export class Sorting {
   readonly queryParams$: Observable<IQueryParams> = this._sortSubject
     .asObservable()
     .pipe(
+      distinctUntilChanged(isEqual),
       map((sort) => {
         if (sort && sort.direction) {
           return { sort_by: sort.active, sort_order: sort.direction };
