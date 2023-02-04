@@ -152,6 +152,8 @@
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef>
         <mvtool-table-options
+          (hideColumns)="onHideColumns()"
+          [hideColumnsDisabled]="!dataFrame.columns.hideableColumns.length"
           (clearFilters)="dataFrame.clearAllFilters()"
           [clearFiltersDisabled]="!(dataFrame.areFiltersSet$ | async)"
           (clearSort)="dataFrame.sort.clearSort()"

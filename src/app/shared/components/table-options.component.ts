@@ -30,11 +30,12 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
       <mat-menu #menu="matMenu">
         <button
           mat-menu-item
-          *ngIf="showHideColumns.observed"
-          (click)="showHideColumns.emit($event)"
+          *ngIf="hideColumns.observed"
+          (click)="hideColumns.emit($event)"
+          [disabled]="hideColumnsDisabled"
         >
           <mat-icon>visibility_off</mat-icon>
-          Show/hide columns
+          Hide columns
         </button>
         <button
           mat-menu-item
@@ -62,11 +63,12 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
   styles: [],
 })
 export class TableOptionsComponent implements OnInit {
-  @Output() showHideColumns = new EventEmitter<Event>();
+  @Output() hideColumns = new EventEmitter<Event>();
   @Output() clearFilters = new EventEmitter<Event>();
   @Output() clearSort = new EventEmitter<Event>();
   @Input() clearFiltersDisabled: boolean = false;
   @Input() clearSortDisabled: boolean = false;
+  @Input() hideColumnsDisabled: boolean = false;
 
   constructor() {}
 
@@ -74,7 +76,7 @@ export class TableOptionsComponent implements OnInit {
 
   get enabled(): boolean {
     return Boolean(
-      this.showHideColumns.observed ||
+      this.hideColumns.observed ||
         this.clearFilters.observed ||
         this.clearSort.observed
     );

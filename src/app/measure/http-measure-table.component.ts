@@ -13,31 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import {
-  AfterViewInit,
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort, Sort } from '@angular/material/sort';
-import {
-  debounceTime,
-  firstValueFrom,
-  map,
-  merge,
-  Observable,
-  startWith,
-  switchMap,
-} from 'rxjs';
+import { Component, Input, OnInit } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
+import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 
-import { IPage, IQueryParams } from '../shared/services/crud.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
 import { Requirement } from '../shared/services/requirement.service';
@@ -73,7 +56,8 @@ export class HttpMeasureTableComponent implements OnInit {
     protected _verificationDialogService: VerificationDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
-    protected _confirmDialogService: ConfirmDialogService
+    protected _confirmDialogService: ConfirmDialogService,
+    protected _hideColumnsDialogService: HideColumnsDialogService
   ) {}
 
   ngOnInit(): void {
@@ -99,6 +83,12 @@ export class HttpMeasureTableComponent implements OnInit {
 
   onSearchMeasures(searchStr: string): void {
     this.dataFrame.search.pattern = searchStr;
+  }
+
+  onHideColumns(): void {
+    this._hideColumnsDialogService.openHideColumnsDialog(
+      this.dataFrame.columns
+    );
   }
 
   async onCreateMeasure(): Promise<void> {
