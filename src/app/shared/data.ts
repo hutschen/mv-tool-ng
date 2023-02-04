@@ -13,17 +13,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { isArray, isEqual } from 'radash';
+import { isEqual, title } from 'radash';
 import {
   BehaviorSubject,
   combineLatest,
   debounceTime,
   distinctUntilChanged,
+  filter,
   map,
-  merge,
   Observable,
   of,
-  startWith,
   Subject,
   switchMap,
   tap,
@@ -39,14 +38,16 @@ export interface IDataItem {
 }
 
 export class DataField<D extends IDataItem, V> {
-  public label: string;
+  public readonly required: boolean;
+  public readonly label: string;
 
   constructor(
     public name: string,
     label: string | null = null,
-    public optional: boolean = true
+    protected _optional: boolean = true
   ) {
-    this.label = label ?? name;
+    this.label = label ?? title(name);
+    this.required = !this._optional;
   }
 
   toValue(data: D): V {
@@ -61,6 +62,14 @@ export class DataField<D extends IDataItem, V> {
 
   toBool(data: D): boolean {
     return Boolean(this.toValue(data));
+  }
+
+  set optional(optional: boolean) {
+    this._optional = optional;
+  }
+
+  get optional(): boolean {
+    return !this.required && this._optional;
   }
 
   isShown(data: D): boolean {
@@ -82,15 +91,25 @@ export class DataColumn<D extends IDataItem> {
   public readonly name: string;
   public readonly label: string;
   public readonly filters: Filters;
+  protected readonly _hiddenSubject: BehaviorSubject<boolean>;
+  public readonly hidden$: Observable<boolean>;
 
   constructor(
     public readonly field: DataField<D, any>,
     filters: Filters | null = null,
-    public hide: boolean = false
+    hidden: boolean = false
   ) {
     this.name = field.name;
     this.label = field.label;
     this.filters = filters ?? new Filters(this.field.label);
+
+    this._hiddenSubject = new BehaviorSubject<boolean>(hidden);
+    this.hidden$ = this._hiddenSubject.asObservable();
+    // .pipe(distinctUntilChanged());
+  }
+
+  get required(): boolean {
+    return this.field.required;
   }
 
   set optional(optional: boolean) {
@@ -101,9 +120,17 @@ export class DataColumn<D extends IDataItem> {
     return this.field.optional;
   }
 
+  set hidden(hide: boolean) {
+    this._hiddenSubject.next(hide);
+  }
+
+  get hidden(): boolean {
+    return !this.required && this._hiddenSubject.value;
+  }
+
   isShown(dataArray: D[]): boolean {
     const fieldIsShown = dataArray.some((data) => this.field.isShown(data));
-    return !this.hide && (!this.optional || fieldIsShown);
+    return !this.hidden && (!this.optional || fieldIsShown);
   }
 }
 
@@ -120,6 +147,8 @@ export class PlaceholderColumn<D extends IDataItem> extends DataColumn<D> {
 export class DataColumns<D extends IDataItem> {
   protected readonly _columns: DataColumn<D>[]; // columns in order
   protected readonly _columnsMap: Map<string, DataColumn<D>>;
+  public readonly hiddenQueryParams$: Observable<IQueryParams>;
+  public readonly filterQueryParams$: Observable<IQueryParams>;
 
   constructor(columns: DataColumn<D>[]) {
     // ensure that all columns have unique names
@@ -131,6 +160,28 @@ export class DataColumns<D extends IDataItem> {
     // set columns and columns map
     this._columns = columns;
     this._columnsMap = new Map(columns.map((column) => [column.name, column]));
+
+    // combine hidden status of columns into query params
+    this.hiddenQueryParams$ = combineLatest(
+      columns.map((column) => column.hidden$)
+    ).pipe(
+      distinctUntilChanged(isEqual),
+      map(() =>
+        columns.filter((column) => column.hidden).map((column) => column.name)
+      ),
+      map((hiddenColumns) => {
+        if (hiddenColumns.length) return { _hidden_columns: hiddenColumns };
+        else return {} as IQueryParams;
+      })
+    );
+
+    // combine filter values of columns into query params
+    this.filterQueryParams$ = combineLatest(
+      columns.map((column) => column.filters.queryParams$)
+    ).pipe(
+      map((queryParams) => Object.assign({}, ...queryParams)),
+      distinctUntilChanged(isEqual)
+    );
   }
 
   getColumn(name: string): DataColumn<D> {
@@ -186,7 +237,7 @@ export class DataFrame<D extends IDataItem> {
     sort: Sorting | null = null,
     usePagination: boolean = true
   ) {
-    this.columns = isArray(columns) ? new DataColumns(columns) : columns;
+    this.columns = Array.isArray(columns) ? new DataColumns(columns) : columns;
     this.search = search ?? new Search();
     this.sort = sort ?? new Sorting();
     this.pagination = new Paginator(usePagination);
@@ -196,17 +247,14 @@ export class DataFrame<D extends IDataItem> {
       this.search.queryParams$.pipe(tap(() => this.pagination.toFirstPage())),
       this.sort.queryParams$.pipe(tap(() => this.pagination.toFirstPage())),
       this.pagination.queryParams$,
-      ...this.columns.map((column) =>
-        column.filters.queryParams$.pipe(
-          tap(() => this.pagination.toFirstPage())
-        )
+      this.columns.hiddenQueryParams$,
+      this.columns.filterQueryParams$.pipe(
+        tap(() => this.pagination.toFirstPage())
       ),
     ]).pipe(
       debounceTime(250),
-      distinctUntilChanged(isEqual),
-      map((queryParams) =>
-        queryParams.reduce((acc, val) => ({ ...acc, ...val }), {})
-      )
+      map((queryParams) => Object.assign({}, ...queryParams)),
+      distinctUntilChanged(isEqual)
     );
 
     // Get names of columns that are shown
