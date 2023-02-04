@@ -40,6 +40,7 @@ import { FilterByPatternComponent } from './components/filter-by-pattern.compone
 import { FilterByValuesComponent } from './components/filter-by-values.component';
 import { FilterForExistenceComponent } from './components/filter-for-existence.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { TableOptionsComponent } from './components/table-options.component';
 
 @NgModule({
   declarations: [
@@ -65,12 +66,14 @@ import { ReactiveFormsModule } from '@angular/forms';
     FilterByPatternComponent,
     FilterByValuesComponent,
     FilterForExistenceComponent,
+    TableOptionsComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
     HttpClientModule,
     TruncatePipe,
     LegacyTableOptionsComponent,
+    TableOptionsComponent,
     TableRowOptionsComponent,
     TableToolbarComponent,
     LegacyTableComponent,
