@@ -41,6 +41,7 @@ import { FilterByValuesComponent } from './components/filter-by-values.component
 import { FilterForExistenceComponent } from './components/filter-for-existence.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TableOptionsComponent } from './components/table-options.component';
+import { HideColumnsDialogComponent } from './components/hide-columns-dialog.component';
 
 @NgModule({
   declarations: [
@@ -67,6 +68,7 @@ import { TableOptionsComponent } from './components/table-options.component';
     FilterByValuesComponent,
     FilterForExistenceComponent,
     TableOptionsComponent,
+    HideColumnsDialogComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
@@ -84,6 +86,7 @@ import { TableOptionsComponent } from './components/table-options.component';
     AutocompleteComponent,
     TableComponent,
     FilterHeaderComponent,
+    HideColumnsDialogComponent,
   ],
 })
 export class SharedModule {}
