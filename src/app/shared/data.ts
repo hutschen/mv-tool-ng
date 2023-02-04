@@ -124,6 +124,7 @@ export class DataFrame<D extends IDataItem> {
   protected _dataSubject: BehaviorSubject<D[]> = new BehaviorSubject<D[]>([]);
   readonly data$: Observable<D[]> = this._dataSubject.asObservable();
   readonly columnNames$: Observable<string[]>;
+  readonly areFiltersSet$: Observable<boolean>;
   readonly queryParams$: Observable<IQueryParams>;
   protected _lengthSubject: BehaviorSubject<number> = new BehaviorSubject(0);
   readonly length$: Observable<number> = this._lengthSubject.asObservable();
@@ -163,6 +164,14 @@ export class DataFrame<D extends IDataItem> {
     this.columnNames$ = this.data$.pipe(
       map((data) => this.columns.filter((column) => column.isShown(data))),
       map((columns) => columns.map((column) => column.name))
+    );
+
+    // Check if any filters are set
+    this.areFiltersSet$ = combineLatest(
+      this.columns.map((c) => c.filters.isSet$)
+    ).pipe(
+      map((isSet) => isSet.some((set) => set)),
+      distinctUntilChanged((x, y) => x === y)
     );
 
     // Define observable to trigger reload
@@ -258,6 +267,10 @@ export class DataFrame<D extends IDataItem> {
     const column = this.columns.find((column) => column.name === name);
     if (column) return column;
     else throw new Error(`Column ${name} not found`);
+  }
+
+  clearAllFilters(): void {
+    this.columns.forEach((column) => column.filters.clear());
   }
 
   reload(): void {

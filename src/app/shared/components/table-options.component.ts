@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'mvtool-table-options',
@@ -39,6 +39,7 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
         <button
           mat-menu-item
           *ngIf="clearFilters.observed"
+          [disabled]="clearFiltersDisabled"
           (click)="clearFilters.emit($event)"
         >
           <mat-icon>filter_alt_off</mat-icon>
@@ -64,6 +65,7 @@ export class TableOptionsComponent implements OnInit {
   @Output() showHideColumns = new EventEmitter<Event>();
   @Output() clearFilters = new EventEmitter<Event>();
   @Output() clearSort = new EventEmitter<Event>();
+  @Input() clearFiltersDisabled: boolean = false;
 
   constructor() {}
 
