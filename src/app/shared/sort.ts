@@ -13,8 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { isEqual } from 'radash';
-import { BehaviorSubject, distinctUntilChanged, map, Observable } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  distinctUntilChanged,
+  map,
+  Observable,
+  tap,
+} from 'rxjs';
 import { IQueryParams } from './services/crud.service';
 
 export interface ISort {
@@ -22,22 +28,45 @@ export interface ISort {
   direction: 'asc' | 'desc' | '';
 }
 
+const defaultSort: ISort = { active: '', direction: '' };
+
 export class Sorting {
-  protected _sortSubject = new BehaviorSubject<ISort | null>(null);
-  readonly queryParams$: Observable<IQueryParams> = this._sortSubject
+  protected _sortSubject = new BehaviorSubject<ISort>(defaultSort);
+  readonly active$: Observable<string> = this._sortSubject.asObservable().pipe(
+    map((sort) => sort.active),
+    distinctUntilChanged()
+  );
+  readonly direction$: Observable<'asc' | 'desc' | ''> = this._sortSubject
     .asObservable()
     .pipe(
-      distinctUntilChanged(isEqual),
-      map((sort) => {
-        if (sort && sort.direction) {
-          return { sort_by: sort.active, sort_order: sort.direction };
-        } else return {} as IQueryParams;
-      })
+      map((sort) => sort.direction),
+      distinctUntilChanged()
     );
+  readonly isSorted$: Observable<boolean> = combineLatest([
+    this.active$,
+    this.direction$,
+  ]).pipe(
+    map(([active, direction]) => Boolean(active && direction)),
+    distinctUntilChanged()
+  );
+  readonly queryParams$: Observable<IQueryParams> = combineLatest([
+    this.active$,
+    this.direction$,
+  ]).pipe(
+    map(([active, direction]) => {
+      if (active && direction) {
+        return { sort_by: active, sort_order: direction };
+      } else return {} as IQueryParams;
+    })
+  );
 
   constructor() {}
 
   setSort(sort: ISort): void {
     this._sortSubject.next(sort);
+  }
+
+  clearSort(): void {
+    this._sortSubject.next(defaultSort);
   }
 }
