@@ -13,15 +13,61 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import { DataColumn, DataColumns, IDataItem } from '../data';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class HideColumnsDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openHideColumnsDialog(
+    columns: DataColumns<IDataItem>
+  ): MatDialogRef<HideColumnsDialogComponent> {
+    return this._dialog.open(HideColumnsDialogComponent, {
+      width: '500px',
+      data: columns,
+    });
+  }
+}
 
 @Component({
   selector: 'mvtool-hide-columns-dialog',
-  template: ` <p>hide-columns-dialog works!</p> `,
+  template: `
+    <div mat-dialog-title>Hide Columns</div>
+    <div mat-dialog-content>
+      <p>Hide columns by selecting them in the list below.</p>
+      <mat-selection-list>
+        <mat-list-option
+          *ngFor="let column of columns.hideableColumns"
+          [(selected)]="column.hidden"
+        >
+          {{ column.label }}
+        </mat-list-option>
+      </mat-selection-list>
+    </div>
+    <div mat-dialog-actions align="end">
+      <button mat-raised-button color="accent" (click)="onClose()">
+        <mat-icon>cancel</mat-icon>
+        Close
+      </button>
+    </div>
+  `,
   styles: [],
 })
-export class HideColumnsDialogComponent implements OnInit {
-  constructor() {}
+export class HideColumnsDialogComponent {
+  constructor(
+    protected _dialogRef: MatDialogRef<HideColumnsDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public columns: DataColumns<IDataItem>
+  ) {}
 
-  ngOnInit(): void {}
+  onClose(): void {
+    this._dialogRef.close();
+  }
 }
