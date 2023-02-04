@@ -147,6 +147,7 @@ export class PlaceholderColumn<D extends IDataItem> extends DataColumn<D> {
 export class DataColumns<D extends IDataItem> {
   protected readonly _columns: DataColumn<D>[]; // columns in order
   protected readonly _columnsMap: Map<string, DataColumn<D>>;
+  public readonly hideableColumns: DataColumn<D>[];
   public readonly hiddenQueryParams$: Observable<IQueryParams>;
   public readonly filterQueryParams$: Observable<IQueryParams>;
 
@@ -160,6 +161,9 @@ export class DataColumns<D extends IDataItem> {
     // set columns and columns map
     this._columns = columns;
     this._columnsMap = new Map(columns.map((column) => [column.name, column]));
+
+    // set hideable columns
+    this.hideableColumns = columns.filter((column) => !column.required);
 
     // combine hidden status of columns into query params
     this.hiddenQueryParams$ = combineLatest(
