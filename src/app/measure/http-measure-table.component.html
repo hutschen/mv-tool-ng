@@ -39,7 +39,7 @@
   >
     <!-- JIRA issue column -->
     <ng-container
-      *ngIf="dataFrame.getColumn('jira_issue') as column"
+      *ngIf="dataFrame.columns.getColumn('jira_issue') as column"
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -59,7 +59,7 @@
 
     <!-- Completion column -->
     <ng-container
-      *ngIf="dataFrame.getColumn('completion_status') as column"
+      *ngIf="dataFrame.columns.getColumn('completion_status') as column"
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -82,7 +82,7 @@
 
     <!-- Compliance column -->
     <ng-container
-      *ngIf="dataFrame.getColumn('compliance_status') as column"
+      *ngIf="dataFrame.columns.getColumn('compliance_status') as column"
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -103,7 +103,7 @@
 
     <!-- Verification status column -->
     <ng-container
-      *ngIf="dataFrame.getColumn('verification_method') as column"
+      *ngIf="dataFrame.columns.getColumn('verification_method') as column"
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -126,7 +126,7 @@
 
     <!-- Verified column -->
     <ng-container
-      *ngIf="dataFrame.getColumn('verified') as column"
+      *ngIf="dataFrame.columns.getColumn('verified') as column"
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { isEqual } from 'radash';
+import { isArray, isEqual } from 'radash';
 import {
   BehaviorSubject,
   combineLatest,
@@ -117,7 +117,55 @@ export class PlaceholderColumn<D extends IDataItem> extends DataColumn<D> {
   }
 }
 
+export class DataColumns<D extends IDataItem> {
+  protected readonly _columns: DataColumn<D>[]; // columns in order
+  protected readonly _columnsMap: Map<string, DataColumn<D>>;
+
+  constructor(columns: DataColumn<D>[]) {
+    // ensure that all columns have unique names
+    const names = columns.map((column) => column.name);
+    if (names.length !== new Set(names).size) {
+      throw new Error('Column names must be unique');
+    }
+
+    // set columns and columns map
+    this._columns = columns;
+    this._columnsMap = new Map(columns.map((column) => [column.name, column]));
+  }
+
+  getColumn(name: string): DataColumn<D> {
+    const column = this._columnsMap.get(name);
+    if (column) return column;
+    else throw new Error(`Column ${name} not found`);
+  }
+
+  // implement map
+  map<T>(callbackfn: (value: DataColumn<D>, index: number) => T): T[] {
+    return this._columns.map(callbackfn);
+  }
+
+  // implement filter
+  filter(
+    callbackfn: (value: DataColumn<D>, index: number) => unknown
+  ): DataColumn<D>[] {
+    return this._columns.filter(callbackfn);
+  }
+
+  // implement find
+  find(
+    callbackfn: (value: DataColumn<D>, index: number) => unknown
+  ): DataColumn<D> | undefined {
+    return this._columns.find(callbackfn);
+  }
+
+  // implement forEach
+  forEach(callbackfn: (value: DataColumn<D>, index: number) => void): void {
+    this._columns.forEach(callbackfn);
+  }
+}
+
 export class DataFrame<D extends IDataItem> {
+  public readonly columns: DataColumns<D>;
   protected _isLoadingData: boolean = true;
   protected _isLoadingColumns: boolean = true;
   protected _reloadSubject: Subject<void> = new Subject();
@@ -133,11 +181,12 @@ export class DataFrame<D extends IDataItem> {
   readonly pagination: Paginator;
 
   constructor(
-    public readonly columns: DataColumn<D>[],
+    columns: DataColumn<D>[] | DataColumns<D>,
     search: Search | null = null,
     sort: Sorting | null = null,
     usePagination: boolean = true
   ) {
+    this.columns = isArray(columns) ? new DataColumns(columns) : columns;
     this.search = search ?? new Search();
     this.sort = sort ?? new Sorting();
     this.pagination = new Paginator(usePagination);
@@ -261,12 +310,6 @@ export class DataFrame<D extends IDataItem> {
       return true;
     }
     return false;
-  }
-
-  getColumn(name: string): DataColumn<D> {
-    const column = this.columns.find((column) => column.name === name);
-    if (column) return column;
-    else throw new Error(`Column ${name} not found`);
   }
 
   clearAllFilters(): void {

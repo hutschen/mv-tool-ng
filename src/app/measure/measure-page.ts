@@ -250,7 +250,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
 
     // Initialize reference values filter
     (
-      this.getColumn('reference').filters
+      this.columns.getColumn('reference').filters
         .filterByValues as ReferenceValuesFilter
     ).initialize(requirement.project, measureService);
 
