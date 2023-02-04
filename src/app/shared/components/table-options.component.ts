@@ -49,11 +49,11 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
           mat-menu-item
           *ngIf="clearSort.observed"
           (click)="clearSort.emit($event)"
+          [disabled]="clearSortDisabled"
         >
           <mat-icon>sort_off</mat-icon>
           Clear sort
         </button>
-
         <ng-content></ng-content>
       </mat-menu>
     </div>
@@ -66,6 +66,7 @@ export class TableOptionsComponent implements OnInit {
   @Output() clearFilters = new EventEmitter<Event>();
   @Output() clearSort = new EventEmitter<Event>();
   @Input() clearFiltersDisabled: boolean = false;
+  @Input() clearSortDisabled: boolean = false;
 
   constructor() {}
 

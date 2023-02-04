@@ -154,6 +154,8 @@
         <mvtool-table-options
           (clearFilters)="dataFrame.clearAllFilters()"
           [clearFiltersDisabled]="!(dataFrame.areFiltersSet$ | async)"
+          (clearSort)="dataFrame.sort.clearSort()"
+          [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
         ></mvtool-table-options>
       </th>
       <td mat-cell *matCellDef="let measure">
