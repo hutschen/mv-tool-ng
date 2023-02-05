@@ -166,6 +166,7 @@ export class DataColumns<D extends IDataItem> {
   public readonly hideableColumns: readonly DataColumn<D>[];
   public readonly hiddenQueryParams$: Observable<IQueryParams>;
   public readonly filterQueryParams$: Observable<IQueryParams>;
+  readonly areColumnsHidden$: Observable<boolean>;
   readonly areFiltersSet$: Observable<boolean>;
 
   constructor(public readonly columns: readonly DataColumn<D>[]) {
@@ -192,6 +193,14 @@ export class DataColumns<D extends IDataItem> {
         if (hiddenColumns.length) return { _hidden_columns: hiddenColumns };
         else return {} as IQueryParams;
       })
+    );
+
+    // check if any columns are hidden
+    this.areColumnsHidden$ = combineLatest(
+      this.columns.map((column) => column.hidden$)
+    ).pipe(
+      map((hiddenArray) => hiddenArray.some((hidden) => hidden)),
+      distinctUntilChanged()
     );
 
     // check if any filters are set
