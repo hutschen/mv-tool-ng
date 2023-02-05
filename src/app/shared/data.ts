@@ -308,6 +308,10 @@ export class DataFrame<D extends IDataItem> {
       .subscribe((data) => this._dataSubject.next(data));
   }
 
+  set queryParams(queryParams: IQueryParams) {
+    // TODO: implement
+  }
+
   get isLoading(): boolean {
     return this._isLoadingData || this._isLoadingColumns;
   }

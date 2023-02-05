@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
@@ -49,6 +50,7 @@ export class HttpMeasureTableComponent implements OnInit {
   // @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
+    protected _router: Router,
     protected _measureService: MeasureService,
     protected _measureDialogService: MeasureDialogService,
     protected _complianceDialogService: ComplianceDialogService,
@@ -58,7 +60,19 @@ export class HttpMeasureTableComponent implements OnInit {
     protected _uploadDialogService: UploadDialogService,
     protected _confirmDialogService: ConfirmDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService
-  ) {}
+  ) {
+    // read query params from router snapshot
+    this.dataFrame.queryParams =
+      this._router.routerState.snapshot.root.queryParams;
+
+    // update query params when data frame changes
+    this.dataFrame.queryParams$.subscribe((queryParams) => {
+      this._router.navigate([], {
+        queryParams: queryParams,
+        replaceUrl: true,
+      });
+    });
+  }
 
   ngOnInit(): void {
     if (this.requirement) {
