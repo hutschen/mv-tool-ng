@@ -240,6 +240,10 @@ export class DataColumns<D extends IDataItem> {
   clearFilters(): void {
     this.columns.forEach((column) => column.filters.clear());
   }
+
+  unhideAllColumns(): void {
+    this.columns.forEach((column) => (column.hidden = false));
+  }
 }
 
 export class DataFrame<D extends IDataItem> {
