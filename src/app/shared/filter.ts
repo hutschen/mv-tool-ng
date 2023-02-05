@@ -146,7 +146,17 @@ export class FilterForExistence {
   constructor(public readonly name: string) {}
 
   set queryParams(queryParams: IQueryParams) {
-    // TODO: implement
+    switch (queryParams[this.name] as unknown) {
+      case 'true':
+        this.exists = true;
+        break;
+      case 'false':
+        this.exists = false;
+        break;
+      default:
+        this.exists = null;
+        break;
+    }
   }
 
   set exists(exists: boolean | null) {
@@ -201,7 +211,10 @@ export class Filters {
   }
 
   set queryParams(queryParams: IQueryParams) {
-    // TODO: implement
+    if (this.filterByPattern) this.filterByPattern.queryParams = queryParams;
+    if (this.filterByValues) this.filterByValues.queryParams = queryParams;
+    if (this.filterForExistence)
+      this.filterForExistence.queryParams = queryParams;
   }
 
   valueOf() {

@@ -114,10 +114,6 @@ export class DataColumn<D extends IDataItem> {
     // .pipe(distinctUntilChanged());
   }
 
-  set queryParams(queryParams: IQueryParams) {
-    // TODO: implement
-  }
-
   get required(): boolean {
     return this.field.required;
   }
@@ -244,7 +240,7 @@ export class DataColumns<D extends IDataItem> {
 
     // set filters
     this.columns.forEach((column) => {
-      column.queryParams = queryParams;
+      column.filters.queryParams = queryParams;
     });
   }
 
