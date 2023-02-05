@@ -168,6 +168,7 @@ export class DataColumns<D extends IDataItem> {
   public readonly hideableColumns: readonly DataColumn<D>[];
   public readonly hiddenQueryParams$: Observable<IQueryParams>;
   public readonly filterQueryParams$: Observable<IQueryParams>;
+  readonly areFiltersSet$: Observable<boolean>;
 
   constructor(columns: DataColumn<D>[]) {
     // ensure that all columns have unique names
@@ -197,6 +198,14 @@ export class DataColumns<D extends IDataItem> {
       })
     );
 
+    // check if any filters are set
+    this.areFiltersSet$ = combineLatest(
+      columns.map((column) => column.filters.isSet$)
+    ).pipe(
+      map((isSetArray) => isSetArray.some((isSet) => isSet)),
+      distinctUntilChanged()
+    );
+
     // combine filter values of columns into query params
     this.filterQueryParams$ = combineLatest(
       columns.map((column) => column.filters.queryParams$)
@@ -223,28 +232,15 @@ export class DataColumns<D extends IDataItem> {
     );
   }
 
-  // implement map
-  map<T>(callbackfn: (value: DataColumn<D>, index: number) => T): T[] {
-    return this._columns.map(callbackfn);
+  clearFilters(): void {
+    this._columns.forEach((column) => column.filters.clear());
   }
 
-  // implement filter
+  // filter method on underlying columns array
   filter(
     callbackfn: (value: DataColumn<D>, index: number) => unknown
   ): DataColumn<D>[] {
     return this._columns.filter(callbackfn);
-  }
-
-  // implement find
-  find(
-    callbackfn: (value: DataColumn<D>, index: number) => unknown
-  ): DataColumn<D> | undefined {
-    return this._columns.find(callbackfn);
-  }
-
-  // implement forEach
-  forEach(callbackfn: (value: DataColumn<D>, index: number) => void): void {
-    this._columns.forEach(callbackfn);
   }
 }
 
@@ -256,7 +252,6 @@ export class DataFrame<D extends IDataItem> {
   protected _dataSubject: BehaviorSubject<D[]> = new BehaviorSubject<D[]>([]);
   readonly data$: Observable<D[]> = this._dataSubject.asObservable();
   readonly columnNames$: Observable<string[]>;
-  readonly areFiltersSet$: Observable<boolean>;
   readonly queryParams$: Observable<IQueryParams>;
   protected _lengthSubject: BehaviorSubject<number> = new BehaviorSubject(0);
   readonly length$: Observable<number> = this._lengthSubject.asObservable();
@@ -305,14 +300,6 @@ export class DataFrame<D extends IDataItem> {
       switchMap((data) => this.columns.getShownColumns(data)),
       map((columns) => columns.map((column) => column.name)),
       distinctUntilChanged(isEqual)
-    );
-
-    // Check if any filters are set
-    this.areFiltersSet$ = combineLatest(
-      this.columns.map((c) => c.filters.isSet$)
-    ).pipe(
-      map((isSet) => isSet.some((set) => set)),
-      distinctUntilChanged()
     );
 
     // Define observable to trigger reload
@@ -407,10 +394,6 @@ export class DataFrame<D extends IDataItem> {
       return true;
     }
     return false;
-  }
-
-  clearAllFilters(): void {
-    this.columns.forEach((column) => column.filters.clear());
   }
 
   reload(): void {

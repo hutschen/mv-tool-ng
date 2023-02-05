@@ -154,8 +154,8 @@
         <mvtool-table-options
           (hideColumns)="onHideColumns()"
           [hideColumnsDisabled]="!dataFrame.columns.hideableColumns.length"
-          (clearFilters)="dataFrame.clearAllFilters()"
-          [clearFiltersDisabled]="!(dataFrame.areFiltersSet$ | async)"
+          (clearFilters)="dataFrame.columns.clearFilters()"
+          [clearFiltersDisabled]="!(dataFrame.columns.areFiltersSet$ | async)"
           (clearSort)="dataFrame.sort.clearSort()"
           [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
         ></mvtool-table-options>
