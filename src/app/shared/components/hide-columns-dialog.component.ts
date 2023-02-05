@@ -42,7 +42,10 @@ export class HideColumnsDialogService {
   template: `
     <div mat-dialog-title>Hide Columns</div>
     <div mat-dialog-content>
-      <p>Hide columns by selecting them in the list below.</p>
+      <p>
+        The columns in the list below are not required. Hide them by selecting
+        them.
+      </p>
       <mat-selection-list>
         <mat-list-option
           *ngFor="let column of columns.hideableColumns"
