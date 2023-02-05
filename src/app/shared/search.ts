@@ -29,6 +29,10 @@ export class Search {
 
   constructor() {}
 
+  set queryParams(queryParams: IQueryParams) {
+    // TODO: implement
+  }
+
   set pattern(pattern: string) {
     this._patternSubject.next(pattern);
   }

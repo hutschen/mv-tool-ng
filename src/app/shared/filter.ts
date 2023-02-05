@@ -36,6 +36,10 @@ export class FilterByPattern {
 
   constructor(public readonly name: string) {}
 
+  set queryParams(queryParams: IQueryParams) {
+    // TODO: implement
+  }
+
   set pattern(pattern: string) {
     this._patternSubject.next(pattern);
   }
@@ -72,6 +76,10 @@ export class FilterByValues {
     public readonly name: string,
     private __options?: IFilterOption[]
   ) {}
+
+  set queryParams(queryParams: IQueryParams) {
+    // TODO: implement
+  }
 
   set values(values: (string | number)[]) {
     this.getOptionsByValues(values).subscribe((options) => {
@@ -137,6 +145,10 @@ export class FilterForExistence {
 
   constructor(public readonly name: string) {}
 
+  set queryParams(queryParams: IQueryParams) {
+    // TODO: implement
+  }
+
   set exists(exists: boolean | null) {
     this._existsSubject.next(exists);
   }
@@ -186,6 +198,10 @@ export class Filters {
     this.hasFilters = Boolean(
       this.filterByPattern || this.filterByValues || this.filterForExistence
     );
+  }
+
+  set queryParams(queryParams: IQueryParams) {
+    // TODO: implement
   }
 
   valueOf() {

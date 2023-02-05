@@ -14,13 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { isEqual } from 'radash';
-import {
-  BehaviorSubject,
-  combineLatest,
-  distinctUntilChanged,
-  map,
-  Observable,
-} from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, map, Observable } from 'rxjs';
 import { IQueryParams } from './services/crud.service';
 
 export interface IPage {
@@ -45,6 +39,10 @@ export class Paginator {
   );
 
   constructor(public readonly enabled: boolean = true) {}
+
+  set queryParams(queryParams: IQueryParams) {
+    // TODO: implement
+  }
 
   get page(): IPage {
     return this._pageSubject.value;

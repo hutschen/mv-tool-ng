@@ -19,7 +19,6 @@ import {
   distinctUntilChanged,
   map,
   Observable,
-  tap,
 } from 'rxjs';
 import { IQueryParams } from './services/crud.service';
 
@@ -61,6 +60,10 @@ export class Sorting {
   );
 
   constructor() {}
+
+  set queryParams(queryParams: IQueryParams) {
+    // TODO: implement
+  }
 
   setSort(sort: ISort): void {
     this._sortSubject.next(sort);

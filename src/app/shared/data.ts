@@ -114,6 +114,10 @@ export class DataColumn<D extends IDataItem> {
     // .pipe(distinctUntilChanged());
   }
 
+  set queryParams(queryParams: IQueryParams) {
+    // TODO: implement
+  }
+
   get required(): boolean {
     return this.field.required;
   }
@@ -218,6 +222,10 @@ export class DataColumns<D extends IDataItem> {
       map((queryParams) => Object.assign({}, ...queryParams)),
       distinctUntilChanged(isEqual)
     );
+  }
+
+  set queryParams(queryParams: IQueryParams) {
+    // TODO: implement
   }
 
   getColumn(name: string): DataColumn<D> {
