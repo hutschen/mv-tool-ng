@@ -19,7 +19,6 @@ import {
   combineLatest,
   debounceTime,
   distinctUntilChanged,
-  filter,
   map,
   Observable,
   of,
@@ -40,14 +39,18 @@ export interface IDataItem {
 export class DataField<D extends IDataItem, V> {
   public readonly required: boolean;
   public readonly label: string;
+  protected _optionalSubject: BehaviorSubject<boolean>;
+  public readonly optional$: Observable<boolean>;
 
   constructor(
     public name: string,
     label: string | null = null,
-    protected _optional: boolean = true
+    optional: boolean = true
   ) {
     this.label = label ?? title(name);
-    this.required = !this._optional;
+    this.required = !optional;
+    this._optionalSubject = new BehaviorSubject<boolean>(optional);
+    this.optional$ = this._optionalSubject.asObservable();
   }
 
   toValue(data: D): V {
@@ -65,15 +68,18 @@ export class DataField<D extends IDataItem, V> {
   }
 
   set optional(optional: boolean) {
-    this._optional = optional;
+    this._optionalSubject.next(optional);
   }
 
   get optional(): boolean {
-    return !this.required && this._optional;
+    return !this.required && this._optionalSubject.value;
   }
 
-  isShown(data: D): boolean {
-    return !this.optional || this.toBool(data);
+  isShown(data: D): Observable<boolean> {
+    return this.optional$.pipe(
+      map((optional) => !optional || this.toBool(data)),
+      distinctUntilChanged()
+    );
   }
 }
 
@@ -128,9 +134,21 @@ export class DataColumn<D extends IDataItem> {
     return !this.required && this._hiddenSubject.value;
   }
 
-  isShown(dataArray: D[]): boolean {
-    const fieldIsShown = dataArray.some((data) => this.field.isShown(data));
-    return !this.hidden && (!this.optional || fieldIsShown);
+  isShown(dataArray: D[]): Observable<boolean> {
+    return combineLatest([
+      this.hidden$,
+      ...dataArray.map((data) => this.field.isShown(data)),
+    ]).pipe(
+      distinctUntilChanged(isEqual),
+      map(([hidden, ...shownArray]) => {
+        if (hidden && !this.required) return false;
+        else {
+          if (shownArray.length === 0) return this.required;
+          else return shownArray.some((shown) => shown);
+        }
+      }),
+      distinctUntilChanged()
+    );
   }
 }
 
@@ -147,7 +165,7 @@ export class PlaceholderColumn<D extends IDataItem> extends DataColumn<D> {
 export class DataColumns<D extends IDataItem> {
   protected readonly _columns: DataColumn<D>[]; // columns in order
   protected readonly _columnsMap: Map<string, DataColumn<D>>;
-  public readonly hideableColumns: DataColumn<D>[];
+  public readonly hideableColumns: readonly DataColumn<D>[];
   public readonly hiddenQueryParams$: Observable<IQueryParams>;
   public readonly filterQueryParams$: Observable<IQueryParams>;
 
@@ -192,6 +210,17 @@ export class DataColumns<D extends IDataItem> {
     const column = this._columnsMap.get(name);
     if (column) return column;
     else throw new Error(`Column ${name} not found`);
+  }
+
+  getShownColumns(dataArray: D[]): Observable<DataColumn<D>[]> {
+    return combineLatest(
+      this._columns.map((column) => column.isShown(dataArray))
+    ).pipe(
+      distinctUntilChanged(isEqual),
+      map((shownArray) =>
+        this._columns.filter((column, index) => shownArray[index])
+      )
+    );
   }
 
   // implement map
@@ -246,12 +275,11 @@ export class DataFrame<D extends IDataItem> {
     this.sort = sort ?? new Sorting();
     this.pagination = new Paginator(usePagination);
 
-    // Combine all query parameters
-    this.queryParams$ = combineLatest([
+    // Combine query params sent to the server
+    const dataQueryParams$ = combineLatest([
       this.search.queryParams$.pipe(tap(() => this.pagination.toFirstPage())),
       this.sort.queryParams$.pipe(tap(() => this.pagination.toFirstPage())),
       this.pagination.queryParams$,
-      this.columns.hiddenQueryParams$,
       this.columns.filterQueryParams$.pipe(
         tap(() => this.pagination.toFirstPage())
       ),
@@ -261,10 +289,22 @@ export class DataFrame<D extends IDataItem> {
       distinctUntilChanged(isEqual)
     );
 
+    // Add client-side query params to server-side query params
+    // Names of client-side query params begin with an underscore
+    const allQueryParams$ = combineLatest([
+      dataQueryParams$,
+      this.columns.hiddenQueryParams$,
+    ]).pipe(
+      map((queryParams) => Object.assign({}, ...queryParams)),
+      distinctUntilChanged(isEqual)
+    );
+    this.queryParams$ = allQueryParams$;
+
     // Get names of columns that are shown
     this.columnNames$ = this.data$.pipe(
-      map((data) => this.columns.filter((column) => column.isShown(data))),
-      map((columns) => columns.map((column) => column.name))
+      switchMap((data) => this.columns.getShownColumns(data)),
+      map((columns) => columns.map((column) => column.name)),
+      distinctUntilChanged(isEqual)
     );
 
     // Check if any filters are set
@@ -272,34 +312,35 @@ export class DataFrame<D extends IDataItem> {
       this.columns.map((c) => c.filters.isSet$)
     ).pipe(
       map((isSet) => isSet.some((set) => set)),
-      distinctUntilChanged((x, y) => x === y)
+      distinctUntilChanged()
     );
 
     // Define observable to trigger reload
-    const reload$ = combineLatest([
+    const reloadData$ = combineLatest([
       this._reloadSubject,
-      this.queryParams$,
+      dataQueryParams$,
     ]).pipe(map(([, queryParams]) => queryParams));
 
-    // Reload and set names of required columns
-    const initialNames = this.columns
-      .filter((column) => !column.optional)
-      .map((column) => column.name);
-    reload$
-      .pipe(
-        tap(() => (this._isLoadingColumns = true)),
-        switchMap(() => this.getColumnNames()),
-        tap(() => (this._isLoadingColumns = false)),
-        map((names) => [...initialNames, ...names])
-      )
-      .subscribe((names) => {
-        this.columns.forEach((column) => {
-          column.optional = !names.includes(column.name);
-        });
-      });
+    // // Reload and set names of required columns
+    // const initialNames = this.columns
+    //   .filter((column) => !column.optional)
+    //   .map((column) => column.name);
+    // reloadData$
+    //   .pipe(
+    //     tap(() => (this._isLoadingColumns = true)),
+    //     switchMap(() => this.getColumnNames()),
+    //     tap(() => (this._isLoadingColumns = false)),
+    //     map((names) => [...initialNames, ...names])
+    //   )
+    //   .subscribe((names) => {
+    //     this.columns.forEach((column) => {
+    //       column.optional = !names.includes(column.name);
+    //     });
+    //   });
+    this._isLoadingColumns = false;
 
     // Reload data
-    reload$
+    reloadData$
       .pipe(
         tap(() => (this._isLoadingData = true)),
         switchMap((queryParams) => this.getData(queryParams)),
