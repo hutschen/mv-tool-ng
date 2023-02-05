@@ -58,7 +58,7 @@ export class TableComponent<T extends IDataItem> implements AfterContentInit {
         return matColumnDef.name;
       }
     );
-    this.columnsToAutoCreate = this.dataFrame.columns.filter(
+    this.columnsToAutoCreate = this.dataFrame.columns.columns.filter(
       (column) => !columnNamesDefined.includes(column.name)
     );
   }

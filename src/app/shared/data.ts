@@ -163,34 +163,30 @@ export class PlaceholderColumn<D extends IDataItem> extends DataColumn<D> {
 }
 
 export class DataColumns<D extends IDataItem> {
-  protected readonly _columns: DataColumn<D>[]; // columns in order
-  protected readonly _columnsMap: Map<string, DataColumn<D>>;
   public readonly hideableColumns: readonly DataColumn<D>[];
   public readonly hiddenQueryParams$: Observable<IQueryParams>;
   public readonly filterQueryParams$: Observable<IQueryParams>;
   readonly areFiltersSet$: Observable<boolean>;
 
-  constructor(columns: DataColumn<D>[]) {
+  constructor(public readonly columns: readonly DataColumn<D>[]) {
     // ensure that all columns have unique names
-    const names = columns.map((column) => column.name);
+    const names = this.columns.map((column) => column.name);
     if (names.length !== new Set(names).size) {
       throw new Error('Column names must be unique');
     }
 
-    // set columns and columns map
-    this._columns = columns;
-    this._columnsMap = new Map(columns.map((column) => [column.name, column]));
-
     // set hideable columns
-    this.hideableColumns = columns.filter((column) => !column.required);
+    this.hideableColumns = this.columns.filter((column) => !column.required);
 
     // combine hidden status of columns into query params
     this.hiddenQueryParams$ = combineLatest(
-      columns.map((column) => column.hidden$)
+      this.columns.map((column) => column.hidden$)
     ).pipe(
       distinctUntilChanged(isEqual),
       map(() =>
-        columns.filter((column) => column.hidden).map((column) => column.name)
+        this.columns
+          .filter((column) => column.hidden)
+          .map((column) => column.name)
       ),
       map((hiddenColumns) => {
         if (hiddenColumns.length) return { _hidden_columns: hiddenColumns };
@@ -200,7 +196,7 @@ export class DataColumns<D extends IDataItem> {
 
     // check if any filters are set
     this.areFiltersSet$ = combineLatest(
-      columns.map((column) => column.filters.isSet$)
+      this.columns.map((column) => column.filters.isSet$)
     ).pipe(
       map((isSetArray) => isSetArray.some((isSet) => isSet)),
       distinctUntilChanged()
@@ -208,7 +204,7 @@ export class DataColumns<D extends IDataItem> {
 
     // combine filter values of columns into query params
     this.filterQueryParams$ = combineLatest(
-      columns.map((column) => column.filters.queryParams$)
+      this.columns.map((column) => column.filters.queryParams$)
     ).pipe(
       map((queryParams) => Object.assign({}, ...queryParams)),
       distinctUntilChanged(isEqual)
@@ -216,31 +212,24 @@ export class DataColumns<D extends IDataItem> {
   }
 
   getColumn(name: string): DataColumn<D> {
-    const column = this._columnsMap.get(name);
+    const column = this.columns.find((column) => column.name === name);
     if (column) return column;
     else throw new Error(`Column ${name} not found`);
   }
 
   getShownColumns(dataArray: D[]): Observable<DataColumn<D>[]> {
     return combineLatest(
-      this._columns.map((column) => column.isShown(dataArray))
+      this.columns.map((column) => column.isShown(dataArray))
     ).pipe(
       distinctUntilChanged(isEqual),
       map((shownArray) =>
-        this._columns.filter((column, index) => shownArray[index])
+        this.columns.filter((column, index) => shownArray[index])
       )
     );
   }
 
   clearFilters(): void {
-    this._columns.forEach((column) => column.filters.clear());
-  }
-
-  // filter method on underlying columns array
-  filter(
-    callbackfn: (value: DataColumn<D>, index: number) => unknown
-  ): DataColumn<D>[] {
-    return this._columns.filter(callbackfn);
+    this.columns.forEach((column) => column.filters.clear());
   }
 }
 
