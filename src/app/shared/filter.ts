@@ -37,7 +37,10 @@ export class FilterByPattern {
   constructor(public readonly name: string) {}
 
   set queryParams(queryParams: IQueryParams) {
-    // TODO: implement
+    const raw = queryParams[this.name] as string | string[] | undefined;
+    if (raw) {
+      this.pattern = Array.isArray(raw) ? raw[0] : raw;
+    }
   }
 
   set pattern(pattern: string) {
