@@ -222,20 +222,12 @@ export class DataColumns<D extends IDataItem> {
 
   set queryParams(queryParams: IQueryParams) {
     // set hidden columns
-    const hiddenColumns = queryParams['_hidden_columns'] as
-      | string
-      | string[]
-      | undefined;
-    if (hiddenColumns) {
-      if (Array.isArray(hiddenColumns)) {
-        this.columns.forEach((column) => {
-          column.hidden = hiddenColumns.includes(column.name);
-        });
-      } else {
-        this.columns.forEach((column) => {
-          column.hidden = column.name === hiddenColumns;
-        });
-      }
+    const raw = queryParams['_hidden_columns'] as string | string[] | undefined;
+    if (raw) {
+      const strings = Array.isArray(raw) ? raw : [raw];
+      this.columns.forEach((column) => {
+        column.hidden = strings.includes(column.name);
+      });
     }
 
     // set filters
