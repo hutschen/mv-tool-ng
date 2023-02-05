@@ -77,7 +77,7 @@ export class DataField<D extends IDataItem, V> {
 
   isShown(data: D): Observable<boolean> {
     return this.optional$.pipe(
-      map((optional) => !optional || this.toBool(data)),
+      map((optional) => this.required || !optional || this.toBool(data)),
       distinctUntilChanged()
     );
   }
@@ -288,14 +288,13 @@ export class DataFrame<D extends IDataItem> {
 
     // Add client-side query params to server-side query params
     // Names of client-side query params begin with an underscore
-    const allQueryParams$ = combineLatest([
+    this.queryParams$ = combineLatest([
       dataQueryParams$,
       this.columns.hiddenQueryParams$,
     ]).pipe(
       map((queryParams) => Object.assign({}, ...queryParams)),
       distinctUntilChanged(isEqual)
     );
-    this.queryParams$ = allQueryParams$;
 
     // Get names of columns that are shown
     this.columnNames$ = this.data$.pipe(
@@ -304,33 +303,23 @@ export class DataFrame<D extends IDataItem> {
       distinctUntilChanged(isEqual)
     );
 
-    // Define observable to trigger reload
-    const reloadData$ = combineLatest([
-      this._reloadSubject,
-      dataQueryParams$,
-    ]).pipe(map(([, queryParams]) => queryParams));
-
-    // // Reload and set names of required columns
-    // const initialNames = this.columns
-    //   .filter((column) => !column.optional)
-    //   .map((column) => column.name);
-    // reloadData$
-    //   .pipe(
-    //     tap(() => (this._isLoadingColumns = true)),
-    //     switchMap(() => this.getColumnNames()),
-    //     tap(() => (this._isLoadingColumns = false)),
-    //     map((names) => [...initialNames, ...names])
-    //   )
-    //   .subscribe((names) => {
-    //     this.columns.forEach((column) => {
-    //       column.optional = !names.includes(column.name);
-    //     });
-    //   });
-    this._isLoadingColumns = false;
-
-    // Reload data
-    reloadData$
+    // Load and set non-optional columns
+    combineLatest([this._reloadSubject, this.data$])
       .pipe(
+        tap(() => (this._isLoadingColumns = true)),
+        switchMap(() => this.getColumnNames()),
+        tap(() => (this._isLoadingColumns = false))
+      )
+      .subscribe((names) => {
+        this.columns.columns.forEach((column) => {
+          column.optional = !names.includes(column.name);
+        });
+      });
+
+    // Load data
+    combineLatest([this._reloadSubject, dataQueryParams$])
+      .pipe(
+        map(([, queryParams]) => queryParams),
         tap(() => (this._isLoadingData = true)),
         switchMap((queryParams) => this.getData(queryParams)),
         tap(() => (this._isLoadingData = false))
