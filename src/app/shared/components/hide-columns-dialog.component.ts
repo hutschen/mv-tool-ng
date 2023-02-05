@@ -19,7 +19,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { DataColumn, DataColumns, IDataItem } from '../data';
+import { DataColumns, IDataItem } from '../data';
 
 @Injectable({
   providedIn: 'root',
@@ -42,10 +42,7 @@ export class HideColumnsDialogService {
   template: `
     <div mat-dialog-title>Hide Columns</div>
     <div mat-dialog-content>
-      <p>
-        The columns in the list below are not required. Hide them by selecting
-        them.
-      </p>
+      <p>The columns in the list below can be hidden by selecting them.</p>
       <mat-selection-list>
         <mat-list-option
           *ngFor="let column of columns.hideableColumns"
@@ -56,8 +53,21 @@ export class HideColumnsDialogService {
       </mat-selection-list>
     </div>
     <div mat-dialog-actions align="end">
+      <button
+        mat-button
+        [disabled]="!(columns.areColumnsHidden$ | async)"
+        (click)="columns.unhideAllColumns()"
+      >
+        <mat-icon>visibility</mat-icon>
+        Show all
+      </button>
       <button mat-raised-button color="accent" (click)="onClose()">
-        <mat-icon>cancel</mat-icon>
+        <mat-icon *ngIf="columns.areColumnsHidden$ | async"
+          >visibility_off</mat-icon
+        >
+        <mat-icon *ngIf="!(columns.areColumnsHidden$ | async)"
+          >visibility</mat-icon
+        >
         Close
       </button>
     </div>
