@@ -41,7 +41,23 @@ export class Paginator {
   constructor(public readonly enabled: boolean = true) {}
 
   set queryParams(queryParams: IQueryParams) {
-    // TODO: implement
+    const rawSize = queryParams['page_size'] as string | string[] | undefined;
+    const rawIndex = queryParams['page'] as string | string[] | undefined;
+
+    if (rawSize && rawIndex) {
+      const strSize = Array.isArray(rawSize) ? rawSize[0] : rawSize;
+      const strIndex = Array.isArray(rawIndex) ? rawIndex[0] : rawIndex;
+      if ([strSize, strIndex].every((s) => /^\d+$/.test(s))) {
+        const pageSize = parseInt(strSize);
+        const pageIndex = parseInt(strIndex) - 1;
+        this.setPage({
+          pageSize: this.pageSizeOptions.includes(pageSize)
+            ? pageSize
+            : this.page.pageSize,
+          pageIndex: pageIndex < 0 ? this.page.pageSize : pageIndex,
+        });
+      }
+    }
   }
 
   get page(): IPage {

@@ -347,7 +347,8 @@ export class DataFrame<D extends IDataItem> {
     this.columns.queryParams = queryParams;
     this.search.queryParams = queryParams;
     this.sort.queryParams = queryParams;
-    this.pagination.queryParams = queryParams;
+    // FIXME: The page params are currently overwritten. Therefore it is not worth to set them. See $queryParams property above.
+    // this.pagination.queryParams = queryParams;
   }
 
   get isLoading(): boolean {
