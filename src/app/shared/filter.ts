@@ -78,7 +78,15 @@ export class FilterByValues {
   ) {}
 
   set queryParams(queryParams: IQueryParams) {
-    // TODO: implement
+    const raw = queryParams[this.name] as string | string[] | undefined;
+    if (raw) {
+      const strings: string[] = Array.isArray(raw) ? raw : [raw];
+      if (strings.every((s) => /^\d+$/.test(s))) {
+        this.values = strings.map((s) => parseInt(s));
+      } else {
+        this.values = strings;
+      }
+    }
   }
 
   set values(values: (string | number)[]) {
