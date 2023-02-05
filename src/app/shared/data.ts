@@ -225,7 +225,27 @@ export class DataColumns<D extends IDataItem> {
   }
 
   set queryParams(queryParams: IQueryParams) {
-    // TODO: implement
+    // set hidden columns
+    const hiddenColumns = queryParams['_hidden_columns'] as
+      | string
+      | string[]
+      | undefined;
+    if (hiddenColumns) {
+      if (Array.isArray(hiddenColumns)) {
+        this.columns.forEach((column) => {
+          column.hidden = hiddenColumns.includes(column.name);
+        });
+      } else {
+        this.columns.forEach((column) => {
+          column.hidden = column.name === hiddenColumns;
+        });
+      }
+    }
+
+    // set filters
+    this.columns.forEach((column) => {
+      column.queryParams = queryParams;
+    });
   }
 
   getColumn(name: string): DataColumn<D> {
@@ -336,7 +356,10 @@ export class DataFrame<D extends IDataItem> {
   }
 
   set queryParams(queryParams: IQueryParams) {
-    // TODO: implement
+    this.columns.queryParams = queryParams;
+    this.search.queryParams = queryParams;
+    this.sort.queryParams = queryParams;
+    this.pagination.queryParams = queryParams;
   }
 
   get isLoading(): boolean {
