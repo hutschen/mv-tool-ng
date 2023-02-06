@@ -281,7 +281,8 @@ export class DataFrame<D extends IDataItem> {
     columns: DataColumn<D>[] | DataColumns<D>,
     search: Search | null = null,
     sort: Sorting | null = null,
-    usePagination: boolean = true
+    usePagination: boolean = true,
+    reloadDelay: number = 500
   ) {
     this.columns = Array.isArray(columns) ? new DataColumns(columns) : columns;
     this.search = search ?? new Search();
@@ -297,7 +298,6 @@ export class DataFrame<D extends IDataItem> {
         tap(() => this.pagination.toFirstPage())
       ),
     ]).pipe(
-      debounceTime(250),
       map((queryParams) => Object.assign({}, ...queryParams)),
       distinctUntilChanged(isEqual)
     );
@@ -320,7 +320,10 @@ export class DataFrame<D extends IDataItem> {
     );
 
     // Load and set non-optional columns
-    combineLatest([this._reloadSubject, this.data$])
+    combineLatest([
+      this._reloadSubject.pipe(debounceTime(reloadDelay)),
+      this.data$,
+    ])
       .pipe(
         tap(() => (this._isLoadingColumns = true)),
         switchMap(() => this.getColumnNames()),
@@ -335,6 +338,7 @@ export class DataFrame<D extends IDataItem> {
     // Load data
     combineLatest([this._reloadSubject, dataQueryParams$])
       .pipe(
+        debounceTime(reloadDelay),
         map(([, queryParams]) => queryParams),
         tap(() => (this._isLoadingData = true)),
         switchMap((queryParams) => this.getData(queryParams)),
