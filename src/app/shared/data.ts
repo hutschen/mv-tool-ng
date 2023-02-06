@@ -144,7 +144,7 @@ export class DataColumn<D extends IDataItem> {
       map(([hidden, ...shownArray]) => {
         if (hidden && !this.required) return false;
         else {
-          if (shownArray.length === 0) return this.required;
+          if (shownArray.length === 0) return this.required || !this.optional;
           else return shownArray.some((shown) => shown);
         }
       }),
