@@ -19,6 +19,7 @@ import {
   combineLatest,
   debounceTime,
   distinctUntilChanged,
+  first,
   map,
   Observable,
   of,
@@ -320,10 +321,7 @@ export class DataFrame<D extends IDataItem> {
     );
 
     // Load and set non-optional columns
-    combineLatest([
-      this._reloadSubject.pipe(debounceTime(reloadDelay)),
-      this.data$,
-    ])
+    combineLatest([this._reloadSubject.pipe(first()), this.data$])
       .pipe(
         tap(() => (this._isLoadingColumns = true)),
         switchMap(() => this.getColumnNames()),
