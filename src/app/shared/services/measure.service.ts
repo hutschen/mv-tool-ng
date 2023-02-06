@@ -15,7 +15,8 @@
 
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { CRUDService, IPage, IQueryParams } from './crud.service';
+import { CRUDService, IPage } from './crud.service';
+import { IQueryParams } from './query-params.service';
 import { IDocument, Document } from './document.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IJiraIssue } from './jira-issue.service';

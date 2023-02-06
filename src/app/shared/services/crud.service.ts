@@ -18,14 +18,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
-
-export interface IQueryParams {
-  [param: string]:
-    | string
-    | number
-    | boolean
-    | ReadonlyArray<string | number | boolean>;
-}
+import { IQueryParams } from './query-params.service';
 
 export interface IPage<T> {
   items: T[];

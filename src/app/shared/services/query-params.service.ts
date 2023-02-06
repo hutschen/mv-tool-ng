@@ -15,6 +15,14 @@
 
 import { Injectable } from '@angular/core';
 
+export interface IQueryParams {
+  [param: string]:
+    | string
+    | number
+    | boolean
+    | ReadonlyArray<string | number | boolean>;
+}
+
 @Injectable({
   providedIn: 'root',
 })

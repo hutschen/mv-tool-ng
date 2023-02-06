@@ -27,8 +27,7 @@ import {
   Filters,
   IFilterOption,
 } from '../shared/filter';
-import { Paginator } from '../shared/page';
-import { IQueryParams } from '../shared/services/crud.service';
+import { IQueryParams } from '../shared/services/query-params.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
 import { Requirement } from '../shared/services/requirement.service';

@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { BehaviorSubject, distinctUntilChanged, map, Observable } from 'rxjs';
-import { IQueryParams } from './services/crud.service';
+import { IQueryParams } from './services/query-params.service';
 
 export class Search {
   protected _patternSubject = new BehaviorSubject<string>('');

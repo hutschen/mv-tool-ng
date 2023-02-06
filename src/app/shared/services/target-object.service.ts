@@ -15,7 +15,8 @@
 
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CRUDService, IQueryParams } from './crud.service';
+import { CRUDService } from './crud.service';
+import { IQueryParams } from './query-params.service';
 import { IRequirementQueryParams } from './requirement.service';
 
 @Injectable({
