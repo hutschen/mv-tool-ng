@@ -75,6 +75,27 @@ class ReferenceValuesFilter extends FilterByValues {
       })
     );
   }
+
+  override getOptionsByValues(
+    values: (string | number)[]
+  ): Observable<IFilterOption[]> {
+    // Build query params to request measure references
+    const queryParams: IQueryParams = {
+      project_ids: this._project.id,
+      references: values,
+    };
+
+    // Request measure references and convert them to filter options
+    return this._measureService.getMeasureReferences(queryParams).pipe(
+      map((references) => {
+        if (!Array.isArray(references)) references = references.items;
+        return references.map((reference) => ({
+          value: reference,
+          label: reference,
+        }));
+      })
+    );
+  }
 }
 
 export class MeasureDataFrame extends DataFrame<Measure> {
