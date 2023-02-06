@@ -15,7 +15,8 @@
 
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { mapValues } from 'radash';
+import { isEmpty, mapValues } from 'radash';
+import { Observable, from, tap } from 'rxjs';
 
 interface IRawQueryParams {
   [param: string]: string | ReadonlyArray<string>;
@@ -46,7 +47,7 @@ function convertToInt(value: string): number {
   return parseInt(value, 10);
 }
 
-function convertToQueryParams(rawQueryParams: IRawQueryParams): IQueryParams {
+function convertRawQueryParams(rawQueryParams: IRawQueryParams): IQueryParams {
   return mapValues(rawQueryParams, (value) => {
     if (Array.isArray(value)) {
       if (value.every((v) => isBool(v))) {
@@ -72,5 +73,39 @@ function convertToQueryParams(rawQueryParams: IRawQueryParams): IQueryParams {
   providedIn: 'root',
 })
 export class QueryParamsService {
+  protected _cachedQueryParams: Map<string, IQueryParams> = new Map();
+
   constructor(protected _router: Router) {}
+
+  protected get currentUrl(): string {
+    return this._router.url.split('?')[0];
+  }
+
+  getQueryParams(): IQueryParams {
+    const queryParams = convertRawQueryParams(
+      this._router.routerState.snapshot.root.queryParams
+    );
+
+    if (isEmpty(queryParams)) {
+      return this._cachedQueryParams.get(this.currentUrl) || {};
+    } else {
+      this._cachedQueryParams.set(this.currentUrl, queryParams);
+      return queryParams;
+    }
+  }
+
+  setQueryParams(queryParams: IQueryParams): Observable<boolean> {
+    return from(
+      this._router.navigate([], {
+        queryParams,
+        replaceUrl: true,
+      })
+    ).pipe(
+      tap((success) => {
+        if (success) {
+          this._cachedQueryParams.set(this.currentUrl, queryParams);
+        }
+      })
+    );
+  }
 }
