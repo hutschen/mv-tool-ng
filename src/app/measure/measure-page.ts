@@ -14,12 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { map, Observable } from 'rxjs';
-import {
-  DataColumn,
-  DataFrame,
-  PlaceholderColumn,
-  PlaceholderField,
-} from '../shared/data';
+import { DataColumn, DataFrame, PlaceholderColumn } from '../shared/data';
 import {
   FilterByPattern,
   FilterByValues,
@@ -41,12 +36,12 @@ import {
 
 class ReferenceValuesFilter extends FilterByValues {
   override hasToLoadOptions: boolean = true;
-  protected _project!: Project;
-  protected _measureService!: MeasureService;
 
-  initialize(project: Project, measureService: MeasureService): void {
-    this._project = project;
-    this._measureService = measureService;
+  constructor(
+    protected _measureService: MeasureService,
+    protected _project: Project
+  ) {
+    super('references');
   }
 
   override getOptions(
@@ -98,17 +93,17 @@ class ReferenceValuesFilter extends FilterByValues {
 }
 
 export class MeasureDataFrame extends DataFrame<Measure> {
-  protected _requirement!: Requirement;
-  protected _measureService!: MeasureService;
-
-  constructor() {
+  constructor(
+    protected _measureService: MeasureService,
+    protected _requirement: Requirement
+  ) {
     // Reference column
     const referenceColumn = new DataColumn(
       new StrField('reference', 'Reference'),
       new Filters(
         'References',
         new FilterByPattern('reference'),
-        new ReferenceValuesFilter('references'),
+        new ReferenceValuesFilter(_measureService, _requirement.project),
         new FilterForExistence('has_reference')
       )
     );
@@ -262,20 +257,6 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       verificationCommentColumn,
       new PlaceholderColumn('options', 'Options'),
     ]);
-  }
-
-  initialize(requirement: Requirement, measureService: MeasureService): void {
-    this._requirement = requirement;
-    this._measureService = measureService;
-
-    // Initialize reference values filter
-    (
-      this.columns.getColumn('reference').filters
-        .filterByValues as ReferenceValuesFilter
-    ).initialize(requirement.project, measureService);
-
-    // Load data
-    this.reload();
   }
 
   override getColumnNames(): Observable<string[]> {
