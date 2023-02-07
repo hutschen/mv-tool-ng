@@ -144,17 +144,33 @@ export class FilterByValues {
 }
 
 export class FilterForExistence {
-  protected _existsSubject = new BehaviorSubject<boolean | null>(null);
-  readonly exists$: Observable<boolean | null> =
-    this._existsSubject.asObservable();
-  readonly queryParams$: Observable<IQueryParams> = this.exists$.pipe(
-    map((exists) => (exists !== null ? { [this.name]: exists } : {}))
-  );
-  readonly isSet$: Observable<boolean> = this.exists$.pipe(
-    map((exists) => exists !== null)
-  );
+  protected _existsSubject: BehaviorSubject<boolean | null>;
+  readonly exists$: Observable<boolean | null>;
+  readonly queryParams$: Observable<IQueryParams>;
+  readonly isSet$: Observable<boolean>;
 
-  constructor(public readonly name: string) {}
+  constructor(
+    public readonly name: string,
+    initQueryParams: IQueryParams = {}
+  ) {
+    // Get initial value from query params
+    this._existsSubject = new BehaviorSubject<boolean | null>(
+      this.__evalQueryParams(initQueryParams)
+    );
+
+    // Set observables
+    this.exists$ = this._existsSubject.asObservable();
+    this.queryParams$ = this.exists$.pipe(
+      map((exists) => (exists !== null ? { [this.name]: exists } : {}))
+    );
+    this.isSet$ = this.exists$.pipe(map((exists) => exists !== null));
+  }
+
+  private __evalQueryParams(queryParams: IQueryParams): boolean | null {
+    const exists = queryParams[this.name];
+    if (typeof exists === 'boolean') return exists;
+    else return null;
+  }
 
   set queryParams(queryParams: IQueryParams) {
     switch (queryParams[this.name] as unknown) {
@@ -219,13 +235,6 @@ export class Filters {
     this.hasFilters = Boolean(
       this.filterByPattern || this.filterByValues || this.filterForExistence
     );
-  }
-
-  set queryParams(queryParams: IQueryParams) {
-    if (this.filterByPattern) this.filterByPattern.queryParams = queryParams;
-    if (this.filterByValues) this.filterByValues.queryParams = queryParams;
-    if (this.filterForExistence)
-      this.filterForExistence.queryParams = queryParams;
   }
 
   valueOf() {
