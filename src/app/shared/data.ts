@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { isEqual, title } from 'radash';
+import { isEqual, isString, title } from 'radash';
 import {
   BehaviorSubject,
   combineLatest,
@@ -104,15 +104,28 @@ export class DataColumn<D extends IDataItem> {
   constructor(
     public readonly field: DataField<D, any>,
     filters: Filters | null = null,
-    hidden: boolean = false
+    initQueryParams: IQueryParams = {}
   ) {
     this.name = field.name;
     this.label = field.label;
     this.filters = filters ?? new Filters(this.field.label);
 
-    this._hiddenSubject = new BehaviorSubject<boolean>(hidden);
+    this._hiddenSubject = new BehaviorSubject<boolean>(
+      this.__evalQueryParams(initQueryParams)
+    );
     this.hidden$ = this._hiddenSubject.asObservable();
-    // .pipe(distinctUntilChanged());
+  }
+
+  private __evalQueryParams(initialQueryParams: IQueryParams): boolean {
+    const { _hidden_columns } = initialQueryParams;
+    if (_hidden_columns) {
+      if (Array.isArray(_hidden_columns)) {
+        return _hidden_columns.includes(this.name);
+      } else {
+        return _hidden_columns === this.name;
+      }
+    }
+    return false;
   }
 
   get required(): boolean {
@@ -157,9 +170,9 @@ export class PlaceholderColumn<D extends IDataItem> extends DataColumn<D> {
   constructor(
     name: string,
     label: string | null = null,
-    hide: boolean = false
+    initQueryParams: IQueryParams = {}
   ) {
-    super(new PlaceholderField(name, label), null, hide);
+    super(new PlaceholderField(name, label), null, initQueryParams);
   }
 }
 
