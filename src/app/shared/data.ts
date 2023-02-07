@@ -234,22 +234,6 @@ export class DataColumns<D extends IDataItem> {
     );
   }
 
-  set queryParams(queryParams: IQueryParams) {
-    // set hidden columns
-    const raw = queryParams['_hidden_columns'] as string | string[] | undefined;
-    if (raw) {
-      const strings = Array.isArray(raw) ? raw : [raw];
-      this.columns.forEach((column) => {
-        column.hidden = strings.includes(column.name);
-      });
-    }
-
-    // set filters
-    this.columns.forEach((column) => {
-      column.filters.queryParams = queryParams;
-    });
-  }
-
   getColumn(name: string): DataColumn<D> {
     const column = this.columns.find((column) => column.name === name);
     if (column) return column;
@@ -293,15 +277,16 @@ export class DataFrame<D extends IDataItem> {
 
   constructor(
     columns: DataColumn<D>[] | DataColumns<D>,
+    initQueryParams: IQueryParams = {},
     search: Search | null = null,
     sort: Sorting | null = null,
-    usePagination: boolean = true,
+    paginator: Paginator | null = null,
     reloadDelay: number = 500
   ) {
     this.columns = Array.isArray(columns) ? new DataColumns(columns) : columns;
-    this.search = search ?? new Search();
-    this.sort = sort ?? new Sorting();
-    this.pagination = new Paginator(usePagination);
+    this.search = search ?? new Search(initQueryParams);
+    this.sort = sort ?? new Sorting(initQueryParams);
+    this.pagination = paginator ?? new Paginator(initQueryParams);
 
     // Combine query params sent to the server
     const dataQueryParams$ = combineLatest([
@@ -356,14 +341,6 @@ export class DataFrame<D extends IDataItem> {
         tap(() => (this._isLoadingData = false))
       )
       .subscribe((data) => this._dataSubject.next(data));
-  }
-
-  set queryParams(queryParams: IQueryParams) {
-    this.columns.queryParams = queryParams;
-    this.search.queryParams = queryParams;
-    this.sort.queryParams = queryParams;
-    // FIXME: The page params are currently overwritten. Therefore it is not worth to set them. See $queryParams property above.
-    // this.pagination.queryParams = queryParams;
   }
 
   get isLoading(): boolean {
