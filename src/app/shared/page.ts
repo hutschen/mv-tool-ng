@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { isEqual } from 'radash';
+import { isEqual, isInt } from 'radash';
 import { BehaviorSubject, distinctUntilChanged, map, Observable } from 'rxjs';
 import { IQueryParams } from './services/query-params.service';
 
@@ -24,40 +24,50 @@ export interface IPage {
 
 export class Paginator {
   readonly pageSizeOptions = [25, 50, 100];
-  protected _pageSubject = new BehaviorSubject<IPage>({
-    pageSize: this.pageSizeOptions[0],
-    pageIndex: 0,
-  });
-  readonly page$: Observable<IPage> = this._pageSubject.asObservable();
-  readonly queryParams$: Observable<IQueryParams> = this.page$.pipe(
-    distinctUntilChanged(isEqual),
-    map((page) => {
-      if (this.enabled) {
-        return { page_size: page.pageSize, page: page.pageIndex + 1 };
-      } else return {} as IQueryParams;
-    })
-  );
+  protected _pageSubject: BehaviorSubject<IPage>;
+  readonly page$: Observable<IPage>;
+  readonly queryParams$: Observable<IQueryParams>;
 
-  constructor(public readonly enabled: boolean = true) {}
+  constructor(
+    initQueryParams: IQueryParams = {},
+    public readonly enabled: boolean = true
+  ) {
+    // Set initial page
+    this._pageSubject = new BehaviorSubject<IPage>(
+      this.__evalQueryParams(initQueryParams, {
+        pageSize: this.pageSizeOptions[0],
+        pageIndex: 0,
+      })
+    );
 
-  set queryParams(queryParams: IQueryParams) {
-    const rawSize = queryParams['page_size'] as string | string[] | undefined;
-    const rawIndex = queryParams['page'] as string | string[] | undefined;
+    // Set page$ and queryParams$ observable
+    this.page$ = this._pageSubject.asObservable();
+    this.queryParams$ = this.page$.pipe(
+      distinctUntilChanged(isEqual),
+      map((page) => {
+        if (this.enabled) {
+          return { page_size: page.pageSize, page: page.pageIndex + 1 };
+        } else return {} as IQueryParams;
+      })
+    );
+  }
 
-    if (rawSize && rawIndex) {
-      const strSize = Array.isArray(rawSize) ? rawSize[0] : rawSize;
-      const strIndex = Array.isArray(rawIndex) ? rawIndex[0] : rawIndex;
-      if ([strSize, strIndex].every((s) => /^\d+$/.test(s))) {
-        const pageSize = parseInt(strSize);
-        const pageIndex = parseInt(strIndex) - 1;
-        this.setPage({
-          pageSize: this.pageSizeOptions.includes(pageSize)
-            ? pageSize
-            : this.page.pageSize,
-          pageIndex: pageIndex < 0 ? this.page.pageSize : pageIndex,
-        });
-      }
-    }
+  private __evalQueryParams(
+    queryParams: IQueryParams,
+    fallbackPage: IPage
+  ): IPage {
+    const { page_size, page } = queryParams;
+    if (
+      isInt(page_size) &&
+      isInt(page) &&
+      this.pageSizeOptions.includes(page_size) &&
+      page > 0
+    ) {
+      return {
+        pageSize: page_size,
+        pageIndex: page - 1,
+      };
+    } else return fallbackPage;
   }
 
   get page(): IPage {
