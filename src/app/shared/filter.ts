@@ -13,14 +13,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { isEqual } from 'radash';
+import { isEqual, isInt, isString } from 'radash';
 import {
   BehaviorSubject,
   combineLatest,
   distinctUntilChanged,
+  first,
+  firstValueFrom,
   map,
   Observable,
   of,
+  ReplaySubject,
+  Subject,
+  switchMap,
 } from 'rxjs';
 import { IQueryParams } from './services/query-params.service';
 
@@ -62,8 +67,9 @@ export interface IFilterOption {
 }
 
 export class FilterByValues {
-  readonly hasToLoadOptions: boolean = false;
-  protected _selectionSubject = new BehaviorSubject<IFilterOption[]>([]);
+  readonly hasToLoadOptions: boolean;
+  protected _loadOptionsSubject = new Subject<void>();
+  protected _selectionSubject = new ReplaySubject<IFilterOption[]>(1);
   readonly selection$: Observable<IFilterOption[]> =
     this._selectionSubject.asObservable();
   readonly queryParams$: Observable<IQueryParams> = this.selection$.pipe(
@@ -77,37 +83,47 @@ export class FilterByValues {
 
   constructor(
     public readonly name: string,
-    private __options?: IFilterOption[]
-  ) {}
+    private __options?: IFilterOption[],
+    initQueryParams: IQueryParams = {}
+  ) {
+    this._loadOptionsSubject
+      .pipe(
+        first(),
+        switchMap(() => this.__evalQueryParams(initQueryParams))
+      )
+      .subscribe((initSelection) => {
+        this._selectionSubject.next(initSelection);
+      });
 
-  set queryParams(queryParams: IQueryParams) {
-    const raw = queryParams[this.name] as string | string[] | undefined;
-    if (raw) {
-      const strings: string[] = Array.isArray(raw) ? raw : [raw];
-      if (strings.every((s) => /^\d+$/.test(s))) {
-        this.values = strings.map((s) => parseInt(s));
-      } else {
-        this.values = strings;
-      }
+    this.hasToLoadOptions = !Array.isArray(__options);
+    if (!this.hasToLoadOptions) {
+      this._loadOptionsSubject.next();
     }
   }
 
-  set values(values: (string | number)[]) {
-    this.getOptionsByValues(values).subscribe((options) => {
-      this._selectionSubject.next(options);
-    });
+  private __evalQueryParams(
+    queryParams: IQueryParams
+  ): Observable<IFilterOption[]> {
+    const rawValues = queryParams[this.name];
+    if (rawValues) {
+      const values = Array.isArray(rawValues) ? rawValues : [rawValues];
+      if (values.every((v) => isString(v) || isInt(v))) {
+        return this.getOptionsByValues(values);
+      }
+    }
+    return of([]);
   }
 
-  selectOption(option: IFilterOption): void {
-    const selection = this._selectionSubject.value;
+  async selectOption(option: IFilterOption) {
+    const selection = await firstValueFrom(this.selection$);
     if (!selection.some((o) => o.value === option.value)) {
       selection.push(option);
       this._selectionSubject.next(selection);
     }
   }
 
-  deselectOption(option: IFilterOption): void {
-    const selection = this._selectionSubject.value;
+  async deselectOption(option: IFilterOption) {
+    const selection = await firstValueFrom(this.selection$);
     const index = selection.findIndex((o) => o.value === option.value);
     if (index >= 0) {
       selection.splice(index, 1);
@@ -136,6 +152,10 @@ export class FilterByValues {
         this.__options.filter((option) => values.includes(option.value))
       );
     } else throw new Error('No selectable options defined');
+  }
+
+  loadOptions(): void {
+    this._loadOptionsSubject.next();
   }
 
   clear(): void {
