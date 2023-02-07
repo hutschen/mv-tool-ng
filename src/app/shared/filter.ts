@@ -30,16 +30,35 @@ import {
 import { IQueryParams } from './services/query-params.service';
 
 export class FilterByPattern {
-  protected _patternSubject = new BehaviorSubject<string>('');
-  readonly pattern$: Observable<string> = this._patternSubject.asObservable();
-  readonly queryParams$: Observable<IQueryParams> = this.pattern$.pipe(
-    map((pattern) => (pattern.length > 0 ? { [this.name]: pattern } : {}))
-  );
-  readonly isSet$: Observable<boolean> = this.pattern$.pipe(
-    map((pattern) => pattern.length > 0)
-  );
+  protected _patternSubject: BehaviorSubject<string>;
+  readonly pattern$: Observable<string>;
+  readonly queryParams$: Observable<IQueryParams>;
+  readonly isSet$: Observable<boolean>;
 
-  constructor(public readonly name: string) {}
+  constructor(
+    public readonly name: string,
+    initQueryParams: IQueryParams = {}
+  ) {
+    // Get initial pattern
+    this._patternSubject = new BehaviorSubject<string>(
+      this.__evalQueryParams(initQueryParams)
+    );
+
+    // Set observables
+    this.pattern$ = this._patternSubject.asObservable();
+    this.queryParams$ = this.pattern$.pipe(
+      map((pattern) => (pattern.length > 0 ? { [this.name]: pattern } : {}))
+    );
+    this.isSet$ = this.pattern$.pipe(map((pattern) => pattern.length > 0));
+  }
+
+  private __evalQueryParams(queryParams: IQueryParams): string {
+    const pattern = queryParams[this.name];
+    if (isString(pattern)) {
+      return pattern;
+    }
+    return '';
+  }
 
   set queryParams(queryParams: IQueryParams) {
     const raw = queryParams[this.name] as string | string[] | undefined;
