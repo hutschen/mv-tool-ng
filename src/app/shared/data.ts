@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { isEqual, isString, title } from 'radash';
+import { isEqual, title } from 'radash';
 import {
   BehaviorSubject,
   combineLatest,
@@ -23,6 +23,7 @@ import {
   map,
   Observable,
   of,
+  skip,
   Subject,
   switchMap,
   tap,
@@ -288,14 +289,21 @@ export class DataFrame<D extends IDataItem> {
     this.sort = sort ?? new Sorting(initQueryParams);
     this.pagination = paginator ?? new Paginator(initQueryParams);
 
+    // Switch to first page when search, sort, or filters change
+    combineLatest([
+      this.search.queryParams$,
+      this.sort.queryParams$,
+      this.columns.filterQueryParams$,
+    ])
+      .pipe(skip(1)) // skip initial values
+      .subscribe(() => this.pagination.toFirstPage());
+
     // Combine query params sent to the server
     const dataQueryParams$ = combineLatest([
-      this.search.queryParams$.pipe(tap(() => this.pagination.toFirstPage())),
-      this.sort.queryParams$.pipe(tap(() => this.pagination.toFirstPage())),
+      this.search.queryParams$,
+      this.sort.queryParams$,
+      this.columns.filterQueryParams$,
       this.pagination.queryParams$,
-      this.columns.filterQueryParams$.pipe(
-        tap(() => this.pagination.toFirstPage())
-      ),
     ]).pipe(
       map((queryParams) => Object.assign({}, ...queryParams)),
       distinctUntilChanged(isEqual)
