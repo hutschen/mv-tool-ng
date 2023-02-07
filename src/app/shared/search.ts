@@ -24,7 +24,7 @@ export class Search {
   constructor(initQueryParams: IQueryParams = {}) {
     // Get initial pattern
     this._patternSubject = new BehaviorSubject<string>(
-      this.__evalQueryParams(initQueryParams, '')
+      this.__evalQueryParams(initQueryParams)
     );
 
     // Set queryParams$ observable
@@ -36,15 +36,12 @@ export class Search {
     );
   }
 
-  private __evalQueryParams(
-    queryParams: IQueryParams,
-    fallbackPattern: string
-  ): string {
+  private __evalQueryParams(queryParams: IQueryParams): string {
     const { search } = queryParams;
     if (isString(search)) {
       return search;
     }
-    return fallbackPattern;
+    return '';
   }
 
   set pattern(pattern: string) {
