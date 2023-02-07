@@ -13,24 +13,38 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { isString } from 'radash';
 import { BehaviorSubject, distinctUntilChanged, map, Observable } from 'rxjs';
 import { IQueryParams } from './services/query-params.service';
 
 export class Search {
-  protected _patternSubject = new BehaviorSubject<string>('');
-  readonly queryParams$: Observable<IQueryParams> = this._patternSubject
-    .asObservable()
-    .pipe(
-      distinctUntilChanged((a, b) => a === b),
+  protected _patternSubject: BehaviorSubject<string>;
+  readonly queryParams$: Observable<IQueryParams>;
+
+  constructor(initQueryParams: IQueryParams = {}) {
+    // Get initial pattern
+    this._patternSubject = new BehaviorSubject<string>(
+      this.__evalQueryParams(initQueryParams, '')
+    );
+
+    // Set queryParams$ observable
+    this.queryParams$ = this._patternSubject.asObservable().pipe(
+      distinctUntilChanged(),
       map((pattern) =>
         pattern.length > 0 ? { search: pattern } : ({} as IQueryParams)
       )
     );
+  }
 
-  constructor() {}
-
-  set queryParams(queryParams: IQueryParams) {
-    // TODO: implement
+  private __evalQueryParams(
+    queryParams: IQueryParams,
+    fallbackPattern: string
+  ): string {
+    const { search } = queryParams;
+    if (isString(search)) {
+      return search;
+    }
+    return fallbackPattern;
   }
 
   set pattern(pattern: string) {
