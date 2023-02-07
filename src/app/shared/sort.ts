@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { isEqual, isString } from 'radash';
 import {
   BehaviorSubject,
   combineLatest,
@@ -22,47 +23,68 @@ import {
 } from 'rxjs';
 import { IQueryParams } from './services/query-params.service';
 
+export type SortDirection = 'asc' | 'desc' | '';
+
 export interface ISort {
   active: string;
-  direction: 'asc' | 'desc' | '';
+  direction: SortDirection;
 }
 
 const defaultSort: ISort = { active: '', direction: '' };
 
 export class Sorting {
-  protected _sortSubject = new BehaviorSubject<ISort>(defaultSort);
-  readonly active$: Observable<string> = this._sortSubject.asObservable().pipe(
-    map((sort) => sort.active),
-    distinctUntilChanged()
-  );
-  readonly direction$: Observable<'asc' | 'desc' | ''> = this._sortSubject
-    .asObservable()
-    .pipe(
+  protected _sortSubject: BehaviorSubject<ISort>;
+  readonly active$: Observable<string>;
+  readonly direction$: Observable<SortDirection>;
+  readonly isSorted$: Observable<boolean>;
+  readonly queryParams$: Observable<IQueryParams>;
+
+  constructor(initQueryParams: IQueryParams = {}) {
+    // Set initial sort
+    this._sortSubject = new BehaviorSubject<ISort>(
+      this.__evalQueryParams(initQueryParams, defaultSort)
+    );
+
+    // Set observables
+    this.active$ = this._sortSubject.asObservable().pipe(
+      map((sort) => sort.active),
+      distinctUntilChanged()
+    );
+
+    this.direction$ = this._sortSubject.asObservable().pipe(
       map((sort) => sort.direction),
       distinctUntilChanged()
     );
-  readonly isSorted$: Observable<boolean> = combineLatest([
-    this.active$,
-    this.direction$,
-  ]).pipe(
-    map(([active, direction]) => Boolean(active && direction)),
-    distinctUntilChanged()
-  );
-  readonly queryParams$: Observable<IQueryParams> = combineLatest([
-    this.active$,
-    this.direction$,
-  ]).pipe(
-    map(([active, direction]) => {
-      if (active && direction) {
-        return { sort_by: active, sort_order: direction };
-      } else return {} as IQueryParams;
-    })
-  );
 
-  constructor() {}
+    const sort$ = this._sortSubject.asObservable();
+    this.isSorted$ = sort$.pipe(
+      map(({ active, direction }) => Boolean(active && direction)),
+      distinctUntilChanged()
+    );
 
-  set queryParams(queryParams: IQueryParams) {
-    // TODO: implement
+    this.queryParams$ = sort$.pipe(
+      map(({ active, direction }) => {
+        if (active && direction) {
+          return { sort_by: active, sort_order: direction };
+        } else return {} as IQueryParams;
+      }),
+      distinctUntilChanged(isEqual)
+    );
+  }
+
+  private __evalQueryParams(
+    queryParams: IQueryParams,
+    fallbackSort: ISort
+  ): ISort {
+    const { sort_by, sort_order } = queryParams;
+    // test for type 'asc' | 'desc' | ''
+    if (
+      isString(sort_by) &&
+      isString(sort_order) &&
+      ['asc', 'desc', ''].includes(sort_order)
+    ) {
+      return { active: sort_by, direction: sort_order as SortDirection };
+    } else return fallbackSort;
   }
 
   setSort(sort: ISort): void {
