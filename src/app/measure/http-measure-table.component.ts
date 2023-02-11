@@ -15,7 +15,7 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { concatMap, debounceTime, firstValueFrom, switchMap } from 'rxjs';
 import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
@@ -24,6 +24,7 @@ import { UploadDialogService } from '../shared/components/upload-dialog.componen
 
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
+import { QueryParamsService } from '../shared/services/query-params.service';
 import { Requirement } from '../shared/services/requirement.service';
 import { CompletionDialogService } from './completion-dialog.component';
 import { MeasureDialogService } from './measure-dialog.component';
@@ -44,13 +45,13 @@ export class HttpMeasureTableComponent implements OnInit {
   @Input() requirement?: Requirement;
   @Input() project?: Project;
 
-  dataFrame: MeasureDataFrame = new MeasureDataFrame();
+  dataFrame!: MeasureDataFrame;
 
   // @ViewChild(MatPaginator) paginator!: MatPaginator;
   // @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
-    protected _router: Router,
+    protected _queryParamsService: QueryParamsService,
     protected _measureService: MeasureService,
     protected _measureDialogService: MeasureDialogService,
     protected _complianceDialogService: ComplianceDialogService,
@@ -60,24 +61,26 @@ export class HttpMeasureTableComponent implements OnInit {
     protected _uploadDialogService: UploadDialogService,
     protected _confirmDialogService: ConfirmDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService
-  ) {
-    // read query params from router snapshot
-    this.dataFrame.queryParams =
-      this._router.routerState.snapshot.root.queryParams;
-
-    // update query params when data frame changes
-    this.dataFrame.queryParams$.subscribe((queryParams) => {
-      this._router.navigate([], {
-        queryParams: queryParams,
-        replaceUrl: true,
-      });
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
-    if (this.requirement) {
-      this.dataFrame.initialize(this.requirement, this._measureService);
-    } else throw new Error('Requirement is undefined');
+    if (!this.requirement) throw new Error('Requirement is undefined');
+    this.dataFrame = new MeasureDataFrame(
+      this._measureService,
+      this.requirement,
+      this._queryParamsService.getQueryParams()
+    );
+    this.dataFrame.reload();
+
+    // update query params when data frame changes
+    this.dataFrame.queryParams$
+      .pipe(
+        debounceTime(250),
+        switchMap((queryParams) =>
+          this._queryParamsService.setQueryParams(queryParams)
+        )
+      )
+      .subscribe();
   }
 
   protected async _createOrEditMeasure(measure?: Measure): Promise<void> {
