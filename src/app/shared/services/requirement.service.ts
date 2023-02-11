@@ -19,7 +19,8 @@ import {
   CatalogRequirement,
   ICatalogRequirement,
 } from './catalog-requirement.service';
-import { CRUDService, IQueryParams } from './crud.service';
+import { CRUDService } from './crud.service';
+import { IQueryParams } from './query-params.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
 import { IUploadState, UploadService } from './upload.service';

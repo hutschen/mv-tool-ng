@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Helmar Hutschenreuter
+// Copyright (C) 2023 Helmar Hutschenreuter
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -13,13 +13,12 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Input } from '@angular/core';
-import { LegacyTableComponent } from './legacy-table.component';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'mvtool-table-options',
   template: `
-    <div class="fx-row fx-end-center">
+    <div *ngIf="enabled" class="fx-row fx-end-center">
       <button
         mat-icon-button
         [matMenuTriggerFor]="menu"
@@ -31,28 +30,55 @@ import { LegacyTableComponent } from './legacy-table.component';
       <mat-menu #menu="matMenu">
         <button
           mat-menu-item
-          (click)="table.onShowHideColumns()"
-          [disabled]="!table.hasColumnsToShowHide"
+          *ngIf="hideColumns.observed"
+          (click)="hideColumns.emit($event)"
+          [disabled]="hideColumnsDisabled"
         >
           <mat-icon>visibility_off</mat-icon>
-          Show/hide columns
+          Hide columns
         </button>
         <button
           mat-menu-item
-          (click)="table.onClearFilters()"
-          [disabled]="!table.isFiltered"
+          *ngIf="clearFilters.observed"
+          [disabled]="clearFiltersDisabled"
+          (click)="clearFilters.emit($event)"
         >
           <mat-icon>filter_alt_off</mat-icon>
           Clear all filters
         </button>
+        <button
+          mat-menu-item
+          *ngIf="clearSort.observed"
+          (click)="clearSort.emit($event)"
+          [disabled]="clearSortDisabled"
+        >
+          <mat-icon>sort_off</mat-icon>
+          Clear sort
+        </button>
+        <ng-content></ng-content>
       </mat-menu>
     </div>
   `,
   styleUrls: ['../styles/flex.scss'],
   styles: [],
 })
-export class TableOptionsComponent {
-  @Input() table!: LegacyTableComponent<any>;
+export class TableOptionsComponent implements OnInit {
+  @Output() hideColumns = new EventEmitter<Event>();
+  @Output() clearFilters = new EventEmitter<Event>();
+  @Output() clearSort = new EventEmitter<Event>();
+  @Input() clearFiltersDisabled: boolean = false;
+  @Input() clearSortDisabled: boolean = false;
+  @Input() hideColumnsDisabled: boolean = false;
 
   constructor() {}
+
+  ngOnInit(): void {}
+
+  get enabled(): boolean {
+    return Boolean(
+      this.hideColumns.observed ||
+        this.clearFilters.observed ||
+        this.clearSort.observed
+    );
+  }
 }

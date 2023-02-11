@@ -31,7 +31,7 @@ import { LegacyFilterDialogComponent } from './components/legacy-filter-dialog.c
 import { LegacyTableFilterHeaderComponent } from './components/legacy-table-filter-header.component';
 import { AutocompleteComponent } from './components/autocomplete.component';
 import { ShowHideDialogComponent } from './components/show-hide-dialog.component';
-import { TableOptionsComponent } from './components/table-options.component';
+import { LegacyTableOptionsComponent } from './components/legacy-table-options.component';
 import { ComplianceDialogComponent } from './components/compliance-dialog.component';
 import { TableComponent } from './components/table.component';
 import { FilterDialogComponent } from './components/filter-dialog.component';
@@ -40,6 +40,8 @@ import { FilterByPatternComponent } from './components/filter-by-pattern.compone
 import { FilterByValuesComponent } from './components/filter-by-values.component';
 import { FilterForExistenceComponent } from './components/filter-for-existence.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { TableOptionsComponent } from './components/table-options.component';
+import { HideColumnsDialogComponent } from './components/hide-columns-dialog.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +59,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     LegacyTableFilterHeaderComponent,
     AutocompleteComponent,
     ShowHideDialogComponent,
-    TableOptionsComponent,
+    LegacyTableOptionsComponent,
     ComplianceDialogComponent,
     TableComponent,
     FilterDialogComponent,
@@ -65,11 +67,14 @@ import { ReactiveFormsModule } from '@angular/forms';
     FilterByPatternComponent,
     FilterByValuesComponent,
     FilterForExistenceComponent,
+    TableOptionsComponent,
+    HideColumnsDialogComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
     HttpClientModule,
     TruncatePipe,
+    LegacyTableOptionsComponent,
     TableOptionsComponent,
     TableRowOptionsComponent,
     TableToolbarComponent,
@@ -81,6 +86,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     AutocompleteComponent,
     TableComponent,
     FilterHeaderComponent,
+    HideColumnsDialogComponent,
   ],
 })
 export class SharedModule {}

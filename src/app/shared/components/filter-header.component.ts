@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
-import { Filterable } from '../filter';
+import { Filters } from '../filter';
 import { FilterDialogService } from './filter-dialog.component';
 
 @Component({
@@ -22,7 +22,7 @@ import { FilterDialogService } from './filter-dialog.component';
   template: `
     <span (click)="onFilter($event)" matTooltip="Click to filter">
       <ng-content></ng-content>
-      <mat-icon class="filter-icon" *ngIf="filterable.filtered">
+      <mat-icon class="filter-icon" *ngIf="filters.isSet$ | async">
         filter_alt
       </mat-icon>
     </span>
@@ -30,12 +30,12 @@ import { FilterDialogService } from './filter-dialog.component';
   styles: ['.filter-icon {   width: 12px; height: 12px; font-size: 12px;}'],
 })
 export class FilterHeaderComponent {
-  @Input() filterable!: Filterable;
+  @Input() filters!: Filters;
 
   constructor(protected _filterDialogService: FilterDialogService) {}
 
   onFilter($event: Event) {
     $event.stopPropagation();
-    this._filterDialogService.openFilterDialog(this.filterable);
+    this._filterDialogService.openFilterDialog(this.filters);
   }
 }
