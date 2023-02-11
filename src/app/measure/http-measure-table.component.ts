@@ -28,7 +28,7 @@ import { QueryParamsService } from '../shared/services/query-params.service';
 import { Requirement } from '../shared/services/requirement.service';
 import { CompletionDialogService } from './completion-dialog.component';
 import { MeasureDialogService } from './measure-dialog.component';
-import { MeasureDataFrame } from './measure-page';
+import { MeasureDataFrame } from './measure-data';
 import { VerificationDialogService } from './verification-dialog.component';
 
 @Component({
