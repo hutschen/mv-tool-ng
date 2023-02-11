@@ -14,8 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { concatMap, debounceTime, firstValueFrom, switchMap } from 'rxjs';
+import { debounceTime, firstValueFrom, switchMap } from 'rxjs';
 import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
@@ -43,12 +42,7 @@ import { VerificationDialogService } from './verification-dialog.component';
 })
 export class HttpMeasureTableComponent implements OnInit {
   @Input() requirement?: Requirement;
-  @Input() project?: Project;
-
   dataFrame!: MeasureDataFrame;
-
-  // @ViewChild(MatPaginator) paginator!: MatPaginator;
-  // @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     protected _queryParamsService: QueryParamsService,
