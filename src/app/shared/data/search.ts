@@ -15,7 +15,7 @@
 
 import { isString } from 'radash';
 import { BehaviorSubject, distinctUntilChanged, map, Observable } from 'rxjs';
-import { IQueryParams } from './services/query-params.service';
+import { IQueryParams } from '../services/query-params.service';
 
 export class Search {
   protected _patternSubject: BehaviorSubject<string>;

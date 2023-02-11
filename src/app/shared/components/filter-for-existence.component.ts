@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
-import { FilterForExistence } from '../filter';
+import { FilterForExistence } from '../data/filter';
 
 @Component({
   selector: 'mvtool-filter-for-existence',

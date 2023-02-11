@@ -19,7 +19,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { DataColumns, IDataItem } from '../data';
+import { DataColumns, IDataItem } from '../data/data';
 
 @Injectable({
   providedIn: 'root',

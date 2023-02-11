@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
-import { Filters } from '../filter';
+import { Filters } from '../data/filter';
 import { FilterDialogService } from './filter-dialog.component';
 
 @Component({

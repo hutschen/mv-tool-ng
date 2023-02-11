@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DataField } from '../shared/data';
+import { DataField } from '../shared/data/data';
 import { Document } from '../shared/services/document.service';
 import { IJiraIssue } from '../shared/services/jira-issue.service';
 import { Measure } from '../shared/services/measure.service';

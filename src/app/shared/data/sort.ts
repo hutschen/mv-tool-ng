@@ -21,7 +21,7 @@ import {
   map,
   Observable,
 } from 'rxjs';
-import { IQueryParams } from './services/query-params.service';
+import { IQueryParams } from '../services/query-params.service';
 
 export type SortDirection = 'asc' | 'desc' | '';
 

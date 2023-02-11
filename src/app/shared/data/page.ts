@@ -15,7 +15,7 @@
 
 import { isEqual, isInt } from 'radash';
 import { BehaviorSubject, distinctUntilChanged, map, Observable } from 'rxjs';
-import { IQueryParams } from './services/query-params.service';
+import { IQueryParams } from '../services/query-params.service';
 
 export interface IPage {
   pageSize: number;

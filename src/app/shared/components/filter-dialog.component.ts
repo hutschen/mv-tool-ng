@@ -19,7 +19,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { Filters } from '../filter';
+import { Filters } from '../data/filter';
 
 @Injectable({
   providedIn: 'root',

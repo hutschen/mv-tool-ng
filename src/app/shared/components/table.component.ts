@@ -24,7 +24,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatColumnDef, MatTable } from '@angular/material/table';
-import { DataColumn, DataFrame, IDataItem } from '../data';
+import { DataColumn, DataFrame, IDataItem } from '../data/data';
 
 @Component({
   selector: 'mvtool-table',

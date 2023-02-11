@@ -20,7 +20,7 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { Observable } from 'rxjs';
 import { debounceTime, startWith, switchMap, tap } from 'rxjs/operators';
-import { FilterByValues, IFilterOption } from '../filter';
+import { FilterByValues, IFilterOption } from '../data/filter';
 
 @Component({
   selector: 'mvtool-filter-by-values',

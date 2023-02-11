@@ -31,7 +31,7 @@ import {
 import { Filters } from './filter';
 import { Paginator } from './page';
 import { Search } from './search';
-import { IQueryParams } from './services/query-params.service';
+import { IQueryParams } from '../services/query-params.service';
 import { Sorting } from './sort';
 
 export interface IDataItem {

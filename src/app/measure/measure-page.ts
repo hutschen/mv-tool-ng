@@ -14,14 +14,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { map, Observable } from 'rxjs';
-import { DataColumn, DataFrame, PlaceholderColumn } from '../shared/data';
+import { DataColumn, DataFrame, PlaceholderColumn } from '../shared/data/data';
 import {
   FilterByPattern,
   FilterByValues,
   FilterForExistence,
   Filters,
   IFilterOption,
-} from '../shared/filter';
+} from '../shared/data/filter';
 import { IQueryParams } from '../shared/services/query-params.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';

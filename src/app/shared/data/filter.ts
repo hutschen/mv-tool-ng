@@ -27,7 +27,7 @@ import {
   Subject,
   switchMap,
 } from 'rxjs';
-import { IQueryParams } from './services/query-params.service';
+import { IQueryParams } from '../services/query-params.service';
 
 export class FilterByPattern {
   protected _patternSubject: BehaviorSubject<string>;
