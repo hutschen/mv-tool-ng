@@ -35,13 +35,13 @@ import {
 } from './measure-fields';
 
 class ReferenceValuesFilter extends FilterByValues {
-  override hasToLoadOptions: boolean = true;
-
   constructor(
     protected _measureService: MeasureService,
-    protected _project: Project
+    protected _project: Project,
+    initQueryParams: IQueryParams = {}
   ) {
-    super('references');
+    super('references', undefined, initQueryParams);
+    this.loadOptions();
   }
 
   override getOptions(
@@ -95,17 +95,23 @@ class ReferenceValuesFilter extends FilterByValues {
 export class MeasureDataFrame extends DataFrame<Measure> {
   constructor(
     protected _measureService: MeasureService,
-    protected _requirement: Requirement
+    protected _requirement: Requirement,
+    initQueryParams: IQueryParams = {}
   ) {
     // Reference column
     const referenceColumn = new DataColumn(
       new StrField('reference', 'Reference'),
       new Filters(
         'References',
-        new FilterByPattern('reference'),
-        new ReferenceValuesFilter(_measureService, _requirement.project),
-        new FilterForExistence('has_reference')
-      )
+        new FilterByPattern('reference', initQueryParams),
+        new ReferenceValuesFilter(
+          _measureService,
+          _requirement.project,
+          initQueryParams
+        ),
+        new FilterForExistence('has_reference', initQueryParams)
+      ),
+      initQueryParams
     );
 
     // Summary column
@@ -113,10 +119,11 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       new StrField('summary', 'Summary', false),
       new Filters(
         'Summaries',
-        new FilterByPattern('summary'),
+        new FilterByPattern('summary', initQueryParams),
         undefined,
-        new FilterForExistence('has_summary')
-      )
+        new FilterForExistence('has_summary', initQueryParams)
+      ),
+      initQueryParams
     );
 
     // Description column
@@ -124,10 +131,11 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       new StrField('description', 'Description'),
       new Filters(
         'Descriptions',
-        new FilterByPattern('description'),
+        new FilterByPattern('description', initQueryParams),
         undefined,
-        new FilterForExistence('has_description')
-      )
+        new FilterForExistence('has_description', initQueryParams)
+      ),
+      initQueryParams
     );
 
     // Document column
@@ -137,8 +145,9 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         'Documents',
         undefined,
         undefined,
-        new FilterForExistence('has_document')
-      )
+        new FilterForExistence('has_document', initQueryParams)
+      ),
+      initQueryParams
     );
 
     // Jira issue column
@@ -148,8 +157,9 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         'Jira Issues',
         undefined,
         undefined,
-        new FilterForExistence('has_jira_issue')
-      )
+        new FilterForExistence('has_jira_issue', initQueryParams)
+      ),
+      initQueryParams
     );
 
     // Compliance status column
@@ -158,14 +168,19 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       new Filters(
         'Compliance Statuses',
         undefined,
-        new FilterByValues('compliance_statuses', [
-          { value: 'C', label: 'Compliant (C)' },
-          { value: 'PC', label: 'Partially Compliant (PC)' },
-          { value: 'NC', label: 'Not Compliant (NC)' },
-          { value: 'N/A', label: 'Not Applicable (N/A)' },
-        ]),
-        new FilterForExistence('has_compliance_status')
-      )
+        new FilterByValues(
+          'compliance_statuses',
+          [
+            { value: 'C', label: 'Compliant (C)' },
+            { value: 'PC', label: 'Partially Compliant (PC)' },
+            { value: 'NC', label: 'Not Compliant (NC)' },
+            { value: 'N/A', label: 'Not Applicable (N/A)' },
+          ],
+          initQueryParams
+        ),
+        new FilterForExistence('has_compliance_status', initQueryParams)
+      ),
+      initQueryParams
     );
 
     // Compliance comment column
@@ -173,10 +188,11 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       new StrField('compliance_comment', 'Compliance Comment'),
       new Filters(
         'Compliance Comments',
-        new FilterByPattern('compliance_comment'),
+        new FilterByPattern('compliance_comment', initQueryParams),
         undefined,
-        new FilterForExistence('has_compliance_comment')
-      )
+        new FilterForExistence('has_compliance_comment', initQueryParams)
+      ),
+      initQueryParams
     );
 
     // Completion status column
@@ -185,13 +201,18 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       new Filters(
         'Completion Statuses',
         undefined,
-        new FilterByValues('completion_statuses', [
-          { value: 'open', label: 'Open' },
-          { value: 'in progress', label: 'In Progress' },
-          { value: 'completed', label: 'Completed' },
-        ]),
-        new FilterForExistence('has_completion_status')
-      )
+        new FilterByValues(
+          'completion_statuses',
+          [
+            { value: 'open', label: 'Open' },
+            { value: 'in progress', label: 'In Progress' },
+            { value: 'completed', label: 'Completed' },
+          ],
+          initQueryParams
+        ),
+        new FilterForExistence('has_completion_status', initQueryParams)
+      ),
+      initQueryParams
     );
 
     // Completion comment column
@@ -199,10 +220,11 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       new StrField('completion_comment', 'Completion Comment'),
       new Filters(
         'Completion Comments',
-        new FilterByPattern('completion_comment'),
+        new FilterByPattern('completion_comment', initQueryParams),
         undefined,
-        new FilterForExistence('has_completion_comment')
-      )
+        new FilterForExistence('has_completion_comment', initQueryParams)
+      ),
+      initQueryParams
     );
 
     // Verification method column
@@ -211,13 +233,18 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       new Filters(
         'Verification Methods',
         undefined,
-        new FilterByValues('verification_methods', [
-          { value: 'I', label: 'Inspection (I)' },
-          { value: 'T', label: 'Test (T)' },
-          { value: 'R', label: 'Review (R)' },
-        ]),
-        new FilterForExistence('has_verification_method')
-      )
+        new FilterByValues(
+          'verification_methods',
+          [
+            { value: 'I', label: 'Inspection (I)' },
+            { value: 'T', label: 'Test (T)' },
+            { value: 'R', label: 'Review (R)' },
+          ],
+          initQueryParams
+        ),
+        new FilterForExistence('has_verification_method', initQueryParams)
+      ),
+      initQueryParams
     );
 
     // Verified column
@@ -227,8 +254,9 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         'Verified',
         undefined,
         undefined,
-        new FilterForExistence('has_verified')
-      )
+        new FilterForExistence('has_verified', initQueryParams)
+      ),
+      initQueryParams
     );
 
     // Verification comment column
@@ -236,27 +264,31 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       new StrField('verification_comment', 'Verification Comment'),
       new Filters(
         'Verification Comments',
-        new FilterByPattern('verification_comment'),
+        new FilterByPattern('verification_comment', initQueryParams),
         undefined,
-        new FilterForExistence('has_verification_comment')
-      )
+        new FilterForExistence('has_verification_comment', initQueryParams)
+      ),
+      initQueryParams
     );
 
-    super([
-      referenceColumn,
-      summaryColumn,
-      descriptionColumn,
-      documentColumn,
-      jiraIssueColumn,
-      complianceStatusColumn,
-      complianceCommentColumn,
-      completionStatusColumn,
-      completionCommentColumn,
-      verificationMethodColumn,
-      verifiedColumn,
-      verificationCommentColumn,
-      new PlaceholderColumn('options', 'Options'),
-    ]);
+    super(
+      [
+        referenceColumn,
+        summaryColumn,
+        descriptionColumn,
+        documentColumn,
+        jiraIssueColumn,
+        complianceStatusColumn,
+        complianceCommentColumn,
+        completionStatusColumn,
+        completionCommentColumn,
+        verificationMethodColumn,
+        verifiedColumn,
+        verificationCommentColumn,
+        new PlaceholderColumn('options', 'Options'),
+      ],
+      initQueryParams
+    );
   }
 
   override getColumnNames(): Observable<string[]> {
