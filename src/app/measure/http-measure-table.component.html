@@ -21,7 +21,7 @@
     (create)="onCreateMeasure()"
     (upload)="onImportMeasures()"
     (download)="onExportMeasures()"
-    (search)="onSearchMeasures($event)"
+    [(search)]="dataFrame.search.pattern"
     searchLabel="Search Measures"
     createLabel="Create Measure"
     #tableToolbar

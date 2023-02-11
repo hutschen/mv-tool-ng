@@ -48,17 +48,20 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
       </div>
 
       <!-- Filter -->
-      <div *ngIf="search.observed || showSearch" class="fx-column fx-flex-30">
+      <div
+        *ngIf="searchChange.observed || showSearch"
+        class="fx-column fx-flex-30"
+      >
         <mat-form-field appearance="fill">
           <mat-label>{{ searchLabel }}</mat-label>
           <mat-icon matPrefix>search</mat-icon>
-          <input matInput [(ngModel)]="searchStr" />
+          <input matInput [(ngModel)]="search" />
           <button
-            *ngIf="searchStr"
+            *ngIf="search"
             matSuffix
             mat-icon-button
             aria-label="Clear"
-            (click)="searchStr = ''"
+            (click)="search = ''"
           >
             <mat-icon>close</mat-icon>
           </button>
@@ -74,7 +77,7 @@ export class TableToolbarComponent {
   @Output() create = new EventEmitter();
   @Output() upload = new EventEmitter();
   @Output() download = new EventEmitter();
-  @Output() search = new EventEmitter<string>();
+  @Output() searchChange = new EventEmitter<string>();
   @Input() refeshLabel: string = 'Refresh Table';
   @Input() createLabel: string = 'Create';
   @Input() uploadLabel: string = 'Import Excel';
@@ -85,12 +88,13 @@ export class TableToolbarComponent {
 
   constructor() {}
 
-  get searchStr(): string {
+  get search(): string {
     return this._searchStr;
   }
 
-  set searchStr(value: string) {
+  @Input()
+  set search(value: string) {
     this._searchStr = value;
-    this.search.emit(this._searchStr);
+    this.searchChange.emit(this._searchStr);
   }
 }
