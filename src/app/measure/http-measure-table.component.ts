@@ -75,15 +75,8 @@ export class HttpMeasureTableComponent implements OnInit {
       this._queryParamsService.getQueryParams()
     );
     this.dataFrame.reload();
-
-    // update query params when data frame changes
-    this.dataFrame.queryParams$
-      .pipe(
-        debounceTime(250),
-        exhaustLatestMap((queryParams, index) =>
-          from(this._queryParamsService.setQueryParams(queryParams))
-        )
-      )
+    this._queryParamsService
+      .syncQueryParams(this.dataFrame.queryParams$)
       .subscribe();
   }
 
