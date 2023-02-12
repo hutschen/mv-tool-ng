@@ -47,6 +47,29 @@ export class ComplianceStatusColumn<D extends IDataItem> extends DataColumn<D> {
   }
 }
 
+class RequiredTextColumn<D extends IDataItem> extends DataColumn<D> {
+  constructor(
+    field: StrField<D>,
+    filtersLabel?: string,
+    initQueryParams: IQueryParams = {}
+  ) {
+    super(
+      field,
+      new Filters(
+        filtersLabel ?? field.label,
+        new FilterByPattern(field.name, initQueryParams)
+      ),
+      initQueryParams
+    );
+  }
+}
+
+export class SummaryColumn<D extends IDataItem> extends RequiredTextColumn<D> {
+  constructor(initQueryParams: IQueryParams = {}) {
+    super(new StrField('summary', null, false), 'Summaries', initQueryParams);
+  }
+}
+
 class TextColumn<D extends IDataItem> extends DataColumn<D> {
   constructor(
     field: StrField<D>,

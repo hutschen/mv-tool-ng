@@ -36,6 +36,7 @@ import {
   ComplianceCommentColumn,
   ComplianceStatusColumn,
   DescriptionColumn,
+  SummaryColumn,
   VerificationCommentColumn,
 } from '../custom/custom-colums';
 
@@ -57,18 +58,6 @@ export class MeasureDataFrame extends DataFrame<Measure> {
           initQueryParams
         ),
         new FilterForExistence('has_reference', initQueryParams)
-      ),
-      initQueryParams
-    );
-
-    // Summary column
-    const summaryColumn = new DataColumn(
-      new StrField('summary', 'Summary', false),
-      new Filters(
-        'Summaries',
-        new FilterByPattern('summary', initQueryParams),
-        undefined,
-        new FilterForExistence('has_summary', initQueryParams)
       ),
       initQueryParams
     );
@@ -152,7 +141,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
     super(
       [
         referenceColumn,
-        summaryColumn,
+        new SummaryColumn(initQueryParams),
         new DescriptionColumn(initQueryParams),
         documentColumn,
         jiraIssueColumn,
