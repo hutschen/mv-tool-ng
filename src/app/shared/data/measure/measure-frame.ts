@@ -35,7 +35,6 @@ import {
   ComplianceCommentColumn,
   ComplianceStatusColumn,
 } from '../custom/custom-colums';
-import { I } from '@angular/cdk/keycodes';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   constructor(

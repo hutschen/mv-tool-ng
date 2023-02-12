@@ -47,18 +47,32 @@ export class ComplianceStatusColumn<D extends IDataItem> extends DataColumn<D> {
   }
 }
 
+class TextColumn<D extends IDataItem> extends DataColumn<D> {
+  constructor(
+    field: StrField<D>,
+    filtersLabel?: string,
+    initQueryParams: IQueryParams = {}
+  ) {
+    super(
+      field,
+      new Filters(
+        filtersLabel ?? field.label,
+        new FilterByPattern(field.name, initQueryParams),
+        undefined,
+        new FilterForExistence('has_' + field.name, initQueryParams)
+      ),
+      initQueryParams
+    );
+  }
+}
+
 export class ComplianceCommentColumn<
   D extends IDataItem
-> extends DataColumn<D> {
-  constructor(initQueryParams: IQueryParams, optional: boolean = true) {
+> extends TextColumn<D> {
+  constructor(initQueryParams: IQueryParams = {}, optional: boolean = true) {
     super(
       new StrField('compliance_comment', null, optional),
-      new Filters(
-        'Compliance Comments',
-        new FilterByPattern('compliance_comment', initQueryParams),
-        undefined,
-        new FilterForExistence('has_compliance_comment', initQueryParams)
-      ),
+      'Compliance Comments',
       initQueryParams
     );
   }
