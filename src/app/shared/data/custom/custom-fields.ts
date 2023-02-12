@@ -15,9 +15,15 @@
 
 import { DataField, IDataItem } from '../data';
 
-export class StrField<D extends IDataItem> extends DataField<D, string> {}
+export class StrField<D extends IDataItem> extends DataField<
+  D,
+  string | null
+> {}
 
-export class StatusField<D extends IDataItem> extends DataField<D, string> {
+export class StatusField<D extends IDataItem> extends DataField<
+  D,
+  string | null
+> {
   override toStr(data: D): string {
     const status = this.toValue(data);
     return status ? status : 'Not set';
