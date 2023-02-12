@@ -192,6 +192,10 @@ export class RequirementService {
     ) as Observable<string[]>;
   }
 
+  getRequirementReferences(params: IQueryParams = {}) {
+    return this._crud_str.query('requirement/references', params);
+  }
+
   importRequirements(
     projectId: number,
     catalogModuleIds: number[]
