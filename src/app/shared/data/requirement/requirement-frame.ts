@@ -24,10 +24,15 @@ import {
   ComplianceStatusColumn,
   DescriptionColumn,
   SummaryColumn,
+  TextColumn,
 } from '../custom/custom-colums';
 import { TextField } from '../custom/custom-fields';
 import { DataColumn, DataFrame } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
+import {
+  GSAbsicherungField,
+  GSVerantwortlicheField,
+} from './requirement-fields';
 
 export class RequirementDataFrame extends DataFrame<Requirement> {
   constructor(
@@ -51,7 +56,18 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
     // Catalog module column
 
     // GS Absicherung column
+    const gsAbsicherungColumn = new TextColumn(
+      new GSAbsicherungField(),
+      'GS Absicherungen',
+      initQueryParams
+    );
+
     // GS Verantwortliche column
+    const gsVerantwortlicheColumn = new TextColumn(
+      new GSVerantwortlicheField(),
+      'GS Verantwortliche',
+      initQueryParams
+    );
 
     // Milestone column
     const milestoneColumn = new DataColumn(
@@ -85,6 +101,8 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
         referenceColumn,
         new SummaryColumn(initQueryParams),
         new DescriptionColumn(initQueryParams),
+        gsAbsicherungColumn,
+        gsVerantwortlicheColumn,
         milestoneColumn,
         targetObjectColumn,
         new ComplianceStatusColumn(initQueryParams),
