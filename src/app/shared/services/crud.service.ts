@@ -67,26 +67,6 @@ export class CRUDService<InputType, OutputType> {
     });
   }
 
-  getPage(
-    relativeUrl: string,
-    page: number = 1,
-    page_size: number = 10,
-    sort_by?: string,
-    sort_order: 'asc' | 'desc' | '' = '',
-    params: IQueryParams = {}
-  ): Observable<IPage<OutputType>> {
-    if (sort_by && sort_order !== '') {
-      params = { sort_by, sort_order, ...params };
-    }
-    return this._httpClient.get<IPage<OutputType>>(
-      this.toAbsoluteUrl(relativeUrl),
-      {
-        params: { page, page_size, ...params },
-        ...this._httpOptions,
-      }
-    );
-  }
-
   create(relativeUrl: string, itemInput: InputType): Observable<OutputType> {
     return this._httpClient.post<OutputType>(
       this.toAbsoluteUrl(relativeUrl),
