@@ -300,7 +300,7 @@ export class RequirementTableComponent implements OnInit {
   async onReloadRequirements(): Promise<void> {
     if (this.project) {
       const data = await firstValueFrom(
-        this._requirementService.listRequirements({
+        this._requirementService.listRequirements_legacy({
           project_ids: [this.project.id],
         })
       );

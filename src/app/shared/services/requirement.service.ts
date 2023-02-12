@@ -135,7 +135,7 @@ export class RequirementService {
     return `requirements/${requirementId}`;
   }
 
-  listRequirements(params: IQueryParams): Observable<Requirement[]> {
+  listRequirements_legacy(params: IQueryParams): Observable<Requirement[]> {
     return this._crud
       .list_legacy('requirements', params)
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
