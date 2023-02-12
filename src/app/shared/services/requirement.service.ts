@@ -116,13 +116,20 @@ export class Requirement implements IRequirement {
   }
 }
 
+export interface IRequirementRepresentation {
+  id: number;
+  reference?: string | null;
+  summary: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class RequirementService {
   constructor(
     protected _crud_requirement: CRUDService<IRequirementInput, IRequirement>,
-    protected _crud_str: CRUDService<string, string>,
+    protected _crud_str: CRUDService<null, string>,
+    protected _crud_repr: CRUDService<null, IRequirementRepresentation>,
     protected _download: DownloadService,
     protected _upload: UploadService,
     protected _projects: ProjectService
@@ -194,6 +201,10 @@ export class RequirementService {
 
   getRequirementReferences(params: IQueryParams = {}) {
     return this._crud_str.query('requirement/references', params);
+  }
+
+  getRequirementRepresentations(params: IQueryParams = {}) {
+    return this._crud_repr.query('requirement/representations', params);
   }
 
   importRequirements(
