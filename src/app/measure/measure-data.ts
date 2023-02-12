@@ -20,11 +20,9 @@ import {
   FilterByValues,
   FilterForExistence,
   Filters,
-  IFilterOption,
 } from '../shared/data/filter';
 import { IQueryParams } from '../shared/services/query-params.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
-import { Project } from '../shared/services/project.service';
 import { Requirement } from '../shared/services/requirement.service';
 import {
   DocumentField,
@@ -33,64 +31,7 @@ import {
   StrField,
   VerifiedField,
 } from './measure-fields';
-
-class ReferenceValuesFilter extends FilterByValues {
-  constructor(
-    protected _measureService: MeasureService,
-    protected _project: Project,
-    initQueryParams: IQueryParams = {}
-  ) {
-    super('references', undefined, initQueryParams);
-    this.loadOptions();
-  }
-
-  override getOptions(
-    searchStr: string | null = null,
-    limit: number = -1
-  ): Observable<IFilterOption[]> {
-    // Build query params to request measure references
-    const queryParams: IQueryParams = {
-      project_ids: this._project.id,
-    };
-    if (searchStr) queryParams['local_search'] = searchStr;
-    if (limit) {
-      queryParams['page'] = 1;
-      queryParams['page_size'] = limit;
-    }
-
-    // Request measure references and convert them to filter options
-    return this._measureService.getMeasureReferences(queryParams).pipe(
-      map((references) => {
-        if (!Array.isArray(references)) references = references.items;
-        return references.map((reference) => ({
-          value: reference,
-          label: reference,
-        }));
-      })
-    );
-  }
-
-  override getOptionsByValues(
-    values: (string | number)[]
-  ): Observable<IFilterOption[]> {
-    // Build query params to request measure references
-    const queryParams: IQueryParams = {
-      project_ids: this._project.id,
-      references: values,
-    };
-
-    // Request measure references and convert them to filter options
-    return this._measureService.getMeasureReferences(queryParams).pipe(
-      map((references) => {
-        if (!Array.isArray(references)) references = references.items;
-        return references.map((reference) => ({
-          value: reference,
-          label: reference,
-        }));
-      })
-    );
-  }
-}
+import { MeasureReferencesFilter } from '../shared/data/measure/measure-filter';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   constructor(
@@ -104,7 +45,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       new Filters(
         'References',
         new FilterByPattern('reference', initQueryParams),
-        new ReferenceValuesFilter(
+        new MeasureReferencesFilter(
           _measureService,
           _requirement.project,
           initQueryParams
