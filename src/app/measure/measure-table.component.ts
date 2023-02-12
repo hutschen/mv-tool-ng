@@ -31,7 +31,7 @@ import { VerificationDialogService } from './verification-dialog.component';
 
 @Component({
   selector: 'mvtool-http-measure-table',
-  templateUrl: './http-measure-table.component.html',
+  templateUrl: './measure-table.component.html',
   styleUrls: [
     '../shared/styles/table.scss',
     '../shared/styles/flex.scss',
@@ -39,7 +39,7 @@ import { VerificationDialogService } from './verification-dialog.component';
   ],
   styles: [],
 })
-export class HttpMeasureTableComponent implements OnInit {
+export class MeasureTableComponent implements OnInit {
   @Input() requirement?: Requirement;
   dataFrame!: MeasureDataFrame;
 

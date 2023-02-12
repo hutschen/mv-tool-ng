@@ -15,18 +15,18 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HttpMeasureTableComponent } from './http-measure-table.component';
+import { MeasureTableComponent } from './measure-table.component';
 
 describe('HttpMeasureTableComponent', () => {
-  let component: HttpMeasureTableComponent;
-  let fixture: ComponentFixture<HttpMeasureTableComponent>;
+  let component: MeasureTableComponent;
+  let fixture: ComponentFixture<MeasureTableComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [HttpMeasureTableComponent],
+      declarations: [MeasureTableComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(HttpMeasureTableComponent);
+    fixture = TestBed.createComponent(MeasureTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

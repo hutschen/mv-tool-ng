@@ -27,7 +27,7 @@ import { AuthGuard } from '../shared/guards/auth.guard';
 import { RequirementIdGuard } from '../shared/guards/id.guard';
 import { RequirementModule } from '../requirement/requirement.module';
 import { CompletionDialogComponent } from './completion-dialog.component';
-import { HttpMeasureTableComponent } from './http-measure-table.component';
+import { MeasureTableComponent } from './measure-table.component';
 
 const routes = [
   {
@@ -43,7 +43,7 @@ const routes = [
     VerificationDialogComponent,
     MeasureViewComponent,
     CompletionDialogComponent,
-    HttpMeasureTableComponent,
+    MeasureTableComponent,
   ],
   imports: [
     CommonModule,
