@@ -121,7 +121,8 @@ export class Requirement implements IRequirement {
 })
 export class RequirementService {
   constructor(
-    protected _crud: CRUDService<IRequirementInput, IRequirement>,
+    protected _crud_requirement: CRUDService<IRequirementInput, IRequirement>,
+    protected _crud_str: CRUDService<string, string>,
     protected _download: DownloadService,
     protected _upload: UploadService,
     protected _projects: ProjectService
@@ -136,7 +137,7 @@ export class RequirementService {
   }
 
   queryRequirements(params: IQueryParams) {
-    return this._crud.query('requirements', params).pipe(
+    return this._crud_requirement.query('requirements', params).pipe(
       map((requirements) => {
         if (Array.isArray(requirements)) {
           return requirements.map((r) => new Requirement(r));
@@ -151,7 +152,7 @@ export class RequirementService {
   }
 
   listRequirements_legacy(params: IQueryParams): Observable<Requirement[]> {
-    return this._crud
+    return this._crud_requirement
       .list_legacy('requirements', params)
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }
@@ -160,13 +161,13 @@ export class RequirementService {
     projectId: number,
     requirementInput: IRequirementInput
   ): Observable<Requirement> {
-    return this._crud
+    return this._crud_requirement
       .create(this.getRequirementsUrl(projectId), requirementInput)
       .pipe(map((requirement) => new Requirement(requirement)));
   }
 
   getRequirement(requirementId: number): Observable<Requirement> {
-    return this._crud
+    return this._crud_requirement
       .read(this.getRequirementUrl(requirementId))
       .pipe(map((requirement) => new Requirement(requirement)));
   }
@@ -175,13 +176,20 @@ export class RequirementService {
     requirementId: number,
     requirementInput: IRequirementInput
   ): Observable<Requirement> {
-    return this._crud
+    return this._crud_requirement
       .update(this.getRequirementUrl(requirementId), requirementInput)
       .pipe(map((requirement) => new Requirement(requirement)));
   }
 
   deleteRequirement(requirementId: number): Observable<null> {
-    return this._crud.delete(this.getRequirementUrl(requirementId));
+    return this._crud_requirement.delete(this.getRequirementUrl(requirementId));
+  }
+
+  getRequirementFieldNames(params: IQueryParams = {}) {
+    return this._crud_str.query(
+      'requirement/field-names',
+      params
+    ) as Observable<string[]>;
   }
 
   importRequirements(
@@ -189,7 +197,7 @@ export class RequirementService {
     catalogModuleIds: number[]
   ): Observable<Requirement[]> {
     const url = `${this.getRequirementsUrl(projectId)}/import`;
-    return this._crud
+    return this._crud_requirement
       .import(url, catalogModuleIds)
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }
