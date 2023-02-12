@@ -19,7 +19,7 @@ import {
   CatalogRequirement,
   ICatalogRequirement,
 } from './catalog-requirement.service';
-import { CRUDService } from './crud.service';
+import { CRUDService, IPage } from './crud.service';
 import { IQueryParams } from './query-params.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
@@ -133,6 +133,21 @@ export class RequirementService {
 
   getRequirementUrl(requirementId: number): string {
     return `requirements/${requirementId}`;
+  }
+
+  queryRequirements(params: IQueryParams) {
+    return this._crud.query('requirements', params).pipe(
+      map((requirements) => {
+        if (Array.isArray(requirements)) {
+          return requirements.map((r) => new Requirement(r));
+        } else {
+          return {
+            ...requirements,
+            items: requirements.items.map((r) => new Requirement(r)),
+          } as IPage<Requirement>;
+        }
+      })
+    );
   }
 
   listRequirements_legacy(params: IQueryParams): Observable<Requirement[]> {
