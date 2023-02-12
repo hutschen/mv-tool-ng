@@ -289,6 +289,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       ],
       initQueryParams
     );
+    this.reload();
   }
 
   override getColumnNames(): Observable<string[]> {
