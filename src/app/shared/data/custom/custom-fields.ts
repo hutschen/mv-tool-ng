@@ -13,25 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { DataField, IDataItem } from '../data';
 
-import { HttpMeasureTableComponent } from './http-measure-table.component';
+export class StrField<D extends IDataItem> extends DataField<D, string> {}
 
-describe('HttpMeasureTableComponent', () => {
-  let component: HttpMeasureTableComponent;
-  let fixture: ComponentFixture<HttpMeasureTableComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [HttpMeasureTableComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(HttpMeasureTableComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  xit('should create', () => {
-    expect(component).toBeTruthy();
-  });
-});
+export class StatusField<D extends IDataItem> extends DataField<D, string> {
+  override toStr(data: D): string {
+    const status = this.toValue(data);
+    return status ? status : 'Not set';
+  }
+}

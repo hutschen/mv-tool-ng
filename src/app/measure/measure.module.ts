@@ -15,7 +15,6 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MeasureTableComponent } from './measure-table.component';
 import { MeasureDialogComponent } from './measure-dialog.component';
 import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
@@ -28,7 +27,7 @@ import { AuthGuard } from '../shared/guards/auth.guard';
 import { RequirementIdGuard } from '../shared/guards/id.guard';
 import { RequirementModule } from '../requirement/requirement.module';
 import { CompletionDialogComponent } from './completion-dialog.component';
-import { HttpMeasureTableComponent } from './http-measure-table.component';
+import { MeasureTableComponent } from './measure-table.component';
 
 const routes = [
   {
@@ -40,12 +39,11 @@ const routes = [
 
 @NgModule({
   declarations: [
-    MeasureTableComponent,
     MeasureDialogComponent,
     VerificationDialogComponent,
     MeasureViewComponent,
     CompletionDialogComponent,
-    HttpMeasureTableComponent,
+    MeasureTableComponent,
   ],
   imports: [
     CommonModule,

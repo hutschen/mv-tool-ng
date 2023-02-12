@@ -16,7 +16,8 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { isEmpty, mapValues } from 'radash';
-import { Observable, from, tap } from 'rxjs';
+import { Observable, from, tap, debounceTime } from 'rxjs';
+import { exhaustLatestMap } from '../exhaust-latest-map';
 
 interface IRawQueryParams {
   [param: string]: string | ReadonlyArray<string>;
@@ -94,18 +95,27 @@ export class QueryParamsService {
     }
   }
 
-  setQueryParams(queryParams: IQueryParams): Observable<boolean> {
-    return from(
-      this._router.navigate([], {
+  async setQueryParams(queryParams: IQueryParams): Promise<boolean> {
+    return this._router
+      .navigate([], {
         queryParams,
         replaceUrl: true,
       })
-    ).pipe(
-      tap((success) => {
-        if (success) {
+      .then((navSucceeded) => {
+        if (navSucceeded) {
           this._cachedQueryParams.set(this.currentUrl, queryParams);
         }
-      })
+        return navSucceeded;
+      });
+  }
+
+  syncQueryParams(
+    outgoingQueryParams$: Observable<IQueryParams>,
+    delay: number = 250
+  ): Observable<boolean> {
+    return outgoingQueryParams$.pipe(
+      debounceTime(delay),
+      exhaustLatestMap((queryParams) => from(this.setQueryParams(queryParams)))
     );
   }
 }
