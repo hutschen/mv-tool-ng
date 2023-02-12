@@ -66,6 +66,16 @@ class TextColumn<D extends IDataItem> extends DataColumn<D> {
   }
 }
 
+export class DescriptionColumn<D extends IDataItem> extends TextColumn<D> {
+  constructor(initQueryParams: IQueryParams = {}, optional: boolean = true) {
+    super(
+      new StrField('description', null, optional),
+      'Descriptions',
+      initQueryParams
+    );
+  }
+}
+
 export class ComplianceCommentColumn<
   D extends IDataItem
 > extends TextColumn<D> {
@@ -73,6 +83,30 @@ export class ComplianceCommentColumn<
     super(
       new StrField('compliance_comment', null, optional),
       'Compliance Comments',
+      initQueryParams
+    );
+  }
+}
+
+export class CompletionCommentColumn<
+  D extends IDataItem
+> extends TextColumn<D> {
+  constructor(initQueryParams: IQueryParams = {}, optional: boolean = true) {
+    super(
+      new StrField('completion_comment', null, optional),
+      'Completion Comments',
+      initQueryParams
+    );
+  }
+}
+
+export class VerificationCommentColumn<
+  D extends IDataItem
+> extends TextColumn<D> {
+  constructor(initQueryParams: IQueryParams = {}, optional: boolean = true) {
+    super(
+      new StrField('verification_comment', null, optional),
+      'Verification Comments',
       initQueryParams
     );
   }

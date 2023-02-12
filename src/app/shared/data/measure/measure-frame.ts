@@ -32,8 +32,11 @@ import {
   VerifiedField,
 } from '../measure/measure-fields';
 import {
+  CompletionCommentColumn,
   ComplianceCommentColumn,
   ComplianceStatusColumn,
+  DescriptionColumn,
+  VerificationCommentColumn,
 } from '../custom/custom-colums';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
@@ -66,18 +69,6 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         new FilterByPattern('summary', initQueryParams),
         undefined,
         new FilterForExistence('has_summary', initQueryParams)
-      ),
-      initQueryParams
-    );
-
-    // Description column
-    const descriptionColumn = new DataColumn(
-      new StrField('description', 'Description'),
-      new Filters(
-        'Descriptions',
-        new FilterByPattern('description', initQueryParams),
-        undefined,
-        new FilterForExistence('has_description', initQueryParams)
       ),
       initQueryParams
     );
@@ -126,18 +117,6 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       initQueryParams
     );
 
-    // Completion comment column
-    const completionCommentColumn = new DataColumn(
-      new StrField('completion_comment', 'Completion Comment'),
-      new Filters(
-        'Completion Comments',
-        new FilterByPattern('completion_comment', initQueryParams),
-        undefined,
-        new FilterForExistence('has_completion_comment', initQueryParams)
-      ),
-      initQueryParams
-    );
-
     // Verification method column
     const verificationMethodColumn = new DataColumn(
       new StatusField('verification_method', 'Verification Method'),
@@ -170,32 +149,20 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       initQueryParams
     );
 
-    // Verification comment column
-    const verificationCommentColumn = new DataColumn(
-      new StrField('verification_comment', 'Verification Comment'),
-      new Filters(
-        'Verification Comments',
-        new FilterByPattern('verification_comment', initQueryParams),
-        undefined,
-        new FilterForExistence('has_verification_comment', initQueryParams)
-      ),
-      initQueryParams
-    );
-
     super(
       [
         referenceColumn,
         summaryColumn,
-        descriptionColumn,
+        new DescriptionColumn(initQueryParams),
         documentColumn,
         jiraIssueColumn,
         new ComplianceStatusColumn(initQueryParams),
         new ComplianceCommentColumn(initQueryParams),
         completionStatusColumn,
-        completionCommentColumn,
+        new CompletionCommentColumn(initQueryParams),
         verificationMethodColumn,
         verifiedColumn,
-        verificationCommentColumn,
+        new VerificationCommentColumn(initQueryParams),
         new PlaceholderColumn('options', 'Options'),
       ],
       initQueryParams
