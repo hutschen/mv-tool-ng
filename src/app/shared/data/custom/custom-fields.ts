@@ -15,7 +15,7 @@
 
 import { DataField, IDataItem } from '../data';
 
-export class StrField<D extends IDataItem> extends DataField<
+export class TextField<D extends IDataItem> extends DataField<
   D,
   string | null
 > {}

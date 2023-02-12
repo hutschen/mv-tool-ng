@@ -25,7 +25,7 @@ import { IQueryParams } from '../../services/query-params.service';
 import { Measure, MeasureService } from '../../services/measure.service';
 import { Requirement } from '../../services/requirement.service';
 import { MeasureReferencesFilter } from '../measure/measure-filter';
-import { StatusField, StrField } from '../custom/custom-fields';
+import { StatusField, TextField } from '../custom/custom-fields';
 import {
   DocumentField,
   JiraIssueField,
@@ -48,7 +48,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
   ) {
     // Reference column
     const referenceColumn = new DataColumn(
-      new StrField('reference', 'Reference'),
+      new TextField('reference', 'Reference'),
       new Filters(
         'References',
         new FilterByPattern('reference', initQueryParams),

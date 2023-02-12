@@ -21,7 +21,7 @@ import {
   FilterForExistence,
   Filters,
 } from '../filter';
-import { StatusField, StrField } from './custom-fields';
+import { StatusField, TextField } from './custom-fields';
 
 export class ComplianceStatusColumn<D extends IDataItem> extends DataColumn<D> {
   constructor(initQueryParams: IQueryParams, optional: boolean = true) {
@@ -49,7 +49,7 @@ export class ComplianceStatusColumn<D extends IDataItem> extends DataColumn<D> {
 
 class RequiredTextColumn<D extends IDataItem> extends DataColumn<D> {
   constructor(
-    field: StrField<D>,
+    field: TextField<D>,
     filtersLabel?: string,
     initQueryParams: IQueryParams = {}
   ) {
@@ -66,13 +66,13 @@ class RequiredTextColumn<D extends IDataItem> extends DataColumn<D> {
 
 export class SummaryColumn<D extends IDataItem> extends RequiredTextColumn<D> {
   constructor(initQueryParams: IQueryParams = {}) {
-    super(new StrField('summary', null, false), 'Summaries', initQueryParams);
+    super(new TextField('summary', null, false), 'Summaries', initQueryParams);
   }
 }
 
-class TextColumn<D extends IDataItem> extends DataColumn<D> {
+export class TextColumn<D extends IDataItem> extends DataColumn<D> {
   constructor(
-    field: StrField<D>,
+    field: TextField<D>,
     filtersLabel?: string,
     initQueryParams: IQueryParams = {}
   ) {
@@ -92,7 +92,7 @@ class TextColumn<D extends IDataItem> extends DataColumn<D> {
 export class DescriptionColumn<D extends IDataItem> extends TextColumn<D> {
   constructor(initQueryParams: IQueryParams = {}, optional: boolean = true) {
     super(
-      new StrField('description', null, optional),
+      new TextField('description', null, optional),
       'Descriptions',
       initQueryParams
     );
@@ -104,7 +104,7 @@ export class ComplianceCommentColumn<
 > extends TextColumn<D> {
   constructor(initQueryParams: IQueryParams = {}, optional: boolean = true) {
     super(
-      new StrField('compliance_comment', null, optional),
+      new TextField('compliance_comment', null, optional),
       'Compliance Comments',
       initQueryParams
     );
@@ -116,7 +116,7 @@ export class CompletionCommentColumn<
 > extends TextColumn<D> {
   constructor(initQueryParams: IQueryParams = {}, optional: boolean = true) {
     super(
-      new StrField('completion_comment', null, optional),
+      new TextField('completion_comment', null, optional),
       'Completion Comments',
       initQueryParams
     );
@@ -128,7 +128,7 @@ export class VerificationCommentColumn<
 > extends TextColumn<D> {
   constructor(initQueryParams: IQueryParams = {}, optional: boolean = true) {
     super(
-      new StrField('verification_comment', null, optional),
+      new TextField('verification_comment', null, optional),
       'Verification Comments',
       initQueryParams
     );

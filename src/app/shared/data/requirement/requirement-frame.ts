@@ -25,7 +25,7 @@ import {
   DescriptionColumn,
   SummaryColumn,
 } from '../custom/custom-colums';
-import { StrField } from '../custom/custom-fields';
+import { TextField } from '../custom/custom-fields';
 import { DataColumn, DataFrame } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 
@@ -37,7 +37,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
   ) {
     // Reference column
     const referenceColumn = new DataColumn(
-      new StrField('reference'),
+      new TextField('reference'),
       new Filters(
         'References',
         new FilterByPattern('reference', initQueryParams),
@@ -55,7 +55,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
 
     // Milestone column
     const milestoneColumn = new DataColumn(
-      new StrField('milestone'),
+      new TextField('milestone'),
       new Filters(
         'Milestone',
         new FilterByPattern('milestone', initQueryParams),
@@ -67,7 +67,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
 
     // Target object column
     const targetObjectColumn = new DataColumn(
-      new StrField('target_object'),
+      new TextField('target_object'),
       new Filters(
         'Target object',
         new FilterByPattern('target_object', initQueryParams),
