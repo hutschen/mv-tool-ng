@@ -15,8 +15,13 @@
 
 import { IQueryParams } from '../../services/query-params.service';
 import { DataColumn, IDataItem } from '../data';
-import { FilterByValues, FilterForExistence, Filters } from '../filter';
-import { StatusField } from './custom-fields';
+import {
+  FilterByPattern,
+  FilterByValues,
+  FilterForExistence,
+  Filters,
+} from '../filter';
+import { StatusField, StrField } from './custom-fields';
 
 export class ComplianceStatusColumn<D extends IDataItem> extends DataColumn<D> {
   constructor(initQueryParams: IQueryParams, optional: boolean = true) {
@@ -36,6 +41,23 @@ export class ComplianceStatusColumn<D extends IDataItem> extends DataColumn<D> {
           initQueryParams
         ),
         new FilterForExistence('has_compliance_status', initQueryParams)
+      ),
+      initQueryParams
+    );
+  }
+}
+
+export class ComplianceCommentColumn<
+  D extends IDataItem
+> extends DataColumn<D> {
+  constructor(initQueryParams: IQueryParams, optional: boolean = true) {
+    super(
+      new StrField('compliance_comment', null, optional),
+      new Filters(
+        'Compliance Comments',
+        new FilterByPattern('compliance_comment', initQueryParams),
+        undefined,
+        new FilterForExistence('has_compliance_comment', initQueryParams)
       ),
       initQueryParams
     );

@@ -31,7 +31,11 @@ import {
   JiraIssueField,
   VerifiedField,
 } from '../measure/measure-fields';
-import { ComplianceStatusColumn } from '../custom/custom-colums';
+import {
+  ComplianceCommentColumn,
+  ComplianceStatusColumn,
+} from '../custom/custom-colums';
+import { I } from '@angular/cdk/keycodes';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   constructor(
@@ -99,21 +103,6 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         undefined,
         undefined,
         new FilterForExistence('has_jira_issue', initQueryParams)
-      ),
-      initQueryParams
-    );
-
-    // Compliance status column
-    const complianceStatusColumn = new ComplianceStatusColumn(initQueryParams);
-
-    // Compliance comment column
-    const complianceCommentColumn = new DataColumn(
-      new StrField('compliance_comment', 'Compliance Comment'),
-      new Filters(
-        'Compliance Comments',
-        new FilterByPattern('compliance_comment', initQueryParams),
-        undefined,
-        new FilterForExistence('has_compliance_comment', initQueryParams)
       ),
       initQueryParams
     );
@@ -201,8 +190,8 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         descriptionColumn,
         documentColumn,
         jiraIssueColumn,
-        complianceStatusColumn,
-        complianceCommentColumn,
+        new ComplianceStatusColumn(initQueryParams),
+        new ComplianceCommentColumn(initQueryParams),
         completionStatusColumn,
         completionCommentColumn,
         verificationMethodColumn,
