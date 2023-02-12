@@ -31,6 +31,7 @@ import {
   JiraIssueField,
   VerifiedField,
 } from '../measure/measure-fields';
+import { ComplianceStatusColumn } from '../custom/custom-colums';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   constructor(
@@ -103,25 +104,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
     );
 
     // Compliance status column
-    const complianceStatusColumn = new DataColumn(
-      new StatusField('compliance_status', 'Compliance'),
-      new Filters(
-        'Compliance Statuses',
-        undefined,
-        new FilterByValues(
-          'compliance_statuses',
-          [
-            { value: 'C', label: 'Compliant (C)' },
-            { value: 'PC', label: 'Partially Compliant (PC)' },
-            { value: 'NC', label: 'Not Compliant (NC)' },
-            { value: 'N/A', label: 'Not Applicable (N/A)' },
-          ],
-          initQueryParams
-        ),
-        new FilterForExistence('has_compliance_status', initQueryParams)
-      ),
-      initQueryParams
-    );
+    const complianceStatusColumn = new ComplianceStatusColumn(initQueryParams);
 
     // Compliance comment column
     const complianceCommentColumn = new DataColumn(
