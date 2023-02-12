@@ -191,8 +191,11 @@ export class MeasureService {
     return this._crud_measure.delete(this.getMeasureUrl(measureId));
   }
 
-  getMeasureFieldNames(params: IQueryParams = {}): Observable<string[]> {
-    return this._crud_str.list_legacy('measure/field-names', params);
+  getMeasureFieldNames(params: IQueryParams = {}) {
+    return this._crud_str.query(
+      'measure/field-names',
+      params // comment to force formatter to keep this line break
+    ) as Observable<string[]>;
   }
 
   getMeasureReferences(
