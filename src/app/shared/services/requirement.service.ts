@@ -116,10 +116,6 @@ export class Requirement implements IRequirement {
   }
 }
 
-export interface IRequirementQueryParams {
-  project_ids?: number[];
-}
-
 @Injectable({
   providedIn: 'root',
 })
@@ -139,9 +135,9 @@ export class RequirementService {
     return `requirements/${requirementId}`;
   }
 
-  listRequirements(params: IRequirementQueryParams): Observable<Requirement[]> {
+  listRequirements(params: IQueryParams): Observable<Requirement[]> {
     return this._crud
-      .list_legacy('requirements', params as IQueryParams)
+      .list_legacy('requirements', params)
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }
 

@@ -17,7 +17,6 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 import { IQueryParams } from './query-params.service';
-import { IRequirementQueryParams } from './requirement.service';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +24,7 @@ import { IRequirementQueryParams } from './requirement.service';
 export class MilestoneService {
   constructor(protected _crud: CRUDService<string, string>) {}
 
-  getMilestones(params: IRequirementQueryParams): Observable<string[]> {
+  getMilestones(params: IQueryParams): Observable<string[]> {
     return this._crud.list_legacy('milestones', params as IQueryParams);
   }
 }
