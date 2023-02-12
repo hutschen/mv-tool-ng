@@ -169,7 +169,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
 
     // Verification method column
     const verificationMethodColumn = new DataColumn(
-      new StrField('verification_method', 'Verification Method'),
+      new StatusField('verification_method', 'Verification Method'),
       new Filters(
         'Verification Methods',
         undefined,
