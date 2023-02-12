@@ -14,23 +14,23 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { map, Observable } from 'rxjs';
-import { DataColumn, DataFrame, PlaceholderColumn } from '../shared/data/data';
+import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import {
   FilterByPattern,
   FilterByValues,
   FilterForExistence,
   Filters,
-} from '../shared/data/filter';
-import { IQueryParams } from '../shared/services/query-params.service';
-import { Measure, MeasureService } from '../shared/services/measure.service';
-import { Requirement } from '../shared/services/requirement.service';
-import { MeasureReferencesFilter } from '../shared/data/measure/measure-filter';
-import { StatusField, StrField } from '../shared/data/custom/custom-fields';
+} from '../filter';
+import { IQueryParams } from '../../services/query-params.service';
+import { Measure, MeasureService } from '../../services/measure.service';
+import { Requirement } from '../../services/requirement.service';
+import { MeasureReferencesFilter } from '../measure/measure-filter';
+import { StatusField, StrField } from '../custom/custom-fields';
 import {
   DocumentField,
   JiraIssueField,
   VerifiedField,
-} from '../shared/data/measure/measure-fields';
+} from '../measure/measure-fields';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   constructor(
@@ -92,7 +92,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
 
     // Jira issue column
     const jiraIssueColumn = new DataColumn(
-      new JiraIssueField(),
+      new JiraIssueField(false),
       new Filters(
         'Jira Issues',
         undefined,

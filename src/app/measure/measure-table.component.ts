@@ -20,13 +20,12 @@ import { ConfirmDialogService } from '../shared/components/confirm-dialog.compon
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
-
+import { MeasureDataFrame } from '../shared/data/measure/measure-frame';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { QueryParamsService } from '../shared/services/query-params.service';
 import { Requirement } from '../shared/services/requirement.service';
 import { CompletionDialogService } from './completion-dialog.component';
 import { MeasureDialogService } from './measure-dialog.component';
-import { MeasureDataFrame } from './measure-data';
 import { VerificationDialogService } from './verification-dialog.component';
 
 @Component({
