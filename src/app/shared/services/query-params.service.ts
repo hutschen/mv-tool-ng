@@ -94,18 +94,15 @@ export class QueryParamsService {
     }
   }
 
-  setQueryParams(queryParams: IQueryParams): Observable<boolean> {
-    return from(
-      this._router.navigate([], {
+  async setQueryParams(queryParams: IQueryParams): Promise<boolean> {
+    return this._router
+      .navigate([], {
         queryParams,
         replaceUrl: true,
       })
-    ).pipe(
-      tap((success) => {
-        if (success) {
-          this._cachedQueryParams.set(this.currentUrl, queryParams);
-        }
-      })
-    );
+      .then((value) => {
+        if (value) this._cachedQueryParams.set(this.currentUrl, queryParams);
+        return value;
+      });
   }
 }
