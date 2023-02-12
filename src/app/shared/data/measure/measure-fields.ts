@@ -18,7 +18,7 @@ import { IJiraIssue } from '../../services/jira-issue.service';
 import { Measure } from '../../services/measure.service';
 import { Document } from '../../services/document.service';
 
-export class DocumentField extends DataField<Measure, Document> {
+export class DocumentField extends DataField<Measure, Document | null> {
   constructor(optional: boolean = true) {
     super('document', 'Document', optional);
   }
