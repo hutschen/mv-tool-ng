@@ -198,9 +198,7 @@ export class MeasureService {
     ) as Observable<string[]>;
   }
 
-  getMeasureReferences(
-    params: IQueryParams = {}
-  ): Observable<string[] | IPage<string>> {
+  getMeasureReferences(params: IQueryParams = {}) {
     return this._crud_str.query('measure/references', params);
   }
 
