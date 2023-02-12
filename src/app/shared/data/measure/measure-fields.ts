@@ -13,13 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DataField } from '../shared/data/data';
-import { Document } from '../shared/services/document.service';
-import { IJiraIssue } from '../shared/services/jira-issue.service';
-import { Measure } from '../shared/services/measure.service';
+import { DataField } from '../data';
+import { IJiraIssue } from '../../services/jira-issue.service';
+import { Measure } from '../../services/measure.service';
+import { Document } from '../../services/document.service';
 
 export class DocumentField extends DataField<Measure, Document> {
-  constructor(optional: boolean = false) {
+  constructor(optional: boolean = true) {
     super('document', 'Document', optional);
   }
 
@@ -32,7 +32,7 @@ export class DocumentField extends DataField<Measure, Document> {
 }
 
 export class JiraIssueField extends DataField<Measure, IJiraIssue | null> {
-  constructor(optional: boolean = false) {
+  constructor(optional: boolean = true) {
     super('jira_issue', 'Jira Issue', optional);
   }
 
@@ -47,17 +47,8 @@ export class JiraIssueField extends DataField<Measure, IJiraIssue | null> {
   }
 }
 
-export class StrField extends DataField<Measure, string> {}
-
-export class StatusField extends DataField<Measure, string> {
-  override toStr(data: Measure): string {
-    const status = this.toValue(data);
-    return status ? status : 'Not set';
-  }
-}
-
 export class VerifiedField extends DataField<Measure, boolean> {
-  constructor(optional: boolean = false) {
+  constructor(optional: boolean = true) {
     super('verified', 'Verified', optional);
   }
 

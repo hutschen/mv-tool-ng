@@ -24,14 +24,13 @@ import {
 import { IQueryParams } from '../shared/services/query-params.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Requirement } from '../shared/services/requirement.service';
+import { MeasureReferencesFilter } from '../shared/data/measure/measure-filter';
+import { StatusField, StrField } from '../shared/data/custom/custom-fields';
 import {
   DocumentField,
   JiraIssueField,
-  StatusField,
-  StrField,
   VerifiedField,
-} from './measure-fields';
-import { MeasureReferencesFilter } from '../shared/data/measure/measure-filter';
+} from '../shared/data/measure/measure-fields';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   constructor(
