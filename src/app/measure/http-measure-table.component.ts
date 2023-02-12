@@ -14,13 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input, OnInit } from '@angular/core';
-import {
-  debounceTime,
-  exhaustMap,
-  firstValueFrom,
-  from,
-  switchMap,
-} from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
@@ -28,17 +22,12 @@ import { HideColumnsDialogService } from '../shared/components/hide-columns-dial
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 
 import { Measure, MeasureService } from '../shared/services/measure.service';
-import { Project } from '../shared/services/project.service';
-import {
-  IQueryParams,
-  QueryParamsService,
-} from '../shared/services/query-params.service';
+import { QueryParamsService } from '../shared/services/query-params.service';
 import { Requirement } from '../shared/services/requirement.service';
 import { CompletionDialogService } from './completion-dialog.component';
 import { MeasureDialogService } from './measure-dialog.component';
 import { MeasureDataFrame } from './measure-data';
 import { VerificationDialogService } from './verification-dialog.component';
-import { exhaustLatestMap } from '../shared/exhaust-latest-map';
 
 @Component({
   selector: 'mvtool-http-measure-table',
