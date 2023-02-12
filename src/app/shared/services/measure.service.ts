@@ -169,38 +169,6 @@ export class MeasureService {
     );
   }
 
-  listMeasures_legacy(params: IMeasureQueryParams = {}): Observable<Measure[]> {
-    return this._crud_measure
-      .list_legacy('measures', params as IQueryParams)
-      .pipe(map((measures) => measures.map((m) => new Measure(m))));
-  }
-
-  getMeasuresPage_legacy(
-    page: number = 1,
-    pageSize: number = 10,
-    sort_by?: string,
-    sort_order: 'asc' | 'desc' | '' = '',
-    params: IMeasureQueryParams = {}
-  ): Observable<IPage<Measure>> {
-    return this._crud_measure
-      .getPage(
-        'measures',
-        page,
-        pageSize,
-        sort_by,
-        sort_order,
-        params as IQueryParams
-      )
-      .pipe(
-        map((page) => {
-          return {
-            ...page,
-            items: page.items.map((m) => new Measure(m)),
-          };
-        })
-      );
-  }
-
   createMeasure(
     requirementId: number,
     measureInput: IMeasureInput

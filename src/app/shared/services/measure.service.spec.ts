@@ -161,13 +161,13 @@ describe('MeasureService', () => {
     expect(sut.getMeasureUrl(measureId)).toEqual(`measures/${measureId}`);
   });
 
-  it('should list measures', (done: DoneFn) => {
+  it('should query measures', (done: DoneFn) => {
     const requirementId = outputMock.requirement.id;
     const measuresList = [outputMock];
 
-    sut.listMeasures_legacy(requirementId).subscribe({
+    sut.queryMeasures({ requirement_id: requirementId }).subscribe({
       next: (value) =>
-        expect(value).toEqual(
+        expect(value as Measure[]).toEqual(
           measuresList.map((measure) => new Measure(measure))
         ),
       complete: done,
