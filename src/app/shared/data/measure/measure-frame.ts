@@ -161,7 +161,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
 
   override getColumnNames(): Observable<string[]> {
     return this._measureService.getMeasureFieldNames({
-      project_ids: [this._requirement.project.id],
+      project_ids: this._requirement.project.id,
     });
   }
 
