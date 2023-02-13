@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Project } from '../../services/project.service';
 import { IQueryParams } from '../../services/query-params.service';
 import {
@@ -160,5 +160,25 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
     return this._requirementService.getRequirementFieldNames({
       project_ids: this._project.id,
     });
+  }
+
+  override getData(queryParams: IQueryParams): Observable<Requirement[]> {
+    // Query requirements and set length of data frame
+    return this._requirementService
+      .queryRequirements({
+        project_ids: this._project.id,
+        ...queryParams,
+      })
+      .pipe(
+        map((requirements) => {
+          if (Array.isArray(requirements)) {
+            this.length = requirements.length;
+            return requirements;
+          } else {
+            this.length = requirements.total_count;
+            return requirements.items;
+          }
+        })
+      );
   }
 }
