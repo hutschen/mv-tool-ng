@@ -33,6 +33,7 @@ import {
   CatalogField,
   CatalogModuleField,
   CompletionField,
+  ComplianceAlertField,
   GSAbsicherungField,
   GSVerantwortlicheField,
 } from './requirement-fields';
@@ -125,6 +126,12 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
     );
 
     // Alert column
+    const complianceAlertColumn = new DataColumn(
+      new ComplianceAlertField(),
+      null,
+      initQueryParams
+    );
+
     // Options column
     super(
       [
@@ -140,7 +147,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
         new ComplianceStatusColumn(initQueryParams),
         new ComplianceCommentColumn(initQueryParams),
         completionColumn,
-        // Alert column
+        complianceAlertColumn,
         new PlaceholderColumn('options', 'Options'),
       ],
       initQueryParams

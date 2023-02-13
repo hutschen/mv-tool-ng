@@ -96,3 +96,21 @@ export class CompletionField extends DataField<Requirement, number | null> {
     return this.toValue(data) !== null;
   }
 }
+
+export class ComplianceAlertField extends DataField<
+  Requirement,
+  string | null
+> {
+  constructor() {
+    super('alert');
+  }
+
+  override toValue(data: Requirement): string | null {
+    if (
+      data.compliance_status &&
+      data.compliance_status !== data.compliance_status_hint
+    ) {
+      return `Compliance status should be ${data.compliance_status_hint}`;
+    } else return null;
+  }
+}
