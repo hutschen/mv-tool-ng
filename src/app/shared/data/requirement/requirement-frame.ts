@@ -27,7 +27,7 @@ import {
   TextColumn,
 } from '../custom/custom-colums';
 import { TextField } from '../custom/custom-fields';
-import { DataColumn, DataFrame } from '../data';
+import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 import {
   CatalogField,
@@ -132,6 +132,9 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
         targetObjectColumn,
         new ComplianceStatusColumn(initQueryParams),
         new ComplianceCommentColumn(initQueryParams),
+        // Completion column
+        // Alert column
+        new PlaceholderColumn('options', 'Options'),
       ],
       initQueryParams
     );
