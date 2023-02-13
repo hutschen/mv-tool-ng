@@ -76,3 +76,23 @@ export class GSVerantwortlicheField extends TextField<Requirement> {
     return data.catalog_requirement?.gs_verantwortliche ?? null;
   }
 }
+
+export class CompletionField extends DataField<Requirement, number | null> {
+  constructor() {
+    super('completion');
+  }
+
+  override toValue(data: Requirement): number | null {
+    return data.percentComplete;
+  }
+
+  override toStr(data: Requirement): string {
+    const completion = this.toValue(data);
+    if (completion !== null) return `${completion}% complete`;
+    else return 'Nothing to be completed';
+  }
+
+  override toBool(data: Requirement): boolean {
+    return this.toValue(data) !== null;
+  }
+}

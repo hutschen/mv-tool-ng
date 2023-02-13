@@ -32,6 +32,7 @@ import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 import {
   CatalogField,
   CatalogModuleField,
+  CompletionField,
   GSAbsicherungField,
   GSVerantwortlicheField,
 } from './requirement-fields';
@@ -117,6 +118,12 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
     );
 
     // Completion column
+    const completionColumn = new DataColumn(
+      new CompletionField(),
+      null,
+      initQueryParams
+    );
+
     // Alert column
     // Options column
     super(
@@ -132,7 +139,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
         targetObjectColumn,
         new ComplianceStatusColumn(initQueryParams),
         new ComplianceCommentColumn(initQueryParams),
-        // Completion column
+        completionColumn,
         // Alert column
         new PlaceholderColumn('options', 'Options'),
       ],
