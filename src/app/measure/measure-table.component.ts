@@ -82,16 +82,6 @@ export class MeasureTableComponent implements OnInit {
     }
   }
 
-  onSearchMeasures(searchStr: string): void {
-    this.dataFrame.search.pattern = searchStr;
-  }
-
-  onHideColumns(): void {
-    this._hideColumnsDialogService.openHideColumnsDialog(
-      this.dataFrame.columns
-    );
-  }
-
   async onCreateMeasure(): Promise<void> {
     await this._createOrEditMeasure();
   }
@@ -168,5 +158,11 @@ export class MeasureTableComponent implements OnInit {
     if (uploadState && uploadState.state == 'done') {
       this.dataFrame.reload();
     }
+  }
+
+  onHideColumns(): void {
+    this._hideColumnsDialogService.openHideColumnsDialog(
+      this.dataFrame.columns
+    );
   }
 }

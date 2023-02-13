@@ -32,6 +32,9 @@
 <div class="mat-elevation-z3 fx-column">
   <mvtool-table
     [dataFrame]="dataFrame"
+    (create)="onCreateMeasure()"
+    noContentText="No measures found."
+    loadingText="Loading measures..."
     matSort
     (matSortChange)="dataFrame.sort.setSort($event)"
     [matSortActive]="(dataFrame.sort.active$ | async) ?? ''"
