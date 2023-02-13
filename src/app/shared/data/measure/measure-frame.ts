@@ -68,7 +68,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       new Filters(
         'Documents',
         undefined,
-        undefined,
+        undefined, // TODO: add filter by values filter
         new FilterForExistence('has_document', initQueryParams)
       ),
       initQueryParams

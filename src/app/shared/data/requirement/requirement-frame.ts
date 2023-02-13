@@ -30,6 +30,8 @@ import { TextField } from '../custom/custom-fields';
 import { DataColumn, DataFrame } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 import {
+  CatalogField,
+  CatalogModuleField,
   GSAbsicherungField,
   GSVerantwortlicheField,
 } from './requirement-fields';
@@ -53,7 +55,28 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
     );
 
     // Catalog column
+    const catalogColumn = new DataColumn(
+      new CatalogField(),
+      new Filters(
+        'Catalogs',
+        undefined,
+        undefined, // TODO: add filter by values filter
+        new FilterForExistence('has_catalog', initQueryParams)
+      ),
+      initQueryParams
+    );
+
     // Catalog module column
+    const catalogModuleColumn = new DataColumn(
+      new CatalogModuleField(),
+      new Filters(
+        'Catalog Modules',
+        undefined,
+        undefined, // TODO: add filter by values filter
+        new FilterForExistence('has_catalog_module', initQueryParams)
+      ),
+      initQueryParams
+    );
 
     // GS Absicherung column
     const gsAbsicherungColumn = new TextColumn(
@@ -99,6 +122,8 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
     super(
       [
         referenceColumn,
+        catalogColumn,
+        catalogModuleColumn,
         new SummaryColumn(initQueryParams),
         new DescriptionColumn(initQueryParams),
         gsAbsicherungColumn,
