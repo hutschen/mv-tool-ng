@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { Observable } from 'rxjs';
 import { Project } from '../../services/project.service';
 import { IQueryParams } from '../../services/query-params.service';
 import {
@@ -153,5 +154,11 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       initQueryParams
     );
     this.reload();
+  }
+
+  override getColumnNames(): Observable<string[]> {
+    return this._requirementService.getRequirementFieldNames({
+      project_ids: this._project.id,
+    });
   }
 }
