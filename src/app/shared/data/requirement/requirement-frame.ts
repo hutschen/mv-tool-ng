@@ -152,5 +152,6 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       ],
       initQueryParams
     );
+    this.reload();
   }
 }
