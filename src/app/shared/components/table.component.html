@@ -63,7 +63,7 @@
       mat-row
       [class.clickable-row]="clickRow.observed"
       *matRowDef="let row; columns: dataFrame.columnNames$ | async"
-      (click)="clickRow.emit(row.data)"
+      (click)="clickRow.emit(row)"
     ></tr>
 
     <!-- Shown when the table is empty -->
