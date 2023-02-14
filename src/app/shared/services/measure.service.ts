@@ -128,12 +128,6 @@ export class Measure implements IMeasure {
   }
 }
 
-export interface IMeasureQueryParams {
-  project_ids?: number[];
-  requirement_ids?: number[];
-  search?: string;
-}
-
 @Injectable({
   providedIn: 'root',
 })
@@ -197,16 +191,14 @@ export class MeasureService {
     return this._crud_measure.delete(this.getMeasureUrl(measureId));
   }
 
-  getMeasureFieldNames(params: IMeasureQueryParams = {}): Observable<string[]> {
-    return this._crud_str.list_legacy(
+  getMeasureFieldNames(params: IQueryParams = {}) {
+    return this._crud_str.query(
       'measure/field-names',
-      params as IQueryParams
-    );
+      params // comment to force formatter to keep this line break
+    ) as Observable<string[]>;
   }
 
-  getMeasureReferences(
-    params: IQueryParams = {}
-  ): Observable<string[] | IPage<string>> {
+  getMeasureReferences(params: IQueryParams = {}) {
     return this._crud_str.query('measure/references', params);
   }
 

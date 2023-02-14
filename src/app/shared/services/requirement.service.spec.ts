@@ -85,7 +85,7 @@ describe('RequirementService', () => {
     const projectId = outputMock.project.id;
     const requirementsList = [outputMock];
 
-    sut.listRequirements(projectId).subscribe({
+    sut.listRequirements_legacy(projectId).subscribe({
       next: (value) => {
         expect(value).toEqual(
           requirementsList.map((requirement) => new Requirement(requirement))

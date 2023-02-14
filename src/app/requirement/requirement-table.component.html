@@ -18,10 +18,10 @@
 <div class="fx-column">
   <!-- Toolbar -->
   <mvtool-table-toolbar
-    (refresh)="onReloadRequirements()"
+    (refresh)="this.dataFrame.reload()"
     (create)="onCreateRequirement()"
-    [showSearch]="true"
-    searchLabel="Filter Requirements"
+    [(search)]="dataFrame.search.pattern"
+    searchLabel="Search Requirements"
     createLabel="Create Requirement"
     #tableToolbar
   >
@@ -42,62 +42,60 @@
       Export Excel
     </button>
   </mvtool-table-toolbar>
+</div>
 
-  <!-- Requirements table -->
-  <mvtool-legacy-table
-    [columns]="columns"
-    [data$]="data$"
-    [dataLoaded]="dataLoaded"
-    [filterValue]="tableToolbar.search"
+<div class="mat-elevation-z3 fx-column">
+  <mvtool-table
+    [dataFrame]="dataFrame"
     (create)="onCreateRequirement()"
     noContentText="No requirements found."
     loadingText="Loading requirements..."
-    (rowClicked)="requirementClicked.emit($event)"
+    (clickRow)="clickRequirement.emit($event)"
     matSort
-    #sort="matSort"
-    [sort]="sort"
-    #table
+    (matSortChange)="dataFrame.sort.setSort($event)"
+    [matSortActive]="(dataFrame.sort.active$ | async) ?? ''"
+    [matSortDirection]="(dataFrame.sort.direction$ | async) ?? ''"
   >
     <!-- Compliance column -->
     <ng-container
-      *ngIf="columns.getColumn('compliance_status') as column"
-      [matColumnDef]="column.id"
+      *ngIf="dataFrame.columns.getColumn('compliance_status') as column"
+      [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-legacy-table-filter-header
-          [column]="column"
-          [table]="table"
-        ></mvtool-legacy-table-filter-header>
+        <mvtool-filter-header [filters]="column.filters">
+          {{ column.label }}
+        </mvtool-filter-header>
       </th>
-      <td mat-cell *matCellDef="let row">
+      <td mat-cell *matCellDef="let data">
         <button
           mat-button
           matTooltip="Click to set compliance status"
-          (click)="
-            onEditCompliance(row.data); $event.stopImmediatePropagation()
-          "
+          (click)="onEditCompliance(data); $event.stopImmediatePropagation()"
         >
-          {{ column.toStr(row.data) }}
+          {{ column.field.toStr(data) }}
         </button>
       </td>
     </ng-container>
 
     <!-- Completion column -->
     <ng-container
-      *ngIf="columns.getColumn('completion') as column"
-      [matColumnDef]="column.id"
+      *ngIf="dataFrame.columns.getColumn('completion') as column"
+      [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-legacy-table-filter-header
-          [column]="column"
-          [table]="table"
-        ></mvtool-legacy-table-filter-header>
+        <mvtool-filter-header [filters]="column.filters">
+          {{ column.label }}
+        </mvtool-filter-header>
       </th>
-      <td mat-cell *matCellDef="let row" [matTooltip]="column.toStr(row.data)">
+      <td
+        mat-cell
+        *matCellDef="let data"
+        [matTooltip]="column.field.toStr(data)"
+      >
         <mat-progress-bar
-          *ngIf="column.toBool(row.data)"
+          *ngIf="column.field.toBool(data)"
           mode="determinate"
-          [value]="column.toValue(row.data)"
+          [value]="column.field.toValue(data)"
         >
         </mat-progress-bar>
       </td>
@@ -105,22 +103,23 @@
 
     <!-- Alert column -->
     <ng-container
-      *ngIf="columns.getColumn('alert') as column"
-      [matColumnDef]="column.id"
+      *ngIf="dataFrame.columns.getColumn('alert') as column"
+      [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-legacy-table-filter-header
-          [column]="column"
-          [table]="table"
-        ></mvtool-legacy-table-filter-header>
+        <mvtool-filter-header [filters]="column.filters">
+          {{ column.label }}
+        </mvtool-filter-header>
       </th>
-      <td mat-cell *matCellDef="let row" [matTooltip]="column.toStr(row.data)">
-        <div *ngIf="column.toBool(row.data)" class="fx-row fx-center-center">
+      <td
+        mat-cell
+        *matCellDef="let data"
+        [matTooltip]="column.field.toStr(data)"
+      >
+        <div *ngIf="column.field.toBool(data)" class="fx-row fx-center-center">
           <button
             mat-icon-button
-            (click)="
-              onEditCompliance(row.data); $event.stopImmediatePropagation()
-            "
+            (click)="onEditCompliance(data); $event.stopImmediatePropagation()"
             aria-label="Fix compliance status"
           >
             <mat-icon>warning</mat-icon>
@@ -132,9 +131,14 @@
     <!-- Options column -->
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef>
-        <mvtool-legacy-table-options
-          [table]="table"
-        ></mvtool-legacy-table-options>
+        <mvtool-table-options
+          (hideColumns)="onHideColumns()"
+          [hideColumnsDisabled]="!dataFrame.columns.hideableColumns.length"
+          (clearFilters)="dataFrame.columns.clearFilters()"
+          [clearFiltersDisabled]="!(dataFrame.columns.areFiltersSet$ | async)"
+          (clearSort)="dataFrame.sort.clearSort()"
+          [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
+        ></mvtool-table-options>
       </th>
       <td mat-cell *matCellDef="let row">
         <mvtool-table-row-options
@@ -149,5 +153,14 @@
         </mvtool-table-row-options>
       </td>
     </ng-container>
-  </mvtool-legacy-table>
+  </mvtool-table>
+
+  <mat-paginator
+    [length]="dataFrame.length$ | async"
+    [pageSize]="(dataFrame.pagination.page$ | async)?.pageSize"
+    [pageIndex]="(dataFrame.pagination.page$ | async)?.pageIndex"
+    [pageSizeOptions]="dataFrame.pagination.pageSizeOptions"
+    (page)="dataFrame.pagination.setPage($event)"
+    showFirstLastButtons
+  ></mat-paginator>
 </div>

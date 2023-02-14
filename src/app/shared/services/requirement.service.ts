@@ -19,7 +19,7 @@ import {
   CatalogRequirement,
   ICatalogRequirement,
 } from './catalog-requirement.service';
-import { CRUDService } from './crud.service';
+import { CRUDService, IPage } from './crud.service';
 import { IQueryParams } from './query-params.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
@@ -116,8 +116,10 @@ export class Requirement implements IRequirement {
   }
 }
 
-export interface IRequirementQueryParams {
-  project_ids?: number[];
+export interface IRequirementRepresentation {
+  id: number;
+  reference?: string | null;
+  summary: string;
 }
 
 @Injectable({
@@ -125,7 +127,9 @@ export interface IRequirementQueryParams {
 })
 export class RequirementService {
   constructor(
-    protected _crud: CRUDService<IRequirementInput, IRequirement>,
+    protected _crud_requirement: CRUDService<IRequirementInput, IRequirement>,
+    protected _crud_str: CRUDService<null, string>,
+    protected _crud_repr: CRUDService<null, IRequirementRepresentation>,
     protected _download: DownloadService,
     protected _upload: UploadService,
     protected _projects: ProjectService
@@ -139,9 +143,24 @@ export class RequirementService {
     return `requirements/${requirementId}`;
   }
 
-  listRequirements(params: IRequirementQueryParams): Observable<Requirement[]> {
-    return this._crud
-      .list_legacy('requirements', params as IQueryParams)
+  queryRequirements(params: IQueryParams) {
+    return this._crud_requirement.query('requirements', params).pipe(
+      map((requirements) => {
+        if (Array.isArray(requirements)) {
+          return requirements.map((r) => new Requirement(r));
+        } else {
+          return {
+            ...requirements,
+            items: requirements.items.map((r) => new Requirement(r)),
+          } as IPage<Requirement>;
+        }
+      })
+    );
+  }
+
+  listRequirements_legacy(params: IQueryParams): Observable<Requirement[]> {
+    return this._crud_requirement
+      .list_legacy('requirements', params)
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }
 
@@ -149,13 +168,13 @@ export class RequirementService {
     projectId: number,
     requirementInput: IRequirementInput
   ): Observable<Requirement> {
-    return this._crud
+    return this._crud_requirement
       .create(this.getRequirementsUrl(projectId), requirementInput)
       .pipe(map((requirement) => new Requirement(requirement)));
   }
 
   getRequirement(requirementId: number): Observable<Requirement> {
-    return this._crud
+    return this._crud_requirement
       .read(this.getRequirementUrl(requirementId))
       .pipe(map((requirement) => new Requirement(requirement)));
   }
@@ -164,13 +183,28 @@ export class RequirementService {
     requirementId: number,
     requirementInput: IRequirementInput
   ): Observable<Requirement> {
-    return this._crud
+    return this._crud_requirement
       .update(this.getRequirementUrl(requirementId), requirementInput)
       .pipe(map((requirement) => new Requirement(requirement)));
   }
 
   deleteRequirement(requirementId: number): Observable<null> {
-    return this._crud.delete(this.getRequirementUrl(requirementId));
+    return this._crud_requirement.delete(this.getRequirementUrl(requirementId));
+  }
+
+  getRequirementFieldNames(params: IQueryParams = {}) {
+    return this._crud_str.query(
+      'requirement/field-names',
+      params
+    ) as Observable<string[]>;
+  }
+
+  getRequirementReferences(params: IQueryParams = {}) {
+    return this._crud_str.query('requirement/references', params);
+  }
+
+  getRequirementRepresentations(params: IQueryParams = {}) {
+    return this._crud_repr.query('requirement/representations', params);
   }
 
   importRequirements(
@@ -178,7 +212,7 @@ export class RequirementService {
     catalogModuleIds: number[]
   ): Observable<Requirement[]> {
     const url = `${this.getRequirementsUrl(projectId)}/import`;
-    return this._crud
+    return this._crud_requirement
       .import(url, catalogModuleIds)
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }

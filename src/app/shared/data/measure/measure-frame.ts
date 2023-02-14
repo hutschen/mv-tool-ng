@@ -25,12 +25,20 @@ import { IQueryParams } from '../../services/query-params.service';
 import { Measure, MeasureService } from '../../services/measure.service';
 import { Requirement } from '../../services/requirement.service';
 import { MeasureReferencesFilter } from '../measure/measure-filter';
-import { StatusField, StrField } from '../custom/custom-fields';
+import { StatusField, TextField } from '../custom/custom-fields';
 import {
   DocumentField,
   JiraIssueField,
   VerifiedField,
 } from '../measure/measure-fields';
+import {
+  CompletionCommentColumn,
+  ComplianceCommentColumn,
+  ComplianceStatusColumn,
+  DescriptionColumn,
+  SummaryColumn,
+  VerificationCommentColumn,
+} from '../custom/custom-colums';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   constructor(
@@ -40,7 +48,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
   ) {
     // Reference column
     const referenceColumn = new DataColumn(
-      new StrField('reference', 'Reference'),
+      new TextField('reference', 'Reference'),
       new Filters(
         'References',
         new FilterByPattern('reference', initQueryParams),
@@ -54,37 +62,13 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       initQueryParams
     );
 
-    // Summary column
-    const summaryColumn = new DataColumn(
-      new StrField('summary', 'Summary', false),
-      new Filters(
-        'Summaries',
-        new FilterByPattern('summary', initQueryParams),
-        undefined,
-        new FilterForExistence('has_summary', initQueryParams)
-      ),
-      initQueryParams
-    );
-
-    // Description column
-    const descriptionColumn = new DataColumn(
-      new StrField('description', 'Description'),
-      new Filters(
-        'Descriptions',
-        new FilterByPattern('description', initQueryParams),
-        undefined,
-        new FilterForExistence('has_description', initQueryParams)
-      ),
-      initQueryParams
-    );
-
     // Document column
     const documentColumn = new DataColumn(
       new DocumentField(),
       new Filters(
         'Documents',
         undefined,
-        undefined,
+        undefined, // TODO: add filter by values filter
         new FilterForExistence('has_document', initQueryParams)
       ),
       initQueryParams
@@ -98,39 +82,6 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         undefined,
         undefined,
         new FilterForExistence('has_jira_issue', initQueryParams)
-      ),
-      initQueryParams
-    );
-
-    // Compliance status column
-    const complianceStatusColumn = new DataColumn(
-      new StatusField('compliance_status', 'Compliance'),
-      new Filters(
-        'Compliance Statuses',
-        undefined,
-        new FilterByValues(
-          'compliance_statuses',
-          [
-            { value: 'C', label: 'Compliant (C)' },
-            { value: 'PC', label: 'Partially Compliant (PC)' },
-            { value: 'NC', label: 'Not Compliant (NC)' },
-            { value: 'N/A', label: 'Not Applicable (N/A)' },
-          ],
-          initQueryParams
-        ),
-        new FilterForExistence('has_compliance_status', initQueryParams)
-      ),
-      initQueryParams
-    );
-
-    // Compliance comment column
-    const complianceCommentColumn = new DataColumn(
-      new StrField('compliance_comment', 'Compliance Comment'),
-      new Filters(
-        'Compliance Comments',
-        new FilterByPattern('compliance_comment', initQueryParams),
-        undefined,
-        new FilterForExistence('has_compliance_comment', initQueryParams)
       ),
       initQueryParams
     );
@@ -155,21 +106,9 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       initQueryParams
     );
 
-    // Completion comment column
-    const completionCommentColumn = new DataColumn(
-      new StrField('completion_comment', 'Completion Comment'),
-      new Filters(
-        'Completion Comments',
-        new FilterByPattern('completion_comment', initQueryParams),
-        undefined,
-        new FilterForExistence('has_completion_comment', initQueryParams)
-      ),
-      initQueryParams
-    );
-
     // Verification method column
     const verificationMethodColumn = new DataColumn(
-      new StrField('verification_method', 'Verification Method'),
+      new StatusField('verification_method', 'Verification Method'),
       new Filters(
         'Verification Methods',
         undefined,
@@ -199,32 +138,20 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       initQueryParams
     );
 
-    // Verification comment column
-    const verificationCommentColumn = new DataColumn(
-      new StrField('verification_comment', 'Verification Comment'),
-      new Filters(
-        'Verification Comments',
-        new FilterByPattern('verification_comment', initQueryParams),
-        undefined,
-        new FilterForExistence('has_verification_comment', initQueryParams)
-      ),
-      initQueryParams
-    );
-
     super(
       [
         referenceColumn,
-        summaryColumn,
-        descriptionColumn,
+        new SummaryColumn(initQueryParams),
+        new DescriptionColumn(initQueryParams),
         documentColumn,
         jiraIssueColumn,
-        complianceStatusColumn,
-        complianceCommentColumn,
+        new ComplianceStatusColumn(initQueryParams),
+        new ComplianceCommentColumn(initQueryParams),
         completionStatusColumn,
-        completionCommentColumn,
+        new CompletionCommentColumn(initQueryParams),
         verificationMethodColumn,
         verifiedColumn,
-        verificationCommentColumn,
+        new VerificationCommentColumn(initQueryParams),
         new PlaceholderColumn('options', 'Options'),
       ],
       initQueryParams
@@ -234,7 +161,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
 
   override getColumnNames(): Observable<string[]> {
     return this._measureService.getMeasureFieldNames({
-      project_ids: [this._requirement.project.id],
+      project_ids: this._requirement.project.id,
     });
   }
 

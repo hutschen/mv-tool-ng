@@ -14,10 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 import { IQueryParams } from './query-params.service';
-import { IRequirementQueryParams } from './requirement.service';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +23,7 @@ import { IRequirementQueryParams } from './requirement.service';
 export class MilestoneService {
   constructor(protected _crud: CRUDService<string, string>) {}
 
-  getMilestones(params: IRequirementQueryParams): Observable<string[]> {
-    return this._crud.list_legacy('milestones', params as IQueryParams);
+  getMilestones(params: IQueryParams) {
+    return this._crud.query('milestones', params as IQueryParams);
   }
 }

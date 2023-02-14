@@ -34,7 +34,10 @@ import { DataColumn, DataFrame, IDataItem } from '../data/data';
     '../styles/flex.scss',
     '../styles/truncate.scss',
   ],
-  styles: [],
+  styles: [
+    '.clickable-row { cursor: pointer; }',
+    '.clickable-row:hover { background: rgba(0,0,0,0.04); }',
+  ],
 })
 export class TableComponent<T extends IDataItem> implements AfterContentInit {
   @Input() dataFrame!: DataFrame<T>;

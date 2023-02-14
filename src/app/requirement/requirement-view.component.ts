@@ -27,7 +27,7 @@ import { Requirement } from '../shared/services/requirement.service';
       <mat-divider></mat-divider>
       <mvtool-requirement-table
         [project]="project"
-        (requirementClicked)="onRequirementClicked($event)"
+        (clickRequirement)="onRequirementClicked($event)"
       >
       </mvtool-requirement-table>
     </div>

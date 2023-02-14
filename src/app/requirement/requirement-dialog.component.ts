@@ -20,7 +20,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { firstValueFrom, map, Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { MilestoneService } from '../shared/services/milestone.service';
 import { Project } from '../shared/services/project.service';
 import {
@@ -80,17 +80,19 @@ export class RequirementDialogComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.targetObjects = await firstValueFrom(
+    // TODO: load target objects paginated when user starts typing
+    this.targetObjects = (await firstValueFrom(
       this._targetObjectService.getTargetObjects({
         project_ids: [this.project.id],
       })
-    );
+    )) as string[];
 
-    this.milestones = await firstValueFrom(
+    // TODO: load milestones paginated when user starts typing
+    this.milestones = (await firstValueFrom(
       this._milestoneService.getMilestones({
         project_ids: [this.project.id],
       })
-    );
+    )) as string[];
   }
 
   get createMode(): boolean {
