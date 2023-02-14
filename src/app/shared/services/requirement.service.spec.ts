@@ -81,11 +81,11 @@ describe('RequirementService', () => {
     );
   });
 
-  it('should list requirements', (done: DoneFn) => {
+  it('should query requirements', (done: DoneFn) => {
     const projectId = outputMock.project.id;
     const requirementsList = [outputMock];
 
-    sut.listRequirements_legacy(projectId).subscribe({
+    sut.queryRequirements({ projectId }).subscribe({
       next: (value) => {
         expect(value).toEqual(
           requirementsList.map((requirement) => new Requirement(requirement))

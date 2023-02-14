@@ -158,12 +158,6 @@ export class RequirementService {
     );
   }
 
-  listRequirements_legacy(params: IQueryParams): Observable<Requirement[]> {
-    return this._crud_requirement
-      .list_legacy('requirements', params)
-      .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
-  }
-
   createRequirement(
     projectId: number,
     requirementInput: IRequirementInput
