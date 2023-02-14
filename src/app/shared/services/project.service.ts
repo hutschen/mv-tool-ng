@@ -77,11 +77,20 @@ export class Project implements IProject {
   }
 }
 
+export interface IProjectRepresentation {
+  id: number;
+  name: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class ProjectService {
-  constructor(protected _crud: CRUDService<IProjectInput, IProject>) {}
+  constructor(
+    protected _crud: CRUDService<IProjectInput, IProject>,
+    protected _crud_str: CRUDService<null, string>,
+    protected _crud_repr: CRUDService<null, IProjectRepresentation>
+  ) {}
 
   getProjectsUrl(): string {
     return 'projects';
@@ -135,5 +144,15 @@ export class ProjectService {
 
   deleteProject(projectId: number): Observable<null> {
     return this._crud.delete(this.getProjectUrl(projectId));
+  }
+
+  getProjectFieldNames(params: IQueryParams = {}) {
+    return this._crud_str.query('project/field-names', params) as Observable<
+      string[]
+    >;
+  }
+
+  getProjectRepresentations(params: IQueryParams = {}) {
+    return this._crud_repr.query('project/representations', params);
   }
 }
