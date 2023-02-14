@@ -100,7 +100,9 @@ export class ProjectTableComponent implements OnInit {
   }
 
   async onReloadProjects(): Promise<void> {
-    const data = await firstValueFrom(this._projectService.listProjects());
+    const data = await firstValueFrom(
+      this._projectService.listProjects_legacy()
+    );
     this._dataSubject.next(data);
     this.dataLoaded = true;
   }

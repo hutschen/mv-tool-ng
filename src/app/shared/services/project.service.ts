@@ -90,7 +90,7 @@ export class ProjectService {
     return `${this.getProjectsUrl()}/${projectId}`;
   }
 
-  listProjects(): Observable<Project[]> {
+  listProjects_legacy(): Observable<Project[]> {
     return this._crud
       .list_legacy(this.getProjectsUrl())
       .pipe(map((projects) => projects.map((p) => new Project(p))));
