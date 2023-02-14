@@ -165,9 +165,9 @@ describe('MeasureService', () => {
     const requirementId = outputMock.requirement.id;
     const measuresList = [outputMock];
 
-    sut.queryMeasures({ requirement_id: requirementId }).subscribe({
+    sut.queryMeasures({ requirementId }).subscribe({
       next: (value) =>
-        expect(value as Measure[]).toEqual(
+        expect(value).toEqual(
           measuresList.map((measure) => new Measure(measure))
         ),
       complete: done,
