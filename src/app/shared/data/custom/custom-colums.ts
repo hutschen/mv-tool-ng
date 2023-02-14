@@ -70,6 +70,12 @@ export class SummaryColumn<D extends IDataItem> extends RequiredTextColumn<D> {
   }
 }
 
+export class NameColumn<D extends IDataItem> extends RequiredTextColumn<D> {
+  constructor(initQueryParams: IQueryParams = {}) {
+    super(new TextField('name', null, false), 'Names', initQueryParams);
+  }
+}
+
 export class TextColumn<D extends IDataItem> extends DataColumn<D> {
   constructor(
     field: TextField<D>,
