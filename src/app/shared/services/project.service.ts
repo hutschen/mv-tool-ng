@@ -16,8 +16,9 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { firstValueFrom, map } from 'rxjs';
-import { CRUDService } from './crud.service';
+import { CRUDService, IPage } from './crud.service';
 import { IJiraProject } from './jira-project.service';
+import { IQueryParams } from './query-params.service';
 
 export interface IProjectInput {
   name: string;
@@ -88,6 +89,21 @@ export class ProjectService {
 
   getProjectUrl(projectId: number): string {
     return `${this.getProjectsUrl()}/${projectId}`;
+  }
+
+  queryProjects(params: IQueryParams = {}) {
+    return this._crud.query('projects', params).pipe(
+      map((projects) => {
+        if (Array.isArray(projects)) {
+          return projects.map((p) => new Project(p));
+        } else {
+          return {
+            ...projects,
+            items: projects.items.map((p) => new Project(p)),
+          } as IPage<Project>;
+        }
+      })
+    );
   }
 
   listProjects_legacy(): Observable<Project[]> {
