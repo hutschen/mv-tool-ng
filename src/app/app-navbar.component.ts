@@ -14,7 +14,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { isEqual } from 'radash';
+import { distinctUntilChanged, filter, map } from 'rxjs';
 
 enum NavbarSelection {
   Projects,
@@ -55,10 +57,18 @@ export class AppNavbarComponent implements OnInit {
   constructor(protected _router: Router) {}
 
   ngOnInit(): void {
-    this._router.events.subscribe((event) => {
-      const url = this._router.url.split('/').filter((s) => s.length > 0);
-      this._handleUrl(url);
-    });
+    this._router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        map((event) => event as NavigationEnd),
+        map((event) => event.urlAfterRedirects),
+        map((url) => url.split('?')[0]),
+        map((url) => url.split('/').filter((s) => s.length > 0)),
+        distinctUntilChanged(isEqual)
+      )
+      .subscribe((url) => {
+        this._handleUrl(url);
+      });
   }
 
   get projectsSelected(): boolean {
