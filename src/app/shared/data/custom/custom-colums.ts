@@ -78,6 +78,12 @@ export class NameColumn<D extends IDataItem> extends RequiredTextColumn<D> {
   }
 }
 
+export class TitleColumn<D extends IDataItem> extends RequiredTextColumn<D> {
+  constructor(initQueryParams: IQueryParams = {}) {
+    super(new TextField('title', null, false), 'Titles', initQueryParams);
+  }
+}
+
 export class TextColumn<D extends IDataItem> extends DataColumn<D> {
   constructor(
     field: TextField<D>,
