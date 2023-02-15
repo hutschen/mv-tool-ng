@@ -91,7 +91,7 @@ describe('DocumentService', () => {
   });
 
   it('should list documents', (done: DoneFn) => {
-    sut.listDocuments(outputMock.project.id).subscribe({
+    sut.listDocuments_legacy(outputMock.project.id).subscribe({
       next: (value) => expect(value).toEqual([new Document(outputMock)]),
       complete: done,
     });

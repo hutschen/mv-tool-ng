@@ -127,7 +127,7 @@ export class DocumentTableComponent implements OnInit {
   async onReloadDocuments(): Promise<void> {
     if (this.project) {
       const data = await firstValueFrom(
-        this._documentService.listDocuments(this.project.id)
+        this._documentService.listDocuments_legacy(this.project.id)
       );
       this._dataSubject.next(data);
       this.dataLoaded = true;
