@@ -21,19 +21,19 @@ import {
   RequirementService,
 } from '../../services/requirement.service';
 import {
+  CompletionColumn,
   ComplianceCommentColumn,
   ComplianceStatusColumn,
   DescriptionColumn,
   SummaryColumn,
   TextColumn,
 } from '../custom/custom-colums';
-import { TextField } from '../custom/custom-fields';
+import { CompletionField, TextField } from '../custom/custom-fields';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 import {
   CatalogField,
   CatalogModuleField,
-  CompletionField,
   ComplianceAlertField,
   GSAbsicherungField,
   GSVerantwortlicheField,
@@ -119,13 +119,6 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       initQueryParams
     );
 
-    // Completion column
-    const completionColumn = new DataColumn(
-      new CompletionField(),
-      null,
-      initQueryParams
-    );
-
     // Alert column
     const complianceAlertColumn = new DataColumn(
       new ComplianceAlertField(),
@@ -133,7 +126,6 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       initQueryParams
     );
 
-    // Options column
     super(
       [
         referenceColumn,
@@ -147,9 +139,9 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
         targetObjectColumn,
         new ComplianceStatusColumn(initQueryParams),
         new ComplianceCommentColumn(initQueryParams),
-        completionColumn,
+        new CompletionColumn(initQueryParams),
         complianceAlertColumn,
-        new PlaceholderColumn('options', 'Options'),
+        new PlaceholderColumn('options'),
       ],
       initQueryParams
     );

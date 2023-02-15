@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Helmar Hutschenreuter
+// Copyright (C) 2023 Helmar Hutschenreuter
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -13,24 +13,22 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Project } from '../shared/services/project.service';
+import { IJiraProject } from '../../services/jira-project.service';
+import { Project } from '../../services/project.service';
+import { DataField } from '../data';
 
-@Component({
-  selector: 'mvtool-project-view',
-  template: `
-    <mvtool-project-table (clickProject)="onProjectClicked($event)">
-    </mvtool-project-table>
-  `,
-  styles: [],
-})
-export class ProjectViewComponent implements OnInit {
-  constructor(protected _router: Router) {}
+export class JiraProjectField extends DataField<Project, IJiraProject | null> {
+  constructor(optional: boolean = true) {
+    super('jira_project', null, optional);
+  }
 
-  ngOnInit(): void {}
-
-  onProjectClicked(project: Project) {
-    this._router.navigate(['/projects', project.id, 'requirements']);
+  override toStr(data: Project): string {
+    if (data.jira_project) {
+      return `${data.jira_project.key} / ${data.jira_project.name}`;
+    } else if (data.jira_project_id) {
+      return 'No permission on Jira project';
+    } else {
+      return 'No Jira project assigned';
+    }
   }
 }

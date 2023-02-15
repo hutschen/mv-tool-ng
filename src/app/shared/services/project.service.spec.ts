@@ -129,7 +129,7 @@ describe('ProjectService', () => {
 
   it('should list projects', (done: DoneFn) => {
     const projectList = [outputMock];
-    sut.listProjects().subscribe({
+    sut.listProjects_legacy().subscribe({
       next: (value) => {
         expect(value).toEqual(
           projectList.map((project) => new Project(project))

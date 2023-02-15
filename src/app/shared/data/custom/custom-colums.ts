@@ -13,7 +13,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { Project } from '../../services/project.service';
 import { IQueryParams } from '../../services/query-params.service';
+import { Requirement } from '../../services/requirement.service';
 import { DataColumn, IDataItem } from '../data';
 import {
   FilterByPattern,
@@ -21,7 +23,7 @@ import {
   FilterForExistence,
   Filters,
 } from '../filter';
-import { StatusField, TextField } from './custom-fields';
+import { CompletionField, StatusField, TextField } from './custom-fields';
 
 export class ComplianceStatusColumn<D extends IDataItem> extends DataColumn<D> {
   constructor(initQueryParams: IQueryParams, optional: boolean = true) {
@@ -67,6 +69,12 @@ class RequiredTextColumn<D extends IDataItem> extends DataColumn<D> {
 export class SummaryColumn<D extends IDataItem> extends RequiredTextColumn<D> {
   constructor(initQueryParams: IQueryParams = {}) {
     super(new TextField('summary', null, false), 'Summaries', initQueryParams);
+  }
+}
+
+export class NameColumn<D extends IDataItem> extends RequiredTextColumn<D> {
+  constructor(initQueryParams: IQueryParams = {}) {
+    super(new TextField('name', null, false), 'Names', initQueryParams);
   }
 }
 
@@ -132,5 +140,11 @@ export class VerificationCommentColumn<
       'Verification Comments',
       initQueryParams
     );
+  }
+}
+
+export class CompletionColumn extends DataColumn<Requirement | Project> {
+  constructor(initQueryParams: IQueryParams = {}, optional: boolean = true) {
+    super(new CompletionField(optional), null, initQueryParams);
   }
 }
