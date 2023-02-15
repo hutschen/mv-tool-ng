@@ -18,44 +18,41 @@
 <div class="fx-column">
   <!-- Toolbar -->
   <mvtool-table-toolbar
-    (refresh)="onReloadProjects()"
+    (refresh)="this.dataFrame.reload()"
     (create)="onCreateProject()"
-    [showSearch]="true"
-    searchLabel="Filter Projects"
+    [(search)]="dataFrame.search.pattern"
+    searchLabel="Search Projects"
     createLabel="Create Project"
     #tableToolbar
   >
   </mvtool-table-toolbar>
+</div>
 
-  <!-- Projects table -->
-  <mvtool-legacy-table
-    [columns]="columns"
-    [data$]="data$"
-    [dataLoaded]="dataLoaded"
-    [filterValue]="tableToolbar.search"
+<div class="mat-elevation-z3 fx-column">
+  <mvtool-table
+    [dataFrame]="dataFrame"
     (create)="onCreateProject()"
     noContentText="No projects found."
     loadingText="Loading projects..."
-    (rowClicked)="projectClicked.emit($event)"
+    (clickRow)="clickProject.emit($event)"
     matSort
-    #sort="matSort"
-    [sort]="sort"
-    #table
+    (matSortChange)="dataFrame.sort.setSort($event)"
+    [matSortActive]="(dataFrame.sort.active$ | async) ?? ''"
+    [matSortDirection]="(dataFrame.sort.direction$ | async) ?? ''"
   >
     <!-- JIRA project column -->
     <ng-container
-      *ngIf="columns.getColumn('jira_project') as column"
-      [matColumnDef]="column.id"
+      *ngIf="dataFrame.columns.getColumn('jira_project') as column"
+      [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-legacy-table-filter-header
-          [column]="column"
-          [table]="table"
-        ></mvtool-legacy-table-filter-header>
+        <mvtool-filter-header [filters]="column.filters">
+          {{ column.label }}
+        </mvtool-filter-header>
       </th>
-      <td mat-cell *matCellDef="let row">
+      <td mat-cell *matCellDef="let project">
         <mvtool-jira-project-label
-          [project]="row.data"
+          [project]="project"
           (click)="$event.stopPropagation()"
         >
         </mvtool-jira-project-label>
@@ -64,20 +61,23 @@
 
     <!-- Completion column -->
     <ng-container
-      *ngIf="columns.getColumn('completion') as column"
-      [matColumnDef]="column.id"
+      *ngIf="dataFrame.columns.getColumn('completion') as column"
+      [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-legacy-table-filter-header
-          [column]="column"
-          [table]="table"
-        ></mvtool-legacy-table-filter-header>
+        <mvtool-filter-header [filters]="column.filters">
+          {{ column.label }}
+        </mvtool-filter-header>
       </th>
-      <td mat-cell *matCellDef="let row" [matTooltip]="column.toStr(row.data)">
+      <td
+        mat-cell
+        *matCellDef="let project"
+        [matTooltip]="column.field.toStr(project)"
+      >
         <mat-progress-bar
-          *ngIf="column.toBool(row.data)"
+          *ngIf="column.field.toBool(project)"
           mode="determinate"
-          [value]="column.toValue(row.data)"
+          [value]="column.field.toValue(project)"
         >
         </mat-progress-bar>
       </td>
@@ -85,17 +85,31 @@
 
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef>
-        <mvtool-legacy-table-options
-          [table]="table"
-        ></mvtool-legacy-table-options>
+        <mvtool-table-options
+          (hideColumns)="onHideColumns()"
+          [hideColumnsDisabled]="!dataFrame.columns.hideableColumns.length"
+          (clearFilters)="dataFrame.columns.clearFilters()"
+          [clearFiltersDisabled]="!(dataFrame.columns.areFiltersSet$ | async)"
+          (clearSort)="dataFrame.sort.clearSort()"
+          [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
+        ></mvtool-table-options>
       </th>
-      <td mat-cell *matCellDef="let row">
+      <td mat-cell *matCellDef="let project">
         <mvtool-table-row-options
-          (edit)="onEditProject(row.data)"
-          (delete)="onDeleteProject(row.data)"
+          (edit)="onEditProject(project)"
+          (delete)="onDeleteProject(project)"
         >
         </mvtool-table-row-options>
       </td>
     </ng-container>
-  </mvtool-legacy-table>
+  </mvtool-table>
+
+  <mat-paginator
+    [length]="dataFrame.length$ | async"
+    [pageSize]="(dataFrame.pagination.page$ | async)?.pageSize"
+    [pageIndex]="(dataFrame.pagination.page$ | async)?.pageIndex"
+    [pageSizeOptions]="dataFrame.pagination.pageSizeOptions"
+    (page)="dataFrame.pagination.setPage($event)"
+    showFirstLastButtons
+  ></mat-paginator>
 </div>

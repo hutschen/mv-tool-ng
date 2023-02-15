@@ -24,7 +24,7 @@ import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import { FilterForExistence, Filters } from '../filter';
 import { JiraProjectField } from './project-fields';
 
-export class ProjectFrame extends DataFrame<Project> {
+export class ProjectDataFrame extends DataFrame<Project> {
   constructor(
     protected _projectService: ProjectService,
     initQueryParams: IQueryParams = {}
