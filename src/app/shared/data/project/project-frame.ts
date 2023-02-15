@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { map } from 'rxjs';
 import { Project, ProjectService } from '../../services/project.service';
 import { IQueryParams } from '../../services/query-params.service';
 import {
@@ -51,5 +52,23 @@ export class ProjectDataFrame extends DataFrame<Project> {
       initQueryParams
     );
     this.reload();
+  }
+
+  override getColumnNames() {
+    return this._projectService.getProjectFieldNames();
+  }
+
+  override getData(queryParams: IQueryParams) {
+    return this._projectService.queryProjects(queryParams).pipe(
+      map((projects) => {
+        if (Array.isArray(projects)) {
+          this.length = projects.length;
+          return projects;
+        } else {
+          this.length = projects.total_count;
+          return projects.items;
+        }
+      })
+    );
   }
 }
