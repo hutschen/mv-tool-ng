@@ -15,9 +15,10 @@
 
 import { Injectable } from '@angular/core';
 import { firstValueFrom, map, Observable } from 'rxjs';
-import { CRUDService } from './crud.service';
+import { CRUDService, IPage } from './crud.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
+import { IQueryParams } from './query-params.service';
 import { IUploadState, UploadService } from './upload.service';
 
 export interface IDocumentInput {
@@ -72,6 +73,21 @@ export class DocumentService {
 
   getDocumentUrl(documentId: number): string {
     return `documents/${documentId}`;
+  }
+
+  queryDocuments(params: IQueryParams = {}) {
+    return this._crud.query('documents', params).pipe(
+      map((documents) => {
+        if (Array.isArray(documents)) {
+          return documents.map((d) => new Document(d));
+        } else {
+          return {
+            ...documents,
+            items: documents.items.map((d) => new Document(d)),
+          } as IPage<Document>;
+        }
+      })
+    );
   }
 
   listDocuments_legacy(projectId: number): Observable<Document[]> {
