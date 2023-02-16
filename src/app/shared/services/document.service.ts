@@ -138,6 +138,10 @@ export class DocumentService {
     >;
   }
 
+  getDocumentReferences(params: IQueryParams = {}) {
+    return this._crud_str.query('document/references', params);
+  }
+
   getDocumentRepresentations(params: IQueryParams = {}) {
     return this._crud_repr.query('document/representations', params);
   }
