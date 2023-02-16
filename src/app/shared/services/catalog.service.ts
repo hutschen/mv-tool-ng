@@ -15,7 +15,8 @@
 
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { CRUDService } from './crud.service';
+import { CRUDService, IPage } from './crud.service';
+import { IQueryParams } from './query-params.service';
 
 export interface ICatalogInput {
   reference: string | null;
@@ -61,6 +62,21 @@ export class CatalogService {
 
   getCatalogUrl(catalogId: number): string {
     return `${this.getCatalogsUrl()}/${catalogId}`;
+  }
+
+  queryCatalogs(params: IQueryParams = {}) {
+    return this._crud.query('catalogs', params).pipe(
+      map((catalogs) => {
+        if (Array.isArray(catalogs)) {
+          return catalogs.map((c) => new Catalog(c));
+        } else {
+          return {
+            ...catalogs,
+            items: catalogs.items.map((c) => new Catalog(c)),
+          } as IPage<Catalog>;
+        }
+      })
+    );
   }
 
   listCatalogs_legacy(): Observable<Catalog[]> {
