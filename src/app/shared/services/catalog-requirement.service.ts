@@ -176,4 +176,8 @@ export class CatalogRequirementService {
       params
     ) as Observable<string[]>;
   }
+
+  getCatalogRequirementReferences(params: IQueryParams = {}) {
+    return this._crud_str.query('catalog-requirement/references', params);
+  }
 }
