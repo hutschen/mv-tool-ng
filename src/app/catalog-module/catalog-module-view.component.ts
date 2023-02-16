@@ -27,7 +27,7 @@ import { Catalog, CatalogService } from '../shared/services/catalog.service';
       <mat-divider></mat-divider>
       <mvtool-catalog-module-table
         [catalog]="catalog"
-        (catalogModuleClicked)="onCatalogModuleClicked($event)"
+        (clickCatalogModule)="onCatalogModuleClicked($event)"
       ></mvtool-catalog-module-table>
     </div>
   `,
