@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { map } from 'rxjs';
 import {
   CatalogModule,
   CatalogModuleService,
@@ -57,5 +58,24 @@ export class CatalogModuleDataFrame extends DataFrame<CatalogModule> {
     return this._catalogModuleService.getCatalogModuleFieldNames({
       catalog_ids: this._catalog.id,
     });
+  }
+
+  override getData(queryParams: IQueryParams) {
+    return this._catalogModuleService
+      .queryCatalogModules({
+        catalog_ids: this._catalog.id,
+        ...queryParams,
+      })
+      .pipe(
+        map((catalogModules) => {
+          if (Array.isArray(catalogModules)) {
+            this.length = catalogModules.length;
+            return catalogModules;
+          } else {
+            this.length = catalogModules.total_count;
+            return catalogModules.items;
+          }
+        })
+      );
   }
 }
