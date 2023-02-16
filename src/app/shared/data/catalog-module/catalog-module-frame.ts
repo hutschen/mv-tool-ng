@@ -52,4 +52,10 @@ export class CatalogModuleDataFrame extends DataFrame<CatalogModule> {
     );
     this.reload();
   }
+
+  override getColumnNames() {
+    return this._catalogModuleService.getCatalogModuleFieldNames({
+      catalog_ids: this._catalog.id,
+    });
+  }
 }
