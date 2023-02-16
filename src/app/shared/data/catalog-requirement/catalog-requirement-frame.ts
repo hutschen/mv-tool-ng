@@ -72,4 +72,10 @@ export class CatalogRequirementDataFrame extends DataFrame<CatalogRequirement> {
     );
     this.reload();
   }
+
+  override getColumnNames() {
+    return this._catalogRequirementService.getCatalogRequirementFieldNames({
+      catalog_module_ids: this._catalogModule.id,
+    });
+  }
 }
