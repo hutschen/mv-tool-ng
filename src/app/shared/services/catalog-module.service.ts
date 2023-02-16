@@ -61,7 +61,7 @@ export class CatalogModule implements ICatalogModule {
 
 export interface ICatalogModuleRepresentation {
   id: number;
-  reference: string | null;
+  reference?: string | null;
   title: string;
 }
 
