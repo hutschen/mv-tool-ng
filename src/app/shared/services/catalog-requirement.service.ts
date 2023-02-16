@@ -78,6 +78,12 @@ export class CatalogRequirement implements ICatalogRequirement {
   }
 }
 
+export interface ICatalogRequirementRepresentation {
+  id: number;
+  reference?: string | null;
+  summary: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -88,6 +94,7 @@ export class CatalogRequirementService {
       ICatalogRequirement
     >,
     protected _crud_str: CRUDService<null, string>,
+    protected _crud_repr: CRUDService<null, ICatalogRequirementRepresentation>,
     protected _catalogModules: CatalogModuleService
   ) {}
 
@@ -179,5 +186,9 @@ export class CatalogRequirementService {
 
   getCatalogRequirementReferences(params: IQueryParams = {}) {
     return this._crud_str.query('catalog-requirement/references', params);
+  }
+
+  getCatalogRequirementRepresentations(params: IQueryParams = {}) {
+    return this._crud_repr.query('catalog-requirement/representations', params);
   }
 }
