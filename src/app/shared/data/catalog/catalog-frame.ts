@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { map } from 'rxjs';
 import { Catalog, CatalogService } from '../../services/catalog.service';
 import { IQueryParams } from '../../services/query-params.service';
 import { DescriptionColumn, TitleColumn } from '../custom/custom-colums';
@@ -46,5 +47,23 @@ export class CatalogDataFrame extends DataFrame<Catalog> {
       initQueryParams
     );
     this.reload();
+  }
+
+  override getColumnNames() {
+    return this._catalogService.getCatalogFieldNames();
+  }
+
+  override getData(queryParams: IQueryParams) {
+    return this._catalogService.queryCatalogs(queryParams).pipe(
+      map((catalogs) => {
+        if (Array.isArray(catalogs)) {
+          this.length = catalogs.length;
+          return catalogs;
+        } else {
+          this.length = catalogs.total_count;
+          return catalogs.items;
+        }
+      })
+    );
   }
 }
