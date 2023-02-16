@@ -103,16 +103,6 @@ export class CatalogModuleService {
     );
   }
 
-  listCatalogModules_legacy(catalogId: number): Observable<CatalogModule[]> {
-    return this._crud_catalog_module
-      .list_legacy(this.getCatalogModulesUrl(catalogId))
-      .pipe(
-        map((catalogModules) =>
-          catalogModules.map((cm) => new CatalogModule(cm))
-        )
-      );
-  }
-
   createCatalogModule(
     catalogId: number,
     catalogModuleInput: ICatalogModuleInput
