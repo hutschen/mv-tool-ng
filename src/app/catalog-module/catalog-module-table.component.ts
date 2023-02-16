@@ -14,9 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
-import { TableColumns } from '../shared/table-columns';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import {
   CatalogModule,
@@ -24,6 +23,9 @@ import {
 } from '../shared/services/catalog-module.service';
 import { Catalog } from '../shared/services/catalog.service';
 import { CatalogModuleDialogService } from './catalog-module-dialog.component';
+import { QueryParamsService } from '../shared/services/query-params.service';
+import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
+import { CatalogModuleDataFrame } from '../shared/data/catalog-module/catalog-module-frame';
 
 @Component({
   selector: 'mvtool-catalog-module-table',
@@ -36,29 +38,29 @@ import { CatalogModuleDialogService } from './catalog-module-dialog.component';
   styles: [],
 })
 export class CatalogModuleTableComponent implements OnInit {
-  columns = new TableColumns<CatalogModule>([
-    { id: 'reference', label: 'Reference', optional: true },
-    { id: 'gs_reference', label: 'GS Reference', optional: true },
-    { id: 'title', label: 'Title' },
-    { id: 'description', label: 'Description', optional: true },
-    { id: 'options' },
-  ]);
-  protected _dataSubject = new ReplaySubject<CatalogModule[]>(1);
-  data$: Observable<CatalogModule[]> = this._dataSubject.asObservable();
-  data: CatalogModule[] = [];
-  dataLoaded: boolean = false;
+  dataFrame!: CatalogModuleDataFrame;
   @Input() catalog?: Catalog;
-  @Output() catalogModuleClicked = new EventEmitter<CatalogModule>();
+  @Output() clickCatalogModule = new EventEmitter<CatalogModule>();
 
   constructor(
+    protected _queryParamsService: QueryParamsService,
     protected _catalogModuleService: CatalogModuleService,
     protected _catalogModuleDialogService: CatalogModuleDialogService,
     protected _uploadDialogService: UploadDialogService,
-    protected _confirmDialogService: ConfirmDialogService
+    protected _confirmDialogService: ConfirmDialogService,
+    protected _hideColumnsDialogService: HideColumnsDialogService
   ) {}
 
   async ngOnInit(): Promise<void> {
-    await this.onReloadCatalogModules();
+    if (!this.catalog) throw new Error('catalog is undefined');
+    this.dataFrame = new CatalogModuleDataFrame(
+      this._catalogModuleService,
+      this.catalog,
+      this._queryParamsService.getQueryParams()
+    );
+    this._queryParamsService
+      .syncQueryParams(this.dataFrame.queryParams$)
+      .subscribe();
   }
 
   protected async _createOrEditCatalogModule(
@@ -74,7 +76,7 @@ export class CatalogModuleTableComponent implements OnInit {
         dialogRef.afterClosed()
       );
       if (resultingCatalogModule) {
-        await this.onReloadCatalogModules();
+        this.dataFrame.addOrUpdateItem(resultingCatalogModule);
       }
     } else {
       throw new Error('catalog is undefined');
@@ -99,7 +101,7 @@ export class CatalogModuleTableComponent implements OnInit {
       await firstValueFrom(
         this._catalogModuleService.deleteCatalogModule(catalogModule.id)
       );
-      await this.onReloadCatalogModules();
+      this.dataFrame.removeItem(catalogModule);
     }
   }
 
@@ -118,19 +120,13 @@ export class CatalogModuleTableComponent implements OnInit {
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());
     if (uploadState && uploadState.state == 'done') {
-      await this.onReloadCatalogModules();
+      this.dataFrame.reload();
     }
   }
 
-  async onReloadCatalogModules(): Promise<void> {
-    if (this.catalog) {
-      const data = await firstValueFrom(
-        this._catalogModuleService.listCatalogModules(this.catalog.id)
-      );
-      this._dataSubject.next(data);
-      this.dataLoaded = true;
-    } else {
-      throw new Error('catalog is undefined');
-    }
+  onHideColumns() {
+    this._hideColumnsDialogService.openHideColumnsDialog(
+      this.dataFrame.columns
+    );
   }
 }

@@ -127,9 +127,9 @@ describe('ProjectService', () => {
     );
   });
 
-  it('should list projects', (done: DoneFn) => {
+  it('should query projects', (done: DoneFn) => {
     const projectList = [outputMock];
-    sut.listProjects_legacy().subscribe({
+    sut.queryProjects().subscribe({
       next: (value) => {
         expect(value).toEqual(
           projectList.map((project) => new Project(project))

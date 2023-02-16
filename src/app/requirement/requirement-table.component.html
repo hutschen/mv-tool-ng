@@ -140,12 +140,12 @@
           [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
         ></mvtool-table-options>
       </th>
-      <td mat-cell *matCellDef="let row">
+      <td mat-cell *matCellDef="let requirement">
         <mvtool-table-row-options
-          (edit)="onEditRequirement(row.data)"
-          (delete)="onDeleteRequirement(row.data)"
+          (edit)="onEditRequirement(requirement)"
+          (delete)="onDeleteRequirement(requirement)"
         >
-          <button mat-menu-item (click)="onEditCompliance(row.data)">
+          <button mat-menu-item (click)="onEditCompliance(requirement)">
             <mat-icon>assured_workload</mat-icon>
             Set compliance status
           </button>

@@ -93,7 +93,7 @@ describe('CatalogModuleService', () => {
     const catalogId = outputMock.catalog.id;
     const catalogModulesList = [outputMock];
 
-    sut.listCatalogModules(catalogId).subscribe({
+    sut.queryCatalogModules({ catalogId }).subscribe({
       next: (value) =>
         expect(value).toEqual(
           catalogModulesList.map((cm) => new CatalogModule(cm))

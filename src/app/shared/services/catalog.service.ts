@@ -82,12 +82,6 @@ export class CatalogService {
     );
   }
 
-  listCatalogs_legacy(): Observable<Catalog[]> {
-    return this._crud_catalog
-      .list_legacy(this.getCatalogsUrl())
-      .pipe(map((catalogs) => catalogs.map((c) => new Catalog(c))));
-  }
-
   createCatalog(catalogInput: ICatalogInput): Observable<Catalog> {
     return this._crud_catalog
       .create(this.getCatalogsUrl(), catalogInput)

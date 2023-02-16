@@ -77,9 +77,9 @@ describe('CatalogService', () => {
     );
   });
 
-  it('should list catalogs', (done: DoneFn) => {
+  it('should query catalogs', (done: DoneFn) => {
     const catalogList = [outputMock];
-    sut.listCatalogs_legacy().subscribe({
+    sut.queryCatalogs().subscribe({
       next: (value) =>
         expect(value).toEqual(catalogList.map((c) => new Catalog(c))),
       complete: done,
