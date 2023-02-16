@@ -143,6 +143,10 @@ export class CatalogModuleService {
     ) as Observable<string[]>;
   }
 
+  getCatalogModuleReferences(params: IQueryParams) {
+    return this._crud_str.query('catalog-module/references', params);
+  }
+
   uploadGSBaustein(catalogId: number, file: File): Observable<IUploadState> {
     const url = `${this.getCatalogModulesUrl(catalogId)}/gs-baustein`;
     return this._upload.upload(url, file);
