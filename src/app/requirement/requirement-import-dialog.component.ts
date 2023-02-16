@@ -227,6 +227,7 @@ export class RequirementImportDialogService {
     project: Project
   ): MatDialogRef<RequirementImportDialogComponent, Requirement[]> {
     return this._dialog.open(RequirementImportDialogComponent, {
+      width: '500px',
       data: project,
     });
   }
@@ -312,7 +313,7 @@ export class RequirementImportDialogComponent implements OnInit {
   // load catalogs and catalog modules
   async ngOnInit(): Promise<void> {
     const catalogs = await firstValueFrom(
-      this._catalogService.listCatalogs_legacy()
+      this._catalogService.queryCatalogs() as Observable<Catalog[]>
     );
     this.dataSource.data = catalogs.map(
       (catalog) => new CatalogNode(catalog, this._catalogModuleService)
