@@ -83,7 +83,11 @@ export class CatalogRequirement implements ICatalogRequirement {
 })
 export class CatalogRequirementService {
   constructor(
-    protected _crud: CRUDService<ICatalogRequirementInput, ICatalogRequirement>,
+    protected _crud_catalog_requirement: CRUDService<
+      ICatalogRequirementInput,
+      ICatalogRequirement
+    >,
+    protected _crud_str: CRUDService<null, string>,
     protected _catalogModules: CatalogModuleService
   ) {}
 
@@ -98,26 +102,28 @@ export class CatalogRequirementService {
   }
 
   queryCatalogRequirements(params: IQueryParams = {}) {
-    return this._crud.query('catalog-requirements', params).pipe(
-      map((catalogRequirements) => {
-        if (Array.isArray(catalogRequirements)) {
-          return catalogRequirements.map((cr) => new CatalogRequirement(cr));
-        } else {
-          return {
-            ...catalogRequirements,
-            items: catalogRequirements.items.map(
-              (cr) => new CatalogRequirement(cr)
-            ),
-          } as IPage<CatalogRequirement>;
-        }
-      })
-    );
+    return this._crud_catalog_requirement
+      .query('catalog-requirements', params)
+      .pipe(
+        map((catalogRequirements) => {
+          if (Array.isArray(catalogRequirements)) {
+            return catalogRequirements.map((cr) => new CatalogRequirement(cr));
+          } else {
+            return {
+              ...catalogRequirements,
+              items: catalogRequirements.items.map(
+                (cr) => new CatalogRequirement(cr)
+              ),
+            } as IPage<CatalogRequirement>;
+          }
+        })
+      );
   }
 
   listCatalogRequirements_legacy(
     catalogModuleId: number
   ): Observable<CatalogRequirement[]> {
-    return this._crud
+    return this._crud_catalog_requirement
       .list_legacy(this.getCatalogRequirementsUrl(catalogModuleId))
       .pipe(
         map((catalogRequirements) =>
@@ -130,7 +136,7 @@ export class CatalogRequirementService {
     catalogModuleId: number,
     catalogRequirementInput: ICatalogRequirementInput
   ): Observable<CatalogRequirement> {
-    return this._crud
+    return this._crud_catalog_requirement
       .create(
         this.getCatalogRequirementsUrl(catalogModuleId),
         catalogRequirementInput
@@ -141,7 +147,7 @@ export class CatalogRequirementService {
   getCatalogRequirement(
     catalogRequirementId: number
   ): Observable<CatalogRequirement> {
-    return this._crud
+    return this._crud_catalog_requirement
       .read(this.getCatalogRequirementUrl(catalogRequirementId))
       .pipe(map((cr) => new CatalogRequirement(cr)));
   }
@@ -150,7 +156,7 @@ export class CatalogRequirementService {
     catalogRequirementId: number,
     catalogRequirementInput: ICatalogRequirementInput
   ): Observable<CatalogRequirement> {
-    return this._crud
+    return this._crud_catalog_requirement
       .update(
         this.getCatalogRequirementUrl(catalogRequirementId),
         catalogRequirementInput
@@ -159,8 +165,15 @@ export class CatalogRequirementService {
   }
 
   deleteCatalogRequirement(catalogRequirementId: number): Observable<null> {
-    return this._crud.delete(
+    return this._crud_catalog_requirement.delete(
       this.getCatalogRequirementUrl(catalogRequirementId)
     );
+  }
+
+  getCatalogRequirementFieldNames(params: IQueryParams = {}) {
+    return this._crud_str.query(
+      'catalog-requirement/field-names',
+      params
+    ) as Observable<string[]>;
   }
 }
