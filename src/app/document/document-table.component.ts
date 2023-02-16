@@ -22,6 +22,9 @@ import { UploadDialogService } from '../shared/components/upload-dialog.componen
 import { DocumentService, Document } from '../shared/services/document.service';
 import { Project } from '../shared/services/project.service';
 import { DocumentDialogService } from './document-dialog.component';
+import { DocumentDataFrame } from '../shared/data/document/document-frame';
+import { QueryParamsService } from '../shared/services/query-params.service';
+import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 
 @Component({
   selector: 'mvtool-document-table',
@@ -34,28 +37,29 @@ import { DocumentDialogService } from './document-dialog.component';
   styles: [],
 })
 export class DocumentTableComponent implements OnInit {
-  columns = new TableColumns<Document>([
-    { id: 'reference', label: 'Reference', optional: true },
-    { id: 'title', label: 'Title' },
-    { id: 'description', label: 'Description', optional: true },
-    { id: 'options' },
-  ]);
-  protected _dataSubject = new ReplaySubject<Document[]>(1);
-  data$: Observable<Document[]> = this._dataSubject.asObservable();
-  dataLoaded: boolean = false;
-  @Input() project: Project | null = null;
-  // @Output() documentClicked = new EventEmitter<Document>()
+  dataFrame!: DocumentDataFrame;
+  @Input() project?: Project;
 
   constructor(
+    protected _queryParamsService: QueryParamsService,
     protected _documentService: DocumentService,
     protected _documentDialogService: DocumentDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
-    protected _confirmDialogService: ConfirmDialogService
+    protected _confirmDialogService: ConfirmDialogService,
+    protected _hideColumnsDialogService: HideColumnsDialogService
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    await this.onReloadDocuments();
+  ngOnInit(): void {
+    if (!this.project) throw new Error('Project is undefined');
+    this.dataFrame = new DocumentDataFrame(
+      this._documentService,
+      this.project,
+      this._queryParamsService.getQueryParams()
+    );
+    this._queryParamsService
+      .syncQueryParams(this.dataFrame.queryParams$)
+      .subscribe();
   }
 
   protected async _createOrEditDocument(document?: Document) {
@@ -66,7 +70,7 @@ export class DocumentTableComponent implements OnInit {
       );
       const resultingDocument = await firstValueFrom(dialogRef.afterClosed());
       if (resultingDocument) {
-        await this.onReloadDocuments();
+        this.dataFrame.addOrUpdateItem(resultingDocument);
       }
     } else {
       throw new Error('Project is undefined');
@@ -89,7 +93,7 @@ export class DocumentTableComponent implements OnInit {
     const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
     if (confirmed) {
       await firstValueFrom(this._documentService.deleteDocument(document.id));
-      await this.onReloadDocuments();
+      this.dataFrame.removeItem(document);
     }
   }
 
@@ -120,19 +124,13 @@ export class DocumentTableComponent implements OnInit {
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());
     if (uploadState && uploadState.state == 'done') {
-      await this.onReloadDocuments();
+      this.dataFrame.reload();
     }
   }
 
-  async onReloadDocuments(): Promise<void> {
-    if (this.project) {
-      const data = await firstValueFrom(
-        this._documentService.listDocuments(this.project.id)
-      );
-      this._dataSubject.next(data);
-      this.dataLoaded = true;
-    } else {
-      throw new Error('Project is undefined');
-    }
+  onHideColumns(): void {
+    this._hideColumnsDialogService.openHideColumnsDialog(
+      this.dataFrame.columns
+    );
   }
 }

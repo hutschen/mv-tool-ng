@@ -47,7 +47,7 @@ export class DocumentInputComponent implements OnInit {
   ngOnInit(): void {
     if (this.project) {
       this._documentService
-        .listDocuments(this.project.id)
+        .listDocuments_legacy(this.project.id)
         .subscribe((documents) => {
           this.documents = documents;
         });
