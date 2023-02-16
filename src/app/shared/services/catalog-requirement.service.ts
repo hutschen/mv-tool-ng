@@ -96,7 +96,7 @@ export class CatalogRequirementService {
     return `catalog-requirements/${catalogRequirementId}`;
   }
 
-  listCatalogRequirements(
+  listCatalogRequirements_legacy(
     catalogModuleId: number
   ): Observable<CatalogRequirement[]> {
     return this._crud

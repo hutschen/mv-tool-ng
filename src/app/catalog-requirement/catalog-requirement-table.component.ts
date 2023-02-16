@@ -112,7 +112,7 @@ export class CatalogRequirementTableComponent implements OnInit {
   async onReloadCatalogRequirements(): Promise<void> {
     if (this.catalogModule) {
       const data = await firstValueFrom(
-        this._catalogRequirementService.listCatalogRequirements(
+        this._catalogRequirementService.listCatalogRequirements_legacy(
           this.catalogModule.id
         )
       );

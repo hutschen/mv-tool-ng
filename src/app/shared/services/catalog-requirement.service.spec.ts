@@ -94,7 +94,7 @@ describe('CatalogRequirementService', () => {
     const catalogModuleId = outputMock.catalog_module.id;
     const catalogRequirementsList = [outputMock];
 
-    sut.listCatalogRequirements(catalogModuleId).subscribe({
+    sut.listCatalogRequirements_legacy(catalogModuleId).subscribe({
       next: (value) =>
         expect(value).toEqual(
           catalogRequirementsList.map((cr) => new CatalogRequirement(cr))
