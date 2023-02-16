@@ -20,7 +20,7 @@ import { Catalog } from '../shared/services/catalog.service';
 @Component({
   selector: 'mvtool-catalog-view',
   template: `<mvtool-catalog-table
-    (catalogClicked)="onCatalogClicked($event)"
+    (clickCatalog)="onCatalogClicked($event)"
   ></mvtool-catalog-table>`,
   styles: [],
 })

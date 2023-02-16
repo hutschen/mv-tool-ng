@@ -311,7 +311,9 @@ export class RequirementImportDialogComponent implements OnInit {
 
   // load catalogs and catalog modules
   async ngOnInit(): Promise<void> {
-    const catalogs = await firstValueFrom(this._catalogService.listCatalogs());
+    const catalogs = await firstValueFrom(
+      this._catalogService.listCatalogs_legacy()
+    );
     this.dataSource.data = catalogs.map(
       (catalog) => new CatalogNode(catalog, this._catalogModuleService)
     );

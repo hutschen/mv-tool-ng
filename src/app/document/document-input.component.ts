@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Document, DocumentService } from '../shared/services/document.service';
 import { Project } from '../shared/services/project.service';
 
@@ -46,11 +47,13 @@ export class DocumentInputComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.project) {
-      this._documentService
-        .listDocuments_legacy(this.project.id)
-        .subscribe((documents) => {
-          this.documents = documents;
-        });
+      (
+        this._documentService.queryDocuments({
+          project_ids: this.project.id,
+        }) as Observable<Document[]>
+      ).subscribe((documents) => {
+        this.documents = documents;
+      });
     }
   }
 

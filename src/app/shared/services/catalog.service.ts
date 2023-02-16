@@ -14,8 +14,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom, map, Observable } from 'rxjs';
-import { CRUDService } from './crud.service';
+import { map, Observable } from 'rxjs';
+import { CRUDService, IPage } from './crud.service';
+import { IQueryParams } from './query-params.service';
 
 export interface ICatalogInput {
   reference: string | null;
@@ -53,7 +54,10 @@ export class Catalog implements ICatalog {
   providedIn: 'root',
 })
 export class CatalogService {
-  constructor(protected _crud: CRUDService<ICatalogInput, ICatalog>) {}
+  constructor(
+    protected _crud_catalog: CRUDService<ICatalogInput, ICatalog>,
+    protected _crud_str: CRUDService<null, string>
+  ) {}
 
   getCatalogsUrl(): string {
     return 'catalogs';
@@ -63,20 +67,35 @@ export class CatalogService {
     return `${this.getCatalogsUrl()}/${catalogId}`;
   }
 
-  listCatalogs(): Observable<Catalog[]> {
-    return this._crud
+  queryCatalogs(params: IQueryParams = {}) {
+    return this._crud_catalog.query('catalogs', params).pipe(
+      map((catalogs) => {
+        if (Array.isArray(catalogs)) {
+          return catalogs.map((c) => new Catalog(c));
+        } else {
+          return {
+            ...catalogs,
+            items: catalogs.items.map((c) => new Catalog(c)),
+          } as IPage<Catalog>;
+        }
+      })
+    );
+  }
+
+  listCatalogs_legacy(): Observable<Catalog[]> {
+    return this._crud_catalog
       .list_legacy(this.getCatalogsUrl())
       .pipe(map((catalogs) => catalogs.map((c) => new Catalog(c))));
   }
 
   createCatalog(catalogInput: ICatalogInput): Observable<Catalog> {
-    return this._crud
+    return this._crud_catalog
       .create(this.getCatalogsUrl(), catalogInput)
       .pipe(map((catalog) => new Catalog(catalog)));
   }
 
   getCatalog(catalogId: number): Observable<Catalog> {
-    return this._crud
+    return this._crud_catalog
       .read(this.getCatalogUrl(catalogId))
       .pipe(map((catalog) => new Catalog(catalog)));
   }
@@ -85,12 +104,24 @@ export class CatalogService {
     catalogId: number,
     catalogInput: ICatalogInput
   ): Observable<Catalog> {
-    return this._crud
+    return this._crud_catalog
       .update(this.getCatalogUrl(catalogId), catalogInput)
       .pipe(map((catalog) => new Catalog(catalog)));
   }
 
   deleteCatalog(catalogId: number): Observable<null> {
-    return this._crud.delete(this.getCatalogUrl(catalogId));
+    return this._crud_catalog.delete(this.getCatalogUrl(catalogId));
+  }
+
+  getCatalogFieldNames(params: IQueryParams = {}) {
+    return this._crud_str.query('catalog/field-names', params) as Observable<
+      string[]
+    >;
+  }
+
+  getCatalogReferences(params: IQueryParams = {}) {
+    return this._crud_str.query('catalog/references', params) as Observable<
+      string[]
+    >;
   }
 }
