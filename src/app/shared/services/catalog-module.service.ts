@@ -64,7 +64,11 @@ export class CatalogModule implements ICatalogModule {
 })
 export class CatalogModuleService {
   constructor(
-    protected _crud: CRUDService<ICatalogModuleInput, ICatalogModule>,
+    protected _crud_catalog_module: CRUDService<
+      ICatalogModuleInput,
+      ICatalogModule
+    >,
+    protected _crud_str: CRUDService<null, string>,
     protected _upload: UploadService,
     protected _catalogs: CatalogService
   ) {}
@@ -78,7 +82,7 @@ export class CatalogModuleService {
   }
 
   queryCatalogModules(params: IQueryParams) {
-    return this._crud.query('catalog-modules', params).pipe(
+    return this._crud_catalog_module.query('catalog-modules', params).pipe(
       map((catalogModules) => {
         if (Array.isArray(catalogModules)) {
           return catalogModules.map((cm) => new CatalogModule(cm));
@@ -93,7 +97,7 @@ export class CatalogModuleService {
   }
 
   listCatalogModules_legacy(catalogId: number): Observable<CatalogModule[]> {
-    return this._crud
+    return this._crud_catalog_module
       .list_legacy(this.getCatalogModulesUrl(catalogId))
       .pipe(
         map((catalogModules) =>
@@ -106,13 +110,13 @@ export class CatalogModuleService {
     catalogId: number,
     catalogModuleInput: ICatalogModuleInput
   ): Observable<CatalogModule> {
-    return this._crud
+    return this._crud_catalog_module
       .create(this.getCatalogModulesUrl(catalogId), catalogModuleInput)
       .pipe(map((catalogModule) => new CatalogModule(catalogModule)));
   }
 
   getCatalogModule(catalogModuleId: number): Observable<CatalogModule> {
-    return this._crud
+    return this._crud_catalog_module
       .read(this.getCatalogModuleUrl(catalogModuleId))
       .pipe(map((catalogModule) => new CatalogModule(catalogModule)));
   }
@@ -121,13 +125,22 @@ export class CatalogModuleService {
     catalogModuleId: number,
     catalogModuleInput: ICatalogModuleInput
   ): Observable<CatalogModule> {
-    return this._crud
+    return this._crud_catalog_module
       .update(this.getCatalogModuleUrl(catalogModuleId), catalogModuleInput)
       .pipe(map((catalogModule) => new CatalogModule(catalogModule)));
   }
 
   deleteCatalogModule(catalogModuleId: number): Observable<null> {
-    return this._crud.delete(this.getCatalogModuleUrl(catalogModuleId));
+    return this._crud_catalog_module.delete(
+      this.getCatalogModuleUrl(catalogModuleId)
+    );
+  }
+
+  getCatalogModuleFieldNames(params: IQueryParams) {
+    return this._crud_str.query(
+      'catalog-module/field-names',
+      params
+    ) as Observable<string[]>;
   }
 
   uploadGSBaustein(catalogId: number, file: File): Observable<IUploadState> {
