@@ -93,7 +93,7 @@ class CatalogNode implements INode {
   async loadChildren(): Promise<CatalogModuleNode[]> {
     if (!this.isLoaded) {
       const children$ = this._catalogModuleService
-        .listCatalogModules(this.catalog.id)
+        .listCatalogModules_legacy(this.catalog.id)
         .pipe(
           // convert to nodes
           map((catalogModules) =>

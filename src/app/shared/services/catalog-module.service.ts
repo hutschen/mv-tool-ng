@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Catalog, CatalogService, ICatalog } from './catalog.service';
 import { CRUDService } from './crud.service';
 import { IUploadState, UploadService } from './upload.service';
@@ -76,7 +76,7 @@ export class CatalogModuleService {
     return `catalog-modules/${catalogModuleId}`;
   }
 
-  listCatalogModules(catalogId: number): Observable<CatalogModule[]> {
+  listCatalogModules_legacy(catalogId: number): Observable<CatalogModule[]> {
     return this._crud
       .list_legacy(this.getCatalogModulesUrl(catalogId))
       .pipe(

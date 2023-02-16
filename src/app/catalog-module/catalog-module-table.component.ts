@@ -125,7 +125,7 @@ export class CatalogModuleTableComponent implements OnInit {
   async onReloadCatalogModules(): Promise<void> {
     if (this.catalog) {
       const data = await firstValueFrom(
-        this._catalogModuleService.listCatalogModules(this.catalog.id)
+        this._catalogModuleService.listCatalogModules_legacy(this.catalog.id)
       );
       this._dataSubject.next(data);
       this.dataLoaded = true;
