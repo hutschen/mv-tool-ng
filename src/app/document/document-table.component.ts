@@ -14,10 +14,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
-import { TableColumns } from '../shared/table-columns';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { DocumentService, Document } from '../shared/services/document.service';
 import { Project } from '../shared/services/project.service';
