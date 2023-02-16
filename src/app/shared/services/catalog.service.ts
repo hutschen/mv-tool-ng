@@ -54,7 +54,10 @@ export class Catalog implements ICatalog {
   providedIn: 'root',
 })
 export class CatalogService {
-  constructor(protected _crud: CRUDService<ICatalogInput, ICatalog>) {}
+  constructor(
+    protected _crud_catalog: CRUDService<ICatalogInput, ICatalog>,
+    protected _crud_str: CRUDService<null, string>
+  ) {}
 
   getCatalogsUrl(): string {
     return 'catalogs';
@@ -65,7 +68,7 @@ export class CatalogService {
   }
 
   queryCatalogs(params: IQueryParams = {}) {
-    return this._crud.query('catalogs', params).pipe(
+    return this._crud_catalog.query('catalogs', params).pipe(
       map((catalogs) => {
         if (Array.isArray(catalogs)) {
           return catalogs.map((c) => new Catalog(c));
@@ -80,19 +83,19 @@ export class CatalogService {
   }
 
   listCatalogs_legacy(): Observable<Catalog[]> {
-    return this._crud
+    return this._crud_catalog
       .list_legacy(this.getCatalogsUrl())
       .pipe(map((catalogs) => catalogs.map((c) => new Catalog(c))));
   }
 
   createCatalog(catalogInput: ICatalogInput): Observable<Catalog> {
-    return this._crud
+    return this._crud_catalog
       .create(this.getCatalogsUrl(), catalogInput)
       .pipe(map((catalog) => new Catalog(catalog)));
   }
 
   getCatalog(catalogId: number): Observable<Catalog> {
-    return this._crud
+    return this._crud_catalog
       .read(this.getCatalogUrl(catalogId))
       .pipe(map((catalog) => new Catalog(catalog)));
   }
@@ -101,12 +104,18 @@ export class CatalogService {
     catalogId: number,
     catalogInput: ICatalogInput
   ): Observable<Catalog> {
-    return this._crud
+    return this._crud_catalog
       .update(this.getCatalogUrl(catalogId), catalogInput)
       .pipe(map((catalog) => new Catalog(catalog)));
   }
 
   deleteCatalog(catalogId: number): Observable<null> {
-    return this._crud.delete(this.getCatalogUrl(catalogId));
+    return this._crud_catalog.delete(this.getCatalogUrl(catalogId));
+  }
+
+  getCatalogFieldNames(params: IQueryParams = {}) {
+    return this._crud_str.query('catalog/field-names', params) as Observable<
+      string[]
+    >;
   }
 }
