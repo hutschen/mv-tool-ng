@@ -56,6 +56,12 @@ export class Document implements IDocument {
   }
 }
 
+export interface IDocumentRepresentation {
+  id: number;
+  reference?: string | null;
+  title: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -63,6 +69,7 @@ export class DocumentService {
   constructor(
     protected _crud_document: CRUDService<IDocumentInput, IDocument>,
     protected _crud_str: CRUDService<null, string>,
+    protected _crud_repr: CRUDService<null, IDocumentRepresentation>,
     protected _download: DownloadService,
     protected _upload: UploadService,
     protected _projects: ProjectService
@@ -129,6 +136,10 @@ export class DocumentService {
     return this._crud_str.query('documents/field-names', params) as Observable<
       string[]
     >;
+  }
+
+  getDocumentRepresentations(params: IQueryParams = {}) {
+    return this._crud_repr.query('document/representations', params);
   }
 
   downloadDocumentExcel(project_id: number): Observable<IDownloadState> {
