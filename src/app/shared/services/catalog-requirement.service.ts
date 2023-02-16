@@ -127,18 +127,6 @@ export class CatalogRequirementService {
       );
   }
 
-  listCatalogRequirements_legacy(
-    catalogModuleId: number
-  ): Observable<CatalogRequirement[]> {
-    return this._crud_catalog_requirement
-      .list_legacy(this.getCatalogRequirementsUrl(catalogModuleId))
-      .pipe(
-        map((catalogRequirements) =>
-          catalogRequirements.map((cr) => new CatalogRequirement(cr))
-        )
-      );
-  }
-
   createCatalogRequirement(
     catalogModuleId: number,
     catalogRequirementInput: ICatalogRequirementInput
