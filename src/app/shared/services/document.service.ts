@@ -133,7 +133,7 @@ export class DocumentService {
   }
 
   getDocumentFieldNames(params: IQueryParams = {}) {
-    return this._crud_str.query('documents/field-names', params) as Observable<
+    return this._crud_str.query('document/field-names', params) as Observable<
       string[]
     >;
   }

@@ -20,6 +20,7 @@ import { IQueryParams } from '../../services/query-params.service';
 import { TextField } from '../custom/custom-fields';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 import { DescriptionColumn, TitleColumn } from '../custom/custom-colums';
+import { Observable } from 'rxjs';
 
 export class DocumentDataFrame extends DataFrame<Document> {
   constructor(
@@ -48,5 +49,11 @@ export class DocumentDataFrame extends DataFrame<Document> {
       initQueryParams
     );
     this.reload();
+  }
+
+  override getColumnNames(): Observable<string[]> {
+    return this._documentService.getDocumentFieldNames({
+      project_ids: this._project.id,
+    });
   }
 }
