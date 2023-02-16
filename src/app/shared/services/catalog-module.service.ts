@@ -59,6 +59,12 @@ export class CatalogModule implements ICatalogModule {
   }
 }
 
+export interface ICatalogModuleRepresentation {
+  id: number;
+  reference: string | null;
+  title: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -69,6 +75,7 @@ export class CatalogModuleService {
       ICatalogModule
     >,
     protected _crud_str: CRUDService<null, string>,
+    protected _crud_repr: CRUDService<null, ICatalogModuleRepresentation>,
     protected _upload: UploadService,
     protected _catalogs: CatalogService
   ) {}
@@ -145,6 +152,10 @@ export class CatalogModuleService {
 
   getCatalogModuleReferences(params: IQueryParams) {
     return this._crud_str.query('catalog-module/references', params);
+  }
+
+  getCatalogModuleRepresentations(params: IQueryParams) {
+    return this._crud_repr.query('catalog-module/representations', params);
   }
 
   uploadGSBaustein(catalogId: number, file: File): Observable<IUploadState> {
