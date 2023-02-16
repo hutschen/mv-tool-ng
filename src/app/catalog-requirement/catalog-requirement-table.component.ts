@@ -23,6 +23,9 @@ import {
   CatalogRequirementService,
 } from '../shared/services/catalog-requirement.service';
 import { CatalogRequirementDialogService } from './catalog-requirement-dialog.component';
+import { QueryParamsService } from '../shared/services/query-params.service';
+import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
+import { CatalogRequirementDataFrame } from '../shared/data/catalog-requirement/catalog-requirement-frame';
 
 @Component({
   selector: 'mvtool-catalog-requirement-table',
@@ -35,30 +38,27 @@ import { CatalogRequirementDialogService } from './catalog-requirement-dialog.co
   styles: ['.mat-column-gs_absicherung {text-align: center;}'],
 })
 export class CatalogRequirementTableComponent implements OnInit {
-  columns = new TableColumns<CatalogRequirement>([
-    { id: 'reference', label: 'Reference', optional: true },
-    { id: 'gs_anforderung_reference', label: 'GS Reference', optional: true },
-    { id: 'summary', label: 'Summary' },
-    { id: 'description', optional: true, label: 'Description' },
-    { id: 'gs_absicherung', optional: true, label: 'GS Absicherung' },
-    { id: 'gs_verantwortliche', optional: true, label: 'GS Verantwortliche' },
-    { id: 'options' },
-  ]);
-  protected _dataSubject = new ReplaySubject<CatalogRequirement[]>(1);
-  data$: Observable<CatalogRequirement[]> = this._dataSubject.asObservable();
-  data: CatalogRequirement[] = [];
-  dataLoaded: boolean = false;
+  dataFrame!: CatalogRequirementDataFrame;
   @Input() catalogModule?: CatalogModule;
-  @Output() catalogRequirementClicked = new EventEmitter<CatalogRequirement>();
 
   constructor(
+    protected _queryParamsService: QueryParamsService,
     protected _catalogRequirementService: CatalogRequirementService,
     protected _catalogRequirementDialogService: CatalogRequirementDialogService,
-    protected _confirmDialogService: ConfirmDialogService
+    protected _confirmDialogService: ConfirmDialogService,
+    protected _hideColumnsDialogService: HideColumnsDialogService
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    await this.onReloadCatalogRequirements();
+  ngOnInit() {
+    if (!this.catalogModule) throw new Error('catalog module is undefined');
+    this.dataFrame = new CatalogRequirementDataFrame(
+      this._catalogRequirementService,
+      this.catalogModule,
+      this._queryParamsService.getQueryParams()
+    );
+    this._queryParamsService
+      .syncQueryParams(this.dataFrame.queryParams$)
+      .subscribe();
   }
 
   protected async _createOrEditCatalogRequirement(
@@ -74,7 +74,7 @@ export class CatalogRequirementTableComponent implements OnInit {
         dialogRef.afterClosed()
       );
       if (resultingCatalogRequirement) {
-        await this.onReloadCatalogRequirements();
+        this.dataFrame.addOrUpdateItem(resultingCatalogRequirement);
       }
     } else {
       throw new Error('catalog module is undefined');
@@ -105,21 +105,13 @@ export class CatalogRequirementTableComponent implements OnInit {
           catalogRequirement.id
         )
       );
-      await this.onReloadCatalogRequirements();
+      this.dataFrame.removeItem(catalogRequirement);
     }
   }
 
-  async onReloadCatalogRequirements(): Promise<void> {
-    if (this.catalogModule) {
-      const data = await firstValueFrom(
-        this._catalogRequirementService.listCatalogRequirements_legacy(
-          this.catalogModule.id
-        )
-      );
-      this._dataSubject.next(data);
-      this.dataLoaded = true;
-    } else {
-      throw new Error('catalog module is undefined');
-    }
+  onHideColumns() {
+    this._hideColumnsDialogService.openHideColumnsDialog(
+      this.dataFrame.columns
+    );
   }
 }

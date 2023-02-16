@@ -18,35 +18,37 @@
 <div class="fx-column">
   <!-- Toolbar -->
   <mvtool-table-toolbar
-    (refresh)="onReloadCatalogRequirements()"
+    (refresh)="this.dataFrame.reload()"
     (create)="onCreateCatalogRequirement()"
-    [showSearch]="true"
-    searchLabel="Filter Catalog Requirements"
+    [(search)]="dataFrame.search.pattern"
+    searchLabel="Search Catalog Requirements"
     createLabel="Create Catalog Requirement"
-    #tableToolbar
   >
   </mvtool-table-toolbar>
+</div>
 
-  <!-- Catalog requirements table -->
-  <mvtool-legacy-table
-    [columns]="columns"
-    [data$]="data$"
-    [dataLoaded]="dataLoaded"
-    [filterValue]="tableToolbar.search"
+<div class="mat-elevation-z3 fx-column">
+  <mvtool-table
+    [dataFrame]="dataFrame"
     (create)="onCreateCatalogRequirement()"
     noContentText="No catalog requirements found."
     loadingText="Loading catalog requirements..."
     matSort
-    #sort="matSort"
-    [sort]="sort"
-    #table
+    (matSortChange)="dataFrame.sort.setSort($event)"
+    [matSortActive]="(dataFrame.sort.active$ | async) ?? ''"
+    [matSortDirection]="(dataFrame.sort.direction$ | async) ?? ''"
   >
     <!-- Options column -->
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef>
-        <mvtool-legacy-table-options
-          [table]="table"
-        ></mvtool-legacy-table-options>
+        <mvtool-table-options
+          (hideColumns)="onHideColumns()"
+          [hideColumnsDisabled]="!dataFrame.columns.hideableColumns.length"
+          (clearFilters)="dataFrame.columns.clearFilters()"
+          [clearFiltersDisabled]="!(dataFrame.columns.areFiltersSet$ | async)"
+          (clearSort)="dataFrame.sort.clearSort()"
+          [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
+        ></mvtool-table-options>
       </th>
       <td mat-cell *matCellDef="let row">
         <mvtool-table-row-options
@@ -56,5 +58,14 @@
         </mvtool-table-row-options>
       </td>
     </ng-container>
-  </mvtool-legacy-table>
+  </mvtool-table>
+
+  <mat-paginator
+    [length]="dataFrame.length$ | async"
+    [pageSize]="(dataFrame.pagination.page$ | async)?.pageSize"
+    [pageIndex]="(dataFrame.pagination.page$ | async)?.pageIndex"
+    [pageSizeOptions]="dataFrame.pagination.pageSizeOptions"
+    (page)="dataFrame.pagination.setPage($event)"
+    showFirstLastButtons
+  ></mat-paginator>
 </div>
