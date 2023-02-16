@@ -20,7 +20,8 @@ import {
   CatalogModuleService,
   ICatalogModule,
 } from './catalog-module.service';
-import { CRUDService } from './crud.service';
+import { CRUDService, IPage } from './crud.service';
+import { IQueryParams } from './query-params.service';
 
 export interface ICatalogRequirementInput {
   reference?: string | null;
@@ -94,6 +95,23 @@ export class CatalogRequirementService {
 
   getCatalogRequirementUrl(catalogRequirementId: number): string {
     return `catalog-requirements/${catalogRequirementId}`;
+  }
+
+  queryCatalogRequirements(params: IQueryParams = {}) {
+    return this._crud.query('catalog-requirements', params).pipe(
+      map((catalogRequirements) => {
+        if (Array.isArray(catalogRequirements)) {
+          return catalogRequirements.map((cr) => new CatalogRequirement(cr));
+        } else {
+          return {
+            ...catalogRequirements,
+            items: catalogRequirements.items.map(
+              (cr) => new CatalogRequirement(cr)
+            ),
+          } as IPage<CatalogRequirement>;
+        }
+      })
+    );
   }
 
   listCatalogRequirements_legacy(
