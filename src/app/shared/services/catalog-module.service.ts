@@ -16,7 +16,8 @@
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { Catalog, CatalogService, ICatalog } from './catalog.service';
-import { CRUDService } from './crud.service';
+import { CRUDService, IPage } from './crud.service';
+import { IQueryParams } from './query-params.service';
 import { IUploadState, UploadService } from './upload.service';
 
 export interface ICatalogModuleInput {
@@ -74,6 +75,21 @@ export class CatalogModuleService {
 
   getCatalogModuleUrl(catalogModuleId: number): string {
     return `catalog-modules/${catalogModuleId}`;
+  }
+
+  queryCatalogModules(params: IQueryParams) {
+    return this._crud.query('catalog-modules', params).pipe(
+      map((catalogModules) => {
+        if (Array.isArray(catalogModules)) {
+          return catalogModules.map((cm) => new CatalogModule(cm));
+        } else {
+          return {
+            ...catalogModules,
+            items: catalogModules.items.map((cm) => new CatalogModule(cm)),
+          } as IPage<CatalogModule>;
+        }
+      })
+    );
   }
 
   listCatalogModules_legacy(catalogId: number): Observable<CatalogModule[]> {
