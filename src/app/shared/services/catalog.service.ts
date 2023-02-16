@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 
 export interface ICatalogInput {
@@ -63,7 +63,7 @@ export class CatalogService {
     return `${this.getCatalogsUrl()}/${catalogId}`;
   }
 
-  listCatalogs(): Observable<Catalog[]> {
+  listCatalogs_legacy(): Observable<Catalog[]> {
     return this._crud
       .list_legacy(this.getCatalogsUrl())
       .pipe(map((catalogs) => catalogs.map((c) => new Catalog(c))));

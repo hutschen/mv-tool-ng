@@ -81,7 +81,9 @@ export class CatalogTableComponent implements OnInit {
   }
 
   async onReloadCatalogs(): Promise<void> {
-    const data = await firstValueFrom(this._catalogService.listCatalogs());
+    const data = await firstValueFrom(
+      this._catalogService.listCatalogs_legacy()
+    );
     this._dataSubject.next(data);
     this.dataLoaded = true;
   }
