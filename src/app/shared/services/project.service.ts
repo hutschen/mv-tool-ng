@@ -115,12 +115,6 @@ export class ProjectService {
     );
   }
 
-  listProjects_legacy(): Observable<Project[]> {
-    return this._crud
-      .list_legacy(this.getProjectsUrl())
-      .pipe(map((projects) => projects.map((p) => new Project(p))));
-  }
-
   createProject(projectInput: IProjectInput): Observable<Project> {
     return this._crud
       .create(this.getProjectsUrl(), projectInput)
