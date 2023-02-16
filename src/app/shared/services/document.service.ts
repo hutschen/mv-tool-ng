@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { CRUDService, IPage } from './crud.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
@@ -96,12 +96,6 @@ export class DocumentService {
         }
       })
     );
-  }
-
-  listDocuments_legacy(projectId: number): Observable<Document[]> {
-    return this._crud_document
-      .list_legacy(this.getDocumentsUrl(projectId))
-      .pipe(map((documents) => documents.map((d) => new Document(d))));
   }
 
   createDocument(

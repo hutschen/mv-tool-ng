@@ -90,8 +90,9 @@ describe('DocumentService', () => {
     );
   });
 
-  it('should list documents', (done: DoneFn) => {
-    sut.listDocuments_legacy(outputMock.project.id).subscribe({
+  it('should query documents', (done: DoneFn) => {
+    const projectId = outputMock.project.id;
+    sut.queryDocuments({ projectId }).subscribe({
       next: (value) => expect(value).toEqual([new Document(outputMock)]),
       complete: done,
     });
