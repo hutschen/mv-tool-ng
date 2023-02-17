@@ -24,7 +24,7 @@ import {
 import { IQueryParams } from '../../services/query-params.service';
 import { Measure, MeasureService } from '../../services/measure.service';
 import { Requirement } from '../../services/requirement.service';
-import { MeasureReferencesFilter } from '../measure/measure-filter';
+import { MeasureReferencesFilter } from './measure-filters';
 import { StatusField, TextField } from '../custom/custom-fields';
 import {
   DocumentField,
