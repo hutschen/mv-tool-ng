@@ -361,6 +361,7 @@ export class DataFrame<D extends IDataItem> {
 
   addItem(item: D): boolean {
     const data = this._dataSubject.value;
+    this.length = this._lengthSubject.value + 1;
     if (
       !this.pagination.enabled ||
       data.length < this.pagination.page.pageSize
