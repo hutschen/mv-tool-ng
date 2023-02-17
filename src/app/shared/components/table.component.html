@@ -69,7 +69,8 @@
     <!-- Shown when the table is empty -->
     <tr class="mat-row" *matNoDataRow>
       <td class="mat-cell" colspan="100">
-        <div *ngIf="dataFrame.isLoading">
+        <div *ngIf="dataFrame.isLoading" class="fx-row fx-gap-10">
+          <mat-spinner diameter="20"></mat-spinner>
           <div>{{ loadingText }}</div>
         </div>
 
