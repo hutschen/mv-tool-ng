@@ -28,7 +28,7 @@ import {
   SummaryColumn,
   TextColumn,
 } from '../custom/custom-colums';
-import { CompletionField, TextField } from '../custom/custom-fields';
+import { TextField } from '../custom/custom-fields';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 import {
@@ -38,6 +38,7 @@ import {
   GSAbsicherungField,
   GSVerantwortlicheField,
 } from './requirement-fields';
+import { RequirementReferencesFilter } from './requirement-filters';
 
 export class RequirementDataFrame extends DataFrame<Requirement> {
   constructor(
@@ -51,7 +52,11 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       new Filters(
         'References',
         new FilterByPattern('reference', initQueryParams),
-        undefined, // TODO: add filter by values filter
+        new RequirementReferencesFilter(
+          _requirementService,
+          _project,
+          initQueryParams
+        ),
         new FilterForExistence('has_reference', initQueryParams)
       ),
       initQueryParams
