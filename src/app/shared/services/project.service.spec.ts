@@ -105,7 +105,6 @@ describe('ProjectService', () => {
       description: inputMock.description,
       jira_project_id: inputMock.jira_project_id,
       jira_project: null,
-      completion: 0,
     };
   });
 

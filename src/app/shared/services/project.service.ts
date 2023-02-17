@@ -15,7 +15,7 @@
 
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { firstValueFrom, map } from 'rxjs';
+import { map } from 'rxjs';
 import { CRUDService, IPage } from './crud.service';
 import { IJiraProject } from './jira-project.service';
 import { IQueryParams } from './query-params.service';
@@ -29,7 +29,8 @@ export interface IProjectInput {
 export interface IProject extends IProjectInput {
   id: number;
   jira_project?: IJiraProject | null;
-  completion?: number | null;
+  completion_progress?: number | null;
+  verification_progress?: number | null;
 }
 
 export class Project implements IProject {
@@ -38,7 +39,8 @@ export class Project implements IProject {
   description: string | null;
   jira_project_id: string | null;
   jira_project: IJiraProject | null;
-  completion: number | null;
+  completion_progress: number | null;
+  verification_progress: number | null;
 
   constructor(project: IProject) {
     this.id = project.id;
@@ -46,7 +48,8 @@ export class Project implements IProject {
     this.description = project.description ?? null;
     this.jira_project_id = project.jira_project_id ?? null;
     this.jira_project = project.jira_project ?? null;
-    this.completion = project.completion ?? null;
+    this.completion_progress = project.completion_progress ?? null;
+    this.verification_progress = project.verification_progress ?? null;
   }
 
   toProjectInput(): IProjectInput {
@@ -69,10 +72,18 @@ export class Project implements IProject {
   }
 
   get percentComplete(): number | null {
-    if (this.completion === null) {
+    if (this.completion_progress === null) {
       return null;
     } else {
-      return Math.round(this.completion * 100);
+      return Math.round(this.completion_progress * 100);
+    }
+  }
+
+  get percentVerified(): number | null {
+    if (this.verification_progress === null) {
+      return null;
+    } else {
+      return Math.round(this.verification_progress * 100);
     }
   }
 }

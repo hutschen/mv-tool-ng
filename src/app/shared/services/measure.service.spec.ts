@@ -135,7 +135,6 @@ describe('MeasureService', () => {
           description: 'A test project description',
           jira_project_id: null,
           jira_project: null,
-          completion: 0,
         },
       },
     };
