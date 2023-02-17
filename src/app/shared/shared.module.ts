@@ -20,18 +20,13 @@ import { HttpClientModule } from '@angular/common/http';
 import { TableRowOptionsComponent } from './components/table-row-options.component';
 import { MaterialModule } from '../material/material.module';
 import { TableToolbarComponent } from './components/table-toolbar.component';
-import { LegacyTableComponent } from './components/legacy-table.component';
 import { DownloadDialogComponent } from './components/download-dialog.component';
 import { UploadDialogComponent } from './components/upload-dialog.component';
 import { DetailComponent } from './components/detail.component';
 import { ErrorDialogComponent } from './components/error-dialog.component';
 import { CreateEditDialogComponent } from './components/create-edit-dialog.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog.component';
-import { LegacyFilterDialogComponent } from './components/legacy-filter-dialog.component';
-import { LegacyTableFilterHeaderComponent } from './components/legacy-table-filter-header.component';
 import { AutocompleteComponent } from './components/autocomplete.component';
-import { ShowHideDialogComponent } from './components/show-hide-dialog.component';
-import { LegacyTableOptionsComponent } from './components/legacy-table-options.component';
 import { ComplianceDialogComponent } from './components/compliance-dialog.component';
 import { TableComponent } from './components/table.component';
 import { FilterDialogComponent } from './components/filter-dialog.component';
@@ -48,18 +43,13 @@ import { HideColumnsDialogComponent } from './components/hide-columns-dialog.com
     TruncatePipe,
     TableRowOptionsComponent,
     TableToolbarComponent,
-    LegacyTableComponent,
     DownloadDialogComponent,
     UploadDialogComponent,
     DetailComponent,
     ErrorDialogComponent,
     CreateEditDialogComponent,
     ConfirmDialogComponent,
-    LegacyFilterDialogComponent,
-    LegacyTableFilterHeaderComponent,
     AutocompleteComponent,
-    ShowHideDialogComponent,
-    LegacyTableOptionsComponent,
     ComplianceDialogComponent,
     TableComponent,
     FilterDialogComponent,
@@ -74,15 +64,12 @@ import { HideColumnsDialogComponent } from './components/hide-columns-dialog.com
   exports: [
     HttpClientModule,
     TruncatePipe,
-    LegacyTableOptionsComponent,
     TableOptionsComponent,
     TableRowOptionsComponent,
     TableToolbarComponent,
-    LegacyTableComponent,
     DetailComponent,
     ErrorDialogComponent,
     CreateEditDialogComponent,
-    LegacyTableFilterHeaderComponent,
     AutocompleteComponent,
     TableComponent,
     FilterHeaderComponent,
