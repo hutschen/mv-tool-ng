@@ -48,7 +48,8 @@ export interface IRequirement {
   compliance_comment?: string | null;
   project: IProject;
   catalog_requirement?: ICatalogRequirement | null;
-  completion?: number | null;
+  completion_progress?: number | null;
+  verification_progress?: number | null;
 }
 
 export class Requirement implements IRequirement {
@@ -63,7 +64,8 @@ export class Requirement implements IRequirement {
   compliance_comment: string | null;
   project: Project;
   catalog_requirement: CatalogRequirement | null;
-  completion: number | null;
+  completion_progress: number | null;
+  verification_progress: number | null;
 
   constructor(requirement: IRequirement) {
     this.id = requirement.id;
@@ -79,7 +81,8 @@ export class Requirement implements IRequirement {
     this.catalog_requirement = requirement.catalog_requirement
       ? new CatalogRequirement(requirement.catalog_requirement)
       : null;
-    this.completion = requirement.completion ?? null;
+    this.completion_progress = requirement.completion_progress ?? null;
+    this.verification_progress = requirement.verification_progress ?? null;
   }
 
   toRequirementInput(): IRequirementInput {
@@ -96,10 +99,18 @@ export class Requirement implements IRequirement {
   }
 
   get percentComplete(): number | null {
-    if (this.completion === null || this.completion === undefined) {
+    if (this.completion_progress === null) {
       return null;
     } else {
-      return Math.round(this.completion * 100);
+      return Math.round(this.completion_progress * 100);
+    }
+  }
+
+  get percentVerified(): number | null {
+    if (this.verification_progress === null) {
+      return null;
+    } else {
+      return Math.round(this.verification_progress * 100);
     }
   }
 
