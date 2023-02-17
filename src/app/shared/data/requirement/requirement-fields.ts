@@ -88,6 +88,7 @@ export class ComplianceAlertField extends DataField<
   override toValue(data: Requirement): string | null {
     if (
       data.compliance_status &&
+      data.compliance_status_hint &&
       data.compliance_status !== data.compliance_status_hint
     ) {
       return `Compliance status should be ${data.compliance_status_hint}`;
