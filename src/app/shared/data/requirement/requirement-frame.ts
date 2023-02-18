@@ -16,6 +16,7 @@
 import { map, Observable } from 'rxjs';
 import { CatalogModuleService } from '../../services/catalog-module.service';
 import { CatalogService } from '../../services/catalog.service';
+import { MilestoneService } from '../../services/milestone.service';
 import { Project } from '../../services/project.service';
 import { IQueryParams } from '../../services/query-params.service';
 import {
@@ -35,6 +36,7 @@ import { TextField } from '../custom/custom-fields';
 import {
   CatalogFilter,
   CatalogModuleFilter,
+  MilestoneFilter,
   TargetObjectFilter,
 } from '../custom/custom-filters';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
@@ -53,6 +55,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
     protected _requirementService: RequirementService,
     catalogService: CatalogService,
     catalogModuleService: CatalogModuleService,
+    milestoneService: MilestoneService,
     targetObjectService: TargetObjectService,
     protected _project: Project,
     initQueryParams: IQueryParams = {}
@@ -121,7 +124,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       new Filters(
         'Milestone',
         new FilterByPattern('milestone', initQueryParams),
-        undefined, // TODO: add filter by values filter
+        new MilestoneFilter(milestoneService, _project, initQueryParams),
         new FilterForExistence('has_milestone', initQueryParams)
       ),
       initQueryParams
