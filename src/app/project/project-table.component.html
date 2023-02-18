@@ -64,10 +64,8 @@
       *ngIf="dataFrame.columns.getColumn('completion') as column"
       [matColumnDef]="column.name"
     >
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        <mvtool-filter-header [filters]="column.filters">
-          {{ column.label }}
-        </mvtool-filter-header>
+      <th mat-header-cell *matHeaderCellDef>
+        {{ column.label }}
       </th>
       <td
         mat-cell
