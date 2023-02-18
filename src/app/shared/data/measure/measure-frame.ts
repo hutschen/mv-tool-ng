@@ -140,7 +140,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         'Verified',
         undefined,
         undefined,
-        new FilterForExistence('has_verified', initQueryParams)
+        new FilterForExistence('verified', initQueryParams)
       ),
       initQueryParams
     );
