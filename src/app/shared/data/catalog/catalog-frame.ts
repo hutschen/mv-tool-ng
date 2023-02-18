@@ -20,6 +20,7 @@ import { DescriptionColumn, TitleColumn } from '../custom/custom-colums';
 import { TextField } from '../custom/custom-fields';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
+import { CatalogReferencesFilter } from './catalog-filters';
 
 export class CatalogDataFrame extends DataFrame<Catalog> {
   constructor(
@@ -32,7 +33,7 @@ export class CatalogDataFrame extends DataFrame<Catalog> {
       new Filters(
         'References',
         new FilterByPattern('reference', initQueryParams),
-        undefined, // TODO: add filter by values filter
+        new CatalogReferencesFilter(_catalogService, initQueryParams),
         new FilterForExistence('has_reference', initQueryParams)
       ),
       initQueryParams
