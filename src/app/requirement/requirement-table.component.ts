@@ -31,6 +31,7 @@ import { QueryParamsService } from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { CatalogService } from '../shared/services/catalog.service';
 import { CatalogModuleService } from '../shared/services/catalog-module.service';
+import { TargetObjectService } from '../shared/services/target-object.service';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -51,6 +52,7 @@ export class RequirementTableComponent implements OnInit {
     protected _requirementService: RequirementService,
     protected _catalogService: CatalogService,
     protected _catalogModuleService: CatalogModuleService,
+    protected _targetObjectService: TargetObjectService,
     protected _requirementDialogService: RequirementDialogService,
     protected _complianceDialogService: ComplianceDialogService,
     protected _downloadDialogService: DownloadDialogService,
@@ -66,6 +68,7 @@ export class RequirementTableComponent implements OnInit {
       this._requirementService,
       this._catalogService,
       this._catalogModuleService,
+      this._targetObjectService,
       this.project,
       this._queryParamsService.getQueryParams()
     );

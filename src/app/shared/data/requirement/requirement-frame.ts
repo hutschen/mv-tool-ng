@@ -22,6 +22,7 @@ import {
   Requirement,
   RequirementService,
 } from '../../services/requirement.service';
+import { TargetObjectService } from '../../services/target-object.service';
 import {
   CompletionColumn,
   ComplianceCommentColumn,
@@ -31,7 +32,11 @@ import {
   TextColumn,
 } from '../custom/custom-colums';
 import { TextField } from '../custom/custom-fields';
-import { CatalogFilter, CatalogModuleFilter } from '../custom/custom-filters';
+import {
+  CatalogFilter,
+  CatalogModuleFilter,
+  TargetObjectFilter,
+} from '../custom/custom-filters';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 import {
@@ -48,6 +53,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
     protected _requirementService: RequirementService,
     catalogService: CatalogService,
     catalogModuleService: CatalogModuleService,
+    targetObjectService: TargetObjectService,
     protected _project: Project,
     initQueryParams: IQueryParams = {}
   ) {
@@ -127,7 +133,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       new Filters(
         'Target object',
         new FilterByPattern('target_object', initQueryParams),
-        undefined, // TODO: add filter by values filter
+        new TargetObjectFilter(targetObjectService, _project, initQueryParams),
         new FilterForExistence('has_target_object', initQueryParams)
       ),
       initQueryParams
