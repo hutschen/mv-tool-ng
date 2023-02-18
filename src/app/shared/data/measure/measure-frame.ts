@@ -39,10 +39,13 @@ import {
   SummaryColumn,
   VerificationCommentColumn,
 } from '../custom/custom-colums';
+import { DocumentService } from '../../services/document.service';
+import { DocumentsFilter } from '../document/document-filters';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   constructor(
     protected _measureService: MeasureService,
+    protected _documentService: DocumentService,
     protected _requirement: Requirement,
     initQueryParams: IQueryParams = {}
   ) {
@@ -68,7 +71,11 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       new Filters(
         'Documents',
         undefined,
-        undefined, // TODO: add filter by values filter
+        new DocumentsFilter(
+          _documentService,
+          _requirement.project,
+          initQueryParams
+        ),
         new FilterForExistence('has_document', initQueryParams)
       ),
       initQueryParams
