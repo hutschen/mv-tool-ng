@@ -16,6 +16,7 @@
 import { map, Observable } from 'rxjs';
 import { CatalogModuleService } from '../../services/catalog-module.service';
 import { Catalog, CatalogService } from '../../services/catalog.service';
+import { MilestoneService } from '../../services/milestone.service';
 import { Project } from '../../services/project.service';
 import { IQueryParams } from '../../services/query-params.service';
 import { TargetObjectService } from '../../services/target-object.service';
@@ -119,6 +120,57 @@ export class CatalogModuleFilter extends FilterByValues {
       catalog_module_ids: values,
     };
     if (this._catalog) queryParams['catalog_ids'] = this._catalog.id;
+    return this.__loadOptions(queryParams);
+  }
+}
+
+export class MilestoneFilter extends FilterByValues {
+  constructor(
+    protected _milestoneService: MilestoneService,
+    protected _project: Project,
+    initQueryParams: IQueryParams = {}
+  ) {
+    super('milestones', undefined, initQueryParams);
+    this.loadOptions();
+  }
+
+  private __loadOptions(
+    queryParams: IQueryParams
+  ): Observable<IFilterOption[]> {
+    // Request milestones and convert them to filter options
+    return this._milestoneService.getMilestones(queryParams).pipe(
+      map((milestones) => {
+        if (!Array.isArray(milestones)) milestones = milestones.items;
+        return milestones.map((milestone) => ({
+          value: milestone,
+          label: milestone,
+        }));
+      })
+    );
+  }
+
+  override getOptions(
+    searchStr: string | null = null,
+    limit: number = -1
+  ): Observable<IFilterOption[]> {
+    // Build query params to request milestones
+    const queryParams: IQueryParams = { project_ids: this._project.id };
+    if (searchStr) queryParams['local_search'] = searchStr;
+    if (limit) {
+      queryParams['page'] = 1;
+      queryParams['page_size'] = limit;
+    }
+
+    return this.__loadOptions(queryParams);
+  }
+
+  override getOptionsByValues(
+    values: (string | number)[]
+  ): Observable<IFilterOption[]> {
+    const queryParams: IQueryParams = {
+      milestones: values,
+      project_ids: this._project.id,
+    };
     return this.__loadOptions(queryParams);
   }
 }
