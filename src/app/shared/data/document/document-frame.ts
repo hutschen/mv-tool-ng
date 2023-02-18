@@ -21,6 +21,7 @@ import { TextField } from '../custom/custom-fields';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 import { DescriptionColumn, TitleColumn } from '../custom/custom-colums';
 import { map, Observable } from 'rxjs';
+import { DocumentReferencesFilters } from './document-filters';
 
 export class DocumentDataFrame extends DataFrame<Document> {
   constructor(
@@ -33,7 +34,11 @@ export class DocumentDataFrame extends DataFrame<Document> {
       new Filters(
         'References',
         new FilterByPattern('reference', initQueryParams),
-        undefined, // TODO: add filter by values filter
+        new DocumentReferencesFilters(
+          _documentService,
+          _project,
+          initQueryParams
+        ),
         new FilterForExistence('has_reference', initQueryParams)
       ),
       initQueryParams
