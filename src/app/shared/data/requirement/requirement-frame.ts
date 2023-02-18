@@ -24,6 +24,7 @@ import {
   RequirementService,
 } from '../../services/requirement.service';
 import { TargetObjectService } from '../../services/target-object.service';
+import { CatalogModulesFilter } from '../catalog-module/catalog-module-filters';
 import { CatalogsFilter } from '../catalog/catalog-filters';
 import {
   CompletionColumn,
@@ -34,11 +35,7 @@ import {
   TextColumn,
 } from '../custom/custom-colums';
 import { TextField } from '../custom/custom-fields';
-import {
-  CatalogModuleFilter,
-  MilestoneFilter,
-  TargetObjectFilter,
-} from '../custom/custom-filters';
+import { MilestoneFilter, TargetObjectFilter } from '../custom/custom-filters';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 import {
@@ -94,7 +91,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       new Filters(
         'Catalog Modules',
         undefined,
-        new CatalogModuleFilter(
+        new CatalogModulesFilter(
           catalogModuleService,
           undefined,
           initQueryParams

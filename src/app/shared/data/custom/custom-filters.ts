@@ -14,68 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { map, Observable } from 'rxjs';
-import { CatalogModuleService } from '../../services/catalog-module.service';
-import { Catalog } from '../../services/catalog.service';
 import { MilestoneService } from '../../services/milestone.service';
 import { Project } from '../../services/project.service';
 import { IQueryParams } from '../../services/query-params.service';
 import { TargetObjectService } from '../../services/target-object.service';
 import { FilterByValues, IFilterOption } from '../filter';
-
-export class CatalogModuleFilter extends FilterByValues {
-  constructor(
-    protected _catalogModuleService: CatalogModuleService,
-    protected _catalog?: Catalog,
-    initQueryParams: IQueryParams = {}
-  ) {
-    super('catalog_module_ids', undefined, initQueryParams);
-    this.loadOptions();
-  }
-
-  private __loadOptions(
-    queryParams: IQueryParams
-  ): Observable<IFilterOption[]> {
-    // Request catalog modules representations and convert them to filter options
-    return this._catalogModuleService
-      .getCatalogModuleRepresentations(queryParams)
-      .pipe(
-        map((catalogModuleReprs) => {
-          if (!Array.isArray(catalogModuleReprs))
-            catalogModuleReprs = catalogModuleReprs.items;
-          return catalogModuleReprs.map((cmr) => ({
-            value: cmr.id,
-            label: (cmr.reference ? cmr.reference + ' ' : '') + cmr.title,
-          }));
-        })
-      );
-  }
-
-  override getOptions(
-    searchStr: string | null = null,
-    limit: number = -1
-  ): Observable<IFilterOption[]> {
-    // Build query params to request catalog modules representations
-    const queryParams = new Object() as IQueryParams;
-    if (this._catalog) queryParams['catalog_ids'] = this._catalog.id;
-    if (searchStr) queryParams['local_search'] = searchStr;
-    if (limit) {
-      queryParams['page'] = 1;
-      queryParams['page_size'] = limit;
-    }
-
-    return this.__loadOptions(queryParams);
-  }
-
-  override getOptionsByValues(
-    values: (string | number)[]
-  ): Observable<IFilterOption[]> {
-    const queryParams: IQueryParams = {
-      catalog_module_ids: values,
-    };
-    if (this._catalog) queryParams['catalog_ids'] = this._catalog.id;
-    return this.__loadOptions(queryParams);
-  }
-}
 
 export class MilestoneFilter extends FilterByValues {
   constructor(
