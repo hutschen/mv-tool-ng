@@ -121,9 +121,7 @@ export class CatalogService {
   }
 
   getCatalogReferences(params: IQueryParams = {}) {
-    return this._crud_str.query('catalog/references', params) as Observable<
-      string[]
-    >;
+    return this._crud_str.query('catalog/references', params);
   }
 
   getCatalogRepresentations(params: IQueryParams = {}) {

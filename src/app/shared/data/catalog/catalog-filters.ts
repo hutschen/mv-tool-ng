@@ -18,6 +18,55 @@ import { CatalogService } from '../../services/catalog.service';
 import { IQueryParams } from '../../services/query-params.service';
 import { FilterByValues, IFilterOption } from '../filter';
 
+export class CatalogReferencesFilter extends FilterByValues {
+  constructor(
+    protected _catalogService: CatalogService,
+    initQueryParams: IQueryParams = {}
+  ) {
+    super('references', undefined, initQueryParams);
+    this.loadOptions();
+  }
+
+  private __loadOptions(
+    queryParams: IQueryParams
+  ): Observable<IFilterOption[]> {
+    // Request catalog references and convert them to filter options
+    return this._catalogService.getCatalogReferences(queryParams).pipe(
+      map((references) => {
+        if (!Array.isArray(references)) references = references.items;
+        return references.map((reference) => ({
+          value: reference,
+          label: reference,
+        }));
+      })
+    );
+  }
+
+  override getOptions(
+    searchStr: string | null = null,
+    limit: number = -1
+  ): Observable<IFilterOption[]> {
+    // Build query params to request catalog references
+    const queryParams: IQueryParams = {};
+    if (searchStr) queryParams['local_search'] = searchStr;
+    if (limit) {
+      queryParams['page'] = 1;
+      queryParams['page_size'] = limit;
+    }
+
+    return this.__loadOptions(queryParams);
+  }
+
+  override getOptionsByValues(
+    values: (string | number)[]
+  ): Observable<IFilterOption[]> {
+    const queryParams: IQueryParams = {
+      references: values,
+    };
+    return this.__loadOptions(queryParams);
+  }
+}
+
 export class CatalogsFilter extends FilterByValues {
   constructor(
     protected _catalogService: CatalogService,
