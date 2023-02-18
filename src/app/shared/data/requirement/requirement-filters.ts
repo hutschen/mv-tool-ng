@@ -29,6 +29,21 @@ export class RequirementReferencesFilter extends FilterByValues {
     this.loadOptions();
   }
 
+  private __loadOptions(
+    queryParams: IQueryParams
+  ): Observable<IFilterOption[]> {
+    // Request requirement references and convert them to filter options
+    return this._requirementService.getRequirementReferences(queryParams).pipe(
+      map((references) => {
+        if (!Array.isArray(references)) references = references.items;
+        return references.map((reference) => ({
+          value: reference,
+          label: reference,
+        }));
+      })
+    );
+  }
+
   override getOptions(
     searchStr: string | null = null,
     limit: number = -1
@@ -43,36 +58,16 @@ export class RequirementReferencesFilter extends FilterByValues {
       queryParams['page_size'] = limit;
     }
 
-    // Request requirement references and convert them to filter options
-    return this._requirementService.getRequirementReferences(queryParams).pipe(
-      map((references) => {
-        if (!Array.isArray(references)) references = references.items;
-        return references.map((reference) => ({
-          value: reference,
-          label: reference,
-        }));
-      })
-    );
+    return this.__loadOptions(queryParams);
   }
 
   override getOptionsByValues(
     values: (string | number)[]
   ): Observable<IFilterOption[]> {
-    // Build query params to request requirement references
     const queryParams: IQueryParams = {
       project_ids: this._project.id,
       references: values,
     };
-
-    // Request requirement references and convert them to filter options
-    return this._requirementService.getRequirementReferences(queryParams).pipe(
-      map((references) => {
-        if (!Array.isArray(references)) references = references.items;
-        return references.map((reference) => ({
-          value: reference,
-          label: reference,
-        }));
-      })
-    );
+    return this.__loadOptions(queryParams);
   }
 }
