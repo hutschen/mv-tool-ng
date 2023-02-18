@@ -173,7 +173,7 @@ describe('MeasureService', () => {
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crud.toAbsoluteUrl(sut.getMeasuresUrl(requirementId)),
+      url: crud.toAbsoluteUrl(`measures?requirementId=${requirementId}`),
     });
     mockResponse.flush(measuresList);
   });

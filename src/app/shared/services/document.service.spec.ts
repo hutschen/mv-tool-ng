@@ -97,7 +97,7 @@ describe('DocumentService', () => {
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crud.toAbsoluteUrl(sut.getDocumentsUrl(outputMock.project.id)),
+      url: crud.toAbsoluteUrl(`documents?projectId=${projectId}`),
     });
     mockResponse.flush([outputMock]);
   });

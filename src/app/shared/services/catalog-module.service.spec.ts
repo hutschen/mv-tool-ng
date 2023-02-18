@@ -89,7 +89,7 @@ describe('CatalogModuleService', () => {
     );
   });
 
-  it('should list catalog modules', (done: DoneFn) => {
+  it('should query catalog modules', (done: DoneFn) => {
     const catalogId = outputMock.catalog.id;
     const catalogModulesList = [outputMock];
 
@@ -103,7 +103,7 @@ describe('CatalogModuleService', () => {
 
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crud.toAbsoluteUrl(sut.getCatalogModulesUrl(catalogId)),
+      url: crud.toAbsoluteUrl(`catalog-modules?catalogId=${catalogId}`),
     });
     mockResponse.flush(catalogModulesList);
   });

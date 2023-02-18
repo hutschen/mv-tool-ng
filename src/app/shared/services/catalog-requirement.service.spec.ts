@@ -103,7 +103,9 @@ describe('CatalogRequirementService', () => {
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crud.toAbsoluteUrl(sut.getCatalogRequirementsUrl(catalogModuleId)),
+      url: crud.toAbsoluteUrl(
+        `catalog-requirements?catalogModuleId=${catalogModuleId}`
+      ),
     });
     mockResponse.flush(catalogRequirementsList);
   });

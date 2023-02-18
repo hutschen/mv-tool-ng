@@ -95,7 +95,7 @@ describe('RequirementService', () => {
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crud.toAbsoluteUrl(sut.getRequirementsUrl(projectId)),
+      url: crud.toAbsoluteUrl(`requirements?projectId=${projectId}`),
     });
     mockResponse.flush(requirementsList);
   });
