@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { map, Observable } from 'rxjs';
+import { CatalogModuleService } from '../../services/catalog-module.service';
 import { CatalogService } from '../../services/catalog.service';
 import { Project } from '../../services/project.service';
 import { IQueryParams } from '../../services/query-params.service';
@@ -30,7 +31,7 @@ import {
   TextColumn,
 } from '../custom/custom-colums';
 import { TextField } from '../custom/custom-fields';
-import { CatalogFilter } from '../custom/custom-filters';
+import { CatalogFilter, CatalogModuleFilter } from '../custom/custom-filters';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 import {
@@ -46,6 +47,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
   constructor(
     protected _requirementService: RequirementService,
     catalogService: CatalogService,
+    catalogModuleService: CatalogModuleService,
     protected _project: Project,
     initQueryParams: IQueryParams = {}
   ) {
@@ -83,7 +85,11 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       new Filters(
         'Catalog Modules',
         undefined,
-        undefined, // TODO: add filter by values filter
+        new CatalogModuleFilter(
+          catalogModuleService,
+          undefined,
+          initQueryParams
+        ),
         new FilterForExistence('has_catalog_module', initQueryParams)
       ),
       initQueryParams

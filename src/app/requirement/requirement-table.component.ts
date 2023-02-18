@@ -30,6 +30,7 @@ import { RequirementDataFrame } from '../shared/data/requirement/requirement-fra
 import { QueryParamsService } from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { CatalogService } from '../shared/services/catalog.service';
+import { CatalogModuleService } from '../shared/services/catalog-module.service';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -49,6 +50,7 @@ export class RequirementTableComponent implements OnInit {
     protected _queryParamsService: QueryParamsService,
     protected _requirementService: RequirementService,
     protected _catalogService: CatalogService,
+    protected _catalogModuleService: CatalogModuleService,
     protected _requirementDialogService: RequirementDialogService,
     protected _complianceDialogService: ComplianceDialogService,
     protected _downloadDialogService: DownloadDialogService,
@@ -63,6 +65,7 @@ export class RequirementTableComponent implements OnInit {
     this.dataFrame = new RequirementDataFrame(
       this._requirementService,
       this._catalogService,
+      this._catalogModuleService,
       this.project,
       this._queryParamsService.getQueryParams()
     );
