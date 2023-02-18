@@ -35,7 +35,6 @@ import {
   TextColumn,
 } from '../custom/custom-colums';
 import { TextField } from '../custom/custom-fields';
-import { MilestoneFilter, TargetObjectFilter } from '../custom/custom-filters';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 import {
@@ -45,7 +44,11 @@ import {
   GSAbsicherungField,
   GSVerantwortlicheField,
 } from './requirement-fields';
-import { RequirementReferencesFilter } from './requirement-filters';
+import {
+  RequirementReferencesFilter,
+  MilestonesFilter,
+  TargetObjectsFilter,
+} from './requirement-filters';
 
 export class RequirementDataFrame extends DataFrame<Requirement> {
   constructor(
@@ -121,7 +124,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       new Filters(
         'Milestone',
         new FilterByPattern('milestone', initQueryParams),
-        new MilestoneFilter(milestoneService, _project, initQueryParams),
+        new MilestonesFilter(milestoneService, _project, initQueryParams),
         new FilterForExistence('has_milestone', initQueryParams)
       ),
       initQueryParams
@@ -133,7 +136,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       new Filters(
         'Target object',
         new FilterByPattern('target_object', initQueryParams),
-        new TargetObjectFilter(targetObjectService, _project, initQueryParams),
+        new TargetObjectsFilter(targetObjectService, _project, initQueryParams),
         new FilterForExistence('has_target_object', initQueryParams)
       ),
       initQueryParams
