@@ -71,3 +71,56 @@ export class DocumentReferencesFilters extends FilterByValues {
     return this.__loadOptions(queryParams);
   }
 }
+
+export class DocumentsFilter extends FilterByValues {
+  constructor(
+    protected _documentService: DocumentService,
+    protected _project: Project,
+    initQueryParams: IQueryParams = {}
+  ) {
+    super('document_ids', undefined, initQueryParams);
+    this.loadOptions();
+  }
+
+  private __loadOptions(
+    queryParams: IQueryParams
+  ): Observable<IFilterOption[]> {
+    // Request documents and convert them to filter options
+    return this._documentService.getDocumentRepresentations(queryParams).pipe(
+      map((documentReprs) => {
+        if (!Array.isArray(documentReprs)) documentReprs = documentReprs.items;
+        return documentReprs.map((dr) => ({
+          value: dr.id,
+          label: (dr.reference ? dr.reference + ' ' : '') + dr.title,
+        }));
+      })
+    );
+  }
+
+  override getOptions(
+    searchStr: string | null = null,
+    limit: number = -1
+  ): Observable<IFilterOption[]> {
+    // Build query params to request document representations
+    const queryParams: IQueryParams = {
+      project_ids: this._project.id,
+    };
+    if (searchStr) queryParams['local_search'] = searchStr;
+    if (limit) {
+      queryParams['page'] = 1;
+      queryParams['page_size'] = limit;
+    }
+
+    return this.__loadOptions(queryParams);
+  }
+
+  override getOptionsByValues(
+    values: (string | number)[]
+  ): Observable<IFilterOption[]> {
+    const queryParams: IQueryParams = {
+      project_ids: this._project.id,
+      ids: values,
+    };
+    return this.__loadOptions(queryParams);
+  }
+}
