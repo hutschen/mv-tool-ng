@@ -50,13 +50,20 @@ export class Catalog implements ICatalog {
   }
 }
 
+export interface ICatalogRepresentation {
+  id: number;
+  reference?: string | null;
+  title: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class CatalogService {
   constructor(
     protected _crud_catalog: CRUDService<ICatalogInput, ICatalog>,
-    protected _crud_str: CRUDService<null, string>
+    protected _crud_str: CRUDService<null, string>,
+    protected _crud_repr: CRUDService<null, ICatalogRepresentation>
   ) {}
 
   getCatalogsUrl(): string {
@@ -114,8 +121,10 @@ export class CatalogService {
   }
 
   getCatalogReferences(params: IQueryParams = {}) {
-    return this._crud_str.query('catalog/references', params) as Observable<
-      string[]
-    >;
+    return this._crud_str.query('catalog/references', params);
+  }
+
+  getCatalogRepresentations(params: IQueryParams = {}) {
+    return this._crud_repr.query('catalog/representations', params);
   }
 }

@@ -14,12 +14,18 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { map, Observable } from 'rxjs';
+import { CatalogModuleService } from '../../services/catalog-module.service';
+import { CatalogService } from '../../services/catalog.service';
+import { MilestoneService } from '../../services/milestone.service';
 import { Project } from '../../services/project.service';
 import { IQueryParams } from '../../services/query-params.service';
 import {
   Requirement,
   RequirementService,
 } from '../../services/requirement.service';
+import { TargetObjectService } from '../../services/target-object.service';
+import { CatalogModulesFilter } from '../catalog-module/catalog-module-filters';
+import { CatalogsFilter } from '../catalog/catalog-filters';
 import {
   CompletionColumn,
   ComplianceCommentColumn,
@@ -28,7 +34,7 @@ import {
   SummaryColumn,
   TextColumn,
 } from '../custom/custom-colums';
-import { CompletionField, TextField } from '../custom/custom-fields';
+import { TextField } from '../custom/custom-fields';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 import {
@@ -38,10 +44,19 @@ import {
   GSAbsicherungField,
   GSVerantwortlicheField,
 } from './requirement-fields';
+import {
+  RequirementReferencesFilter,
+  MilestonesFilter,
+  TargetObjectsFilter,
+} from './requirement-filters';
 
 export class RequirementDataFrame extends DataFrame<Requirement> {
   constructor(
     protected _requirementService: RequirementService,
+    catalogService: CatalogService,
+    catalogModuleService: CatalogModuleService,
+    milestoneService: MilestoneService,
+    targetObjectService: TargetObjectService,
     protected _project: Project,
     initQueryParams: IQueryParams = {}
   ) {
@@ -51,7 +66,11 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       new Filters(
         'References',
         new FilterByPattern('reference', initQueryParams),
-        undefined, // TODO: add filter by values filter
+        new RequirementReferencesFilter(
+          _requirementService,
+          _project,
+          initQueryParams
+        ),
         new FilterForExistence('has_reference', initQueryParams)
       ),
       initQueryParams
@@ -63,7 +82,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       new Filters(
         'Catalogs',
         undefined,
-        undefined, // TODO: add filter by values filter
+        new CatalogsFilter(catalogService, initQueryParams),
         new FilterForExistence('has_catalog', initQueryParams)
       ),
       initQueryParams
@@ -75,7 +94,11 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       new Filters(
         'Catalog Modules',
         undefined,
-        undefined, // TODO: add filter by values filter
+        new CatalogModulesFilter(
+          catalogModuleService,
+          undefined,
+          initQueryParams
+        ),
         new FilterForExistence('has_catalog_module', initQueryParams)
       ),
       initQueryParams
@@ -101,7 +124,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       new Filters(
         'Milestone',
         new FilterByPattern('milestone', initQueryParams),
-        undefined, // TODO: add filter by values filter
+        new MilestonesFilter(milestoneService, _project, initQueryParams),
         new FilterForExistence('has_milestone', initQueryParams)
       ),
       initQueryParams
@@ -113,7 +136,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       new Filters(
         'Target object',
         new FilterByPattern('target_object', initQueryParams),
-        undefined, // TODO: add filter by values filter
+        new TargetObjectsFilter(targetObjectService, _project, initQueryParams),
         new FilterForExistence('has_target_object', initQueryParams)
       ),
       initQueryParams

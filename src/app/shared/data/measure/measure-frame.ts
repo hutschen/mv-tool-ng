@@ -24,7 +24,7 @@ import {
 import { IQueryParams } from '../../services/query-params.service';
 import { Measure, MeasureService } from '../../services/measure.service';
 import { Requirement } from '../../services/requirement.service';
-import { MeasureReferencesFilter } from '../measure/measure-filter';
+import { MeasureReferencesFilter } from './measure-filters';
 import { StatusField, TextField } from '../custom/custom-fields';
 import {
   DocumentField,
@@ -39,10 +39,13 @@ import {
   SummaryColumn,
   VerificationCommentColumn,
 } from '../custom/custom-colums';
+import { DocumentService } from '../../services/document.service';
+import { DocumentsFilter } from '../document/document-filters';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   constructor(
     protected _measureService: MeasureService,
+    protected _documentService: DocumentService,
     protected _requirement: Requirement,
     initQueryParams: IQueryParams = {}
   ) {
@@ -68,7 +71,11 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       new Filters(
         'Documents',
         undefined,
-        undefined, // TODO: add filter by values filter
+        new DocumentsFilter(
+          _documentService,
+          _requirement.project,
+          initQueryParams
+        ),
         new FilterForExistence('has_document', initQueryParams)
       ),
       initQueryParams
@@ -133,7 +140,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         'Verified',
         undefined,
         undefined,
-        new FilterForExistence('has_verified', initQueryParams)
+        new FilterForExistence('verified', initQueryParams)
       ),
       initQueryParams
     );

@@ -21,6 +21,7 @@ import { DownloadDialogService } from '../shared/components/download-dialog.comp
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { MeasureDataFrame } from '../shared/data/measure/measure-frame';
+import { DocumentService } from '../shared/services/document.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { QueryParamsService } from '../shared/services/query-params.service';
 import { Requirement } from '../shared/services/requirement.service';
@@ -45,6 +46,7 @@ export class MeasureTableComponent implements OnInit {
   constructor(
     protected _queryParamsService: QueryParamsService,
     protected _measureService: MeasureService,
+    protected _documentService: DocumentService,
     protected _measureDialogService: MeasureDialogService,
     protected _complianceDialogService: ComplianceDialogService,
     protected _completionDialogService: CompletionDialogService,
@@ -59,6 +61,7 @@ export class MeasureTableComponent implements OnInit {
     if (!this.requirement) throw new Error('Requirement is undefined');
     this.dataFrame = new MeasureDataFrame(
       this._measureService,
+      this._documentService,
       this.requirement,
       this._queryParamsService.getQueryParams()
     );

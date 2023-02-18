@@ -361,6 +361,7 @@ export class DataFrame<D extends IDataItem> {
 
   addItem(item: D): boolean {
     const data = this._dataSubject.value;
+    this.length = this._lengthSubject.value + 1;
     if (
       !this.pagination.enabled ||
       data.length < this.pagination.page.pageSize
@@ -390,6 +391,7 @@ export class DataFrame<D extends IDataItem> {
   removeItem(item: D): boolean {
     const data = this._dataSubject.value;
     const index = data.findIndex((i) => i.id === item.id);
+    this.length = this._lengthSubject.value - 1;
     if (index >= 0) {
       // Remove item from data
       data.splice(index, 1);
