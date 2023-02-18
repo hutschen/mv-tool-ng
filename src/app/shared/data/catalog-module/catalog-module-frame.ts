@@ -24,6 +24,7 @@ import { DescriptionColumn, TitleColumn } from '../custom/custom-colums';
 import { TextField } from '../custom/custom-fields';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
+import { CatalogModuleReferencesFilter } from './catalog-module-filters';
 
 export class CatalogModuleDataFrame extends DataFrame<CatalogModule> {
   constructor(
@@ -36,7 +37,11 @@ export class CatalogModuleDataFrame extends DataFrame<CatalogModule> {
       new Filters(
         'References',
         new FilterByPattern('reference', initQueryParams),
-        undefined, // TODO: add filter by values filter
+        new CatalogModuleReferencesFilter(
+          _catalogModuleService,
+          _catalog,
+          initQueryParams
+        ),
         new FilterForExistence('has_reference', initQueryParams)
       ),
       initQueryParams
