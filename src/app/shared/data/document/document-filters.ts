@@ -19,7 +19,7 @@ import { Project } from '../../services/project.service';
 import { IQueryParams } from '../../services/query-params.service';
 import { FilterByValues, IFilterOption } from '../filter';
 
-export class DocumentReferencesFilters extends FilterByValues {
+export class DocumentReferencesFilter extends FilterByValues {
   constructor(
     protected _documentService: DocumentService,
     protected _project: Project,
