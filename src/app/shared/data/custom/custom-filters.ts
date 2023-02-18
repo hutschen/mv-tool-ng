@@ -15,59 +15,12 @@
 
 import { map, Observable } from 'rxjs';
 import { CatalogModuleService } from '../../services/catalog-module.service';
-import { Catalog, CatalogService } from '../../services/catalog.service';
+import { Catalog } from '../../services/catalog.service';
 import { MilestoneService } from '../../services/milestone.service';
 import { Project } from '../../services/project.service';
 import { IQueryParams } from '../../services/query-params.service';
 import { TargetObjectService } from '../../services/target-object.service';
 import { FilterByValues, IFilterOption } from '../filter';
-
-export class CatalogFilter extends FilterByValues {
-  constructor(
-    protected _catalogService: CatalogService,
-    initQueryParams: IQueryParams = {}
-  ) {
-    super('catalog_ids', undefined, initQueryParams);
-    this.loadOptions();
-  }
-
-  private __loadOptions(
-    queryParams: IQueryParams
-  ): Observable<IFilterOption[]> {
-    // Request catalogs representations and convert them to filter options
-    return this._catalogService.getCatalogRepresentations(queryParams).pipe(
-      map((catalogReprs) => {
-        if (!Array.isArray(catalogReprs)) catalogReprs = catalogReprs.items;
-        return catalogReprs.map((cr) => ({
-          value: cr.id,
-          label: (cr.reference ? cr.reference + ' ' : '') + cr.title,
-        }));
-      })
-    );
-  }
-
-  override getOptions(
-    searchStr: string | null = null,
-    limit: number = -1
-  ): Observable<IFilterOption[]> {
-    // Build query params to request catalogs representations
-    const queryParams = new Object() as IQueryParams;
-    if (searchStr) queryParams['local_search'] = searchStr;
-    if (limit) {
-      queryParams['page'] = 1;
-      queryParams['page_size'] = limit;
-    }
-
-    return this.__loadOptions(queryParams);
-  }
-
-  override getOptionsByValues(
-    values: (string | number)[]
-  ): Observable<IFilterOption[]> {
-    const queryParams = { catalog_ids: values };
-    return this.__loadOptions(queryParams);
-  }
-}
 
 export class CatalogModuleFilter extends FilterByValues {
   constructor(

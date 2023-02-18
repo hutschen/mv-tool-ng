@@ -24,6 +24,7 @@ import {
   RequirementService,
 } from '../../services/requirement.service';
 import { TargetObjectService } from '../../services/target-object.service';
+import { CatalogsFilter } from '../catalog/catalog-filters';
 import {
   CompletionColumn,
   ComplianceCommentColumn,
@@ -34,7 +35,6 @@ import {
 } from '../custom/custom-colums';
 import { TextField } from '../custom/custom-fields';
 import {
-  CatalogFilter,
   CatalogModuleFilter,
   MilestoneFilter,
   TargetObjectFilter,
@@ -82,7 +82,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
       new Filters(
         'Catalogs',
         undefined,
-        new CatalogFilter(catalogService, initQueryParams),
+        new CatalogsFilter(catalogService, initQueryParams),
         new FilterForExistence('has_catalog', initQueryParams)
       ),
       initQueryParams
