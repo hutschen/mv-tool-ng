@@ -51,16 +51,6 @@ import {
           <div class="truncate">{{ requirement.reference }}</div>
         </mvtool-detail>
 
-        <!-- GS Anforderung Reference -->
-        <mvtool-detail
-          *ngIf="requirement.gsAnforderungReference"
-          label="GS Anforderung Reference"
-        >
-          <div class="truncate">
-            {{ requirement.gsAnforderungReference }}
-          </div>
-        </mvtool-detail>
-
         <!-- Catalog Module -->
         <mvtool-detail
           *ngIf="requirement.catalog_requirement"
@@ -68,7 +58,6 @@ import {
         >
           <div class="truncate">
             {{ requirement.catalog_requirement.catalog_module.reference }}
-            {{ requirement.catalog_requirement.catalog_module.gs_reference }}
             {{ requirement.catalog_requirement.catalog_module.title }}
           </div>
         </mvtool-detail>
