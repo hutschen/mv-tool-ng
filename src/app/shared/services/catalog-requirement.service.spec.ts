@@ -57,7 +57,6 @@ describe('CatalogRequirementService', () => {
         reference: null,
         title: 'A test catalog module',
         description: null,
-        gs_reference: null,
         catalog: {
           id: 1,
           reference: null,
