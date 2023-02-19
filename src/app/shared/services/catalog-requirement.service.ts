@@ -46,7 +46,6 @@ export class CatalogRequirement implements ICatalogRequirement {
   catalog_module: CatalogModule;
 
   // Special attributes for IT Grundschutz Kompendium
-  gs_anforderung_reference?: string | null;
   gs_absicherung?: string | null;
   gs_verantwortliche?: string | null;
 
