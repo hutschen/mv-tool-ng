@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { map, Observable } from 'rxjs';
+import { map } from 'rxjs';
 import { CatalogModule } from '../../services/catalog-module.service';
 import {
   CatalogRequirement,
@@ -28,6 +28,7 @@ import {
 import { TextField } from '../custom/custom-fields';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
+import { CatalogRequirementReferencesFilter } from './catalog-requirement-filter';
 
 export class CatalogRequirementDataFrame extends DataFrame<CatalogRequirement> {
   constructor(
@@ -40,7 +41,11 @@ export class CatalogRequirementDataFrame extends DataFrame<CatalogRequirement> {
       new Filters(
         'References',
         new FilterByPattern('reference', initQueryParams),
-        undefined, // TODO: add filter by values filter
+        new CatalogRequirementReferencesFilter(
+          _catalogRequirementService,
+          _catalogModule,
+          initQueryParams
+        ),
         new FilterForExistence('has_reference', initQueryParams)
       ),
       initQueryParams
