@@ -14,13 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { isEqual, isString } from 'radash';
-import {
-  BehaviorSubject,
-  combineLatest,
-  distinctUntilChanged,
-  map,
-  Observable,
-} from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, map, Observable } from 'rxjs';
 import { IQueryParams } from '../services/query-params.service';
 
 export type SortDirection = 'asc' | 'desc' | '';
