@@ -62,7 +62,6 @@ export class CatalogModuleDialogComponent {
     reference: null,
     title: '',
     description: null,
-    gs_reference: null,
   };
 
   constructor(

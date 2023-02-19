@@ -62,11 +62,10 @@ class CatalogModuleNode implements INode {
   constructor(public catalogModule: CatalogModule) {}
 
   get name(): string {
-    return [
-      this.catalogModule.reference,
-      this.catalogModule.gs_reference,
-      this.catalogModule.title,
-    ].join(' ');
+    return (
+      (this.catalogModule.reference ? this.catalogModule.reference + ' ' : '') +
+      this.catalogModule.title
+    );
   }
 
   toggleChecked(): void {

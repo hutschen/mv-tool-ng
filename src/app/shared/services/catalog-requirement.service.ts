@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import {
   CatalogModule,
   CatalogModuleService,
@@ -29,7 +29,6 @@ export interface ICatalogRequirementInput {
   description?: string | null;
 
   // Special attributes for IT Grundschutz Kompendium
-  gs_anforderung_reference?: string | null;
   gs_absicherung?: string | null;
   gs_verantwortliche?: string | null;
 }
@@ -59,7 +58,6 @@ export class CatalogRequirement implements ICatalogRequirement {
     this.catalog_module = new CatalogModule(catalogRequirement.catalog_module);
 
     // Special attributes for IT Grundschutz Kompendium
-    this.gs_anforderung_reference = catalogRequirement.gs_anforderung_reference;
     this.gs_absicherung = catalogRequirement.gs_absicherung;
     this.gs_verantwortliche = catalogRequirement.gs_verantwortliche;
   }
@@ -71,7 +69,6 @@ export class CatalogRequirement implements ICatalogRequirement {
       description: this.description,
 
       // Special attributes for IT Grundschutz Kompendium
-      gs_anforderung_reference: this.gs_anforderung_reference,
       gs_absicherung: this.gs_absicherung,
       gs_verantwortliche: this.gs_verantwortliche,
     };

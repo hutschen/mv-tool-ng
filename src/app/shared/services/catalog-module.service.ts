@@ -24,7 +24,6 @@ export interface ICatalogModuleInput {
   reference: string | null;
   title: string;
   description: string | null;
-  gs_reference: string | null;
 }
 
 export interface ICatalogModule extends ICatalogModuleInput {
@@ -37,7 +36,6 @@ export class CatalogModule implements ICatalogModule {
   reference: string | null;
   title: string;
   description: string | null;
-  gs_reference: string | null;
   catalog: Catalog;
 
   constructor(catalogModule: ICatalogModule) {
@@ -45,7 +43,6 @@ export class CatalogModule implements ICatalogModule {
     this.reference = catalogModule.reference;
     this.title = catalogModule.title;
     this.description = catalogModule.description;
-    this.gs_reference = catalogModule.gs_reference;
     this.catalog = new Catalog(catalogModule.catalog);
   }
 
@@ -54,7 +51,6 @@ export class CatalogModule implements ICatalogModule {
       reference: this.reference,
       title: this.title,
       description: this.description,
-      gs_reference: this.gs_reference,
     };
   }
 }

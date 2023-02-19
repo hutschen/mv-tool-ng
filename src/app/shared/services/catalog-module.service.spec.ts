@@ -50,14 +50,12 @@ describe('CatalogModuleService', () => {
       reference: null,
       title: 'A test catalog module',
       description: 'A test catalog module description',
-      gs_reference: null,
     };
     outputMock = {
       id: 1,
       reference: inputMock.reference,
       title: inputMock.title,
       description: inputMock.description,
-      gs_reference: inputMock.gs_reference,
       catalog: {
         id: 1,
         reference: null,
