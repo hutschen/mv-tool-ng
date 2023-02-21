@@ -13,11 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { combineLatest, skip, withLatestFrom } from 'rxjs';
+import { BehaviorSubject, combineLatest, skip, withLatestFrom } from 'rxjs';
+import { IQueryParams } from '../services/query-params.service';
 import {
   FilterByPattern,
   FilterByValues,
   FilterForExistence,
+  Filters,
   IFilterOption,
 } from './filter';
 
@@ -208,5 +210,100 @@ describe('FilterForExistence', () => {
         done();
       }
     );
+  });
+});
+
+class DummyFilter {
+  queryParamsSubject = new BehaviorSubject<IQueryParams>({});
+  queryParams$ = this.queryParamsSubject.asObservable();
+  isSetSubject = new BehaviorSubject<boolean>(false);
+  isSet$ = this.isSetSubject.asObservable();
+
+  clear(): void {
+    this.queryParamsSubject.next({});
+    this.isSetSubject.next(false);
+  }
+}
+
+describe('Filters', () => {
+  const label = 'a label';
+  let filterByPattern: DummyFilter;
+  let filterByValues: DummyFilter;
+  let filterForExistence: DummyFilter;
+  let sut: Filters;
+
+  beforeEach(() => {
+    filterByPattern = new DummyFilter();
+    filterByValues = new DummyFilter();
+    filterForExistence = new DummyFilter();
+    sut = new Filters(
+      label,
+      filterByPattern as unknown as FilterByPattern,
+      filterByValues as unknown as FilterByValues,
+      filterForExistence as unknown as FilterForExistence
+    );
+  });
+
+  it('should indicate that it holds filters', () => {
+    expect(sut.valueOf()).toBeTruthy();
+    expect(sut.hasFilters).toBeTrue();
+  });
+
+  it('should indicate that it does not hold filters', () => {
+    sut = new Filters(label);
+    expect(sut.valueOf()).toBeFalsy();
+    expect(sut.hasFilters).toBeFalse();
+  });
+
+  it('should combine query params', (done: DoneFn) => {
+    const queryParams = {
+      by_pattern: 'a',
+      by_values: ['a', 'b'],
+      for_existence: true,
+    };
+    filterByPattern.queryParamsSubject.next({ by_pattern: 'a' });
+    filterByValues.queryParamsSubject.next({ by_values: ['a', 'b'] });
+    filterForExistence.queryParamsSubject.next({ for_existence: true });
+    sut.queryParams$.subscribe((params) => {
+      expect(params).toEqual(queryParams);
+      done();
+    });
+  });
+
+  it('should indicate if at least one filter is set', (done: DoneFn) => {
+    filterByPattern.isSetSubject.next(true);
+    filterByValues.isSetSubject.next(false);
+    filterForExistence.isSetSubject.next(false);
+    sut.isSet$.subscribe((isSet) => {
+      expect(isSet).toBeTrue();
+      done();
+    });
+  });
+
+  it('should indicate if no filters are set', (done: DoneFn) => {
+    filterByPattern.isSetSubject.next(false);
+    filterByValues.isSetSubject.next(false);
+    filterForExistence.isSetSubject.next(false);
+    sut.isSet$.subscribe((isSet) => {
+      expect(isSet).toBeFalse();
+      done();
+    });
+  });
+
+  it('should clear all filters', (done: DoneFn) => {
+    filterByPattern.isSetSubject.next(true);
+    filterByValues.isSetSubject.next(true);
+    filterForExistence.isSetSubject.next(true);
+    sut.clear();
+    combineLatest([
+      filterByPattern.isSet$,
+      filterByValues.isSet$,
+      filterForExistence.isSet$,
+    ]).subscribe(([isSet1, isSet2, isSet3]) => {
+      expect(isSet1).toBeFalse();
+      expect(isSet2).toBeFalse();
+      expect(isSet3).toBeFalse();
+      done();
+    });
   });
 });
