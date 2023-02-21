@@ -85,6 +85,7 @@ export class DataField<D extends IDataItem, V> {
   }
 }
 
+// TODO: use any instead of type D
 export class PlaceholderField<D extends IDataItem> extends DataField<D, any> {
   constructor(name: string, label: string | null = null) {
     super(name, label, false);
