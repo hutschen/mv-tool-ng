@@ -13,7 +13,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { DataField, IDataItem } from './data';
+import { of } from 'rxjs';
+import { DataColumn, DataField, IDataItem } from './data';
 
 class DummyDataItem implements IDataItem {
   id = 1;
@@ -127,5 +128,151 @@ describe('DataField', () => {
         expect(isShown).toBeFalse();
         done();
       });
+  });
+});
+
+describe('DataColumn', () => {
+  let field: any;
+  let filters: any;
+  let sut: DataColumn<any>;
+
+  beforeEach(() => {
+    field = jasmine.createSpyObj('DataField', ['isShown'], {
+      name: 'field_name',
+      label: 'Field Name',
+    });
+    filters = jasmine.createSpyObj('Filters', ['clear'], {});
+  });
+
+  it('should be hidden when it is the only column mentioned in query params', (done: DoneFn) => {
+    field.required = false;
+    sut = new DataColumn(field, filters, { _hidden_columns: field.name });
+
+    sut.hidden$.subscribe((hidden) => {
+      expect(hidden).toBeTrue();
+      done();
+    });
+    expect(sut.hidden).toBeTrue();
+  });
+
+  it('should be hidden when it is not the only column mentioned in query params', (done: DoneFn) => {
+    field.required = false;
+    sut = new DataColumn(field, filters, {
+      _hidden_columns: [field.name, 'other_field_name'],
+    });
+
+    sut.hidden$.subscribe((hidden) => {
+      expect(hidden).toBeTrue();
+      done();
+    });
+    expect(sut.hidden).toBeTrue();
+  });
+
+  it('should not initially be hidden', (done: DoneFn) => {
+    field.required = false;
+    sut = new DataColumn(field, filters, {});
+
+    sut.hidden$.subscribe((hidden) => {
+      expect(hidden).toBeFalse();
+      done();
+    });
+    expect(sut.hidden).toBeFalse();
+  });
+
+  it('should never be hidden if it is required, even if it is mentioned in query params', (done: DoneFn) => {
+    field.required = true;
+    sut = new DataColumn(field, filters, { _hidden_columns: 'field_name' });
+
+    sut.hidden$.subscribe((hidden) => {
+      expect(hidden).toBeFalse();
+      done();
+    });
+    expect(sut.hidden).toBeFalse();
+  });
+
+  it('should never be set to hidden if it is required', (done: DoneFn) => {
+    field.required = true;
+    sut = new DataColumn(field, filters, {});
+    sut.hidden = true;
+
+    sut.hidden$.subscribe((hidden) => {
+      expect(hidden).toBeFalse();
+      done();
+    });
+    expect(sut.hidden).toBeFalse();
+  });
+
+  it('should be able to be set to hidden if it is not required', (done: DoneFn) => {
+    field.required = false;
+    sut = new DataColumn(field, filters, {});
+    sut.hidden = true;
+
+    sut.hidden$.subscribe((hidden) => {
+      expect(hidden).toBeTrue();
+      done();
+    });
+    expect(sut.hidden).toBeTrue();
+  });
+
+  it('should never be shown if it is hidden', (done: DoneFn) => {
+    const data: any[] = [{}, {}, {}];
+    field.required = false;
+    sut = new DataColumn(field, filters, {});
+    sut.hidden = true;
+
+    sut.isShown(data).subscribe((isShown) => {
+      expect(isShown).toBeFalse();
+      done();
+    });
+    expect(field.isShown).not.toHaveBeenCalled();
+  });
+
+  it('should always be shown if it is non-optional', (done: DoneFn) => {
+    const data: any[] = [{}, {}, {}];
+    field.optional = false;
+    sut = new DataColumn(field, filters, {});
+
+    sut.isShown(data).subscribe((isShown) => {
+      expect(isShown).toBeTrue();
+      done();
+    });
+    expect(field.isShown).not.toHaveBeenCalled();
+  });
+
+  it('should always be shown if it is required', (done: DoneFn) => {
+    const data: any[] = [{}, {}, {}];
+    field.required = true;
+    sut = new DataColumn(field, filters, {});
+
+    sut.isShown(data).subscribe((isShown) => {
+      expect(isShown).toBeTrue();
+      done();
+    });
+    expect(field.isShown).not.toHaveBeenCalled();
+  });
+
+  it('should not be shown if it is optional and data array is empty', (done: DoneFn) => {
+    const data: any[] = [];
+    field.optional = true;
+    sut = new DataColumn(field, filters, {});
+
+    sut.isShown(data).subscribe((isShown) => {
+      expect(isShown).toBeFalse();
+      done();
+    });
+    expect(field.isShown).not.toHaveBeenCalled();
+  });
+
+  it('should be shown if it is optional, the data array is not empty and the field is shown', (done: DoneFn) => {
+    const data: any[] = [{}, {}, {}];
+    field.optional = true;
+    field.isShown.and.returnValue(of(true));
+    sut = new DataColumn(field, filters, {});
+
+    sut.isShown(data).subscribe((isShown) => {
+      expect(isShown).toBeTrue();
+      done();
+    });
+    expect(field.isShown).toHaveBeenCalled();
   });
 });
