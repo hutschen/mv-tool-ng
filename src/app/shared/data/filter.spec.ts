@@ -13,7 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { BehaviorSubject, combineLatest, skip, withLatestFrom } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatest,
+  Observable,
+  skip,
+  Subject,
+  withLatestFrom,
+} from 'rxjs';
 import { IQueryParams } from '../services/query-params.service';
 import {
   FilterByPattern,
@@ -213,34 +220,31 @@ describe('FilterForExistence', () => {
   });
 });
 
-class DummyFilter {
-  queryParamsSubject = new BehaviorSubject<IQueryParams>({});
-  queryParams$ = this.queryParamsSubject.asObservable();
-  isSetSubject = new BehaviorSubject<boolean>(false);
-  isSet$ = this.isSetSubject.asObservable();
-
-  clear(): void {
-    this.queryParamsSubject.next({});
-    this.isSetSubject.next(false);
-  }
-}
-
 describe('Filters', () => {
   const label = 'a label';
-  let filterByPattern: DummyFilter;
-  let filterByValues: DummyFilter;
-  let filterForExistence: DummyFilter;
+  let filterByPattern: any;
+  let filterByValues: any;
+  let filterForExistence: any;
   let sut: Filters;
 
   beforeEach(() => {
-    filterByPattern = new DummyFilter();
-    filterByValues = new DummyFilter();
-    filterForExistence = new DummyFilter();
+    filterByPattern = jasmine.createSpyObj('FilterByPattern', ['clear'], {
+      queryParams$: new Subject<IQueryParams>(),
+      isSet$: new Subject<boolean>(),
+    });
+    filterByValues = jasmine.createSpyObj('FilterByValues', ['clear'], {
+      queryParams$: new Subject<IQueryParams>(),
+      isSet$: new Subject<boolean>(),
+    });
+    filterForExistence = jasmine.createSpyObj('FilterForExistence', ['clear'], {
+      queryParams$: new Subject<IQueryParams>(),
+      isSet$: new Subject<boolean>(),
+    });
     sut = new Filters(
       label,
-      filterByPattern as unknown as FilterByPattern,
-      filterByValues as unknown as FilterByValues,
-      filterForExistence as unknown as FilterForExistence
+      filterByPattern,
+      filterByValues,
+      filterForExistence
     );
   });
 
@@ -261,49 +265,39 @@ describe('Filters', () => {
       by_values: ['a', 'b'],
       for_existence: true,
     };
-    filterByPattern.queryParamsSubject.next({ by_pattern: 'a' });
-    filterByValues.queryParamsSubject.next({ by_values: ['a', 'b'] });
-    filterForExistence.queryParamsSubject.next({ for_existence: true });
     sut.queryParams$.subscribe((params) => {
       expect(params).toEqual(queryParams);
       done();
     });
+    filterByPattern.queryParams$.next({ by_pattern: 'a' });
+    filterByValues.queryParams$.next({ by_values: ['a', 'b'] });
+    filterForExistence.queryParams$.next({ for_existence: true });
   });
 
   it('should indicate if at least one filter is set', (done: DoneFn) => {
-    filterByPattern.isSetSubject.next(true);
-    filterByValues.isSetSubject.next(false);
-    filterForExistence.isSetSubject.next(false);
     sut.isSet$.subscribe((isSet) => {
       expect(isSet).toBeTrue();
       done();
     });
+    filterByPattern.isSet$.next(true);
+    filterByValues.isSet$.next(false);
+    filterForExistence.isSet$.next(false);
   });
 
   it('should indicate if no filters are set', (done: DoneFn) => {
-    filterByPattern.isSetSubject.next(false);
-    filterByValues.isSetSubject.next(false);
-    filterForExistence.isSetSubject.next(false);
     sut.isSet$.subscribe((isSet) => {
       expect(isSet).toBeFalse();
       done();
     });
+    filterByPattern.isSet$.next(false);
+    filterByValues.isSet$.next(false);
+    filterForExistence.isSet$.next(false);
   });
 
-  it('should clear all filters', (done: DoneFn) => {
-    filterByPattern.isSetSubject.next(true);
-    filterByValues.isSetSubject.next(true);
-    filterForExistence.isSetSubject.next(true);
+  it('should clear all filters', () => {
     sut.clear();
-    combineLatest([
-      filterByPattern.isSet$,
-      filterByValues.isSet$,
-      filterForExistence.isSet$,
-    ]).subscribe(([isSet1, isSet2, isSet3]) => {
-      expect(isSet1).toBeFalse();
-      expect(isSet2).toBeFalse();
-      expect(isSet3).toBeFalse();
-      done();
-    });
+    expect(filterByPattern.clear).toHaveBeenCalled();
+    expect(filterByValues.clear).toHaveBeenCalled();
+    expect(filterForExistence.clear).toHaveBeenCalled();
   });
 });
