@@ -152,10 +152,10 @@ export class DataColumn<D extends IDataItem> {
   }
 
   isShown(dataArray: D[]): Observable<boolean> {
-    return this.hidden$.pipe(
-      switchMap((hidden) => {
+    return combineLatest([this.hidden$, this.field.optional$]).pipe(
+      switchMap(([hidden, optional]) => {
         if (hidden) return of(false);
-        if (!this.optional || this.required) return of(true);
+        if (!optional) return of(true);
         if (dataArray.length === 0) return of(false);
 
         return combineLatest(
