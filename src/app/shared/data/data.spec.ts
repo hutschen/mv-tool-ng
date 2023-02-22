@@ -13,8 +13,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { of } from 'rxjs';
-import { DataColumn, DataField, IDataItem } from './data';
+import { Observable, of, Subject } from 'rxjs';
+import { IQueryParams } from '../services/query-params.service';
+import { DataColumn, DataColumns, DataField, IDataItem } from './data';
 
 class DummyDataItem implements IDataItem {
   id = 1;
@@ -140,8 +141,9 @@ describe('DataColumn', () => {
     field = jasmine.createSpyObj('DataField', ['isShown'], {
       name: 'field_name',
       label: 'Field Name',
+      optional$: new Subject<boolean>(),
     });
-    filters = jasmine.createSpyObj('Filters', ['clear'], {});
+    filters = {} as any;
   });
 
   it('should be hidden when it is the only column mentioned in query params', (done: DoneFn) => {
@@ -216,7 +218,6 @@ describe('DataColumn', () => {
 
   it('should never be shown if it is hidden', (done: DoneFn) => {
     const data: any[] = [{}, {}, {}];
-    field.required = false;
     sut = new DataColumn(field, filters, {});
     sut.hidden = true;
 
@@ -224,46 +225,35 @@ describe('DataColumn', () => {
       expect(isShown).toBeFalse();
       done();
     });
+    field.optional$.next(true);
     expect(field.isShown).not.toHaveBeenCalled();
   });
 
   it('should always be shown if it is non-optional', (done: DoneFn) => {
     const data: any[] = [{}, {}, {}];
-    field.optional = false;
     sut = new DataColumn(field, filters, {});
 
     sut.isShown(data).subscribe((isShown) => {
       expect(isShown).toBeTrue();
       done();
     });
-    expect(field.isShown).not.toHaveBeenCalled();
-  });
-
-  it('should always be shown if it is required', (done: DoneFn) => {
-    const data: any[] = [{}, {}, {}];
-    field.required = true;
-    sut = new DataColumn(field, filters, {});
-
-    sut.isShown(data).subscribe((isShown) => {
-      expect(isShown).toBeTrue();
-      done();
-    });
+    field.optional$.next(false);
     expect(field.isShown).not.toHaveBeenCalled();
   });
 
   it('should not be shown if it is optional and data array is empty', (done: DoneFn) => {
     const data: any[] = [];
-    field.optional = true;
     sut = new DataColumn(field, filters, {});
 
     sut.isShown(data).subscribe((isShown) => {
       expect(isShown).toBeFalse();
       done();
     });
+    field.optional$.next(true);
     expect(field.isShown).not.toHaveBeenCalled();
   });
 
-  it('should be shown if it is optional, the data array is not empty and the field is shown', (done: DoneFn) => {
+  it('should be shown if it is optional, data array is not empty and field is shown', (done: DoneFn) => {
     const data: any[] = [{}, {}, {}];
     field.optional = true;
     field.isShown.and.returnValue(of(true));
@@ -273,6 +263,155 @@ describe('DataColumn', () => {
       expect(isShown).toBeTrue();
       done();
     });
+    field.optional$.next(true);
     expect(field.isShown).toHaveBeenCalled();
+  });
+});
+
+describe('DataColumns', () => {
+  const createColumnSpy = function (
+    name: string,
+    required: boolean = false
+  ): any {
+    return jasmine.createSpyObj(name, ['isShown'], {
+      name,
+      required,
+      hidden$: new Subject<boolean>(),
+      filters: jasmine.createSpyObj('Filters of ' + name, ['clear'], {
+        queryParams$: new Subject<IQueryParams>(),
+        isSet$: new Subject<boolean>(),
+      }),
+    });
+  };
+  let sut: DataColumns<any>;
+
+  it('should be created without columns', () => {
+    sut = new DataColumns([]);
+    expect(sut).toBeTruthy();
+  });
+
+  it('should be created with columns', () => {
+    const columns = [createColumnSpy('column1'), createColumnSpy('column2')];
+    sut = new DataColumns(columns);
+    expect(sut).toBeTruthy();
+  });
+
+  it('should ensure unique column names', () => {
+    const columns = [
+      createColumnSpy('column1'),
+      createColumnSpy('column2'),
+      createColumnSpy('column1'),
+    ];
+    expect(() => new DataColumns(columns)).toThrowError(/unique/i);
+  });
+
+  it('should provide a list of hideable columns', () => {
+    const nonRequiredColumns = [
+      createColumnSpy('column1', false),
+      createColumnSpy('column2', false),
+    ];
+    const columns = [...nonRequiredColumns, createColumnSpy('column3', true)];
+    sut = new DataColumns(columns);
+    expect(sut.hideableColumns).toEqual(nonRequiredColumns);
+  });
+
+  it('should combine hidden status of columns into query params', (done: DoneFn) => {
+    const hiddenColumn = createColumnSpy('column1', false);
+    const nonHiddenColumn = createColumnSpy('column2');
+    sut = new DataColumns([hiddenColumn, nonHiddenColumn]);
+
+    sut.hiddenQueryParams$.subscribe((queryParams) => {
+      expect(queryParams['_hidden_columns']).toEqual([hiddenColumn.name]);
+      done();
+    });
+    hiddenColumn.hidden = true;
+    hiddenColumn.hidden$.next(true);
+    nonHiddenColumn.hidden = false;
+    nonHiddenColumn.hidden$.next(false);
+  });
+
+  it('should indicate if columns are hidden', (done: DoneFn) => {
+    const hiddenColumn = createColumnSpy('column1');
+    const nonHiddenColumn = createColumnSpy('column2');
+    sut = new DataColumns([hiddenColumn, nonHiddenColumn]);
+
+    sut.areColumnsHidden$.subscribe((areHidden) => {
+      expect(areHidden).toBeTrue();
+      done();
+    });
+    hiddenColumn.hidden$.next(true);
+    nonHiddenColumn.hidden$.next(false);
+  });
+
+  it('should indicate if filters are set on columns', (done: DoneFn) => {
+    const hiddenColumn = createColumnSpy('column1', false);
+    const nonHiddenColumn = createColumnSpy('column2');
+    sut = new DataColumns([hiddenColumn, nonHiddenColumn]);
+
+    sut.areFiltersSet$.subscribe((areSet) => {
+      expect(areSet).toBeTrue();
+      done();
+    });
+    hiddenColumn.filters.isSet$.next(true);
+    nonHiddenColumn.filters.isSet$.next(false);
+  });
+
+  it('should combine filter values into query params', (done: DoneFn) => {
+    const column1 = createColumnSpy('column1');
+    const column2 = createColumnSpy('column2');
+    sut = new DataColumns([column1, column2]);
+
+    sut.filterQueryParams$.subscribe((queryParams) => {
+      expect(queryParams).toEqual({
+        column1: 'value1',
+        column2: 'value2',
+      });
+      done();
+    });
+    column1.filters.queryParams$.next({ column1: 'value1' });
+    column2.filters.queryParams$.next({ column2: 'value2' });
+  });
+
+  it('should get column by name', () => {
+    const column1 = createColumnSpy('column1');
+    sut = new DataColumns([column1]);
+
+    expect(sut.getColumn('column1')).toBe(column1);
+    expect(() => sut.getColumn('column2')).toThrowError(/not found/i);
+  });
+
+  it('should get shown columns', (done: DoneFn) => {
+    const shownColumn = createColumnSpy('column1', false);
+    const hiddenColumn = createColumnSpy('column2', false);
+    shownColumn.isShown.and.returnValue(of(true));
+    hiddenColumn.isShown.and.returnValue(of(false));
+    sut = new DataColumns([shownColumn, hiddenColumn]);
+
+    sut.getShownColumns([]).subscribe((columns) => {
+      expect(columns).toEqual([shownColumn]);
+      done();
+    });
+  });
+
+  it('should clear filters of all columns', () => {
+    const column1 = createColumnSpy('column1');
+    const column2 = createColumnSpy('column2');
+    sut = new DataColumns([column1, column2]);
+
+    sut.clearFilters();
+    expect(column1.filters.clear).toHaveBeenCalled();
+    expect(column2.filters.clear).toHaveBeenCalled();
+  });
+
+  it('should unhide all columns', () => {
+    const column1 = createColumnSpy('column1');
+    const column2 = createColumnSpy('column2');
+    column1.hidden = true;
+    column2.hidden = false;
+    sut = new DataColumns([column1, column2]);
+
+    sut.unhideAllColumns();
+    expect(column1.hidden).toBeFalse();
+    expect(column2.hidden).toBeFalse();
   });
 });
