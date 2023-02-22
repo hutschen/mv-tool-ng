@@ -113,12 +113,13 @@ export class DataColumn<D extends IDataItem> {
     this.filters = filters ?? new Filters(this.field.label);
 
     this._hiddenSubject = new BehaviorSubject<boolean>(
-      this.__evalQueryParams(initQueryParams)
+      !this.required && this.__evalQueryParams(initQueryParams)
     );
     this.hidden$ = this._hiddenSubject.asObservable();
   }
 
   private __evalQueryParams(initialQueryParams: IQueryParams): boolean {
+    // Check if column is mentioned in _hidden_columns property of query params
     const { _hidden_columns } = initialQueryParams;
     if (_hidden_columns) {
       if (Array.isArray(_hidden_columns)) {
@@ -143,25 +144,23 @@ export class DataColumn<D extends IDataItem> {
   }
 
   set hidden(hide: boolean) {
-    this._hiddenSubject.next(hide);
+    this._hiddenSubject.next(!this.required && hide);
   }
 
   get hidden(): boolean {
-    return !this.required && this._hiddenSubject.value;
+    return this._hiddenSubject.value;
   }
 
   isShown(dataArray: D[]): Observable<boolean> {
-    return combineLatest([
-      this.hidden$,
-      ...dataArray.map((data) => this.field.isShown(data)),
-    ]).pipe(
-      distinctUntilChanged(isEqual),
-      map(([hidden, ...shownArray]) => {
-        if (hidden && !this.required) return false;
-        else {
-          if (shownArray.length === 0) return this.required || !this.optional;
-          else return shownArray.some((shown) => shown);
-        }
+    return this.hidden$.pipe(
+      switchMap((hidden) => {
+        if (hidden) return of(false);
+        if (!this.optional || this.required) return of(true);
+        if (dataArray.length === 0) return of(false);
+
+        return combineLatest(
+          dataArray.map((data) => this.field.isShown(data))
+        ).pipe(map((shownArray) => shownArray.some((shown) => shown)));
       }),
       distinctUntilChanged()
     );
