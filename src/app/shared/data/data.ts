@@ -70,16 +70,16 @@ export class DataField<D extends IDataItem, V> {
   }
 
   set optional(optional: boolean) {
-    this._optionalSubject.next(optional);
+    this._optionalSubject.next(!this.required && optional);
   }
 
   get optional(): boolean {
-    return !this.required && this._optionalSubject.value;
+    return this._optionalSubject.value;
   }
 
   isShown(data: D): Observable<boolean> {
     return this.optional$.pipe(
-      map((optional) => this.required || !optional || this.toBool(data)),
+      map((optional) => !optional || this.toBool(data)),
       distinctUntilChanged()
     );
   }
