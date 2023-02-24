@@ -15,9 +15,10 @@
 
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { firstValueFrom, map } from 'rxjs';
-import { CRUDService } from './crud.service';
+import { map } from 'rxjs';
+import { CRUDService, IPage } from './crud.service';
 import { IJiraProject } from './jira-project.service';
+import { IQueryParams } from './query-params.service';
 
 export interface IProjectInput {
   name: string;
@@ -28,7 +29,8 @@ export interface IProjectInput {
 export interface IProject extends IProjectInput {
   id: number;
   jira_project?: IJiraProject | null;
-  completion?: number | null;
+  completion_progress?: number | null;
+  verification_progress?: number | null;
 }
 
 export class Project implements IProject {
@@ -37,7 +39,8 @@ export class Project implements IProject {
   description: string | null;
   jira_project_id: string | null;
   jira_project: IJiraProject | null;
-  completion: number | null;
+  completion_progress: number | null;
+  verification_progress: number | null;
 
   constructor(project: IProject) {
     this.id = project.id;
@@ -45,7 +48,8 @@ export class Project implements IProject {
     this.description = project.description ?? null;
     this.jira_project_id = project.jira_project_id ?? null;
     this.jira_project = project.jira_project ?? null;
-    this.completion = project.completion ?? null;
+    this.completion_progress = project.completion_progress ?? null;
+    this.verification_progress = project.verification_progress ?? null;
   }
 
   toProjectInput(): IProjectInput {
@@ -68,19 +72,36 @@ export class Project implements IProject {
   }
 
   get percentComplete(): number | null {
-    if (this.completion === null) {
+    if (this.completion_progress === null) {
       return null;
     } else {
-      return Math.round(this.completion * 100);
+      return Math.round(this.completion_progress * 100);
     }
   }
+
+  get percentVerified(): number | null {
+    if (this.verification_progress === null) {
+      return null;
+    } else {
+      return Math.round(this.verification_progress * 100);
+    }
+  }
+}
+
+export interface IProjectRepresentation {
+  id: number;
+  name: string;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProjectService {
-  constructor(protected _crud: CRUDService<IProjectInput, IProject>) {}
+  constructor(
+    protected _crud: CRUDService<IProjectInput, IProject>,
+    protected _crud_str: CRUDService<null, string>,
+    protected _crud_repr: CRUDService<null, IProjectRepresentation>
+  ) {}
 
   getProjectsUrl(): string {
     return 'projects';
@@ -90,10 +111,19 @@ export class ProjectService {
     return `${this.getProjectsUrl()}/${projectId}`;
   }
 
-  listProjects(): Observable<Project[]> {
-    return this._crud
-      .list(this.getProjectsUrl())
-      .pipe(map((projects) => projects.map((p) => new Project(p))));
+  queryProjects(params: IQueryParams = {}) {
+    return this._crud.query('projects', params).pipe(
+      map((projects) => {
+        if (Array.isArray(projects)) {
+          return projects.map((p) => new Project(p));
+        } else {
+          return {
+            ...projects,
+            items: projects.items.map((p) => new Project(p)),
+          } as IPage<Project>;
+        }
+      })
+    );
   }
 
   createProject(projectInput: IProjectInput): Observable<Project> {
@@ -119,5 +149,15 @@ export class ProjectService {
 
   deleteProject(projectId: number): Observable<null> {
     return this._crud.delete(this.getProjectUrl(projectId));
+  }
+
+  getProjectFieldNames(params: IQueryParams = {}) {
+    return this._crud_str.query('project/field-names', params) as Observable<
+      string[]
+    >;
+  }
+
+  getProjectRepresentations(params: IQueryParams = {}) {
+    return this._crud_repr.query('project/representations', params);
   }
 }

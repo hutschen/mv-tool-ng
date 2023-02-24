@@ -20,7 +20,7 @@ import { Project } from '../shared/services/project.service';
 @Component({
   selector: 'mvtool-project-view',
   template: `
-    <mvtool-project-table (projectClicked)="onProjectClicked($event)">
+    <mvtool-project-table (clickProject)="onProjectClicked($event)">
     </mvtool-project-table>
   `,
   styles: [],

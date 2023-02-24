@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Helmar Hutschenreuter
+// Copyright (C) 2023 Helmar Hutschenreuter
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -13,25 +13,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
-import { FilterDialogComponent } from './filter-dialog.component';
+import { QueryParamsService } from './query-params.service';
 
-describe('FilterDialogComponent', () => {
-  let component: FilterDialogComponent<any>;
-  let fixture: ComponentFixture<FilterDialogComponent<any>>;
+describe('QueryParamsService', () => {
+  let service: QueryParamsService;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [FilterDialogComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(FilterDialogComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(QueryParamsService);
   });
 
-  xit('should create', () => {
-    expect(component).toBeTruthy();
+  xit('should be created', () => {
+    expect(service).toBeTruthy();
   });
 });

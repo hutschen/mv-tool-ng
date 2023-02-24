@@ -19,7 +19,8 @@ import {
   CatalogRequirement,
   ICatalogRequirement,
 } from './catalog-requirement.service';
-import { CRUDService } from './crud.service';
+import { CRUDService, IPage } from './crud.service';
+import { IQueryParams } from './query-params.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
 import { IUploadState, UploadService } from './upload.service';
@@ -47,7 +48,8 @@ export interface IRequirement {
   compliance_comment?: string | null;
   project: IProject;
   catalog_requirement?: ICatalogRequirement | null;
-  completion?: number | null;
+  completion_progress?: number | null;
+  verification_progress?: number | null;
 }
 
 export class Requirement implements IRequirement {
@@ -62,7 +64,8 @@ export class Requirement implements IRequirement {
   compliance_comment: string | null;
   project: Project;
   catalog_requirement: CatalogRequirement | null;
-  completion: number | null;
+  completion_progress: number | null;
+  verification_progress: number | null;
 
   constructor(requirement: IRequirement) {
     this.id = requirement.id;
@@ -78,7 +81,8 @@ export class Requirement implements IRequirement {
     this.catalog_requirement = requirement.catalog_requirement
       ? new CatalogRequirement(requirement.catalog_requirement)
       : null;
-    this.completion = requirement.completion ?? null;
+    this.completion_progress = requirement.completion_progress ?? null;
+    this.verification_progress = requirement.verification_progress ?? null;
   }
 
   toRequirementInput(): IRequirementInput {
@@ -95,15 +99,19 @@ export class Requirement implements IRequirement {
   }
 
   get percentComplete(): number | null {
-    if (this.completion === null || this.completion === undefined) {
+    if (this.completion_progress === null) {
       return null;
     } else {
-      return Math.round(this.completion * 100);
+      return Math.round(this.completion_progress * 100);
     }
   }
 
-  get gsAnforderungReference(): string | null {
-    return this.catalog_requirement?.gs_anforderung_reference || null;
+  get percentVerified(): number | null {
+    if (this.verification_progress === null) {
+      return null;
+    } else {
+      return Math.round(this.verification_progress * 100);
+    }
   }
 
   get gsAbsicherung(): string | null {
@@ -115,12 +123,20 @@ export class Requirement implements IRequirement {
   }
 }
 
+export interface IRequirementRepresentation {
+  id: number;
+  reference?: string | null;
+  summary: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class RequirementService {
   constructor(
-    protected _crud: CRUDService<IRequirementInput, IRequirement>,
+    protected _crud_requirement: CRUDService<IRequirementInput, IRequirement>,
+    protected _crud_str: CRUDService<null, string>,
+    protected _crud_repr: CRUDService<null, IRequirementRepresentation>,
     protected _download: DownloadService,
     protected _upload: UploadService,
     protected _projects: ProjectService
@@ -134,23 +150,32 @@ export class RequirementService {
     return `requirements/${requirementId}`;
   }
 
-  listRequirements(projectId: number): Observable<Requirement[]> {
-    return this._crud
-      .list(this.getRequirementsUrl(projectId))
-      .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
+  queryRequirements(params: IQueryParams) {
+    return this._crud_requirement.query('requirements', params).pipe(
+      map((requirements) => {
+        if (Array.isArray(requirements)) {
+          return requirements.map((r) => new Requirement(r));
+        } else {
+          return {
+            ...requirements,
+            items: requirements.items.map((r) => new Requirement(r)),
+          } as IPage<Requirement>;
+        }
+      })
+    );
   }
 
   createRequirement(
     projectId: number,
     requirementInput: IRequirementInput
   ): Observable<Requirement> {
-    return this._crud
+    return this._crud_requirement
       .create(this.getRequirementsUrl(projectId), requirementInput)
       .pipe(map((requirement) => new Requirement(requirement)));
   }
 
   getRequirement(requirementId: number): Observable<Requirement> {
-    return this._crud
+    return this._crud_requirement
       .read(this.getRequirementUrl(requirementId))
       .pipe(map((requirement) => new Requirement(requirement)));
   }
@@ -159,13 +184,28 @@ export class RequirementService {
     requirementId: number,
     requirementInput: IRequirementInput
   ): Observable<Requirement> {
-    return this._crud
+    return this._crud_requirement
       .update(this.getRequirementUrl(requirementId), requirementInput)
       .pipe(map((requirement) => new Requirement(requirement)));
   }
 
   deleteRequirement(requirementId: number): Observable<null> {
-    return this._crud.delete(this.getRequirementUrl(requirementId));
+    return this._crud_requirement.delete(this.getRequirementUrl(requirementId));
+  }
+
+  getRequirementFieldNames(params: IQueryParams = {}) {
+    return this._crud_str.query(
+      'requirement/field-names',
+      params
+    ) as Observable<string[]>;
+  }
+
+  getRequirementReferences(params: IQueryParams = {}) {
+    return this._crud_str.query('requirement/references', params);
+  }
+
+  getRequirementRepresentations(params: IQueryParams = {}) {
+    return this._crud_repr.query('requirement/representations', params);
   }
 
   importRequirements(
@@ -173,7 +213,7 @@ export class RequirementService {
     catalogModuleIds: number[]
   ): Observable<Requirement[]> {
     const url = `${this.getRequirementsUrl(projectId)}/import`;
-    return this._crud
+    return this._crud_requirement
       .import(url, catalogModuleIds)
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }

@@ -81,11 +81,11 @@ describe('RequirementService', () => {
     );
   });
 
-  it('should list requirements', (done: DoneFn) => {
+  it('should query requirements', (done: DoneFn) => {
     const projectId = outputMock.project.id;
     const requirementsList = [outputMock];
 
-    sut.listRequirements(projectId).subscribe({
+    sut.queryRequirements({ projectId }).subscribe({
       next: (value) => {
         expect(value).toEqual(
           requirementsList.map((requirement) => new Requirement(requirement))
@@ -95,7 +95,7 @@ describe('RequirementService', () => {
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crud.toAbsoluteUrl(sut.getRequirementsUrl(projectId)),
+      url: crud.toAbsoluteUrl(`requirements?projectId=${projectId}`),
     });
     mockResponse.flush(requirementsList);
   });

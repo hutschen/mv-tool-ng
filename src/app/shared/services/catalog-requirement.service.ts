@@ -14,13 +14,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom, map, Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import {
   CatalogModule,
   CatalogModuleService,
   ICatalogModule,
 } from './catalog-module.service';
-import { CRUDService } from './crud.service';
+import { CRUDService, IPage } from './crud.service';
+import { IQueryParams } from './query-params.service';
 
 export interface ICatalogRequirementInput {
   reference?: string | null;
@@ -28,7 +29,6 @@ export interface ICatalogRequirementInput {
   description?: string | null;
 
   // Special attributes for IT Grundschutz Kompendium
-  gs_anforderung_reference?: string | null;
   gs_absicherung?: string | null;
   gs_verantwortliche?: string | null;
 }
@@ -46,7 +46,6 @@ export class CatalogRequirement implements ICatalogRequirement {
   catalog_module: CatalogModule;
 
   // Special attributes for IT Grundschutz Kompendium
-  gs_anforderung_reference?: string | null;
   gs_absicherung?: string | null;
   gs_verantwortliche?: string | null;
 
@@ -58,7 +57,6 @@ export class CatalogRequirement implements ICatalogRequirement {
     this.catalog_module = new CatalogModule(catalogRequirement.catalog_module);
 
     // Special attributes for IT Grundschutz Kompendium
-    this.gs_anforderung_reference = catalogRequirement.gs_anforderung_reference;
     this.gs_absicherung = catalogRequirement.gs_absicherung;
     this.gs_verantwortliche = catalogRequirement.gs_verantwortliche;
   }
@@ -70,11 +68,16 @@ export class CatalogRequirement implements ICatalogRequirement {
       description: this.description,
 
       // Special attributes for IT Grundschutz Kompendium
-      gs_anforderung_reference: this.gs_anforderung_reference,
       gs_absicherung: this.gs_absicherung,
       gs_verantwortliche: this.gs_verantwortliche,
     };
   }
+}
+
+export interface ICatalogRequirementRepresentation {
+  id: number;
+  reference?: string | null;
+  summary: string;
 }
 
 @Injectable({
@@ -82,7 +85,12 @@ export class CatalogRequirement implements ICatalogRequirement {
 })
 export class CatalogRequirementService {
   constructor(
-    protected _crud: CRUDService<ICatalogRequirementInput, ICatalogRequirement>,
+    protected _crud_catalog_requirement: CRUDService<
+      ICatalogRequirementInput,
+      ICatalogRequirement
+    >,
+    protected _crud_str: CRUDService<null, string>,
+    protected _crud_repr: CRUDService<null, ICatalogRequirementRepresentation>,
     protected _catalogModules: CatalogModuleService
   ) {}
 
@@ -96,15 +104,22 @@ export class CatalogRequirementService {
     return `catalog-requirements/${catalogRequirementId}`;
   }
 
-  listCatalogRequirements(
-    catalogModuleId: number
-  ): Observable<CatalogRequirement[]> {
-    return this._crud
-      .list(this.getCatalogRequirementsUrl(catalogModuleId))
+  queryCatalogRequirements(params: IQueryParams = {}) {
+    return this._crud_catalog_requirement
+      .query('catalog-requirements', params)
       .pipe(
-        map((catalogRequirements) =>
-          catalogRequirements.map((cr) => new CatalogRequirement(cr))
-        )
+        map((catalogRequirements) => {
+          if (Array.isArray(catalogRequirements)) {
+            return catalogRequirements.map((cr) => new CatalogRequirement(cr));
+          } else {
+            return {
+              ...catalogRequirements,
+              items: catalogRequirements.items.map(
+                (cr) => new CatalogRequirement(cr)
+              ),
+            } as IPage<CatalogRequirement>;
+          }
+        })
       );
   }
 
@@ -112,7 +127,7 @@ export class CatalogRequirementService {
     catalogModuleId: number,
     catalogRequirementInput: ICatalogRequirementInput
   ): Observable<CatalogRequirement> {
-    return this._crud
+    return this._crud_catalog_requirement
       .create(
         this.getCatalogRequirementsUrl(catalogModuleId),
         catalogRequirementInput
@@ -123,7 +138,7 @@ export class CatalogRequirementService {
   getCatalogRequirement(
     catalogRequirementId: number
   ): Observable<CatalogRequirement> {
-    return this._crud
+    return this._crud_catalog_requirement
       .read(this.getCatalogRequirementUrl(catalogRequirementId))
       .pipe(map((cr) => new CatalogRequirement(cr)));
   }
@@ -132,7 +147,7 @@ export class CatalogRequirementService {
     catalogRequirementId: number,
     catalogRequirementInput: ICatalogRequirementInput
   ): Observable<CatalogRequirement> {
-    return this._crud
+    return this._crud_catalog_requirement
       .update(
         this.getCatalogRequirementUrl(catalogRequirementId),
         catalogRequirementInput
@@ -141,8 +156,23 @@ export class CatalogRequirementService {
   }
 
   deleteCatalogRequirement(catalogRequirementId: number): Observable<null> {
-    return this._crud.delete(
+    return this._crud_catalog_requirement.delete(
       this.getCatalogRequirementUrl(catalogRequirementId)
     );
+  }
+
+  getCatalogRequirementFieldNames(params: IQueryParams = {}) {
+    return this._crud_str.query(
+      'catalog-requirement/field-names',
+      params
+    ) as Observable<string[]>;
+  }
+
+  getCatalogRequirementReferences(params: IQueryParams = {}) {
+    return this._crud_str.query('catalog-requirement/references', params);
+  }
+
+  getCatalogRequirementRepresentations(params: IQueryParams = {}) {
+    return this._crud_repr.query('catalog-requirement/representations', params);
   }
 }

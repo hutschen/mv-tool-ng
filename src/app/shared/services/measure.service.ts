@@ -15,7 +15,8 @@
 
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { CRUDService } from './crud.service';
+import { CRUDService, IPage } from './crud.service';
+import { IQueryParams } from './query-params.service';
 import { IDocument, Document } from './document.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IJiraIssue } from './jira-issue.service';
@@ -132,7 +133,8 @@ export class Measure implements IMeasure {
 })
 export class MeasureService {
   constructor(
-    protected _crud: CRUDService<IMeasureInput, IMeasure>,
+    protected _crud_measure: CRUDService<IMeasureInput, IMeasure>,
+    protected _crud_str: CRUDService<string, string>,
     protected _download: DownloadService,
     protected _upload: UploadService,
     protected _requirements: RequirementService
@@ -146,23 +148,32 @@ export class MeasureService {
     return `measures/${measureId}`;
   }
 
-  listMeasures(requirementId: number): Observable<Measure[]> {
-    return this._crud
-      .list(this.getMeasuresUrl(requirementId))
-      .pipe(map((measures) => measures.map((m) => new Measure(m))));
+  queryMeasures(params: IQueryParams = {}) {
+    return this._crud_measure.query('measures', params).pipe(
+      map((measures) => {
+        if (Array.isArray(measures)) {
+          return measures.map((m) => new Measure(m));
+        } else {
+          return {
+            ...measures,
+            items: measures.items.map((m) => new Measure(m)),
+          } as IPage<Measure>;
+        }
+      })
+    );
   }
 
   createMeasure(
     requirementId: number,
     measureInput: IMeasureInput
   ): Observable<Measure> {
-    return this._crud
+    return this._crud_measure
       .create(this.getMeasuresUrl(requirementId), measureInput)
       .pipe(map((measure) => new Measure(measure)));
   }
 
   getMeasure(measureId: number): Observable<Measure> {
-    return this._crud
+    return this._crud_measure
       .read(this.getMeasureUrl(measureId))
       .pipe(map((measure) => new Measure(measure)));
   }
@@ -171,13 +182,24 @@ export class MeasureService {
     measureId: number,
     measureInput: IMeasureInput
   ): Observable<Measure> {
-    return this._crud
+    return this._crud_measure
       .update(this.getMeasureUrl(measureId), measureInput)
       .pipe(map((measure) => new Measure(measure)));
   }
 
   deleteMeasure(measureId: number): Observable<null> {
-    return this._crud.delete(this.getMeasureUrl(measureId));
+    return this._crud_measure.delete(this.getMeasureUrl(measureId));
+  }
+
+  getMeasureFieldNames(params: IQueryParams = {}) {
+    return this._crud_str.query(
+      'measure/field-names',
+      params // comment to force formatter to keep this line break
+    ) as Observable<string[]>;
+  }
+
+  getMeasureReferences(params: IQueryParams = {}) {
+    return this._crud_str.query('measure/references', params);
   }
 
   downloadMeasureExcel(requirementId: number): Observable<IDownloadState> {

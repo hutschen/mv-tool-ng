@@ -50,14 +50,12 @@ describe('CatalogModuleService', () => {
       reference: null,
       title: 'A test catalog module',
       description: 'A test catalog module description',
-      gs_reference: null,
     };
     outputMock = {
       id: 1,
       reference: inputMock.reference,
       title: inputMock.title,
       description: inputMock.description,
-      gs_reference: inputMock.gs_reference,
       catalog: {
         id: 1,
         reference: null,
@@ -89,11 +87,11 @@ describe('CatalogModuleService', () => {
     );
   });
 
-  it('should list catalog modules', (done: DoneFn) => {
+  it('should query catalog modules', (done: DoneFn) => {
     const catalogId = outputMock.catalog.id;
     const catalogModulesList = [outputMock];
 
-    sut.listCatalogModules(catalogId).subscribe({
+    sut.queryCatalogModules({ catalogId }).subscribe({
       next: (value) =>
         expect(value).toEqual(
           catalogModulesList.map((cm) => new CatalogModule(cm))
@@ -103,7 +101,7 @@ describe('CatalogModuleService', () => {
 
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crud.toAbsoluteUrl(sut.getCatalogModulesUrl(catalogId)),
+      url: crud.toAbsoluteUrl(`catalog-modules?catalogId=${catalogId}`),
     });
     mockResponse.flush(catalogModulesList);
   });

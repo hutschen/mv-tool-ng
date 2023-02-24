@@ -71,7 +71,7 @@ describe('CRUDService', () => {
   });
 
   it('should list items', (done: DoneFn) => {
-    sut.list('items').subscribe({
+    sut.list_legacy('items').subscribe({
       next: (value) => {
         expect(value.length).toEqual(1);
         expect(value[0]).toEqual(outputMock);

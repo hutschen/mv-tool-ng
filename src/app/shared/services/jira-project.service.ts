@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 
 export interface IJiraProject {
@@ -39,7 +39,7 @@ export class JiraProjectService {
   }
 
   getJiraProjects(): Observable<IJiraProject[]> {
-    return this._crud.list(this.getJiraProjectsUrl());
+    return this._crud.list_legacy(this.getJiraProjectsUrl());
   }
 
   getJiraProject(jiraProjectId: string): Observable<IJiraProject> {

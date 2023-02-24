@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Helmar Hutschenreuter
+// Copyright (C) 2023 Helmar Hutschenreuter
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -13,25 +13,19 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
-import { ShowHideDialogComponent } from './show-hide-dialog.component';
+import { TargetObjectService } from './target-object.service';
 
-describe('ShowHideDialogComponent', () => {
-  let component: ShowHideDialogComponent;
-  let fixture: ComponentFixture<ShowHideDialogComponent>;
+describe('TargetObjectService', () => {
+  let service: TargetObjectService;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ShowHideDialogComponent],
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(ShowHideDialogComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(TargetObjectService);
   });
 
-  xit('should create', () => {
-    expect(component).toBeTruthy();
+  xit('should be created', () => {
+    expect(service).toBeTruthy();
   });
 });

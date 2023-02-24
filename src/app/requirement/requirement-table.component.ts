@@ -13,18 +13,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import {
-  Component,
-  EventEmitter,
-  Injectable,
-  Input,
-  OnInit,
-  Output,
-} from '@angular/core';
-import { BehaviorSubject, firstValueFrom, Observable } from 'rxjs';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
-import { TableColumns } from '../shared/table-columns';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { Project } from '../shared/services/project.service';
 import {
@@ -34,49 +26,13 @@ import {
 import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
 import { RequirementDialogService } from './requirement-dialog.component';
 import { RequirementImportDialogService } from './requirement-import-dialog.component';
-
-// FIXME: This service is only a temporary, quick and dirty solution to increase the loading speed.
-@Injectable({
-  providedIn: 'root',
-})
-export class RequirementCachingService {
-  protected _cache = new Map<number, BehaviorSubject<Requirement[]>>();
-
-  getSubject(projectId: number): BehaviorSubject<Requirement[]> {
-    let subject = this._cache.get(projectId);
-    if (!subject) {
-      subject = new BehaviorSubject<Requirement[]>([]);
-      this._cache.set(projectId, subject);
-    }
-    return subject;
-  }
-
-  createOrUpdateRequirement(projectId: number, requirement: Requirement) {
-    const subject = this.getSubject(projectId);
-    const requirements = subject.getValue();
-    if (requirements) {
-      const index = requirements.findIndex((r) => r.id === requirement.id);
-      if (index >= 0) {
-        requirements[index] = requirement;
-      } else {
-        requirements.push(requirement);
-      }
-      subject.next(requirements);
-    }
-  }
-
-  deleteRequirement(projectId: number, requirement: Requirement) {
-    const subject = this.getSubject(projectId);
-    const requirements = subject.getValue();
-    if (requirements) {
-      const index = requirements.findIndex((r) => r.id === requirement.id);
-      if (index >= 0) {
-        requirements.splice(index, 1);
-        subject.next(requirements);
-      }
-    }
-  }
-}
+import { RequirementDataFrame } from '../shared/data/requirement/requirement-frame';
+import { QueryParamsService } from '../shared/services/query-params.service';
+import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
+import { CatalogService } from '../shared/services/catalog.service';
+import { CatalogModuleService } from '../shared/services/catalog-module.service';
+import { TargetObjectService } from '../shared/services/target-object.service';
+import { MilestoneService } from '../shared/services/milestone.service';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -88,108 +44,40 @@ export class RequirementCachingService {
   ],
 })
 export class RequirementTableComponent implements OnInit {
-  columns = new TableColumns<Requirement>([
-    { id: 'reference', label: 'Reference', optional: true },
-    {
-      id: 'gs_anforderung_reference',
-      label: 'GS Reference',
-      optional: true,
-      toValue: (r) => r.catalog_requirement?.gs_anforderung_reference,
-    },
-    {
-      id: 'catalog',
-      label: 'Catalog',
-      optional: true,
-      toValue: (r) => r.catalog_requirement?.catalog_module.catalog,
-      toStr: (r) => r.catalog_requirement?.catalog_module.catalog.title ?? '',
-    },
-    {
-      id: 'catalog_module',
-      label: 'Catalog Module',
-      optional: true,
-      toValue: (r) => r.catalog_requirement?.catalog_module,
-      toStr: (r) => r.catalog_requirement?.catalog_module.title ?? '',
-    },
-    { id: 'summary', label: 'Summary' },
-    { id: 'description', label: 'Description', optional: true },
-    {
-      id: 'gs_absicherung',
-      label: 'GS Absicherung',
-      optional: true,
-      toValue: (r) => r.catalog_requirement?.gs_absicherung,
-    },
-    {
-      id: 'gs_verantwortliche',
-      label: 'GS Verantwortliche',
-      optional: true,
-      toValue: (r) => r.catalog_requirement?.gs_verantwortliche,
-    },
-    { id: 'milestone', label: 'Milestone', optional: true },
-    { id: 'target_object', label: 'Target Object', optional: true },
-    {
-      id: 'compliance_status',
-      label: 'Compliance',
-      optional: true,
-      toStr: (r) => (r.compliance_status ? r.compliance_status : 'Not set'),
-    },
-    { id: 'compliance_comment', label: 'Compliance Comment', optional: true },
-    {
-      id: 'completion',
-      label: 'Completion',
-      optional: true,
-      toValue: (r) => r.percentComplete,
-      toStr: (r) =>
-        r.percentComplete !== null
-          ? `${r.percentComplete}% complete`
-          : 'Nothing to be completed',
-      toBool: (r) => r.percentComplete !== null,
-    },
-    {
-      id: 'alert',
-      label: 'Alert',
-      optional: true,
-      toValue: (r) =>
-        !!(
-          r.compliance_status &&
-          r.compliance_status_hint !== r.compliance_status
-        ),
-      toStr: (r) =>
-        !!(
-          r.compliance_status &&
-          r.compliance_status_hint !== r.compliance_status
-        )
-          ? `Compliance status should be ${r.compliance_status_hint}.`
-          : '',
-    },
-    { id: 'options' },
-  ]);
-  protected _dataSubject!: BehaviorSubject<Requirement[]>;
-  data$!: Observable<Requirement[]>;
-  dataLoaded: boolean = false;
+  dataFrame!: RequirementDataFrame;
   @Input() project?: Project;
-  @Output() requirementClicked = new EventEmitter<Requirement>();
+  @Output() clickRequirement = new EventEmitter<Requirement>();
 
   constructor(
+    protected _queryParamsService: QueryParamsService,
     protected _requirementService: RequirementService,
-    protected _requirementCachingService: RequirementCachingService,
+    protected _catalogService: CatalogService,
+    protected _catalogModuleService: CatalogModuleService,
+    protected _milestoneService: MilestoneService,
+    protected _targetObjectService: TargetObjectService,
     protected _requirementDialogService: RequirementDialogService,
     protected _complianceDialogService: ComplianceDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _requirementImportDialogService: RequirementImportDialogService,
-    protected _confirmDialogService: ConfirmDialogService
+    protected _confirmDialogService: ConfirmDialogService,
+    protected _hideColumnsDialogService: HideColumnsDialogService
   ) {}
 
   async ngOnInit(): Promise<void> {
-    if (this.project) {
-      this._dataSubject = this._requirementCachingService.getSubject(
-        this.project.id
-      );
-      this.data$ = this._dataSubject.asObservable();
-      await this.onReloadRequirements();
-    } else {
-      throw new Error('Project is undefined');
-    }
+    if (!this.project) throw new Error('Project is undefined');
+    this.dataFrame = new RequirementDataFrame(
+      this._requirementService,
+      this._catalogService,
+      this._catalogModuleService,
+      this._milestoneService,
+      this._targetObjectService,
+      this.project,
+      this._queryParamsService.getQueryParams()
+    );
+    this._queryParamsService
+      .syncQueryParams(this.dataFrame.queryParams$)
+      .subscribe();
   }
 
   protected async _createOrEditRequirement(
@@ -204,10 +92,7 @@ export class RequirementTableComponent implements OnInit {
         dialogRef.afterClosed()
       );
       if (resultingRequirement) {
-        this._requirementCachingService.createOrUpdateRequirement(
-          this.project.id,
-          resultingRequirement
-        );
+        this.dataFrame.addOrUpdateItem(resultingRequirement);
       }
     } else {
       throw new Error('Project is undefined');
@@ -226,11 +111,8 @@ export class RequirementTableComponent implements OnInit {
     const dialogRef =
       this._complianceDialogService.openComplianceDialog(requirement);
     const updatedRequirement = await firstValueFrom(dialogRef.afterClosed());
-    if (updatedRequirement && this.project) {
-      this._requirementCachingService.createOrUpdateRequirement(
-        this.project.id,
-        updatedRequirement as Requirement
-      );
+    if (updatedRequirement) {
+      this.dataFrame.updateItem(updatedRequirement as Requirement);
     }
   }
 
@@ -240,14 +122,11 @@ export class RequirementTableComponent implements OnInit {
       `Do you really want to delete requirement "${requirement.summary}"?`
     );
     const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
-    if (confirmed && this.project) {
+    if (confirmed) {
       await firstValueFrom(
         this._requirementService.deleteRequirement(requirement.id)
       );
-      this._requirementCachingService.deleteRequirement(
-        this.project.id,
-        requirement
-      );
+      this.dataFrame.removeItem(requirement);
     }
   }
 
@@ -278,7 +157,7 @@ export class RequirementTableComponent implements OnInit {
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());
     if (uploadState && uploadState.state == 'done') {
-      await this.onReloadRequirements();
+      this.dataFrame.reload();
     }
   }
 
@@ -290,22 +169,16 @@ export class RequirementTableComponent implements OnInit {
         );
       const result = await firstValueFrom(dialogRef.afterClosed());
       if (result) {
-        await this.onReloadRequirements();
+        this.dataFrame.reload();
       }
     } else {
       throw new Error('Project is undefined');
     }
   }
 
-  async onReloadRequirements(): Promise<void> {
-    if (this.project) {
-      const data = await firstValueFrom(
-        this._requirementService.listRequirements(this.project.id)
-      );
-      this._dataSubject.next(data);
-      this.dataLoaded = true;
-    } else {
-      throw new Error('Project is undefined');
-    }
+  onHideColumns(): void {
+    this._hideColumnsDialogService.openHideColumnsDialog(
+      this.dataFrame.columns
+    );
   }
 }

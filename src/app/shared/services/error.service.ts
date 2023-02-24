@@ -114,7 +114,7 @@ export class ErrorService implements ErrorHandler {
       const ngZone = this._injector.get(NgZone);
       ngZone.run(() => this.handleHttpError(error));
     } else {
-      console.log('Unhandled error', error);
+      console.error('Unhandled error', error);
     }
   }
 }

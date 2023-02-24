@@ -14,11 +14,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
-import { TableColumns } from '../shared/table-columns';
 import { Catalog, CatalogService } from '../shared/services/catalog.service';
 import { CatalogDialogService } from './catalog-dialog.component';
+import { CatalogDataFrame } from '../shared/data/catalog/catalog-frame';
+import { QueryParamsService } from '../shared/services/query-params.service';
+import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-table',
@@ -31,32 +33,32 @@ import { CatalogDialogService } from './catalog-dialog.component';
   styles: [],
 })
 export class CatalogTableComponent implements OnInit {
-  columns = new TableColumns<Catalog>([
-    { id: 'reference', label: 'Reference', optional: true },
-    { id: 'title', label: 'Title' },
-    { id: 'description', label: 'Description', optional: true },
-    { id: 'options' },
-  ]);
-  protected _dataSubject = new ReplaySubject<Catalog[]>(1);
-  data$: Observable<Catalog[]> = this._dataSubject.asObservable();
-  dataLoaded: boolean = false;
-  @Output() catalogClicked = new EventEmitter<Catalog>();
+  dataFrame!: CatalogDataFrame;
+  @Output() clickCatalog = new EventEmitter<Catalog>();
 
   constructor(
+    protected _queryParamsService: QueryParamsService,
     protected _catalogService: CatalogService,
     protected _catalogDialogService: CatalogDialogService,
-    protected _confirmDialogService: ConfirmDialogService
+    protected _confirmDialogService: ConfirmDialogService,
+    protected _hideColumnsDialogService: HideColumnsDialogService
   ) {}
 
-  async ngOnInit(): Promise<void> {
-    await this.onReloadCatalogs();
+  ngOnInit() {
+    this.dataFrame = new CatalogDataFrame(
+      this._catalogService,
+      this._queryParamsService.getQueryParams()
+    );
+    this._queryParamsService
+      .syncQueryParams(this.dataFrame.queryParams$)
+      .subscribe();
   }
 
   protected async _createOrEditCatalog(catalog?: Catalog): Promise<void> {
     const dialogRef = this._catalogDialogService.openCatalogDialog(catalog);
     const resultingCatalog = await firstValueFrom(dialogRef.afterClosed());
     if (resultingCatalog) {
-      await this.onReloadCatalogs();
+      this.dataFrame.addOrUpdateItem(resultingCatalog);
     }
   }
 
@@ -76,13 +78,13 @@ export class CatalogTableComponent implements OnInit {
     const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
     if (confirmed) {
       await firstValueFrom(this._catalogService.deleteCatalog(catalog.id));
-      await this.onReloadCatalogs();
+      this.dataFrame.removeItem(catalog);
     }
   }
 
-  async onReloadCatalogs(): Promise<void> {
-    const data = await firstValueFrom(this._catalogService.listCatalogs());
-    this._dataSubject.next(data);
-    this.dataLoaded = true;
+  onHideColumns() {
+    this._hideColumnsDialogService.openHideColumnsDialog(
+      this.dataFrame.columns
+    );
   }
 }

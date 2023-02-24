@@ -14,10 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom, map, Observable } from 'rxjs';
-import { CRUDService } from './crud.service';
+import { map, Observable } from 'rxjs';
+import { CRUDService, IPage } from './crud.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
+import { IQueryParams } from './query-params.service';
 import { IUploadState, UploadService } from './upload.service';
 
 export interface IDocumentInput {
@@ -55,12 +56,20 @@ export class Document implements IDocument {
   }
 }
 
+export interface IDocumentRepresentation {
+  id: number;
+  reference?: string | null;
+  title: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class DocumentService {
   constructor(
-    protected _crud: CRUDService<IDocumentInput, IDocument>,
+    protected _crud_document: CRUDService<IDocumentInput, IDocument>,
+    protected _crud_str: CRUDService<null, string>,
+    protected _crud_repr: CRUDService<null, IDocumentRepresentation>,
     protected _download: DownloadService,
     protected _upload: UploadService,
     protected _projects: ProjectService
@@ -74,23 +83,32 @@ export class DocumentService {
     return `documents/${documentId}`;
   }
 
-  listDocuments(projectId: number): Observable<Document[]> {
-    return this._crud
-      .list(this.getDocumentsUrl(projectId))
-      .pipe(map((documents) => documents.map((d) => new Document(d))));
+  queryDocuments(params: IQueryParams = {}) {
+    return this._crud_document.query('documents', params).pipe(
+      map((documents) => {
+        if (Array.isArray(documents)) {
+          return documents.map((d) => new Document(d));
+        } else {
+          return {
+            ...documents,
+            items: documents.items.map((d) => new Document(d)),
+          } as IPage<Document>;
+        }
+      })
+    );
   }
 
   createDocument(
     projectId: number,
     documentInput: IDocumentInput
   ): Observable<Document> {
-    return this._crud
+    return this._crud_document
       .create(this.getDocumentsUrl(projectId), documentInput)
       .pipe(map((document) => new Document(document)));
   }
 
   getDocument(documentId: number): Observable<Document> {
-    return this._crud
+    return this._crud_document
       .read(this.getDocumentUrl(documentId))
       .pipe(map((document) => new Document(document)));
   }
@@ -99,13 +117,27 @@ export class DocumentService {
     documentId: number,
     documentInput: IDocumentInput
   ): Observable<Document> {
-    return this._crud
+    return this._crud_document
       .update(this.getDocumentUrl(documentId), documentInput)
       .pipe(map((document) => new Document(document)));
   }
 
   deleteDocument(documentId: number): Observable<null> {
-    return this._crud.delete(this.getDocumentUrl(documentId));
+    return this._crud_document.delete(this.getDocumentUrl(documentId));
+  }
+
+  getDocumentFieldNames(params: IQueryParams = {}) {
+    return this._crud_str.query('document/field-names', params) as Observable<
+      string[]
+    >;
+  }
+
+  getDocumentReferences(params: IQueryParams = {}) {
+    return this._crud_str.query('document/references', params);
+  }
+
+  getDocumentRepresentations(params: IQueryParams = {}) {
+    return this._crud_repr.query('document/representations', params);
   }
 
   downloadDocumentExcel(project_id: number): Observable<IDownloadState> {

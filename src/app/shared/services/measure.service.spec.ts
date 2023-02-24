@@ -135,7 +135,6 @@ describe('MeasureService', () => {
           description: 'A test project description',
           jira_project_id: null,
           jira_project: null,
-          completion: 0,
         },
       },
     };
@@ -161,11 +160,11 @@ describe('MeasureService', () => {
     expect(sut.getMeasureUrl(measureId)).toEqual(`measures/${measureId}`);
   });
 
-  it('should list measures', (done: DoneFn) => {
+  it('should query measures', (done: DoneFn) => {
     const requirementId = outputMock.requirement.id;
     const measuresList = [outputMock];
 
-    sut.listMeasures(requirementId).subscribe({
+    sut.queryMeasures({ requirementId }).subscribe({
       next: (value) =>
         expect(value).toEqual(
           measuresList.map((measure) => new Measure(measure))
@@ -174,7 +173,7 @@ describe('MeasureService', () => {
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crud.toAbsoluteUrl(sut.getMeasuresUrl(requirementId)),
+      url: crud.toAbsoluteUrl(`measures?requirementId=${requirementId}`),
     });
     mockResponse.flush(measuresList);
   });

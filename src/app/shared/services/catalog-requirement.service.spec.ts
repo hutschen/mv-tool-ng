@@ -57,7 +57,6 @@ describe('CatalogRequirementService', () => {
         reference: null,
         title: 'A test catalog module',
         description: null,
-        gs_reference: null,
         catalog: {
           id: 1,
           reference: null,
@@ -90,11 +89,11 @@ describe('CatalogRequirementService', () => {
     );
   });
 
-  it('should list catalog requirements', (done: DoneFn) => {
+  it('should query catalog requirements', (done: DoneFn) => {
     const catalogModuleId = outputMock.catalog_module.id;
     const catalogRequirementsList = [outputMock];
 
-    sut.listCatalogRequirements(catalogModuleId).subscribe({
+    sut.queryCatalogRequirements({ catalogModuleId }).subscribe({
       next: (value) =>
         expect(value).toEqual(
           catalogRequirementsList.map((cr) => new CatalogRequirement(cr))
@@ -103,7 +102,9 @@ describe('CatalogRequirementService', () => {
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crud.toAbsoluteUrl(sut.getCatalogRequirementsUrl(catalogModuleId)),
+      url: crud.toAbsoluteUrl(
+        `catalog-requirements?catalogModuleId=${catalogModuleId}`
+      ),
     });
     mockResponse.flush(catalogRequirementsList);
   });

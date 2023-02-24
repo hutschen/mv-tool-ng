@@ -105,7 +105,6 @@ describe('ProjectService', () => {
       description: inputMock.description,
       jira_project_id: inputMock.jira_project_id,
       jira_project: null,
-      completion: 0,
     };
   });
 
@@ -127,9 +126,9 @@ describe('ProjectService', () => {
     );
   });
 
-  it('should list projects', (done: DoneFn) => {
+  it('should query projects', (done: DoneFn) => {
     const projectList = [outputMock];
-    sut.listProjects().subscribe({
+    sut.queryProjects().subscribe({
       next: (value) => {
         expect(value).toEqual(
           projectList.map((project) => new Project(project))

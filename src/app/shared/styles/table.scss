@@ -15,6 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.loading-indicator-header-row {
+  height: 4px;
+}
+
+tr.mat-header-row > .mat-column-loading-indicator {
+  padding: 0;
+  border: 0;
+}
+
 .mat-header-cell {
   white-space: nowrap;
   padding: 5px 10px 5px 0px;

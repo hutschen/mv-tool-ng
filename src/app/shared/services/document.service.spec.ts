@@ -65,7 +65,6 @@ describe('DocumentService', () => {
         description: 'A test project description',
         jira_project_id: null,
         jira_project: null,
-        completion: 0,
       },
     };
   });
@@ -90,14 +89,15 @@ describe('DocumentService', () => {
     );
   });
 
-  it('should list documents', (done: DoneFn) => {
-    sut.listDocuments(outputMock.project.id).subscribe({
+  it('should query documents', (done: DoneFn) => {
+    const projectId = outputMock.project.id;
+    sut.queryDocuments({ projectId }).subscribe({
       next: (value) => expect(value).toEqual([new Document(outputMock)]),
       complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crud.toAbsoluteUrl(sut.getDocumentsUrl(outputMock.project.id)),
+      url: crud.toAbsoluteUrl(`documents?projectId=${projectId}`),
     });
     mockResponse.flush([outputMock]);
   });

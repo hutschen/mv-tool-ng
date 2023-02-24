@@ -16,9 +16,14 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { firstValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
+import { IQueryParams } from './query-params.service';
+
+export interface IPage<T> {
+  items: T[];
+  total_count: number;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -42,11 +47,24 @@ export class CRUDService<InputType, OutputType> {
     };
   }
 
-  list(relativeUrl: string): Observable<OutputType[]> {
-    return this._httpClient.get<OutputType[]>(
-      this.toAbsoluteUrl(relativeUrl),
-      this._httpOptions
-    );
+  query(
+    relativeUrl: string,
+    params: IQueryParams = {}
+  ): Observable<OutputType[] | IPage<OutputType>> {
+    return this._httpClient.get<OutputType[]>(this.toAbsoluteUrl(relativeUrl), {
+      params,
+      ...this._httpOptions,
+    });
+  }
+
+  list_legacy(
+    relativeUrl: string,
+    params: IQueryParams = {}
+  ): Observable<OutputType[]> {
+    return this._httpClient.get<OutputType[]>(this.toAbsoluteUrl(relativeUrl), {
+      params,
+      ...this._httpOptions,
+    });
   }
 
   create(relativeUrl: string, itemInput: InputType): Observable<OutputType> {

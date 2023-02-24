@@ -15,7 +15,8 @@
 
 import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { filter, firstValueFrom, map } from 'rxjs';
+import { isEqual } from 'radash';
+import { distinctUntilChanged, filter, firstValueFrom, map } from 'rxjs';
 import { CatalogModuleService } from './shared/services/catalog-module.service';
 import { CatalogService } from './shared/services/catalog.service';
 import { ProjectService } from './shared/services/project.service';
@@ -38,13 +39,13 @@ interface IBreadcrumb {
         >
           <div *ngIf="!breadcrumb.alternativeBreadcrumbs?.length">
             <button mat-button [routerLink]="breadcrumb.navigationCommands">
-              {{ breadcrumb.displayText | truncate: 25 }}
+              {{ breadcrumb.displayText | truncate : 25 }}
             </button>
             <span *ngIf="i < breadcrumbs.length - 1">&sol;</span>
           </div>
           <div *ngIf="breadcrumb.alternativeBreadcrumbs?.length">
             <button mat-button [matMenuTriggerFor]="menu">
-              {{ breadcrumb.displayText | truncate: 25 }}
+              {{ breadcrumb.displayText | truncate : 25 }}
               <mat-icon>expand_more</mat-icon>
             </button>
             <mat-menu #menu="matMenu">
@@ -53,7 +54,7 @@ interface IBreadcrumb {
                 *ngFor="let altBreadcrumb of breadcrumb.alternativeBreadcrumbs"
                 [routerLink]="altBreadcrumb.navigationCommands"
               >
-                {{ altBreadcrumb.displayText | truncate: 25 }}
+                {{ altBreadcrumb.displayText | truncate : 25 }}
               </button>
             </mat-menu>
           </div>
@@ -80,7 +81,9 @@ export class BreadcrumbTrailComponent {
         filter((event) => event instanceof NavigationEnd),
         map((event) => event as NavigationEnd),
         map((event) => event.urlAfterRedirects),
-        map((url) => url.split('/').filter((s) => s.length > 0))
+        map((url) => url.split('?')[0]),
+        map((url) => url.split('/').filter((s) => s.length > 0)),
+        distinctUntilChanged(isEqual)
       )
       .subscribe(async (urlParts) => {
         this.breadcrumbs = await this._parseUrl(urlParts);
