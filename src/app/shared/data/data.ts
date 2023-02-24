@@ -18,6 +18,7 @@ import {
   BehaviorSubject,
   combineLatest,
   debounceTime,
+  delay,
   distinctUntilChanged,
   first,
   map,
@@ -340,9 +341,17 @@ export class DataFrame<D extends IDataItem> {
       });
 
     // Load data
-    combineLatest([this._reloadSubject, dataQueryParams$])
+    combineLatest([
+      this._reloadSubject,
+      dataQueryParams$.pipe(
+        // delay second and subsequent emissions similar to debounceTime
+        switchMap((queryParams, index) => {
+          if (index === 0) return of(queryParams);
+          else return of(queryParams).pipe(delay(reloadDelay));
+        })
+      ),
+    ])
       .pipe(
-        debounceTime(reloadDelay),
         map(([, queryParams]) => queryParams),
         tap(() => (this._isLoadingData = true)),
         switchMap((queryParams) => this.getData(queryParams)),
