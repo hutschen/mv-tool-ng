@@ -114,10 +114,6 @@ export class Requirement implements IRequirement {
     }
   }
 
-  get gsAnforderungReference(): string | null {
-    return this.catalog_requirement?.gs_anforderung_reference || null;
-  }
-
   get gsAbsicherung(): string | null {
     return this.catalog_requirement?.gs_absicherung || null;
   }

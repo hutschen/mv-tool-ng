@@ -18,6 +18,7 @@ import {
   BehaviorSubject,
   combineLatest,
   debounceTime,
+  delay,
   distinctUntilChanged,
   first,
   map,
@@ -70,21 +71,22 @@ export class DataField<D extends IDataItem, V> {
   }
 
   set optional(optional: boolean) {
-    this._optionalSubject.next(optional);
+    this._optionalSubject.next(!this.required && optional);
   }
 
   get optional(): boolean {
-    return !this.required && this._optionalSubject.value;
+    return this._optionalSubject.value;
   }
 
   isShown(data: D): Observable<boolean> {
     return this.optional$.pipe(
-      map((optional) => this.required || !optional || this.toBool(data)),
+      map((optional) => !optional || this.toBool(data)),
       distinctUntilChanged()
     );
   }
 }
 
+// TODO: use any instead of type D
 export class PlaceholderField<D extends IDataItem> extends DataField<D, any> {
   constructor(name: string, label: string | null = null) {
     super(name, label, false);
@@ -112,12 +114,13 @@ export class DataColumn<D extends IDataItem> {
     this.filters = filters ?? new Filters(this.field.label);
 
     this._hiddenSubject = new BehaviorSubject<boolean>(
-      this.__evalQueryParams(initQueryParams)
+      !this.required && this.__evalQueryParams(initQueryParams)
     );
     this.hidden$ = this._hiddenSubject.asObservable();
   }
 
   private __evalQueryParams(initialQueryParams: IQueryParams): boolean {
+    // Check if column is mentioned in _hidden_columns property of query params
     const { _hidden_columns } = initialQueryParams;
     if (_hidden_columns) {
       if (Array.isArray(_hidden_columns)) {
@@ -142,25 +145,23 @@ export class DataColumn<D extends IDataItem> {
   }
 
   set hidden(hide: boolean) {
-    this._hiddenSubject.next(hide);
+    this._hiddenSubject.next(!this.required && hide);
   }
 
   get hidden(): boolean {
-    return !this.required && this._hiddenSubject.value;
+    return this._hiddenSubject.value;
   }
 
   isShown(dataArray: D[]): Observable<boolean> {
-    return combineLatest([
-      this.hidden$,
-      ...dataArray.map((data) => this.field.isShown(data)),
-    ]).pipe(
-      distinctUntilChanged(isEqual),
-      map(([hidden, ...shownArray]) => {
-        if (hidden && !this.required) return false;
-        else {
-          if (shownArray.length === 0) return this.required || !this.optional;
-          else return shownArray.some((shown) => shown);
-        }
+    return combineLatest([this.hidden$, this.field.optional$]).pipe(
+      switchMap(([hidden, optional]) => {
+        if (hidden) return of(false);
+        if (!optional) return of(true);
+        if (dataArray.length === 0) return of(false);
+
+        return combineLatest(
+          dataArray.map((data) => this.field.isShown(data))
+        ).pipe(map((shownArray) => shownArray.some((shown) => shown)));
       }),
       distinctUntilChanged()
     );
@@ -263,8 +264,8 @@ export class DataColumns<D extends IDataItem> {
 
 export class DataFrame<D extends IDataItem> {
   public readonly columns: DataColumns<D>;
-  protected _isLoadingData: boolean = true;
-  protected _isLoadingColumns: boolean = true;
+  protected _isLoadingData: boolean = false;
+  protected _isLoadingColumns: boolean = false;
   protected _reloadSubject: Subject<void> = new Subject();
   protected _dataSubject: BehaviorSubject<D[]> = new BehaviorSubject<D[]>([]);
   readonly data$: Observable<D[]> = this._dataSubject.asObservable();
@@ -340,9 +341,17 @@ export class DataFrame<D extends IDataItem> {
       });
 
     // Load data
-    combineLatest([this._reloadSubject, dataQueryParams$])
+    combineLatest([
+      this._reloadSubject,
+      dataQueryParams$.pipe(
+        // delay second and subsequent emissions similar to debounceTime
+        switchMap((queryParams, index) => {
+          if (index === 0) return of(queryParams);
+          else return of(queryParams).pipe(delay(reloadDelay));
+        })
+      ),
+    ])
       .pipe(
-        debounceTime(reloadDelay),
         map(([, queryParams]) => queryParams),
         tap(() => (this._isLoadingData = true)),
         switchMap((queryParams) => this.getData(queryParams)),
@@ -359,7 +368,12 @@ export class DataFrame<D extends IDataItem> {
     this._lengthSubject.next(length);
   }
 
+  get length(): number {
+    return this._lengthSubject.value;
+  }
+
   addItem(item: D): boolean {
+    // FIXME: prevent adding duplicate items (items need unique ids)
     const data = this._dataSubject.value;
     this.length = this._lengthSubject.value + 1;
     if (
@@ -418,6 +432,7 @@ export class DataFrame<D extends IDataItem> {
   }
 
   getData(queryParams: IQueryParams): Observable<D[]> {
+    // TODO: Instead of an array it should be possible to return a page, the length should be set automatically.
     return of([]);
   }
 }
