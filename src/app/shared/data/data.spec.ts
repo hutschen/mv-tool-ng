@@ -13,9 +13,16 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Observable, of, Subject } from 'rxjs';
+import { PropertyRead } from '@angular/compiler';
+import { combineLatest, of, skip, Subject } from 'rxjs';
 import { IQueryParams } from '../services/query-params.service';
-import { DataColumn, DataColumns, DataField, IDataItem } from './data';
+import {
+  DataColumn,
+  DataColumns,
+  DataField,
+  DataFrame,
+  IDataItem,
+} from './data';
 
 class DummyDataItem implements IDataItem {
   id = 1;
@@ -413,5 +420,221 @@ describe('DataColumns', () => {
     sut.unhideAllColumns();
     expect(column1.hidden).toBeFalse();
     expect(column2.hidden).toBeFalse();
+  });
+});
+
+describe('DataFrame', () => {
+  let columns: any;
+  let search: any;
+  let sort: any;
+  let paginator: any;
+  let sut: DataFrame<any>;
+
+  beforeEach(() => {
+    columns = jasmine.createSpyObj('Columns', ['getShownColumns'], {
+      filterQueryParams$: new Subject<IQueryParams>(),
+      hiddenQueryParams$: new Subject<IQueryParams>(),
+      columns: [],
+    });
+    search = jasmine.createSpyObj('Search', ['filter'], {
+      queryParams$: new Subject<IQueryParams>(),
+    });
+    sort = jasmine.createSpyObj('Sort', ['sort'], {
+      queryParams$: new Subject<IQueryParams>(),
+    });
+    paginator = jasmine.createSpyObj('Paginator', ['toFirstPage'], {
+      queryParams$: new Subject<IQueryParams>(),
+    });
+  });
+
+  it('should be created without anything', () => {
+    sut = new DataFrame([]);
+    expect(sut).toBeTruthy();
+  });
+
+  it('should switch to the first page when filter, search or sort change for the second time', (done: DoneFn) => {
+    sut = new DataFrame(columns, {}, search, sort, paginator);
+
+    sut.queryParams$.pipe(skip(1)).subscribe((queryParams) => {
+      expect(queryParams).toEqual({ value: 2 });
+      expect(paginator.toFirstPage).toHaveBeenCalled();
+      done();
+    });
+
+    [1, 2].forEach((value) => {
+      columns.filterQueryParams$.next({ value });
+      columns.hiddenQueryParams$.next({ value });
+      search.queryParams$.next({ value });
+      sort.queryParams$.next({ value });
+      paginator.queryParams$.next({ value });
+    });
+  });
+
+  it('should combine query params of search, sort, paginator and columns', (done: DoneFn) => {
+    const filterQueryParams = { filter: 'value' };
+    const hiddenQueryParams = { hidden: 'value' };
+    const searchQueryParams = { search: 'value' };
+    const sortQueryParams = { sort: 'value' };
+    const paginatorQueryParams = { paginator: 'value' };
+    sut = new DataFrame(columns, {}, search, sort, paginator, 0);
+
+    sut.queryParams$.subscribe((queryParams) => {
+      expect(queryParams).toEqual({
+        ...filterQueryParams,
+        ...hiddenQueryParams,
+        ...searchQueryParams,
+        ...sortQueryParams,
+        ...paginatorQueryParams,
+      });
+      done();
+    });
+
+    columns.filterQueryParams$.next(filterQueryParams);
+    columns.hiddenQueryParams$.next(hiddenQueryParams);
+    search.queryParams$.next(searchQueryParams);
+    sort.queryParams$.next(sortQueryParams);
+    paginator.queryParams$.next(paginatorQueryParams);
+  });
+
+  it('should get names of shown columns', (done: DoneFn) => {
+    const columnNames = ['column1', 'column2'];
+    columns.getShownColumns.and.returnValue(
+      of(columnNames.map((name) => jasmine.createSpyObj(name, [], { name })))
+    );
+    sut = new DataFrame(columns);
+
+    sut.columnNames$.subscribe((columnNames_) => {
+      expect(columnNames_).toEqual(columnNames);
+      expect(columns.getShownColumns).toHaveBeenCalled();
+      done();
+    });
+  });
+
+  it('should load names of non-optional columns and set them non-optional', (done: DoneFn) => {
+    const column1 = {
+      name: 'column1',
+    };
+    columns = jasmine.createSpyObj('Columns', ['getShownColumns'], {
+      filterQueryParams$: new Subject<IQueryParams>(),
+      hiddenQueryParams$: new Subject<IQueryParams>(),
+      columns: [column1],
+    });
+    sut = new DataFrame(columns, {}, search, sort, paginator, 0);
+    expect(sut.isLoading).toBeFalse(); // loading should not be started yet
+
+    // check if getColumnNames is called
+    const getColumnNames = spyOn(sut, 'getColumnNames').and.callFake(() => {
+      expect(sut.isLoading).toBeTrue(); // loading should be in progress
+      return of(['column1']);
+    });
+
+    // check if column is set non-optional
+    Object.defineProperty(column1, 'optional', {
+      get: () => true,
+      set: (optional) => {
+        expect(getColumnNames).toHaveBeenCalled();
+        expect(optional).toBeFalse();
+        expect(sut.isLoading).toBeFalse(); // loading should be finished
+        done();
+        return false;
+      },
+    });
+
+    // trigger loading column names and data
+    sut.reload();
+  });
+
+  it('should load data', (done: DoneFn) => {
+    sut = new DataFrame(columns, {}, search, sort, paginator, 0);
+    expect(sut.isLoading).toBeFalse(); // loading should not be started yet
+
+    // check if getData is called
+    const getData = spyOn(sut, 'getData').and.callFake((queryParams) => {
+      expect(sut.isLoading).toBeTrue(); // loading should be in progress
+      expect(queryParams).toEqual({});
+      return of([]);
+    });
+
+    // check if data is passed to _dataSubject
+    spyOn(sut['_dataSubject'], 'next').and.callFake(() => {
+      expect(getData).toHaveBeenCalled();
+      expect(sut.isLoading).toBeFalse(); // loading should be finished
+      done();
+    });
+
+    // trigger loading column names and data
+    search.queryParams$.next({});
+    sort.queryParams$.next({});
+    columns.filterQueryParams$.next({});
+    paginator.queryParams$.next({});
+    sut.reload();
+  });
+
+  it('initial length should be 0', (done: DoneFn) => {
+    sut = new DataFrame(columns);
+    sut.length$.subscribe((length) => {
+      expect(length).toBe(0);
+      done();
+    });
+  });
+
+  xit('should get length of data', () => {
+    // TODO: implement test
+  });
+
+  it('should add item', (done: DoneFn) => {
+    // TODO: test also the case when an item is not added because the page is full
+    sut = new DataFrame([]);
+    const item = { id: 1 };
+
+    sut.data$
+      .pipe(
+        skip(1) // skip initial data
+      )
+      .subscribe((data) => {
+        expect(data).toEqual([item]);
+        expect(sut.length).toBe(1);
+        done();
+      });
+
+    expect(sut.addItem(item)).toBeTrue();
+  });
+
+  it('should update item', (done: DoneFn) => {
+    // TODO: test also the case when an item is not updated because it is not found
+    sut = new DataFrame([]);
+    const initialItem = { id: 1, value: 'initial' };
+    const updatedItem = { id: 1, value: 'updated' };
+
+    sut.data$
+      .pipe(
+        skip(2) // skip initial data, skip adding initial item
+      )
+      .subscribe((data) => {
+        expect(data).toEqual([updatedItem]);
+        expect(sut.length).toBe(1);
+        done();
+      });
+
+    expect(sut.addItem(initialItem)).toBeTrue();
+    expect(sut.updateItem(updatedItem)).toBeTrue();
+  });
+
+  it('should remove item', () => {
+    // TODO: test also the case when an item is not removed because it is not found
+    sut = new DataFrame([]);
+    const item = { id: 1 };
+
+    sut.data$
+      .pipe(
+        skip(2) // skip initial data, skip adding initial item
+      )
+      .subscribe((data) => {
+        expect(data).toEqual([]);
+        expect(sut.length).toBe(0);
+      });
+
+    expect(sut.addItem(item)).toBeTrue();
+    expect(sut.removeItem(item)).toBeTrue();
   });
 });

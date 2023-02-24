@@ -263,8 +263,8 @@ export class DataColumns<D extends IDataItem> {
 
 export class DataFrame<D extends IDataItem> {
   public readonly columns: DataColumns<D>;
-  protected _isLoadingData: boolean = true;
-  protected _isLoadingColumns: boolean = true;
+  protected _isLoadingData: boolean = false;
+  protected _isLoadingColumns: boolean = false;
   protected _reloadSubject: Subject<void> = new Subject();
   protected _dataSubject: BehaviorSubject<D[]> = new BehaviorSubject<D[]>([]);
   readonly data$: Observable<D[]> = this._dataSubject.asObservable();
@@ -359,7 +359,12 @@ export class DataFrame<D extends IDataItem> {
     this._lengthSubject.next(length);
   }
 
+  get length(): number {
+    return this._lengthSubject.value;
+  }
+
   addItem(item: D): boolean {
+    // FIXME: prevent adding duplicate items (items need unique ids)
     const data = this._dataSubject.value;
     this.length = this._lengthSubject.value + 1;
     if (
@@ -418,6 +423,7 @@ export class DataFrame<D extends IDataItem> {
   }
 
   getData(queryParams: IQueryParams): Observable<D[]> {
+    // TODO: Instead of an array it should be possible to return a page, the length should be set automatically.
     return of([]);
   }
 }
