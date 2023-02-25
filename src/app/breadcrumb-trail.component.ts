@@ -16,7 +16,14 @@
 import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { isEqual } from 'radash';
-import { distinctUntilChanged, filter, firstValueFrom, map } from 'rxjs';
+import {
+  distinctUntilChanged,
+  filter,
+  map,
+  Observable,
+  of,
+  switchMap,
+} from 'rxjs';
 import { CatalogModuleService } from './shared/services/catalog-module.service';
 import { CatalogService } from './shared/services/catalog.service';
 import { ProjectService } from './shared/services/project.service';
@@ -31,43 +38,47 @@ interface IBreadcrumb {
 @Component({
   selector: 'mvtool-breadcrumb-trail',
   template: `
-    <div *ngIf="breadcrumbs.length">
-      <div class="fx-row">
-        <div
-          class="breadcrumb-trail"
-          *ngFor="let breadcrumb of breadcrumbs; let i = index"
-        >
-          <div *ngIf="!breadcrumb.alternativeBreadcrumbs?.length">
-            <button mat-button [routerLink]="breadcrumb.navigationCommands">
-              {{ breadcrumb.displayText | truncate : 25 }}
-            </button>
-            <span *ngIf="i < breadcrumbs.length - 1">&sol;</span>
-          </div>
-          <div *ngIf="breadcrumb.alternativeBreadcrumbs?.length">
-            <button mat-button [matMenuTriggerFor]="menu">
-              {{ breadcrumb.displayText | truncate : 25 }}
-              <mat-icon>expand_more</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-              <button
-                mat-menu-item
-                *ngFor="let altBreadcrumb of breadcrumb.alternativeBreadcrumbs"
-                [routerLink]="altBreadcrumb.navigationCommands"
-              >
-                {{ altBreadcrumb.displayText | truncate : 25 }}
+    <ng-container *ngIf="breadcrumbs$ | async as breadcrumbs">
+      <div *ngIf="breadcrumbs.length">
+        <div class="fx-row">
+          <div
+            class="breadcrumb-trail"
+            *ngFor="let breadcrumb of breadcrumbs; let i = index"
+          >
+            <div *ngIf="!breadcrumb.alternativeBreadcrumbs?.length">
+              <button mat-button [routerLink]="breadcrumb.navigationCommands">
+                {{ breadcrumb.displayText | truncate : 25 }}
               </button>
-            </mat-menu>
+              <span *ngIf="i < breadcrumbs.length - 1">&sol;</span>
+            </div>
+            <div *ngIf="breadcrumb.alternativeBreadcrumbs?.length">
+              <button mat-button [matMenuTriggerFor]="menu">
+                {{ breadcrumb.displayText | truncate : 25 }}
+                <mat-icon>expand_more</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button
+                  mat-menu-item
+                  *ngFor="
+                    let altBreadcrumb of breadcrumb.alternativeBreadcrumbs
+                  "
+                  [routerLink]="altBreadcrumb.navigationCommands"
+                >
+                  {{ altBreadcrumb.displayText | truncate : 25 }}
+                </button>
+              </mat-menu>
+            </div>
           </div>
         </div>
+        <mat-divider></mat-divider>
       </div>
-      <mat-divider></mat-divider>
-    </div>
+    </ng-container>
   `,
   styleUrls: ['./shared/styles/flex.scss'],
   styles: ['.breadcrumb-trail { padding: 5px 2px; }'],
 })
 export class BreadcrumbTrailComponent {
-  breadcrumbs: IBreadcrumb[] = [];
+  breadcrumbs$: Observable<IBreadcrumb[]>;
 
   constructor(
     protected _router: Router,
@@ -76,159 +87,156 @@ export class BreadcrumbTrailComponent {
     protected _projectService: ProjectService,
     protected _requirementService: RequirementService
   ) {
-    this._router.events
-      .pipe(
-        filter((event) => event instanceof NavigationEnd),
-        map((event) => event as NavigationEnd),
-        map((event) => event.urlAfterRedirects),
-        map((url) => url.split('?')[0]),
-        map((url) => url.split('/').filter((s) => s.length > 0)),
-        distinctUntilChanged(isEqual)
-      )
-      .subscribe(async (urlParts) => {
-        this.breadcrumbs = await this._parseUrl(urlParts);
-      });
+    this.breadcrumbs$ = this._router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      map((event) => event as NavigationEnd),
+      map((event) => event.urlAfterRedirects),
+      map((url) => url.split('?')[0]),
+      map((url) => url.split('/').filter((s) => s.length > 0)),
+      distinctUntilChanged(isEqual),
+      switchMap((urlParts) => this._parseUrl(urlParts))
+    );
   }
 
-  protected async _parseCatalogUrl(urlParts: string[]): Promise<IBreadcrumb[]> {
+  protected _parseCatalogUrl(urlParts: string[]): Observable<IBreadcrumb[]> {
     const first = urlParts.length > 0 ? urlParts[0] : null;
     if (!first) {
-      return [];
+      return of([]);
     }
 
     const catalogId = Number(first);
-    return [
-      {
-        displayText: (
-          await firstValueFrom(this._catalogService.getCatalog(catalogId))
-        ).title,
-        navigationCommands: ['catalogs', catalogId, 'catalog-modules'],
-      },
-      {
-        displayText: 'Catalog Modules',
-        navigationCommands: ['catalogs', catalogId, 'catalog-modules'],
-      },
-    ];
+    return this._catalogService.getCatalog(catalogId).pipe(
+      map((catalog) => [
+        {
+          displayText: catalog.title,
+          navigationCommands: ['catalogs', catalog.id, 'catalog-modules'],
+        },
+        {
+          displayText: 'Catalog Modules',
+          navigationCommands: ['catalogs', catalog.id, 'catalog-modules'],
+        },
+      ])
+    );
   }
 
-  protected async _parseCatalogModuleUrl(
+  protected _parseCatalogModuleUrl(
     urlParts: string[]
-  ): Promise<IBreadcrumb[]> {
+  ): Observable<IBreadcrumb[]> {
     const first = urlParts.length > 0 ? urlParts[0] : null;
     if (!first) {
-      return [];
+      return of([]);
     }
 
     const catalogModuleId = Number(first);
-    const catalogModule = await firstValueFrom(
-      this._catalogModuleService.getCatalogModule(catalogModuleId)
+    return this._catalogModuleService.getCatalogModule(catalogModuleId).pipe(
+      map((catalogModule) => [
+        {
+          displayText: catalogModule.catalog.title,
+          navigationCommands: [
+            'catalogs',
+            catalogModule.catalog.id,
+            'catalog-modules',
+          ],
+        },
+        {
+          displayText: catalogModule.title,
+          navigationCommands: [
+            'catalog-modules',
+            catalogModule.id,
+            'catalog-requirements',
+          ],
+        },
+        {
+          displayText: 'Catalog Requirements',
+          navigationCommands: [
+            'catalog-modules',
+            catalogModule.id,
+            'catalog-requirements',
+          ],
+        },
+      ])
     );
-    return [
-      {
-        displayText: catalogModule.catalog.title,
-        navigationCommands: [
-          'catalogs',
-          catalogModule.catalog.id,
-          'catalog-modules',
-        ],
-      },
-      {
-        displayText: catalogModule.title,
-        navigationCommands: [
-          'catalog-modules',
-          catalogModule.id,
-          'catalog-requirements',
-        ],
-      },
-      {
-        displayText: 'Catalog Requirements',
-        navigationCommands: [
-          'catalog-modules',
-          catalogModule.id,
-          'catalog-requirements',
-        ],
-      },
-    ];
   }
 
-  protected async _parseProjectUrl(urlParts: string[]): Promise<IBreadcrumb[]> {
+  protected _parseProjectUrl(urlParts: string[]): Observable<IBreadcrumb[]> {
     const first = urlParts.length > 0 ? urlParts[0] : null;
     const second = urlParts.length > 1 ? urlParts[1] : null;
     if (!first || !second) {
-      return [];
+      return of([]);
     }
 
     const projectId = Number(first);
-    const projectBreadcrumb = {
-      displayText: (
-        await firstValueFrom(this._projectService.getProject(projectId))
-      ).name,
-      navigationCommands: ['projects', projectId, 'requirements'],
-    };
-    const requirementsBreadcrumb = {
-      displayText: 'Requirements',
-      navigationCommands: ['projects', projectId, 'requirements'],
-    };
-    const documentsBreadcrumb = {
-      displayText: 'Documents',
-      navigationCommands: ['projects', projectId, 'documents'],
-    };
+    return this._projectService.getProject(projectId).pipe(
+      map((project) => {
+        const projectBreadcrumb = {
+          displayText: project.name,
+          navigationCommands: ['projects', project.id, 'requirements'],
+        };
+        const requirementsBreadcrumb = {
+          displayText: 'Requirements',
+          navigationCommands: ['projects', project.id, 'requirements'],
+        };
+        const documentsBreadcrumb = {
+          displayText: 'Documents',
+          navigationCommands: ['projects', project.id, 'documents'],
+        };
 
-    switch (second) {
-      case 'requirements':
-        return [
-          projectBreadcrumb,
-          {
-            ...requirementsBreadcrumb,
-            alternativeBreadcrumbs: [documentsBreadcrumb],
-          },
-        ];
-      case 'documents':
-        return [
-          projectBreadcrumb,
-          {
-            ...documentsBreadcrumb,
-            alternativeBreadcrumbs: [requirementsBreadcrumb],
-          },
-        ];
-      default:
-        return [];
-    }
+        switch (second) {
+          case 'requirements':
+            return [
+              projectBreadcrumb,
+              {
+                ...requirementsBreadcrumb,
+                alternativeBreadcrumbs: [documentsBreadcrumb],
+              },
+            ];
+          case 'documents':
+            return [
+              projectBreadcrumb,
+              {
+                ...documentsBreadcrumb,
+                alternativeBreadcrumbs: [requirementsBreadcrumb],
+              },
+            ];
+          default:
+            return [];
+        }
+      })
+    );
   }
 
-  protected async _parseRequirementUrl(
+  protected _parseRequirementUrl(
     urlParts: string[]
-  ): Promise<IBreadcrumb[]> {
+  ): Observable<IBreadcrumb[]> {
     const first = urlParts.length > 0 ? urlParts[0] : null;
     if (!first) {
-      return [];
+      return of([]);
     }
 
     const requirementId = Number(first);
-    const requirement = await firstValueFrom(
-      this._requirementService.getRequirement(requirementId)
+    return this._requirementService.getRequirement(requirementId).pipe(
+      map((requirement) => [
+        {
+          displayText: requirement.project.name,
+          navigationCommands: [
+            'projects',
+            requirement.project.id,
+            'requirements',
+          ],
+        },
+        {
+          displayText: requirement.summary,
+          navigationCommands: ['requirements', requirement.id, 'measures'],
+        },
+        {
+          displayText: 'Measures',
+          navigationCommands: ['requirements', requirement.id, 'measures'],
+        },
+      ])
     );
-    return [
-      {
-        displayText: requirement.project.name,
-        navigationCommands: [
-          'projects',
-          requirement.project.id,
-          'requirements',
-        ],
-      },
-      {
-        displayText: requirement.summary,
-        navigationCommands: ['requirements', requirement.id, 'measures'],
-      },
-      {
-        displayText: 'Measures',
-        navigationCommands: ['requirements', requirement.id, 'measures'],
-      },
-    ];
   }
 
-  protected async _parseUrl(urlParts: string[]): Promise<IBreadcrumb[]> {
+  protected _parseUrl(urlParts: string[]): Observable<IBreadcrumb[]> {
     const head = urlParts.length > 0 ? urlParts[0] : null;
     const tail = urlParts.length > 1 ? urlParts.slice(1) : [];
 
@@ -243,21 +251,23 @@ export class BreadcrumbTrailComponent {
 
     switch (head) {
       case 'catalogs':
-        return [allCatalogsBreadcrumb, ...(await this._parseCatalogUrl(tail))];
+        return this._parseCatalogUrl(tail).pipe(
+          map((breadcrumbs) => [allCatalogsBreadcrumb, ...breadcrumbs])
+        );
       case 'catalog-modules':
-        return [
-          allCatalogsBreadcrumb,
-          ...(await this._parseCatalogModuleUrl(tail)),
-        ];
+        return this._parseCatalogModuleUrl(tail).pipe(
+          map((breadcrumbs) => [allCatalogsBreadcrumb, ...breadcrumbs])
+        );
       case 'projects':
-        return [allProjectsBreadcrumb, ...(await this._parseProjectUrl(tail))];
+        return this._parseProjectUrl(tail).pipe(
+          map((breadcrumbs) => [allProjectsBreadcrumb, ...breadcrumbs])
+        );
       case 'requirements':
-        return [
-          allProjectsBreadcrumb,
-          ...(await this._parseRequirementUrl(tail)),
-        ];
+        return this._parseRequirementUrl(tail).pipe(
+          map((breadcrumbs) => [allProjectsBreadcrumb, ...breadcrumbs])
+        );
       default:
-        return [];
+        return of([]);
     }
   }
 }
