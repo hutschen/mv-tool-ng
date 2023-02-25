@@ -17,12 +17,27 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProjectMeasureViewComponent } from './project-measure-view.component';
 import { ProjectMeasureTableComponent } from './project-measure-table.component';
+import { AuthGuard } from '../shared/guards/auth.guard';
+import { ProjectIdGuard } from '../shared/guards/id.guard';
+import { SharedModule } from '../shared/shared.module';
+import { MaterialModule } from '../material/material.module';
+import { RouterModule } from '@angular/router';
+
+const routes = [
+  {
+    path: 'projects/:projectId/measures',
+    canActivate: [AuthGuard, ProjectIdGuard],
+    component: ProjectMeasureViewComponent,
+  },
+];
 
 @NgModule({
-  declarations: [
-    ProjectMeasureViewComponent,
-    ProjectMeasureTableComponent
+  declarations: [ProjectMeasureViewComponent, ProjectMeasureTableComponent],
+  imports: [
+    CommonModule,
+    SharedModule,
+    MaterialModule,
+    RouterModule.forChild(routes),
   ],
-  imports: [CommonModule],
 })
 export class ProjectMeasureModule {}
