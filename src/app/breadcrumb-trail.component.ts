@@ -180,6 +180,10 @@ export class BreadcrumbTrailComponent {
           displayText: 'Documents',
           navigationCommands: ['projects', project.id, 'documents'],
         };
+        const projectMeasuresBreadcrumb = {
+          displayText: 'Measures',
+          navigationCommands: ['projects', project.id, 'measures'],
+        };
 
         switch (second) {
           case 'requirements':
@@ -187,7 +191,10 @@ export class BreadcrumbTrailComponent {
               projectBreadcrumb,
               {
                 ...requirementsBreadcrumb,
-                alternativeBreadcrumbs: [documentsBreadcrumb],
+                alternativeBreadcrumbs: [
+                  projectMeasuresBreadcrumb,
+                  documentsBreadcrumb,
+                ],
               },
             ];
           case 'documents':
@@ -195,7 +202,21 @@ export class BreadcrumbTrailComponent {
               projectBreadcrumb,
               {
                 ...documentsBreadcrumb,
-                alternativeBreadcrumbs: [requirementsBreadcrumb],
+                alternativeBreadcrumbs: [
+                  requirementsBreadcrumb,
+                  projectMeasuresBreadcrumb,
+                ],
+              },
+            ];
+          case 'measures':
+            return [
+              projectBreadcrumb,
+              {
+                ...projectMeasuresBreadcrumb,
+                alternativeBreadcrumbs: [
+                  requirementsBreadcrumb,
+                  documentsBreadcrumb,
+                ],
               },
             ];
           default:
