@@ -13,7 +13,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Project, ProjectService } from '../shared/services/project.service';
 
 @Component({
   selector: 'mvtool-project-measure-view',
@@ -21,7 +24,27 @@ import { Component, OnInit } from '@angular/core';
   styles: [],
 })
 export class ProjectMeasureViewComponent implements OnInit {
-  constructor() {}
+  project!: Project;
 
-  ngOnInit(): void {}
+  constructor(
+    protected _route: ActivatedRoute,
+    protected _router: Router,
+    protected _projectService: ProjectService
+  ) {}
+
+  ngOnInit(): void {
+    const projectId = Number(this._route.snapshot.paramMap.get('projectId'));
+    this._projectService.getProject(projectId).subscribe({
+      next: (project) => {
+        this.project = project;
+      },
+      error: (error) => {
+        if (error instanceof HttpErrorResponse && error.status === 404) {
+          this._router.navigate(['/']);
+        } else {
+          throw error;
+        }
+      },
+    });
+  }
 }
