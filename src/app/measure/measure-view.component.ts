@@ -45,7 +45,7 @@ import {
   styles: [],
 })
 export class MeasureViewComponent implements OnInit {
-  requirement: Requirement | null = null;
+  requirement!: Requirement;
 
   constructor(
     protected _route: ActivatedRoute,
