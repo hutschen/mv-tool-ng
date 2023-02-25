@@ -86,21 +86,9 @@ export class CatalogRequirementDataFrame extends DataFrame<CatalogRequirement> {
   }
 
   override getData(queryParams: IQueryParams) {
-    return this._catalogRequirementService
-      .queryCatalogRequirements({
-        catalog_module_ids: this._catalogModule.id,
-        ...queryParams,
-      })
-      .pipe(
-        map((catalogRequirements) => {
-          if (Array.isArray(catalogRequirements)) {
-            this.length = catalogRequirements.length;
-            return catalogRequirements;
-          } else {
-            this.length = catalogRequirements.total_count;
-            return catalogRequirements.items;
-          }
-        })
-      );
+    return this._catalogRequirementService.queryCatalogRequirements({
+      catalog_module_ids: this._catalogModule.id,
+      ...queryParams,
+    });
   }
 }

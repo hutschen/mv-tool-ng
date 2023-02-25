@@ -172,23 +172,11 @@ export class MeasureDataFrame extends DataFrame<Measure> {
     });
   }
 
-  override getData(queryParams: IQueryParams): Observable<Measure[]> {
+  override getData(queryParams: IQueryParams) {
     // Query measures, and set the length of the data frame
-    return this._measureService
-      .queryMeasures({
-        requirement_ids: this._requirement.id,
-        ...queryParams,
-      })
-      .pipe(
-        map((measures) => {
-          if (Array.isArray(measures)) {
-            this.length = measures.length;
-            return measures;
-          } else {
-            this.length = measures.total_count;
-            return measures.items;
-          }
-        })
-      );
+    return this._measureService.queryMeasures({
+      requirement_ids: this._requirement.id,
+      ...queryParams,
+    });
   }
 }

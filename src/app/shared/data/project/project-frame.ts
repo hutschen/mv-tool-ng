@@ -59,16 +59,6 @@ export class ProjectDataFrame extends DataFrame<Project> {
   }
 
   override getData(queryParams: IQueryParams) {
-    return this._projectService.queryProjects(queryParams).pipe(
-      map((projects) => {
-        if (Array.isArray(projects)) {
-          this.length = projects.length;
-          return projects;
-        } else {
-          this.length = projects.total_count;
-          return projects.items;
-        }
-      })
-    );
+    return this._projectService.queryProjects(queryParams);
   }
 }

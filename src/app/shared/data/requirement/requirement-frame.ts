@@ -177,23 +177,11 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
     });
   }
 
-  override getData(queryParams: IQueryParams): Observable<Requirement[]> {
+  override getData(queryParams: IQueryParams) {
     // Query requirements and set length of data frame
-    return this._requirementService
-      .queryRequirements({
-        project_ids: this._project.id,
-        ...queryParams,
-      })
-      .pipe(
-        map((requirements) => {
-          if (Array.isArray(requirements)) {
-            this.length = requirements.length;
-            return requirements;
-          } else {
-            this.length = requirements.total_count;
-            return requirements.items;
-          }
-        })
-      );
+    return this._requirementService.queryRequirements({
+      project_ids: this._project.id,
+      ...queryParams,
+    });
   }
 }
