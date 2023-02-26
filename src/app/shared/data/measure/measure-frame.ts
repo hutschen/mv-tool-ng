@@ -41,25 +41,30 @@ import {
 } from '../custom/custom-colums';
 import { DocumentService } from '../../services/document.service';
 import { DocumentsFilter } from '../document/document-filters';
+import { Project } from '../../services/project.service';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
+  protected _requirement?: Requirement;
+  protected _project: Project;
+
   constructor(
     protected _measureService: MeasureService,
     protected _documentService: DocumentService,
-    protected _requirement: Requirement,
+    requirementOrProject: Requirement | Project,
     initQueryParams: IQueryParams = {}
   ) {
+    const project =
+      requirementOrProject instanceof Project
+        ? requirementOrProject
+        : requirementOrProject.project;
+
     // Reference column
     const referenceColumn = new DataColumn(
       new TextField('reference', 'Reference'),
       new Filters(
         'References',
         new FilterByPattern('reference', initQueryParams),
-        new MeasureReferencesFilter(
-          _measureService,
-          _requirement.project,
-          initQueryParams
-        ),
+        new MeasureReferencesFilter(_measureService, project, initQueryParams),
         new FilterForExistence('has_reference', initQueryParams)
       ),
       initQueryParams
@@ -71,11 +76,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       new Filters(
         'Documents',
         undefined,
-        new DocumentsFilter(
-          _documentService,
-          _requirement.project,
-          initQueryParams
-        ),
+        new DocumentsFilter(_documentService, project, initQueryParams),
         new FilterForExistence('has_document', initQueryParams)
       ),
       initQueryParams
@@ -163,20 +164,28 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       ],
       initQueryParams
     );
+    this._project = project;
+    this._requirement =
+      requirementOrProject instanceof Requirement
+        ? requirementOrProject
+        : undefined;
     this.reload();
   }
 
   override getColumnNames(): Observable<string[]> {
     return this._measureService.getMeasureFieldNames({
-      project_ids: this._requirement.project.id,
+      project_ids: this._project.id,
     });
   }
 
   override getData(queryParams: IQueryParams) {
-    // Query measures, and set the length of the data frame
-    return this._measureService.queryMeasures({
-      requirement_ids: this._requirement.id,
-      ...queryParams,
-    });
+    // Prepare query params
+    if (this._requirement) {
+      queryParams['requirement_ids'] = this._requirement.id;
+    } else {
+      queryParams['project_ids'] = this._project.id;
+    }
+
+    return this._measureService.queryMeasures(queryParams);
   }
 }
