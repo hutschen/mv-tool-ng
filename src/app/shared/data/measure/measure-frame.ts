@@ -23,7 +23,10 @@ import {
 } from '../filter';
 import { IQueryParams } from '../../services/query-params.service';
 import { Measure, MeasureService } from '../../services/measure.service';
-import { Requirement } from '../../services/requirement.service';
+import {
+  Requirement,
+  RequirementService,
+} from '../../services/requirement.service';
 import { MeasureReferencesFilter } from './measure-filters';
 import { StatusField, TextField } from '../custom/custom-fields';
 import {
@@ -31,6 +34,7 @@ import {
   JiraIssueField,
   MeasureCatalogField,
   MeasureCatalogModuleField,
+  RequirementField,
   VerifiedField,
 } from '../measure/measure-fields';
 import {
@@ -62,6 +66,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
     initQueryParams: IQueryParams = {},
     catalogService?: CatalogService,
     catalogModuleService?: CatalogModuleService,
+    requirementService?: RequirementService,
     milestoneService?: MilestoneService,
     targetObjectService?: TargetObjectService
   ) {
@@ -102,6 +107,22 @@ export class MeasureDataFrame extends DataFrame<Measure> {
               initQueryParams
             ),
             new FilterForExistence('has_catalog_module', initQueryParams)
+          ),
+          initQueryParams
+        )
+      );
+    }
+
+    // Requirement column
+    if (requirementService) {
+      additionalColumns.push(
+        new DataColumn(
+          new RequirementField(),
+          new Filters(
+            'Requirements',
+            undefined,
+            undefined,
+            new FilterForExistence('has_requirement', initQueryParams)
           ),
           initQueryParams
         )

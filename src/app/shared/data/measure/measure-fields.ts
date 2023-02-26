@@ -20,6 +20,7 @@ import { Document } from '../../services/document.service';
 import { Catalog } from '../../services/catalog.service';
 import { CatalogField, CatalogModuleField } from '../custom/custom-fields';
 import { CatalogModule } from '../../services/catalog-module.service';
+import { Requirement } from '../../services/requirement.service';
 
 export class MeasureCatalogField extends CatalogField<Measure> {
   override toValue(data: Measure): Catalog | null {
@@ -35,9 +36,23 @@ export class MeasureCatalogModuleField extends CatalogModuleField<Measure> {
   }
 }
 
+export class RequirementField extends DataField<Measure, Requirement> {
+  constructor(optional: boolean = true) {
+    super('requirement', null, optional);
+  }
+
+  override toStr(data: Measure): string {
+    const requirement = this.toValue(data);
+    return (
+      (requirement.reference ? requirement.reference + ' ' : '') +
+      requirement.summary
+    );
+  }
+}
+
 export class DocumentField extends DataField<Measure, Document | null> {
   constructor(optional: boolean = true) {
-    super('document', 'Document', optional);
+    super('document', null, optional);
   }
 
   override toStr(data: Measure): string {
