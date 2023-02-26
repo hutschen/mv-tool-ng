@@ -60,6 +60,16 @@ export class MilestoneField extends DataField<Measure, string | null> {
   }
 }
 
+export class TargetObjectField extends DataField<Measure, string | null> {
+  constructor(optional: boolean = true) {
+    super('target_object', null, optional);
+  }
+
+  override toValue(data: Measure): string | null {
+    return data.requirement?.target_object ?? null;
+  }
+}
+
 export class DocumentField extends DataField<Measure, Document | null> {
   constructor(optional: boolean = true) {
     super('document', null, optional);

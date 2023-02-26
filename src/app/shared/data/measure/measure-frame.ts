@@ -36,6 +36,7 @@ import {
   MeasureCatalogModuleField,
   MilestoneField,
   RequirementField,
+  TargetObjectField,
   VerifiedField,
 } from '../measure/measure-fields';
 import {
@@ -58,6 +59,7 @@ import { CatalogModulesFilter } from '../catalog-module/catalog-module-filters';
 import {
   MilestonesFilter,
   RequirementsFilter,
+  TargetObjectsFilter,
 } from '../requirement/requirement-filters';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
@@ -149,6 +151,26 @@ export class MeasureDataFrame extends DataFrame<Measure> {
             new FilterByPattern('milestone', initQueryParams),
             new MilestonesFilter(milestoneService, project, initQueryParams),
             new FilterForExistence('has_milestone', initQueryParams)
+          ),
+          initQueryParams
+        )
+      );
+    }
+
+    // Target object column
+    if (targetObjectService) {
+      additionalColumns.push(
+        new DataColumn(
+          new TargetObjectField(),
+          new Filters(
+            'Target object',
+            new FilterByPattern('target_object', initQueryParams),
+            new TargetObjectsFilter(
+              targetObjectService,
+              project,
+              initQueryParams
+            ),
+            new FilterForExistence('has_target_object', initQueryParams)
           ),
           initQueryParams
         )
