@@ -16,7 +16,11 @@
 import { CatalogModule } from '../../services/catalog-module.service';
 import { Catalog } from '../../services/catalog.service';
 import { Requirement } from '../../services/requirement.service';
-import { CatalogField, TextField } from '../custom/custom-fields';
+import {
+  CatalogField,
+  CatalogModuleField,
+  TextField,
+} from '../custom/custom-fields';
 import { DataField } from '../data';
 
 export class RequirementCatalogField extends CatalogField<Requirement> {
@@ -25,24 +29,9 @@ export class RequirementCatalogField extends CatalogField<Requirement> {
   }
 }
 
-export class CatalogModuleField extends DataField<
-  Requirement,
-  CatalogModule | null
-> {
-  constructor() {
-    super('catalog_module');
-  }
-
+export class RequirementCatalogModuleField extends CatalogModuleField<Requirement> {
   override toValue(data: Requirement): CatalogModule | null {
     return data.catalog_requirement?.catalog_module ?? null;
-  }
-
-  override toStr(data: Requirement): string {
-    const catalogModule = this.toValue(data);
-    return catalogModule
-      ? (catalogModule.reference ? catalogModule.reference + ' ' : '') +
-          catalogModule.title
-      : 'No catalog module';
   }
 }
 

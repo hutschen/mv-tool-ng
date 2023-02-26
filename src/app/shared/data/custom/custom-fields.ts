@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { CatalogModule } from '../../services/catalog-module.service';
 import { Catalog } from '../../services/catalog.service';
 import { Project } from '../../services/project.service';
 import { Requirement } from '../../services/requirement.service';
@@ -69,5 +70,22 @@ export abstract class CatalogField<D extends IDataItem> extends DataField<
     return catalog
       ? (catalog.reference ? catalog.reference + ' ' : '') + catalog.title
       : 'No catalog';
+  }
+}
+
+export abstract class CatalogModuleField<D extends IDataItem> extends DataField<
+  D,
+  CatalogModule | null
+> {
+  constructor() {
+    super('catalog_module');
+  }
+
+  override toStr(data: D): string {
+    const catalogModule = this.toValue(data);
+    return catalogModule
+      ? (catalogModule.reference ? catalogModule.reference + ' ' : '') +
+          catalogModule.title
+      : 'No catalog module';
   }
 }

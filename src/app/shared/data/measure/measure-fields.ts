@@ -18,13 +18,20 @@ import { IJiraIssue } from '../../services/jira-issue.service';
 import { Measure } from '../../services/measure.service';
 import { Document } from '../../services/document.service';
 import { Catalog } from '../../services/catalog.service';
-import { CatalogField } from '../custom/custom-fields';
+import { CatalogField, CatalogModuleField } from '../custom/custom-fields';
+import { CatalogModule } from '../../services/catalog-module.service';
 
 export class MeasureCatalogField extends CatalogField<Measure> {
   override toValue(data: Measure): Catalog | null {
     return (
       data.requirement?.catalog_requirement?.catalog_module.catalog ?? null
     );
+  }
+}
+
+export class MeasureCatalogModuleField extends CatalogModuleField<Measure> {
+  override toValue(data: Measure): CatalogModule | null {
+    return data.requirement?.catalog_requirement?.catalog_module ?? null;
   }
 }
 

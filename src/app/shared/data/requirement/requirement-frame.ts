@@ -39,7 +39,7 @@ import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 import {
   RequirementCatalogField,
-  CatalogModuleField,
+  RequirementCatalogModuleField,
   ComplianceAlertField,
   GSAbsicherungField,
   GSVerantwortlicheField,
@@ -90,7 +90,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
 
     // Catalog module column
     const catalogModuleColumn = new DataColumn(
-      new CatalogModuleField(),
+      new RequirementCatalogModuleField(),
       new Filters(
         'Catalog Modules',
         undefined,

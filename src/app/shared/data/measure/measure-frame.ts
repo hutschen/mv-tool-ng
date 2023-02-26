@@ -30,6 +30,7 @@ import {
   DocumentField,
   JiraIssueField,
   MeasureCatalogField,
+  MeasureCatalogModuleField,
   VerifiedField,
 } from '../measure/measure-fields';
 import {
@@ -48,6 +49,7 @@ import { CatalogModuleService } from '../../services/catalog-module.service';
 import { MilestoneService } from '../../services/milestone.service';
 import { TargetObjectService } from '../../services/target-object.service';
 import { CatalogsFilter } from '../catalog/catalog-filters';
+import { CatalogModulesFilter } from '../catalog-module/catalog-module-filters';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   protected _requirement?: Requirement;
@@ -80,6 +82,26 @@ export class MeasureDataFrame extends DataFrame<Measure> {
             undefined,
             new CatalogsFilter(catalogService, initQueryParams),
             new FilterForExistence('has_catalog', initQueryParams)
+          ),
+          initQueryParams
+        )
+      );
+    }
+
+    // Catalog module column
+    if (catalogModuleService) {
+      additionalColumns.push(
+        new DataColumn(
+          new MeasureCatalogModuleField(),
+          new Filters(
+            'Catalog Modules',
+            undefined,
+            new CatalogModulesFilter(
+              catalogModuleService,
+              undefined,
+              initQueryParams
+            ),
+            new FilterForExistence('has_catalog_module', initQueryParams)
           ),
           initQueryParams
         )
