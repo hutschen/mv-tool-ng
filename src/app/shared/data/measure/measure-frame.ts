@@ -34,6 +34,7 @@ import {
   JiraIssueField,
   MeasureCatalogField,
   MeasureCatalogModuleField,
+  MilestoneField,
   RequirementField,
   VerifiedField,
 } from '../measure/measure-fields';
@@ -54,7 +55,10 @@ import { MilestoneService } from '../../services/milestone.service';
 import { TargetObjectService } from '../../services/target-object.service';
 import { CatalogsFilter } from '../catalog/catalog-filters';
 import { CatalogModulesFilter } from '../catalog-module/catalog-module-filters';
-import { RequirementsFilter } from '../requirement/requirement-filters';
+import {
+  MilestonesFilter,
+  RequirementsFilter,
+} from '../requirement/requirement-filters';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   protected _requirement?: Requirement;
@@ -128,6 +132,22 @@ export class MeasureDataFrame extends DataFrame<Measure> {
               initQueryParams
             ),
             undefined
+          ),
+          initQueryParams
+        )
+      );
+    }
+
+    // Milestone column
+    if (milestoneService) {
+      additionalColumns.push(
+        new DataColumn(
+          new MilestoneField(),
+          new Filters(
+            'Milestone',
+            new FilterByPattern('milestone', initQueryParams),
+            new MilestonesFilter(milestoneService, project, initQueryParams),
+            new FilterForExistence('has_milestone', initQueryParams)
           ),
           initQueryParams
         )
