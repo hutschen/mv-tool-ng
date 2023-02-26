@@ -20,7 +20,23 @@ import { Project, ProjectService } from '../shared/services/project.service';
 
 @Component({
   selector: 'mvtool-project-measure-view',
-  template: ` <p>project-measure-view works!</p> `,
+  template: `
+    <div *ngIf="project" class="fx-column">
+      <mvtool-project-details [project]="project"></mvtool-project-details>
+      <mat-divider></mat-divider>
+      <mvtool-project-measure-table
+        [project]="project"
+      ></mvtool-project-measure-table>
+    </div>
+    <div
+      *ngIf="!project"
+      class="fx-column fx-center-center"
+      style="height: 50%"
+    >
+      <mat-spinner></mat-spinner>
+    </div>
+  `,
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: [],
 })
 export class ProjectMeasureViewComponent implements OnInit {

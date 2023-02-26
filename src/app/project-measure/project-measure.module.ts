@@ -22,6 +22,7 @@ import { ProjectIdGuard } from '../shared/guards/id.guard';
 import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
 import { RouterModule } from '@angular/router';
+import { ProjectModule } from '../project/project.module';
 
 const routes = [
   {
@@ -37,6 +38,7 @@ const routes = [
     CommonModule,
     SharedModule,
     MaterialModule,
+    ProjectModule,
     RouterModule.forChild(routes),
   ],
 })
