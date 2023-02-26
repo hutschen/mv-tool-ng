@@ -16,23 +16,12 @@
 import { CatalogModule } from '../../services/catalog-module.service';
 import { Catalog } from '../../services/catalog.service';
 import { Requirement } from '../../services/requirement.service';
-import { TextField } from '../custom/custom-fields';
+import { CatalogField, TextField } from '../custom/custom-fields';
 import { DataField } from '../data';
 
-export class CatalogField extends DataField<Requirement, Catalog | null> {
-  constructor() {
-    super('catalog');
-  }
-
+export class RequirementCatalogField extends CatalogField<Requirement> {
   override toValue(data: Requirement): Catalog | null {
     return data.catalog_requirement?.catalog_module.catalog ?? null;
-  }
-
-  override toStr(data: Requirement): string {
-    const catalog = this.toValue(data);
-    return catalog
-      ? (catalog.reference ? catalog.reference + ' ' : '') + catalog.title
-      : 'No catalog';
   }
 }
 

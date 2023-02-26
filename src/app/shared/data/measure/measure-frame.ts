@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import {
   FilterByPattern,
@@ -29,6 +29,7 @@ import { StatusField, TextField } from '../custom/custom-fields';
 import {
   DocumentField,
   JiraIssueField,
+  MeasureCatalogField,
   VerifiedField,
 } from '../measure/measure-fields';
 import {
@@ -42,6 +43,11 @@ import {
 import { DocumentService } from '../../services/document.service';
 import { DocumentsFilter } from '../document/document-filters';
 import { Project } from '../../services/project.service';
+import { CatalogService } from '../../services/catalog.service';
+import { CatalogModuleService } from '../../services/catalog-module.service';
+import { MilestoneService } from '../../services/milestone.service';
+import { TargetObjectService } from '../../services/target-object.service';
+import { CatalogsFilter } from '../catalog/catalog-filters';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   protected _requirement?: Requirement;
@@ -51,12 +57,34 @@ export class MeasureDataFrame extends DataFrame<Measure> {
     protected _measureService: MeasureService,
     protected _documentService: DocumentService,
     requirementOrProject: Requirement | Project,
-    initQueryParams: IQueryParams = {}
+    initQueryParams: IQueryParams = {},
+    catalogService?: CatalogService,
+    catalogModuleService?: CatalogModuleService,
+    milestoneService?: MilestoneService,
+    targetObjectService?: TargetObjectService
   ) {
-    const project =
-      requirementOrProject instanceof Project
-        ? requirementOrProject
-        : requirementOrProject.project;
+    const noRequirement = requirementOrProject instanceof Project;
+    const project = noRequirement
+      ? requirementOrProject
+      : requirementOrProject.project;
+
+    const additionalColumns: DataColumn<Measure>[] = [];
+
+    // Catalog column
+    if (catalogService) {
+      additionalColumns.push(
+        new DataColumn(
+          new MeasureCatalogField(),
+          new Filters(
+            'Catalogs',
+            undefined,
+            new CatalogsFilter(catalogService, initQueryParams),
+            new FilterForExistence('has_catalog', initQueryParams)
+          ),
+          initQueryParams
+        )
+      );
+    }
 
     // Reference column
     const referenceColumn = new DataColumn(
@@ -165,10 +193,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       initQueryParams
     );
     this._project = project;
-    this._requirement =
-      requirementOrProject instanceof Requirement
-        ? requirementOrProject
-        : undefined;
+    this._requirement = noRequirement ? undefined : requirementOrProject;
     this.reload();
   }
 

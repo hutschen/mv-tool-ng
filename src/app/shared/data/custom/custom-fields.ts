@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { Catalog } from '../../services/catalog.service';
 import { Project } from '../../services/project.service';
 import { Requirement } from '../../services/requirement.service';
 import { DataField, IDataItem } from '../data';
@@ -52,5 +53,21 @@ export class CompletionField extends DataField<
 
   override toBool(data: Requirement | Project): boolean {
     return this.toValue(data) !== null;
+  }
+}
+
+export abstract class CatalogField<D extends IDataItem> extends DataField<
+  D,
+  Catalog | null
+> {
+  constructor() {
+    super('catalog');
+  }
+
+  override toStr(data: D): string {
+    const catalog = this.toValue(data);
+    return catalog
+      ? (catalog.reference ? catalog.reference + ' ' : '') + catalog.title
+      : 'No catalog';
   }
 }

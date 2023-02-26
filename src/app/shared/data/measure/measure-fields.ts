@@ -17,6 +17,16 @@ import { DataField } from '../data';
 import { IJiraIssue } from '../../services/jira-issue.service';
 import { Measure } from '../../services/measure.service';
 import { Document } from '../../services/document.service';
+import { Catalog } from '../../services/catalog.service';
+import { CatalogField } from '../custom/custom-fields';
+
+export class MeasureCatalogField extends CatalogField<Measure> {
+  override toValue(data: Measure): Catalog | null {
+    return (
+      data.requirement?.catalog_requirement?.catalog_module.catalog ?? null
+    );
+  }
+}
 
 export class DocumentField extends DataField<Measure, Document | null> {
   constructor(optional: boolean = true) {

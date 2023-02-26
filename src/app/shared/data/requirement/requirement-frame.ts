@@ -38,7 +38,7 @@ import { TextField } from '../custom/custom-fields';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 import {
-  CatalogField,
+  RequirementCatalogField,
   CatalogModuleField,
   ComplianceAlertField,
   GSAbsicherungField,
@@ -78,7 +78,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
 
     // Catalog column
     const catalogColumn = new DataColumn(
-      new CatalogField(),
+      new RequirementCatalogField(),
       new Filters(
         'Catalogs',
         undefined,
