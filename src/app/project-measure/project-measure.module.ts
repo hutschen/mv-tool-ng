@@ -23,6 +23,7 @@ import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
 import { RouterModule } from '@angular/router';
 import { ProjectModule } from '../project/project.module';
+import { JiraIssueModule } from '../jira-issue/jira-issue.module';
 
 const routes = [
   {
@@ -39,6 +40,7 @@ const routes = [
     SharedModule,
     MaterialModule,
     ProjectModule,
+    JiraIssueModule,
     RouterModule.forChild(routes),
   ],
 })
