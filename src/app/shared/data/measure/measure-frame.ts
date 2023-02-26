@@ -176,6 +176,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
 
     super(
       [
+        ...additionalColumns,
         referenceColumn,
         new SummaryColumn(initQueryParams),
         new DescriptionColumn(initQueryParams),
