@@ -23,6 +23,7 @@ import { ConfirmDialogService } from '../shared/components/confirm-dialog.compon
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { MeasureDataFrame } from '../shared/data/measure/measure-frame';
+import { CatalogModuleService } from '../shared/services/catalog-module.service';
 import { CatalogService } from '../shared/services/catalog.service';
 import { DocumentService } from '../shared/services/document.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
@@ -47,6 +48,7 @@ export class ProjectMeasureTableComponent implements OnInit {
     protected _queryParamsService: QueryParamsService,
     protected _measureService: MeasureService,
     protected _catalogService: CatalogService,
+    protected _catalogModuleService: CatalogModuleService,
     protected _documentService: DocumentService,
     protected _measureDialogService: MeasureDialogService,
     protected _complianceDialogService: ComplianceDialogService,
@@ -64,7 +66,8 @@ export class ProjectMeasureTableComponent implements OnInit {
       this._documentService,
       this.project,
       this._queryParamsService.getQueryParams(),
-      this._catalogService
+      this._catalogService,
+      this._catalogModuleService
     );
     this._queryParamsService
       .syncQueryParams(this.dataFrame.queryParams$)
