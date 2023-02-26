@@ -54,6 +54,7 @@ import { MilestoneService } from '../../services/milestone.service';
 import { TargetObjectService } from '../../services/target-object.service';
 import { CatalogsFilter } from '../catalog/catalog-filters';
 import { CatalogModulesFilter } from '../catalog-module/catalog-module-filters';
+import { RequirementsFilter } from '../requirement/requirement-filters';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   protected _requirement?: Requirement;
@@ -121,8 +122,12 @@ export class MeasureDataFrame extends DataFrame<Measure> {
           new Filters(
             'Requirements',
             undefined,
-            undefined,
-            new FilterForExistence('has_requirement', initQueryParams)
+            new RequirementsFilter(
+              requirementService,
+              project,
+              initQueryParams
+            ),
+            undefined
           ),
           initQueryParams
         )
