@@ -31,6 +31,7 @@ import { MilestoneService } from '../shared/services/milestone.service';
 import { Project } from '../shared/services/project.service';
 import { QueryParamsService } from '../shared/services/query-params.service';
 import { RequirementService } from '../shared/services/requirement.service';
+import { TargetObjectService } from '../shared/services/target-object.service';
 
 @Component({
   selector: 'mvtool-project-measure-table',
@@ -53,6 +54,7 @@ export class ProjectMeasureTableComponent implements OnInit {
     protected _catalogModuleService: CatalogModuleService,
     protected _requirementService: RequirementService,
     protected _milestoneService: MilestoneService,
+    protected _targetObjectService: TargetObjectService,
     protected _documentService: DocumentService,
     protected _measureDialogService: MeasureDialogService,
     protected _complianceDialogService: ComplianceDialogService,
@@ -73,7 +75,8 @@ export class ProjectMeasureTableComponent implements OnInit {
       this._catalogService,
       this._catalogModuleService,
       this._requirementService,
-      this._milestoneService
+      this._milestoneService,
+      this._targetObjectService
     );
     this._queryParamsService
       .syncQueryParams(this.dataFrame.queryParams$)
