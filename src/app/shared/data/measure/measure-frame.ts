@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Observable } from 'rxjs';
+import { combineLatest, map, Observable, of } from 'rxjs';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import {
   FilterByPattern,
@@ -63,6 +63,7 @@ import {
 export class MeasureDataFrame extends DataFrame<Measure> {
   protected _requirement?: Requirement;
   protected _project: Project;
+  protected _additionalColumnNames: string[];
 
   constructor(
     protected _measureService: MeasureService,
@@ -71,7 +72,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
     initQueryParams: IQueryParams = {},
     catalogService?: CatalogService,
     catalogModuleService?: CatalogModuleService,
-    requirementService?: RequirementService,
+    protected _requirementService?: RequirementService,
     milestoneService?: MilestoneService,
     targetObjectService?: TargetObjectService
   ) {
@@ -119,7 +120,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
     }
 
     // Requirement column
-    if (requirementService) {
+    if (_requirementService) {
       additionalColumns.push(
         new DataColumn(
           new RequirementField(),
@@ -127,7 +128,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
             'Requirements',
             undefined,
             new RequirementsFilter(
-              requirementService,
+              _requirementService,
               project,
               initQueryParams
             ),
@@ -263,13 +264,35 @@ export class MeasureDataFrame extends DataFrame<Measure> {
     );
     this._project = project;
     this._requirement = noRequirement ? undefined : requirementOrProject;
+    this._additionalColumnNames = additionalColumns.map((c) => c.name);
     this.reload();
   }
 
   override getColumnNames(): Observable<string[]> {
-    return this._measureService.getMeasureFieldNames({
-      project_ids: this._project.id,
-    });
+    let requirementFieldNames$: Observable<string[]> = of([]);
+    if (!this._requirement && this._requirementService) {
+      requirementFieldNames$ = this._requirementService
+        .getRequirementFieldNames({
+          project_ids: this._project.id,
+        })
+        .pipe(
+          map((fieldNames) => {
+            return fieldNames.filter((fn) =>
+              this._additionalColumnNames.includes(fn)
+            );
+          })
+        );
+    }
+    return combineLatest([
+      requirementFieldNames$,
+      this._measureService.getMeasureFieldNames({
+        project_ids: this._project.id,
+      }),
+    ]).pipe(
+      map(([requirementFieldNames, measureFieldNames]) => {
+        return [...requirementFieldNames, ...measureFieldNames];
+      })
+    );
   }
 
   override getData(queryParams: IQueryParams) {
