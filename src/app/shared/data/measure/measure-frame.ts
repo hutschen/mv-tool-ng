@@ -74,7 +74,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
     initQueryParams: IQueryParams = {},
     catalogService?: CatalogService,
     catalogModuleService?: CatalogModuleService,
-    protected _requirementService?: RequirementService,
+    requirementService?: RequirementService,
     milestoneService?: MilestoneService,
     targetObjectService?: TargetObjectService
   ) {
@@ -122,7 +122,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
     }
 
     // Requirement column
-    if (_requirementService) {
+    if (requirementService) {
       additionalColumns.push(
         new DataColumn(
           new RequirementField(),
@@ -130,7 +130,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
             'Requirements',
             undefined,
             new RequirementsFilter(
-              _requirementService,
+              requirementService,
               project,
               initQueryParams
             ),
@@ -291,30 +291,9 @@ export class MeasureDataFrame extends DataFrame<Measure> {
   }
 
   override getColumnNames(): Observable<string[]> {
-    let requirementFieldNames$: Observable<string[]> = of([]);
-    if (!this._requirement && this._requirementService) {
-      requirementFieldNames$ = this._requirementService
-        .getRequirementFieldNames({
-          project_ids: this._project.id,
-        })
-        .pipe(
-          map((fieldNames) => {
-            return fieldNames.filter((fn) =>
-              this._additionalColumnNames.includes(fn)
-            );
-          })
-        );
-    }
-    return combineLatest([
-      requirementFieldNames$,
-      this._measureService.getMeasureFieldNames({
-        project_ids: this._project.id,
-      }),
-    ]).pipe(
-      map(([requirementFieldNames, measureFieldNames]) => {
-        return [...requirementFieldNames, ...measureFieldNames];
-      })
-    );
+    return this._measureService.getMeasureFieldNames({
+      project_ids: this._project.id,
+    });
   }
 
   override getData(queryParams: IQueryParams) {
