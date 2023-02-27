@@ -80,7 +80,7 @@ export class RequirementsFilter extends FilterByValues {
     protected _project: Project,
     initQueryParams: IQueryParams = {}
   ) {
-    super('requirements', undefined, initQueryParams);
+    super('requirement_ids', undefined, initQueryParams);
     this.loadOptions();
   }
 
