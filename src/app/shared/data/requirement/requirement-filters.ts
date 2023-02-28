@@ -74,6 +74,63 @@ export class RequirementReferencesFilter extends FilterByValues {
   }
 }
 
+export class RequirementsFilter extends FilterByValues {
+  constructor(
+    protected _requirementService: RequirementService,
+    protected _project: Project,
+    initQueryParams: IQueryParams = {}
+  ) {
+    super('requirement_ids', undefined, initQueryParams);
+    this.loadOptions();
+  }
+
+  private __loadOptions(
+    queryParams: IQueryParams
+  ): Observable<IFilterOption[]> {
+    // Request requirements and convert them to filter options
+    return this._requirementService
+      .getRequirementRepresentations(queryParams)
+      .pipe(
+        map((requirementReprs) => {
+          if (!Array.isArray(requirementReprs)) {
+            requirementReprs = requirementReprs.items;
+          }
+          return requirementReprs.map((rr) => ({
+            value: rr.id,
+            label: (rr.reference ? rr.reference + ' ' : '') + rr.summary,
+          }));
+        })
+      );
+  }
+
+  override getOptions(
+    searchStr: string | null = null,
+    limit: number = -1
+  ): Observable<IFilterOption[]> {
+    // Build query params to request requirements
+    const queryParams: IQueryParams = {
+      project_ids: this._project.id,
+    };
+    if (searchStr) queryParams['local_search'] = searchStr;
+    if (limit) {
+      queryParams['page'] = 1;
+      queryParams['page_size'] = limit;
+    }
+
+    return this.__loadOptions(queryParams);
+  }
+
+  override getOptionsByValues(
+    values: (string | number)[]
+  ): Observable<IFilterOption[]> {
+    const queryParams: IQueryParams = {
+      project_ids: this._project.id,
+      ids: values,
+    };
+    return this.__loadOptions(queryParams);
+  }
+}
+
 export class MilestonesFilter extends FilterByValues {
   constructor(
     protected _milestoneService: MilestoneService,

@@ -17,10 +17,62 @@ import { DataField } from '../data';
 import { IJiraIssue } from '../../services/jira-issue.service';
 import { Measure } from '../../services/measure.service';
 import { Document } from '../../services/document.service';
+import { Catalog } from '../../services/catalog.service';
+import { CatalogField, CatalogModuleField } from '../custom/custom-fields';
+import { CatalogModule } from '../../services/catalog-module.service';
+import { Requirement } from '../../services/requirement.service';
+
+export class MeasureCatalogField extends CatalogField<Measure> {
+  override toValue(data: Measure): Catalog | null {
+    return (
+      data.requirement?.catalog_requirement?.catalog_module.catalog ?? null
+    );
+  }
+}
+
+export class MeasureCatalogModuleField extends CatalogModuleField<Measure> {
+  override toValue(data: Measure): CatalogModule | null {
+    return data.requirement?.catalog_requirement?.catalog_module ?? null;
+  }
+}
+
+export class RequirementField extends DataField<Measure, Requirement> {
+  constructor(optional: boolean = true) {
+    super('requirement', null, optional);
+  }
+
+  override toStr(data: Measure): string {
+    const requirement = this.toValue(data);
+    return (
+      (requirement.reference ? requirement.reference + ' ' : '') +
+      requirement.summary
+    );
+  }
+}
+
+export class MilestoneField extends DataField<Measure, string | null> {
+  constructor(optional: boolean = true) {
+    super('milestone', null, optional);
+  }
+
+  override toValue(data: Measure): string | null {
+    return data.requirement?.milestone ?? null;
+  }
+}
+
+export class TargetObjectField extends DataField<Measure, string | null> {
+  constructor(optional: boolean = true) {
+    super('target_object', null, optional);
+  }
+
+  override toValue(data: Measure): string | null {
+    return data.requirement?.target_object ?? null;
+  }
+}
 
 export class DocumentField extends DataField<Measure, Document | null> {
   constructor(optional: boolean = true) {
-    super('document', 'Document', optional);
+    super('document', null, optional);
   }
 
   override toStr(data: Measure): string {

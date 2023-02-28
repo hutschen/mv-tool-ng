@@ -101,13 +101,4 @@
       </td>
     </ng-container>
   </mvtool-table>
-
-  <mat-paginator
-    [length]="dataFrame.length$ | async"
-    [pageSize]="(dataFrame.pagination.page$ | async)?.pageSize"
-    [pageIndex]="(dataFrame.pagination.page$ | async)?.pageIndex"
-    [pageSizeOptions]="dataFrame.pagination.pageSizeOptions"
-    (page)="dataFrame.pagination.setPage($event)"
-    showFirstLastButtons
-  ></mat-paginator>
 </div>

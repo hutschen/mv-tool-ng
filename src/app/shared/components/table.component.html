@@ -92,4 +92,15 @@
       </td>
     </tr>
   </table>
+
+  <!-- Paginator -->
+  <!-- TODO: Make Paginator sticky. style="position: sticky; bottom: 0; z-index: 2" -->
+  <mat-paginator
+    [length]="dataFrame.length$ | async"
+    [pageSize]="(dataFrame.pagination.page$ | async)?.pageSize"
+    [pageIndex]="(dataFrame.pagination.page$ | async)?.pageIndex"
+    [pageSizeOptions]="dataFrame.pagination.pageSizeOptions"
+    (page)="dataFrame.pagination.setPage($event)"
+    showFirstLastButtons
+  ></mat-paginator>
 </div>
