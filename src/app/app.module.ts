@@ -33,6 +33,7 @@ import { BreadcrumbTrailComponent } from './breadcrumb-trail.component';
 import { CatalogModuleModule } from './catalog-module/catalog-module.module';
 import { CatalogRequirementModule } from './catalog-requirement/catalog-requirement.module';
 import { ErrorService } from './shared/services/error.service';
+import { ProjectMeasureModule } from './project-measure/project-measure.module';
 
 const routes = [{ path: '**', redirectTo: 'projects' }];
 
@@ -54,6 +55,7 @@ const routes = [{ path: '**', redirectTo: 'projects' }];
     RequirementModule,
     DocumentModule,
     MeasureModule,
+    ProjectMeasureModule,
     CatalogModule,
     CatalogModuleModule,
     CatalogRequirementModule,

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CatalogModuleService } from '../../services/catalog-module.service';
 import { CatalogService } from '../../services/catalog.service';
 import { MilestoneService } from '../../services/milestone.service';
@@ -38,8 +38,8 @@ import { TextField } from '../custom/custom-fields';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 import {
-  CatalogField,
-  CatalogModuleField,
+  RequirementCatalogField,
+  RequirementCatalogModuleField,
   ComplianceAlertField,
   GSAbsicherungField,
   GSVerantwortlicheField,
@@ -78,7 +78,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
 
     // Catalog column
     const catalogColumn = new DataColumn(
-      new CatalogField(),
+      new RequirementCatalogField(),
       new Filters(
         'Catalogs',
         undefined,
@@ -90,7 +90,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
 
     // Catalog module column
     const catalogModuleColumn = new DataColumn(
-      new CatalogModuleField(),
+      new RequirementCatalogModuleField(),
       new Filters(
         'Catalog Modules',
         undefined,
@@ -177,23 +177,11 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
     });
   }
 
-  override getData(queryParams: IQueryParams): Observable<Requirement[]> {
+  override getData(queryParams: IQueryParams) {
     // Query requirements and set length of data frame
-    return this._requirementService
-      .queryRequirements({
-        project_ids: this._project.id,
-        ...queryParams,
-      })
-      .pipe(
-        map((requirements) => {
-          if (Array.isArray(requirements)) {
-            this.length = requirements.length;
-            return requirements;
-          } else {
-            this.length = requirements.total_count;
-            return requirements.items;
-          }
-        })
-      );
+    return this._requirementService.queryRequirements({
+      project_ids: this._project.id,
+      ...queryParams,
+    });
   }
 }

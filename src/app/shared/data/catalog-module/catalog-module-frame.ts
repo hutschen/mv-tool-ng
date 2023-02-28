@@ -66,21 +66,9 @@ export class CatalogModuleDataFrame extends DataFrame<CatalogModule> {
   }
 
   override getData(queryParams: IQueryParams) {
-    return this._catalogModuleService
-      .queryCatalogModules({
-        catalog_ids: this._catalog.id,
-        ...queryParams,
-      })
-      .pipe(
-        map((catalogModules) => {
-          if (Array.isArray(catalogModules)) {
-            this.length = catalogModules.length;
-            return catalogModules;
-          } else {
-            this.length = catalogModules.total_count;
-            return catalogModules.items;
-          }
-        })
-      );
+    return this._catalogModuleService.queryCatalogModules({
+      catalog_ids: this._catalog.id,
+      ...queryParams,
+    });
   }
 }

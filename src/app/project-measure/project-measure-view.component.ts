@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Helmar Hutschenreuter
+// Copyright (C) 2023 Helmar Hutschenreuter
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -16,25 +16,20 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  Requirement,
-  RequirementService,
-} from '../shared/services/requirement.service';
+import { Project, ProjectService } from '../shared/services/project.service';
 
 @Component({
-  selector: 'mvtool-measure-view',
+  selector: 'mvtool-project-measure-view',
   template: `
-    <div *ngIf="requirement" class="fx-column">
-      <mvtool-requirement-details
-        [requirement]="requirement"
-      ></mvtool-requirement-details>
+    <div *ngIf="project" class="fx-column">
+      <mvtool-project-details [project]="project"></mvtool-project-details>
       <mat-divider></mat-divider>
-      <mvtool-http-measure-table
-        [requirement]="requirement"
-      ></mvtool-http-measure-table>
+      <mvtool-project-measure-table
+        [project]="project"
+      ></mvtool-project-measure-table>
     </div>
     <div
-      *ngIf="!requirement"
+      *ngIf="!project"
       class="fx-column fx-center-center"
       style="height: 50%"
     >
@@ -44,22 +39,20 @@ import {
   styleUrls: ['../shared/styles/flex.scss'],
   styles: [],
 })
-export class MeasureViewComponent implements OnInit {
-  requirement!: Requirement;
+export class ProjectMeasureViewComponent implements OnInit {
+  project!: Project;
 
   constructor(
     protected _route: ActivatedRoute,
     protected _router: Router,
-    protected _requirementService: RequirementService
+    protected _projectService: ProjectService
   ) {}
 
   ngOnInit(): void {
-    const requirementId = Number(
-      this._route.snapshot.paramMap.get('requirementId')
-    );
-    this._requirementService.getRequirement(requirementId).subscribe({
-      next: (requirement) => {
-        this.requirement = requirement;
+    const projectId = Number(this._route.snapshot.paramMap.get('projectId'));
+    this._projectService.getProject(projectId).subscribe({
+      next: (project) => {
+        this.project = project;
       },
       error: (error) => {
         if (error instanceof HttpErrorResponse && error.status === 404) {

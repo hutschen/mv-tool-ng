@@ -34,6 +34,7 @@ import { Paginator } from './page';
 import { Search } from './search';
 import { IQueryParams } from '../services/query-params.service';
 import { Sorting } from './sort';
+import { IPage } from '../services/crud.service';
 
 export interface IDataItem {
   id: number | string;
@@ -357,16 +358,24 @@ export class DataFrame<D extends IDataItem> {
         switchMap((queryParams) => this.getData(queryParams)),
         tap(() => (this._isLoadingData = false))
       )
-      .subscribe((data) => this._dataSubject.next(data));
+      .subscribe((data) => {
+        if (Array.isArray(data)) {
+          this._dataSubject.next(data);
+          this._lengthSubject.next(data.length);
+        } else {
+          this._dataSubject.next(data.items);
+          this._lengthSubject.next(data.total_count);
+        }
+      });
   }
 
   get isLoading(): boolean {
     return this._isLoadingData || this._isLoadingColumns;
   }
 
-  set length(length: number) {
-    this._lengthSubject.next(length);
-  }
+  // set length(length: number) {
+  //   this._lengthSubject.next(length);
+  // }
 
   get length(): number {
     return this._lengthSubject.value;
@@ -375,7 +384,7 @@ export class DataFrame<D extends IDataItem> {
   addItem(item: D): boolean {
     // FIXME: prevent adding duplicate items (items need unique ids)
     const data = this._dataSubject.value;
-    this.length = this._lengthSubject.value + 1;
+    this._lengthSubject.next(this._lengthSubject.value + 1);
     if (
       !this.pagination.enabled ||
       data.length < this.pagination.page.pageSize
@@ -405,7 +414,7 @@ export class DataFrame<D extends IDataItem> {
   removeItem(item: D): boolean {
     const data = this._dataSubject.value;
     const index = data.findIndex((i) => i.id === item.id);
-    this.length = this._lengthSubject.value - 1;
+    this._lengthSubject.next(this._lengthSubject.value - 1);
     if (index >= 0) {
       // Remove item from data
       data.splice(index, 1);
@@ -431,8 +440,7 @@ export class DataFrame<D extends IDataItem> {
     return of([]);
   }
 
-  getData(queryParams: IQueryParams): Observable<D[]> {
-    // TODO: Instead of an array it should be possible to return a page, the length should be set automatically.
+  getData(queryParams: IQueryParams): Observable<D[] | IPage<D>> {
     return of([]);
   }
 }

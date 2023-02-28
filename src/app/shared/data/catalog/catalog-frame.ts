@@ -55,16 +55,6 @@ export class CatalogDataFrame extends DataFrame<Catalog> {
   }
 
   override getData(queryParams: IQueryParams) {
-    return this._catalogService.queryCatalogs(queryParams).pipe(
-      map((catalogs) => {
-        if (Array.isArray(catalogs)) {
-          this.length = catalogs.length;
-          return catalogs;
-        } else {
-          this.length = catalogs.total_count;
-          return catalogs.items;
-        }
-      })
-    );
+    return this._catalogService.queryCatalogs(queryParams);
   }
 }

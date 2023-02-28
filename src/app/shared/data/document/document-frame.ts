@@ -63,21 +63,9 @@ export class DocumentDataFrame extends DataFrame<Document> {
   }
 
   override getData(queryParams: IQueryParams) {
-    return this._documentService
-      .queryDocuments({
-        project_ids: this._project.id,
-        ...queryParams,
-      })
-      .pipe(
-        map((documents) => {
-          if (Array.isArray(documents)) {
-            this.length = documents.length;
-            return documents;
-          } else {
-            this.length = documents.total_count;
-            return documents.items;
-          }
-        })
-      );
+    return this._documentService.queryDocuments({
+      project_ids: this._project.id,
+      ...queryParams,
+    });
   }
 }
