@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { NgModule } from '@angular/core';
+import { inject, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RequirementTableComponent } from './requirement-table.component';
 import { SharedModule } from '../shared/shared.module';
@@ -30,7 +30,7 @@ import { ProjectModule } from '../project/project.module';
 const routes = [
   {
     path: 'projects/:projectId/requirements',
-    canActivate: [AuthGuard, ProjectIdGuard],
+    canActivate: [() => inject(AuthGuard).canActivate(), ProjectIdGuard],
     component: RequirementViewComponent,
   },
 ];

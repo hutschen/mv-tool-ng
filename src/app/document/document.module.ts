@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { NgModule } from '@angular/core';
+import { inject, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DocumentTableComponent } from './document-table.component';
 import { DocumentDialogComponent } from './document-dialog.component';
@@ -29,7 +29,7 @@ import { ProjectIdGuard } from '../shared/guards/id.guard';
 const routes = [
   {
     path: 'projects/:projectId/documents',
-    canActivate: [AuthGuard, ProjectIdGuard],
+    canActivate: [() => inject(AuthGuard).canActivate(), ProjectIdGuard],
     component: DocumentViewComponent,
   },
 ];
