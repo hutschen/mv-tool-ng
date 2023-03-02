@@ -29,7 +29,11 @@ import {
       <!-- Title -->
       <div class="fx-row fx-space-between-center fx-gap-5">
         <h1 class="truncate">{{ requirement.summary }}</h1>
-        <button mat-stroked-button [matMenuTriggerFor]="menu">
+        <button
+          mat-stroked-button
+          [matMenuTriggerFor]="menu"
+          class="icon-button"
+        >
           <mat-icon>more_vert</mat-icon>
           <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="onEditRequirement()">
@@ -108,7 +112,11 @@ import {
     </div>
   `,
   styleUrls: ['../shared/styles/flex.scss', '../shared/styles/truncate.scss'],
-  styles: ['h1 { margin: 0; }', '.requirement-card { margin: 20px; }'],
+  styles: [
+    'h1 { margin: 0; }',
+    '.requirement-card { margin: 20px; }',
+    '.icon-button > mat-icon { margin: 0; }',
+  ],
 })
 export class RequirementDetailsComponent {
   @Input() requirement: Requirement | null = null;
