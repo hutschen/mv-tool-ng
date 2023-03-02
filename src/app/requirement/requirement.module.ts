@@ -22,7 +22,7 @@ import { RequirementDialogComponent } from './requirement-dialog.component';
 import { RequirementDetailsComponent } from './requirement-details.component';
 import { RequirementImportDialogComponent } from './requirement-import-dialog.component';
 import { RequirementViewComponent } from './requirement-view.component';
-import { RouterModule } from '@angular/router';
+import { CanActivateFn, RouterModule } from '@angular/router';
 import { AuthGuard } from '../shared/guards/auth.guard';
 import { ProjectIdGuard } from '../shared/guards/id.guard';
 import { ProjectModule } from '../project/project.module';
@@ -30,7 +30,10 @@ import { ProjectModule } from '../project/project.module';
 const routes = [
   {
     path: 'projects/:projectId/requirements',
-    canActivate: [() => inject(AuthGuard).canActivate(), ProjectIdGuard],
+    canActivate: [
+      () => inject(AuthGuard).canActivate(),
+      (route) => inject(ProjectIdGuard).canActivate(route),
+    ] as CanActivateFn[],
     component: RequirementViewComponent,
   },
 ];

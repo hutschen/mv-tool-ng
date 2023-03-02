@@ -22,7 +22,7 @@ import { DocumentModule } from '../document/document.module';
 import { JiraIssueModule } from '../jira-issue/jira-issue.module';
 import { VerificationDialogComponent } from './verification-dialog.component';
 import { MeasureViewComponent } from './measure-view.component';
-import { RouterModule } from '@angular/router';
+import { CanActivateFn, RouterModule } from '@angular/router';
 import { AuthGuard } from '../shared/guards/auth.guard';
 import { RequirementIdGuard } from '../shared/guards/id.guard';
 import { RequirementModule } from '../requirement/requirement.module';
@@ -32,7 +32,10 @@ import { MeasureTableComponent } from './measure-table.component';
 const routes = [
   {
     path: 'requirements/:requirementId/measures',
-    canActivate: [() => inject(AuthGuard).canActivate(), RequirementIdGuard],
+    canActivate: [
+      () => inject(AuthGuard).canActivate(),
+      (route) => inject(RequirementIdGuard).canActivate(route),
+    ] as CanActivateFn[],
     component: MeasureViewComponent,
   },
 ];

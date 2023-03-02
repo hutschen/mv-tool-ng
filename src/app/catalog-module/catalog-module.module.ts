@@ -21,7 +21,7 @@ import { MaterialModule } from '../material/material.module';
 import { CatalogModuleDialogComponent } from './catalog-module-dialog.component';
 import { CatalogModuleDetailsComponent } from './catalog-module-details.component';
 import { CatalogModule } from '../catalog/catalog.module';
-import { RouterModule } from '@angular/router';
+import { CanActivateFn, RouterModule } from '@angular/router';
 import { AuthGuard } from '../shared/guards/auth.guard';
 import { CatalogIdGuard } from '../shared/guards/id.guard';
 import { CatalogModuleViewComponent } from './catalog-module-view.component';
@@ -29,7 +29,10 @@ import { CatalogModuleViewComponent } from './catalog-module-view.component';
 const routes = [
   {
     path: 'catalogs/:catalogId/catalog-modules',
-    canActivate: [() => inject(AuthGuard).canActivate(), CatalogIdGuard],
+    canActivate: [
+      () => inject(AuthGuard).canActivate(),
+      (route) => inject(CatalogIdGuard).canActivate(route),
+    ] as CanActivateFn[],
     component: CatalogModuleViewComponent,
   },
 ];

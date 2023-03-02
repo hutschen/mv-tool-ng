@@ -21,14 +21,17 @@ import { AuthGuard } from '../shared/guards/auth.guard';
 import { ProjectIdGuard } from '../shared/guards/id.guard';
 import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
-import { RouterModule } from '@angular/router';
+import { CanActivateFn, RouterModule } from '@angular/router';
 import { ProjectModule } from '../project/project.module';
 import { JiraIssueModule } from '../jira-issue/jira-issue.module';
 
 const routes = [
   {
     path: 'projects/:projectId/measures',
-    canActivate: [() => inject(AuthGuard).canActivate(), ProjectIdGuard],
+    canActivate: [
+      () => inject(AuthGuard).canActivate(),
+      (route) => inject(ProjectIdGuard).canActivate(route),
+    ] as CanActivateFn[],
     component: ProjectMeasureViewComponent,
   },
 ];

@@ -21,14 +21,17 @@ import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
 import { CatalogRequirementViewComponent } from './catalog-requirement-view.component';
 import { CatalogModuleModule } from '../catalog-module/catalog-module.module';
-import { RouterModule } from '@angular/router';
+import { CanActivateFn, RouterModule } from '@angular/router';
 import { AuthGuard } from '../shared/guards/auth.guard';
 import { CatalogModuleIdGuard } from '../shared/guards/id.guard';
 
 const routes = [
   {
     path: 'catalog-modules/:catalogModuleId/catalog-requirements',
-    canActivate: [() => inject(AuthGuard).canActivate(), CatalogModuleIdGuard],
+    canActivate: [
+      () => inject(AuthGuard).canActivate(),
+      (route) => inject(CatalogModuleIdGuard).canActivate(route),
+    ] as CanActivateFn[],
     component: CatalogRequirementViewComponent,
   },
 ];
