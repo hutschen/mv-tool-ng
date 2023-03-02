@@ -26,7 +26,7 @@ import { Router } from '@angular/router';
     </div>
   `,
   styleUrls: ['../shared/styles/flex.scss'],
-  styles: ['.user-login-card { width: 500px; margin: 20px; }'],
+  styles: ['.user-login-card { width: 500px; margin: 20px; padding: 10px; }'],
 })
 export class UserLoginViewComponent implements OnInit {
   constructor(protected _router: Router) {}
