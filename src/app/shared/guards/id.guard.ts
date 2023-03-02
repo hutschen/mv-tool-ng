@@ -15,6 +15,7 @@
 
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Router } from '@angular/router';
+import { isInt, toInt } from 'radash';
 
 abstract class IdGuard {
   protected _router: Router;
@@ -26,12 +27,12 @@ abstract class IdGuard {
   }
 
   canActivate(route: ActivatedRouteSnapshot): boolean {
-    const id = route.paramMap.get(this._idParamName);
-    if (isNaN(Number(id)) || Number(id) < 0) {
+    const id = toInt(route.paramMap.get(this._idParamName), 0);
+    if (0 < id) {
+      return true;
+    } else {
       this._router.navigate(['/']);
       return false;
-    } else {
-      return true;
     }
   }
 }
