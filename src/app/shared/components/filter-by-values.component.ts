@@ -36,10 +36,10 @@ import { FilterByValues, IFilterOption } from '../data/filter';
           to search for values.
         </span>
       </p>
-      <mat-form-field class="example-chip-list" appearance="fill">
+      <mat-form-field appearance="fill">
         <mat-label>Selected values</mat-label>
-        <mat-chip-list #chipList aria-label="Value selection">
-          <mat-chip
+        <mat-chip-grid #chipGrid aria-label="Value selection">
+          <mat-chip-row
             *ngFor="let option of filter.selection$ | async"
             (removed)="filter.deselectOption(option)"
           >
@@ -47,17 +47,17 @@ import { FilterByValues, IFilterOption } from '../data/filter';
             <button matChipRemove>
               <mat-icon>cancel</mat-icon>
             </button>
-          </mat-chip>
+          </mat-chip-row>
           <input
             placeholder="Search value ..."
             #valueInput
             [formControl]="valueCtrl"
             [matAutocomplete]="auto"
-            [matChipInputFor]="chipList"
+            [matChipInputFor]="chipGrid"
             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
             (matChipInputTokenEnd)="onTokenEnd($event)"
           />
-        </mat-chip-list>
+        </mat-chip-grid>
         <mat-autocomplete
           #auto="matAutocomplete"
           autoActiveFirstOption
