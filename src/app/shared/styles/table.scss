@@ -15,9 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-$spacing-x: 30px;
-$cell-spacing-x: 10px;
-$cell-spacing-y: 10px;
+@import "./variables";
 
 .loading-indicator-header-row {
   height: 4px;
