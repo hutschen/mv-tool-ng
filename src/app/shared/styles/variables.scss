@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Helmar Hutschenreuter
+// Copyright (C) 2023 Helmar Hutschenreuter
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -13,22 +13,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+$spacing-x: 20px; // horizontal space between elements
+$spacing-y: 20px; // vertical space between elements
+$cell-spacing-x: 10px; // horizontal space between table cells
+$cell-spacing-y: 10px; // vertial space between table cells
 
-@Injectable({
-  providedIn: 'root',
-})
-export class AuthGuard {
-  constructor(protected _auth: AuthService, protected _router: Router) {}
-
-  canActivate(): boolean {
-    if (this._auth.isLoggedIn) {
-      return true;
-    } else {
-      this._router.navigate(['/login']);
-      return false;
-    }
-  }
-}
+$mat-toolbar-padding-x: 16px; // horizontal padding of toolbars
+$mat-button-padding-x: 8px; // horizontal padding of buttons

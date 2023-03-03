@@ -71,3 +71,8 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
+
+// Don't wrap text in buttons
+.mat-mdc-button {
+  white-space: nowrap;
+}

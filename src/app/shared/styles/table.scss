@@ -15,20 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+@import "./variables";
+
 .loading-indicator-header-row {
   height: 4px;
 }
 
-tr.mat-header-row > .mat-column-loading-indicator {
+tr.mat-mdc-header-row > .mat-column-loading-indicator {
   padding: 0;
   border: 0;
 }
 
-.mat-header-cell {
-  white-space: nowrap;
-  padding: 5px 10px 5px 0px;
+.mat-mdc-header-cell,
+.mat-mdc-cell,
+.mat-cell {
+  padding: calc($cell-spacing-y/2) calc($cell-spacing-x/2);
+  &:first-child {
+    padding-left: $spacing-x;
+  }
+  &:last-child {
+    padding-right: $spacing-x;
+  }
 }
 
-.mat-cell {
-  padding: 5px 10px 5px 0px;
+.mat-mdc-header-cell {
+  white-space: nowrap;
 }

@@ -20,12 +20,16 @@ import { Router } from '@angular/router';
   selector: 'mvtool-app-toolbar',
   template: `
     <mat-toolbar color="primary">
-      <span>MV-Tool</span>
+      <div class="margin-l-toolbar-first-child">MV-Tool</div>
       <ng-content></ng-content>
-      <span class="spacer"></span>
-      <mvtool-user-menu (loggedOut)="onLoggedOut()"></mvtool-user-menu>
+      <div class="spacer"></div>
+      <mvtool-user-menu
+        class="margin-r-toolbar-last-child"
+        (loggedOut)="onLoggedOut()"
+      ></mvtool-user-menu>
     </mat-toolbar>
   `,
+  styleUrls: ['shared/styles/spacing.scss'],
   styles: ['.spacer { flex: 1 1 auto; }'],
 })
 export class AppToolbarComponent implements OnInit {

@@ -26,7 +26,7 @@ enum NavbarSelection {
 @Component({
   selector: 'mvtool-app-navbar',
   template: `
-    <div *ngIf="!hide" class="navbar">
+    <div *ngIf="!hide" class="margin-x-half">
       <!-- Button Catalog -->
       <button
         mat-button
@@ -45,8 +45,8 @@ enum NavbarSelection {
       </button>
     </div>
   `,
+  styleUrls: ['shared/styles/spacing.scss'],
   styles: [
-    '.navbar { padding-left: 10px; }',
     '.selected { background: rgba(0,0,0,.2); }',
     'button:hover { background: rgba(0,0,0,.4); }',
   ],
