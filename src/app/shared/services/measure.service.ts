@@ -116,6 +116,19 @@ export class Measure implements IMeasure {
     return this.completion_status === 'completed';
   }
 
+  get completionStatusColor(): string | null {
+    switch (this.completion_status) {
+      case 'completed':
+        return 'primary';
+      case 'in progress':
+        return 'accent';
+      case 'open':
+        return 'warn';
+      default:
+        return null;
+    }
+  }
+
   get hasLinkedJiraIssue(): boolean {
     return this.jira_issue !== null || this.jira_issue_id !== null;
   }
