@@ -135,9 +135,10 @@
           {{ column.label }}
         </mvtool-filter-header>
       </th>
-      <td mat-cell *matCellDef="let measure">
+      <td mat-cell *matCellDef="let measure" class="indicator">
         <button
           mat-icon-button
+          [color]="measure.verifiedColor"
           (click)="
             onEditVerification(measure); $event.stopImmediatePropagation()
           "
