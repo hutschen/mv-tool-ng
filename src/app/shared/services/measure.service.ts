@@ -129,6 +129,10 @@ export class Measure implements IMeasure {
     }
   }
 
+  get verifiedColor(): string | null {
+    return this.verified ? 'primary' : 'warn';
+  }
+
   get hasLinkedJiraIssue(): boolean {
     return this.jira_issue !== null || this.jira_issue_id !== null;
   }
