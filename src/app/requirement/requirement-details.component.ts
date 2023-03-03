@@ -25,16 +25,12 @@ import {
 @Component({
   selector: 'mvtool-requirement-details',
   template: `
-    <div class="requirement-card fx-column fx-gap-15" *ngIf="requirement">
+    <div class="fx-column fx-gap-15 margin-x margin-y" *ngIf="requirement">
       <!-- Title -->
       <div class="fx-row fx-space-between-center fx-gap-5">
-        <h1 class="truncate">{{ requirement.summary }}</h1>
-        <button
-          mat-stroked-button
-          [matMenuTriggerFor]="menu"
-          class="icon-button"
-        >
-          <mat-icon>more_vert</mat-icon>
+        <h1 class="truncate no-margin">{{ requirement.summary }}</h1>
+        <button mat-stroked-button [matMenuTriggerFor]="menu">
+          <mat-icon class="no-margin">more_vert</mat-icon>
           <mat-menu #menu="matMenu">
             <button mat-menu-item (click)="onEditRequirement()">
               <mat-icon>edit_note</mat-icon>
@@ -111,12 +107,12 @@ import {
       </div>
     </div>
   `,
-  styleUrls: ['../shared/styles/flex.scss', '../shared/styles/truncate.scss'],
-  styles: [
-    'h1 { margin: 0; }',
-    '.requirement-card { margin: 20px; }',
-    '.icon-button > mat-icon { margin: 0; }',
+  styleUrls: [
+    '../shared/styles/flex.scss',
+    '../shared/styles/truncate.scss',
+    '../shared/styles/spacing.scss',
   ],
+  styles: [],
 })
 export class RequirementDetailsComponent {
   @Input() requirement: Requirement | null = null;

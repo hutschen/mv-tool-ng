@@ -21,10 +21,10 @@ import { ProjectDialogComponent } from './project-dialog.component';
 @Component({
   selector: 'mvtool-project-details',
   template: `
-    <div class="project-card fx-column fx-gap-15" *ngIf="project">
-      <!-- Title -->
-      <div class="fx-row fx-space-between-center fx-gap-5">
-        <h1 class="truncate">{{ project.name }}</h1>
+    <ng-container *ngIf="project">
+      <div class="fx-row fx-space-between-center fx-gap-5 margin-x margin-y">
+        <!-- Title -->
+        <h1 class="truncate no-margin">{{ project.name }}</h1>
         <div class="fx-row fx-gap-5">
           <mvtool-jira-project-label
             *ngIf="project.jira_project"
@@ -36,10 +36,14 @@ import { ProjectDialogComponent } from './project-dialog.component';
           </button>
         </div>
       </div>
-    </div>
+    </ng-container>
   `,
-  styleUrls: ['../shared/styles/flex.scss', '../shared/styles/truncate.scss'],
-  styles: ['h1 { margin: 0; }', '.project-card { margin: 20px; }'],
+  styleUrls: [
+    '../shared/styles/flex.scss',
+    '../shared/styles/truncate.scss',
+    '../shared/styles/spacing.scss',
+  ],
+  styles: [],
 })
 export class ProjectDetailsComponent {
   @Input() project: Project | null = null;

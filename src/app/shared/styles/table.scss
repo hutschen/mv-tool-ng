@@ -31,10 +31,10 @@ tr.mat-mdc-header-row > .mat-column-loading-indicator {
 .mat-cell {
   padding: calc($cell-spacing-y/2) calc($cell-spacing-x/2);
   &:first-child {
-    padding-left: calc($spacing-x/2);
+    padding-left: $spacing-x;
   }
   &:last-child {
-    padding-right: calc($spacing-x/2);
+    padding-right: $spacing-x;
   }
 }
 

@@ -13,7 +13,10 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-$spacing-x: 30px; // horizontal space between elements
-$spacing-y: 30px; // vertical space between elements
+$spacing-x: 20px; // horizontal space between elements
+$spacing-y: 20px; // vertical space between elements
 $cell-spacing-x: 10px; // horizontal space between table cells
 $cell-spacing-y: 10px; // vertial space between table cells
+
+$mat-toolbar-padding-x: 16px; // horizontal padding of toolbars
+$mat-button-padding-x: 8px; // horizontal padding of buttons

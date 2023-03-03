@@ -21,10 +21,10 @@ import { CatalogDialogComponent } from './catalog-dialog.component';
 @Component({
   selector: 'mvtool-catalog-details',
   template: `
-    <div class="details fx-column fx-gap-15" *ngIf="catalog">
+    <div class="fx-column fx-gap-15 margin-x margin-y" *ngIf="catalog">
       <!-- Title -->
       <div class="fx-row fx-space-between-center fx-gap-5">
-        <h1 class="truncate">{{ catalog.title }}</h1>
+        <h1 class="truncate no-margin">{{ catalog.title }}</h1>
         <div class="fx-row fx-gap-5">
           <button mat-stroked-button (click)="onEditCatalog()">
             <mat-icon>edit_note</mat-icon>
@@ -34,8 +34,12 @@ import { CatalogDialogComponent } from './catalog-dialog.component';
       </div>
     </div>
   `,
-  styleUrls: ['../shared/styles/flex.scss', '../shared/styles/truncate.scss'],
-  styles: ['h1 { margin: 0; }', '.details { margin: 20px; }'],
+  styleUrls: [
+    '../shared/styles/flex.scss',
+    '../shared/styles/truncate.scss',
+    '../shared/styles/spacing.scss',
+  ],
+  styles: [],
 })
 export class CatalogDetailsComponent {
   @Input() catalog: Catalog | null = null;
