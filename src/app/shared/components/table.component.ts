@@ -36,7 +36,7 @@ import { DataColumn, DataFrame, IDataItem } from '../data/data';
   ],
   styles: [
     '.clickable-row { cursor: pointer; }',
-    '.clickable-row:hover { background: rgba(0,0,0,0.04); }',
+    '.clickable-row:hover { background-color: rgba(0,0,0,0.04) !important; }',
   ],
 })
 export class TableComponent<T extends IDataItem> implements AfterContentInit {
