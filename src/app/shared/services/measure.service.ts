@@ -21,13 +21,13 @@ import { IDocument, Document } from './document.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IJiraIssue } from './jira-issue.service';
 import {
+  ComplianceStatus,
   IRequirement,
   Requirement,
   RequirementService,
 } from './requirement.service';
 import { IUploadState, UploadService } from './upload.service';
 
-export type ComplianceStatus = 'C' | 'PC' | 'NC' | 'N/A';
 export type CompletionStatus = 'open' | 'in progress' | 'completed';
 export type VerificationStatus =
   | 'verified'
