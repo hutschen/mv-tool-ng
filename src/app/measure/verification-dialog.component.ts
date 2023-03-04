@@ -70,6 +70,23 @@ export class VerificationDialogService {
           </mat-select>
         </mat-form-field>
 
+        <!-- Verification status -->
+        <mat-form-field appearance="fill">
+          <mat-label>Verification status</mat-label>
+          <mat-select
+            name="verificationStatus"
+            [(ngModel)]="measureInput.verification_status"
+          >
+            <mat-option [value]="null">None</mat-option>
+            <mat-option
+              *ngFor="let status of verificationStatuses"
+              [value]="status"
+            >
+              {{ status }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
         <!-- Verification comment -->
         <mat-form-field appearance="fill">
           <mat-label>Verification comment</mat-label>
@@ -79,13 +96,6 @@ export class VerificationDialogService {
             [(ngModel)]="measureInput.verification_comment"
           ></textarea>
         </mat-form-field>
-
-        <!-- Vefification status -->
-        <p>
-          <mat-checkbox name="verified" [(ngModel)]="measureInput.verified">
-            Verified
-          </mat-checkbox>
-        </p>
       </div>
     </mvtool-create-edit-dialog>
   `,
@@ -94,6 +104,7 @@ export class VerificationDialogService {
 })
 export class VerificationDialogComponent {
   verificationMethods = ['I', 'T', 'R'];
+  verificationStatuses = ['verified', 'partially verified', 'not verified'];
   measureInput: IMeasureInput;
 
   constructor(
