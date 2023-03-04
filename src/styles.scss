@@ -54,7 +54,7 @@ $dark-theme: mat.define-dark-theme(
 
 // Define indicator light theme
 $indicator-light-primary: mat.define-palette(mat.$teal-palette);
-$indicator-light-accent: mat.define-palette(mat.$orange-palette);
+$indicator-light-accent: $light-primary;
 $indicator-light-warn: $light-primary;
 $indicator-light-theme: mat.define-light-theme(
   (
@@ -68,7 +68,7 @@ $indicator-light-theme: mat.define-light-theme(
 
 // Define indicator dark theme
 $indicator-dark-primary: mat.define-palette(mat.$lime-palette);
-$indicator-dark-accent: mat.define-palette(mat.$amber-palette);
+$indicator-dark-accent: $dark-primary;
 $indicator-dark-warn: $dark-primary;
 $indicator-dark-theme: mat.define-dark-theme(
   (
