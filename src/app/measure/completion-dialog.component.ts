@@ -21,6 +21,7 @@ import {
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import {
+  CompletionStatus,
   IMeasureInput,
   Measure,
   MeasureService,
@@ -59,10 +60,10 @@ export class CompletionDialogService {
           <mat-select name="completionStatus" [(ngModel)]="completionStatus">
             <mat-option [value]="null">None</mat-option>
             <mat-option
-              *ngFor="let completionStatus of completionStates"
-              [value]="completionStatus"
+              *ngFor="let status of completionStatuses"
+              [value]="status"
             >
-              {{ completionStatus | titlecase }}
+              {{ status | titlecase }}
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -74,7 +75,7 @@ export class CompletionDialogService {
             name="completionComment"
             matInput
             [(ngModel)]="measureInput.completion_comment"
-            [disabled]="completionCommentDisabled"
+            [disabled]="!completionStatus"
           ></textarea>
         </mat-form-field>
       </div>
@@ -84,7 +85,7 @@ export class CompletionDialogService {
   styles: ['textarea { min-height: 100px; }'],
 })
 export class CompletionDialogComponent {
-  completionStates = ['open', 'in progress', 'completed'];
+  completionStatuses = ['open', 'in progress', 'completed'];
   measureInput: IMeasureInput;
 
   constructor(
@@ -95,17 +96,13 @@ export class CompletionDialogComponent {
     this.measureInput = this._measure.toMeasureInput();
   }
 
-  get completionCommentDisabled(): boolean {
-    return !this.measureInput.completion_status;
-  }
-
-  get completionStatus(): string | null {
+  get completionStatus(): CompletionStatus | null {
     return this.measureInput.completion_status ?? null;
   }
 
-  set completionStatus(value: string | null) {
+  set completionStatus(value: CompletionStatus | null) {
     this.measureInput.completion_status = value;
-    if (this.completionCommentDisabled) {
+    if (!value) {
       this.measureInput.completion_comment = null;
     }
   }

@@ -27,16 +27,23 @@ import {
 } from './requirement.service';
 import { IUploadState, UploadService } from './upload.service';
 
+export type ComplianceStatus = 'C' | 'PC' | 'NC' | 'N/A';
+export type CompletionStatus = 'open' | 'in progress' | 'completed';
+export type VerificationStatus =
+  | 'verified'
+  | 'partially verified'
+  | 'not verified';
+
 export interface IMeasureInput {
   reference?: string | null;
   summary: string;
   description?: string | null;
-  compliance_status?: string | null;
+  compliance_status?: ComplianceStatus | null;
   compliance_comment?: string | null;
-  completion_status?: string | null;
+  completion_status?: CompletionStatus | null;
   completion_comment?: string | null;
   verification_method?: string | null;
-  verification_status?: string | null;
+  verification_status?: VerificationStatus | null;
   verification_comment?: string | null;
   jira_issue_id?: string | null;
   document_id?: number | null;
@@ -47,12 +54,12 @@ export interface IMeasure {
   reference?: string | null;
   summary: string;
   description?: string | null;
-  compliance_status?: string | null;
+  compliance_status?: ComplianceStatus | null;
   compliance_comment?: string | null;
-  completion_status?: string | null;
+  completion_status?: CompletionStatus | null;
   completion_comment?: string | null;
   verification_method?: string | null;
-  verification_status?: string | null;
+  verification_status?: VerificationStatus | null;
   verification_comment?: string | null;
   jira_issue_id?: string | null;
   jira_issue?: IJiraIssue | null;
@@ -65,12 +72,12 @@ export class Measure implements IMeasure {
   reference: string | null;
   summary: string;
   description: string | null;
-  compliance_status: string | null;
+  compliance_status: ComplianceStatus | null;
   compliance_comment: string | null;
-  completion_status: string | null;
+  completion_status: CompletionStatus | null;
   completion_comment: string | null;
   verification_method: string | null;
-  verification_status: string | null;
+  verification_status: VerificationStatus | null;
   verification_comment: string | null;
   jira_issue_id: string | null;
   jira_issue: IJiraIssue | null;
