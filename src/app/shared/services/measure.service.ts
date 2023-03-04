@@ -29,6 +29,7 @@ import {
 import { IUploadState, UploadService } from './upload.service';
 
 export type CompletionStatus = 'open' | 'in progress' | 'completed';
+export type VerificationMethod = 'R' | 'T' | 'I';
 export type VerificationStatus =
   | 'verified'
   | 'partially verified'
@@ -42,7 +43,7 @@ export interface IMeasureInput {
   compliance_comment?: string | null;
   completion_status?: CompletionStatus | null;
   completion_comment?: string | null;
-  verification_method?: string | null;
+  verification_method?: VerificationMethod | null;
   verification_status?: VerificationStatus | null;
   verification_comment?: string | null;
   jira_issue_id?: string | null;
@@ -58,7 +59,7 @@ export interface IMeasure {
   compliance_comment?: string | null;
   completion_status?: CompletionStatus | null;
   completion_comment?: string | null;
-  verification_method?: string | null;
+  verification_method?: VerificationMethod | null;
   verification_status?: VerificationStatus | null;
   verification_comment?: string | null;
   jira_issue_id?: string | null;
@@ -76,7 +77,7 @@ export class Measure implements IMeasure {
   compliance_comment: string | null;
   completion_status: CompletionStatus | null;
   completion_comment: string | null;
-  verification_method: string | null;
+  verification_method: VerificationMethod | null;
   verification_status: VerificationStatus | null;
   verification_comment: string | null;
   jira_issue_id: string | null;

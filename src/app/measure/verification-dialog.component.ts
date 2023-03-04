@@ -24,6 +24,7 @@ import {
   IMeasureInput,
   Measure,
   MeasureService,
+  VerificationMethod,
 } from '../shared/services/measure.service';
 
 @Injectable({
@@ -58,7 +59,7 @@ export class VerificationDialogService {
           <mat-label>Verification method</mat-label>
           <mat-select
             name="verificationMethod"
-            [(ngModel)]="measureInput.verification_method"
+            [(ngModel)]="verificationMethod"
           >
             <mat-option [value]="null">None</mat-option>
             <mat-option
@@ -76,13 +77,14 @@ export class VerificationDialogService {
           <mat-select
             name="verificationStatus"
             [(ngModel)]="measureInput.verification_status"
+            [disabled]="!verificationMethod"
           >
             <mat-option [value]="null">None</mat-option>
             <mat-option
               *ngFor="let status of verificationStatuses"
               [value]="status"
             >
-              {{ status }}
+              {{ status | titlecase }}
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -94,6 +96,7 @@ export class VerificationDialogService {
             matInput
             name="verificationComment"
             [(ngModel)]="measureInput.verification_comment"
+            [disabled]="!verificationMethod"
           ></textarea>
         </mat-form-field>
       </div>
@@ -103,7 +106,7 @@ export class VerificationDialogService {
   styles: ['textarea { min-height: 100px; }'],
 })
 export class VerificationDialogComponent {
-  verificationMethods = ['I', 'T', 'R'];
+  verificationMethods = ['R', 'T', 'I'];
   verificationStatuses = ['verified', 'partially verified', 'not verified'];
   measureInput: IMeasureInput;
 
@@ -113,6 +116,18 @@ export class VerificationDialogComponent {
     @Inject(MAT_DIALOG_DATA) protected _measure: Measure
   ) {
     this.measureInput = this._measure.toMeasureInput();
+  }
+
+  set verificationMethod(value: VerificationMethod | null) {
+    this.measureInput.verification_method = value;
+    if (!value) {
+      this.measureInput.verification_status = null;
+      this.measureInput.verification_comment = null;
+    }
+  }
+
+  get verificationMethod(): VerificationMethod | null {
+    return this.measureInput.verification_method ?? null;
   }
 
   onSave(form: NgForm): void {
