@@ -86,6 +86,19 @@ export class Project implements IProject {
       return Math.round(this.verification_progress * 100);
     }
   }
+
+  get completionProgressColor(): string | null {
+    switch (this.completion_progress) {
+      case null:
+        return null;
+      case 0:
+        return 'warn';
+      case 1:
+        return 'primary';
+      default:
+        return 'accent';
+    }
+  }
 }
 
 export interface IProjectRepresentation {
