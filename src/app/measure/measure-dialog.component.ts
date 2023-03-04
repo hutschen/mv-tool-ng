@@ -60,10 +60,6 @@ export class MeasureDialogComponent {
   requirement: Requirement;
   measureInput: IMeasureInput = {
     summary: '',
-    description: null,
-    verified: false,
-    jira_issue_id: null,
-    document_id: null,
   };
 
   constructor(

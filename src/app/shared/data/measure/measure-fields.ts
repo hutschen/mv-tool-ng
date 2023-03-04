@@ -98,13 +98,3 @@ export class JiraIssueField extends DataField<Measure, IJiraIssue | null> {
     }
   }
 }
-
-export class VerifiedField extends DataField<Measure, boolean> {
-  constructor(optional: boolean = true) {
-    super('verified', 'Verified', optional);
-  }
-
-  override toStr(data: Measure): string {
-    return this.toValue(data) ? 'Verified' : 'Not verified';
-  }
-}

@@ -25,13 +25,15 @@ import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
 import { IUploadState, UploadService } from './upload.service';
 
+export type ComplianceStatus = 'C' | 'PC' | 'NC' | 'N/A';
+
 export interface IRequirementInput {
   reference?: string | null;
   summary: string;
   description?: string | null;
   target_object?: string | null;
   milestone?: string | null;
-  compliance_status?: string | null;
+  compliance_status?: ComplianceStatus | null;
   compliance_comment?: string | null;
   catalog_requirement_id?: number | null;
 }
@@ -43,8 +45,8 @@ export interface IRequirement {
   description?: string | null;
   target_object?: string | null;
   milestone?: string | null;
-  compliance_status?: string | null;
-  compliance_status_hint?: string | null;
+  compliance_status?: ComplianceStatus | null;
+  compliance_status_hint?: ComplianceStatus | null;
   compliance_comment?: string | null;
   project: IProject;
   catalog_requirement?: ICatalogRequirement | null;
@@ -59,8 +61,8 @@ export class Requirement implements IRequirement {
   description: string | null;
   target_object: string | null;
   milestone: string | null;
-  compliance_status: string | null;
-  compliance_status_hint: string | null;
+  compliance_status: ComplianceStatus | null;
+  compliance_status_hint: ComplianceStatus | null;
   compliance_comment: string | null;
   project: Project;
   catalog_requirement: CatalogRequirement | null;

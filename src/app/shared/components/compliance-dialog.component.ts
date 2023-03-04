@@ -26,6 +26,7 @@ import {
   MeasureService,
 } from '../services/measure.service';
 import {
+  ComplianceStatus,
   IRequirementInput,
   Requirement,
   RequirementService,
@@ -70,28 +71,24 @@ export class ComplianceDialogComponent {
       this.itemInput = _item.toMeasureInput();
     }
 
-    // Initially set the compliance status the inferred value
+    // Initially set the compliance status to the inferred value
     if (!this.complianceStatus && this.complianceStatusHint) {
       this.complianceStatus = this.complianceStatusHint;
     }
   }
 
-  get complianceCommentDisabled(): boolean {
-    return !this.itemInput.compliance_status;
-  }
-
-  set complianceStatus(value: string | null | undefined) {
+  set complianceStatus(value: ComplianceStatus | null) {
     this.itemInput.compliance_status = value;
-    if (this.complianceCommentDisabled) {
+    if (!value) {
       this.itemInput.compliance_comment = null;
     }
   }
 
-  get complianceStatus(): string | null | undefined {
-    return this.itemInput.compliance_status;
+  get complianceStatus(): ComplianceStatus | null {
+    return this.itemInput.compliance_status ?? null;
   }
 
-  get complianceStatusHint(): string | null {
+  get complianceStatusHint(): ComplianceStatus | null {
     if (this._item instanceof Requirement) {
       return this._item.compliance_status_hint;
     } else {
