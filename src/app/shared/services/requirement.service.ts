@@ -114,6 +114,19 @@ export class Requirement implements IRequirement {
     }
   }
 
+  get completionProgressColor(): string | null {
+    switch (this.completion_progress) {
+      case null:
+        return null;
+      case 0:
+        return 'warn';
+      case 1:
+        return 'primary';
+      default:
+        return 'accent';
+    }
+  }
+
   get gsAbsicherung(): string | null {
     return this.catalog_requirement?.gs_absicherung || null;
   }

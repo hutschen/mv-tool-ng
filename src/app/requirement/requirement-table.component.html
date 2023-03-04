@@ -89,11 +89,13 @@
         mat-cell
         *matCellDef="let data"
         [matTooltip]="column.field.toStr(data)"
+        class="indicator"
       >
         <mat-progress-bar
           *ngIf="column.field.toBool(data)"
           mode="determinate"
           [value]="column.field.toValue(data)"
+          [color]="data.completionProgressColor"
         >
         </mat-progress-bar>
       </td>
