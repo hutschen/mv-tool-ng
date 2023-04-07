@@ -18,7 +18,7 @@ import { map, Observable } from 'rxjs';
 import { CRUDService, IPage } from './crud.service';
 import { IQueryParams } from './query-params.service';
 import { IDocument, Document } from './document.service';
-import { DownloadService, IDownloadState } from './download.service';
+import { DownloadService } from './download.service';
 import { IJiraIssue } from './jira-issue.service';
 import {
   ComplianceStatus,
@@ -26,7 +26,7 @@ import {
   Requirement,
   RequirementService,
 } from './requirement.service';
-import { IUploadState, UploadService } from './upload.service';
+import { UploadService } from './upload.service';
 
 export type CompletionStatus = 'open' | 'in progress' | 'completed';
 export type VerificationMethod = 'R' | 'T' | 'I';
@@ -240,16 +240,11 @@ export class MeasureService {
     return this._crud_str.query('measure/references', params);
   }
 
-  downloadMeasureExcel(requirementId: number): Observable<IDownloadState> {
-    const url = `${this.getMeasuresUrl(requirementId)}/excel`;
-    return this._download.download(url);
+  downloadMeasureExcel(params: IQueryParams = {}) {
+    return this._download.download('excel/measures', params);
   }
 
-  uploadMeasureExcel(
-    requirementId: number,
-    file: File
-  ): Observable<IUploadState> {
-    const url = `${this.getMeasuresUrl(requirementId)}/excel`;
-    return this._upload.upload(url, file);
+  uploadMeasureExcel(file: File, params: IQueryParams = {}) {
+    return this._upload.upload('excel/measures', file, params);
   }
 }
