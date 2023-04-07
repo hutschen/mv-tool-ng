@@ -135,7 +135,14 @@ export class MeasureTableComponent implements OnInit {
   async onExportMeasures(): Promise<void> {
     if (this.requirement) {
       const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._measureService.downloadMeasureExcel(this.requirement.id),
+        this._measureService.downloadMeasureExcel({
+          requirement_ids: this.requirement.id,
+          // TODO: This is a quick solution to get the query params.
+          // In future, query params should be cached to avoid running the pipe
+          ...(await firstValueFrom(this.dataFrame.search.queryParams$)),
+          ...(await firstValueFrom(this.dataFrame.columns.filterQueryParams$)),
+          ...(await firstValueFrom(this.dataFrame.sort.queryParams$)),
+        }),
         'measure.xlsx'
       );
       await firstValueFrom(dialogRef.afterClosed());
@@ -148,10 +155,9 @@ export class MeasureTableComponent implements OnInit {
     const dialogRef = this._uploadDialogService.openUploadDialog(
       (file: File) => {
         if (this.requirement) {
-          return this._measureService.uploadMeasureExcel(
-            this.requirement.id,
-            file
-          );
+          return this._measureService.uploadMeasureExcel(file, {
+            fallback_requirement_id: this.requirement.id,
+          });
         } else {
           throw new Error('Requirement is undefined');
         }
