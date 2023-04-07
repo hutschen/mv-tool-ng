@@ -99,7 +99,14 @@ export class DocumentTableComponent implements OnInit {
   async onExportDocuments(): Promise<void> {
     if (this.project) {
       const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._documentService.downloadDocumentExcel(this.project.id),
+        this._documentService.downloadDocumentExcel({
+          project_ids: this.project.id,
+          // TODO: This is a quick solution to get the query params.
+          // In future, query params should be cached to avoid running the pipe
+          ...(await firstValueFrom(this.dataFrame.search.queryParams$)),
+          ...(await firstValueFrom(this.dataFrame.columns.filterQueryParams$)),
+          ...(await firstValueFrom(this.dataFrame.sort.queryParams$)),
+        }),
         'documents.xlsx'
       );
       await firstValueFrom(dialogRef.afterClosed());
@@ -112,10 +119,9 @@ export class DocumentTableComponent implements OnInit {
     const dialogRef = this._uploadDialogService.openUploadDialog(
       (file: File) => {
         if (this.project) {
-          return this._documentService.uploadDocumentExcel(
-            this.project.id,
-            file
-          );
+          return this._documentService.uploadDocumentExcel(file, {
+            fallback_project_id: this.project.id,
+          });
         } else {
           throw new Error('Project is undefined');
         }
