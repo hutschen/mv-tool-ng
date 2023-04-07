@@ -133,7 +133,14 @@ export class RequirementTableComponent implements OnInit {
   async onExportRequirementsExcel(): Promise<void> {
     if (this.project) {
       const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._requirementService.downloadRequirementsExcel(this.project.id),
+        this._requirementService.downloadRequirementsExcel({
+          project_ids: this.project.id,
+          // TODO: This is a quick solution to get the query params.
+          // In future, query params should be cached to avoid running the pipe
+          ...(await firstValueFrom(this.dataFrame.search.queryParams$)),
+          ...(await firstValueFrom(this.dataFrame.columns.filterQueryParams$)),
+          ...(await firstValueFrom(this.dataFrame.sort.queryParams$)),
+        }),
         'requirements.xlsx'
       );
       await firstValueFrom(dialogRef.afterClosed());
@@ -146,10 +153,9 @@ export class RequirementTableComponent implements OnInit {
     const dialogRef = this._uploadDialogService.openUploadDialog(
       (file: File) => {
         if (this.project) {
-          return this._requirementService.uploadRequirementsExcel(
-            this.project.id,
-            file
-          );
+          return this._requirementService.uploadRequirementsExcel(file, {
+            fallback_project_id: this.project.id,
+          });
         } else {
           throw new Error('Project is undefined');
         }
