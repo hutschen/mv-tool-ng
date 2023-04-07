@@ -16,10 +16,10 @@
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { CRUDService, IPage } from './crud.service';
-import { DownloadService, IDownloadState } from './download.service';
+import { DownloadService } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
 import { IQueryParams } from './query-params.service';
-import { IUploadState, UploadService } from './upload.service';
+import { UploadService } from './upload.service';
 
 export interface IDocumentInput {
   reference: string | null;
@@ -140,16 +140,11 @@ export class DocumentService {
     return this._crud_repr.query('document/representations', params);
   }
 
-  downloadDocumentExcel(project_id: number): Observable<IDownloadState> {
-    const url = `${this.getDocumentsUrl(project_id)}/excel`;
-    return this._download.download(url);
+  downloadDocumentExcel(params: IQueryParams = {}) {
+    return this._download.download('excel/documents', params);
   }
 
-  uploadDocumentExcel(
-    project_id: number,
-    file: File
-  ): Observable<IUploadState> {
-    const url = `${this.getDocumentsUrl(project_id)}/excel`;
-    return this._upload.upload(url, file);
+  uploadDocumentExcel(file: File, params: IQueryParams = {}) {
+    return this._upload.upload('excel/documents', file, params);
   }
 }
