@@ -240,11 +240,6 @@ export class MeasureService {
     return this._crud_str.query('measure/references', params);
   }
 
-  downloadProjectMeasureExcel(projectId: number): Observable<IDownloadState> {
-    const url = `projects/${projectId}/measures/excel`;
-    return this._download.download(url);
-  }
-
   downloadMeasureExcel(requirementId: number): Observable<IDownloadState> {
     const url = `${this.getMeasuresUrl(requirementId)}/excel`;
     return this._download.download(url);

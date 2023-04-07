@@ -140,7 +140,7 @@ export class ProjectMeasureTableComponent implements OnInit {
   async onExportMeasures(): Promise<void> {
     if (this.project) {
       const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._measureService.downloadProjectMeasureExcel(this.project.id),
+        this._measureService.downloadMeasureExcel(this.project.id),
         'measure.xlsx'
       );
       await firstValueFrom(dialogRef.afterClosed());
