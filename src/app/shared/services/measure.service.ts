@@ -150,6 +150,10 @@ export class Measure implements IMeasure {
     }
   }
 
+  get verified(): boolean {
+    return this.verification_status === 'verified';
+  }
+
   get hasLinkedJiraIssue(): boolean {
     return this.jira_issue !== null || this.jira_issue_id !== null;
   }
