@@ -19,6 +19,8 @@ import { map } from 'rxjs';
 import { CRUDService, IPage } from './crud.service';
 import { IJiraProject } from './jira-project.service';
 import { IQueryParams } from './query-params.service';
+import { DownloadService } from './download.service';
+import { UploadService } from './upload.service';
 
 export interface IProjectInput {
   name: string;
@@ -113,7 +115,9 @@ export class ProjectService {
   constructor(
     protected _crud: CRUDService<IProjectInput, IProject>,
     protected _crud_str: CRUDService<null, string>,
-    protected _crud_repr: CRUDService<null, IProjectRepresentation>
+    protected _crud_repr: CRUDService<null, IProjectRepresentation>,
+    protected _download: DownloadService,
+    protected _upload: UploadService
   ) {}
 
   getProjectsUrl(): string {
@@ -172,5 +176,13 @@ export class ProjectService {
 
   getProjectRepresentations(params: IQueryParams = {}) {
     return this._crud_repr.query('project/representations', params);
+  }
+
+  downloadProjectsExcel(params: IQueryParams = {}) {
+    return this._download.download('excel/projects', params);
+  }
+
+  uploadProjectsExcel(file: File, params: IQueryParams = {}) {
+    return this._upload.upload('excel/projects', file, params);
   }
 }
