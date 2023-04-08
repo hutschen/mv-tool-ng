@@ -32,6 +32,7 @@ import { Project } from '../shared/services/project.service';
 import { QueryParamsService } from '../shared/services/query-params.service';
 import { RequirementService } from '../shared/services/requirement.service';
 import { TargetObjectService } from '../shared/services/target-object.service';
+import { UploadDialogService } from '../shared/components/upload-dialog.component';
 
 @Component({
   selector: 'mvtool-project-measure-table',
@@ -61,6 +62,7 @@ export class ProjectMeasureTableComponent implements OnInit {
     protected _completionDialogService: CompletionDialogService,
     protected _verificationDialogService: VerificationDialogService,
     protected _downloadDialogService: DownloadDialogService,
+    protected _uploadDialogService: UploadDialogService,
     protected _confirmDialogService: ConfirmDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService
   ) {}
@@ -141,7 +143,12 @@ export class ProjectMeasureTableComponent implements OnInit {
     if (this.project) {
       const dialogRef = this._downloadDialogService.openDownloadDialog(
         this._measureService.downloadMeasureExcel({
-          requirement_ids: this.project.id,
+          project_ids: this.project.id,
+          // TODO: This is a quick solution to get the query params.
+          // In future, query params should be cached to avoid running the pipe
+          ...(await firstValueFrom(this.dataFrame.search.queryParams$)),
+          ...(await firstValueFrom(this.dataFrame.columns.filterQueryParams$)),
+          ...(await firstValueFrom(this.dataFrame.sort.queryParams$)),
         }),
         'measure.xlsx'
       );
