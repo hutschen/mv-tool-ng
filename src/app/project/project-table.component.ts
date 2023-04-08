@@ -102,7 +102,10 @@ export class ProjectTableComponent implements OnInit {
         return this._projectService.uploadProjectsExcel(file);
       }
     );
-    await firstValueFrom(dialogRef.afterClosed());
+    const uploadState = await firstValueFrom(dialogRef.afterClosed());
+    if (uploadState && uploadState.state === 'done') {
+      this.dataFrame.reload();
+    }
   }
 
   onHideColumns() {

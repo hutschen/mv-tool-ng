@@ -128,7 +128,7 @@ export class DocumentTableComponent implements OnInit {
       }
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());
-    if (uploadState && uploadState.state == 'done') {
+    if (uploadState && uploadState.state === 'done') {
       this.dataFrame.reload();
     }
   }

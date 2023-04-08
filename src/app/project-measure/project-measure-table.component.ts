@@ -32,7 +32,6 @@ import { Project } from '../shared/services/project.service';
 import { QueryParamsService } from '../shared/services/query-params.service';
 import { RequirementService } from '../shared/services/requirement.service';
 import { TargetObjectService } from '../shared/services/target-object.service';
-import { UploadDialogService } from '../shared/components/upload-dialog.component';
 
 @Component({
   selector: 'mvtool-project-measure-table',
@@ -62,7 +61,6 @@ export class ProjectMeasureTableComponent implements OnInit {
     protected _completionDialogService: CompletionDialogService,
     protected _verificationDialogService: VerificationDialogService,
     protected _downloadDialogService: DownloadDialogService,
-    protected _uploadDialogService: UploadDialogService,
     protected _confirmDialogService: ConfirmDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService
   ) {}

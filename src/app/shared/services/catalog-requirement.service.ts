@@ -180,6 +180,10 @@ export class CatalogRequirementService {
     return this._crud_repr.query('catalog-requirement/representations', params);
   }
 
+  downloadCatalogRequirementExcel(params: IQueryParams = {}) {
+    return this._download.download('excel/catalog-requirements', params);
+  }
+
   uploadCatalogRequirementExcel(file: File, params: IQueryParams = {}) {
     return this._upload.upload('excel/catalog-requirements', file, params);
   }
