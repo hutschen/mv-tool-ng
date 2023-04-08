@@ -23,6 +23,7 @@ import { Injectable } from '@angular/core';
 import { Observable, scan } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
+import { IQueryParams } from './query-params.service';
 
 export interface IDownloadState {
   state: 'pending' | 'in_progress' | 'done';
@@ -68,7 +69,10 @@ export class DownloadService {
     }
   }
 
-  download(relativeUrl: string): Observable<IDownloadState> {
+  download(
+    relativeUrl: string,
+    params: IQueryParams = {}
+  ): Observable<IDownloadState> {
     const initialState: IDownloadState = {
       state: 'pending',
       progress: 0,
@@ -82,6 +86,7 @@ export class DownloadService {
         }),
         responseType: 'blob',
         observe: 'events',
+        params: params,
         reportProgress: true,
       })
       .pipe(scan(this._caculateState, initialState));

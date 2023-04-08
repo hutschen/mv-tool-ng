@@ -140,7 +140,14 @@ export class ProjectMeasureTableComponent implements OnInit {
   async onExportMeasures(): Promise<void> {
     if (this.project) {
       const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._measureService.downloadProjectMeasureExcel(this.project.id),
+        this._measureService.downloadMeasureExcel({
+          project_ids: this.project.id,
+          // TODO: This is a quick solution to get the query params.
+          // In future, query params should be cached to avoid running the pipe
+          ...(await firstValueFrom(this.dataFrame.search.queryParams$)),
+          ...(await firstValueFrom(this.dataFrame.columns.filterQueryParams$)),
+          ...(await firstValueFrom(this.dataFrame.sort.queryParams$)),
+        }),
         'measure.xlsx'
       );
       await firstValueFrom(dialogRef.afterClosed());

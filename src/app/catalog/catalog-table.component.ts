@@ -21,6 +21,8 @@ import { CatalogDialogService } from './catalog-dialog.component';
 import { CatalogDataFrame } from '../shared/data/catalog/catalog-frame';
 import { QueryParamsService } from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
+import { DownloadDialogService } from '../shared/components/download-dialog.component';
+import { UploadDialogService } from '../shared/components/upload-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-table',
@@ -40,6 +42,8 @@ export class CatalogTableComponent implements OnInit {
     protected _queryParamsService: QueryParamsService,
     protected _catalogService: CatalogService,
     protected _catalogDialogService: CatalogDialogService,
+    protected _downloadDialogService: DownloadDialogService,
+    protected _uploadDialogService: UploadDialogService,
     protected _confirmDialogService: ConfirmDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService
   ) {}
@@ -79,6 +83,32 @@ export class CatalogTableComponent implements OnInit {
     if (confirmed) {
       await firstValueFrom(this._catalogService.deleteCatalog(catalog.id));
       this.dataFrame.removeItem(catalog);
+    }
+  }
+
+  async onExportCatalogs(): Promise<void> {
+    const dialogRef = this._downloadDialogService.openDownloadDialog(
+      this._catalogService.downloadCatalogExcel({
+        // TODO: This is a quick solution to get the query params.
+        // In future, query params should be cached to avoid running the pipe
+        ...(await firstValueFrom(this.dataFrame.search.queryParams$)),
+        ...(await firstValueFrom(this.dataFrame.columns.filterQueryParams$)),
+        ...(await firstValueFrom(this.dataFrame.sort.queryParams$)),
+      }),
+      'catalogs.xlsx'
+    );
+    await firstValueFrom(dialogRef.afterClosed());
+  }
+
+  async onImportCatalogs(): Promise<void> {
+    const dialogRef = this._uploadDialogService.openUploadDialog(
+      (file: File) => {
+        return this._catalogService.uploadCatalogExcel(file);
+      }
+    );
+    const uploadState = await firstValueFrom(dialogRef.afterClosed());
+    if (uploadState && uploadState.state === 'done') {
+      this.dataFrame.reload();
     }
   }
 

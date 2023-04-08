@@ -19,6 +19,8 @@
   <mvtool-table-toolbar
     (refresh)="this.dataFrame.reload()"
     (create)="onCreateDocument()"
+    (upload)="onImportDocuments()"
+    (download)="onExportDocuments()"
     [(search)]="dataFrame.search.pattern"
     searchLabel="Search Documents"
     createLabel="Create Document"

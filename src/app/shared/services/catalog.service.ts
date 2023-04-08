@@ -17,6 +17,8 @@ import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { CRUDService, IPage } from './crud.service';
 import { IQueryParams } from './query-params.service';
+import { DownloadService } from './download.service';
+import { UploadService } from './upload.service';
 
 export interface ICatalogInput {
   reference: string | null;
@@ -63,7 +65,9 @@ export class CatalogService {
   constructor(
     protected _crud_catalog: CRUDService<ICatalogInput, ICatalog>,
     protected _crud_str: CRUDService<null, string>,
-    protected _crud_repr: CRUDService<null, ICatalogRepresentation>
+    protected _crud_repr: CRUDService<null, ICatalogRepresentation>,
+    protected _download: DownloadService,
+    protected _upload: UploadService
   ) {}
 
   getCatalogsUrl(): string {
@@ -126,5 +130,13 @@ export class CatalogService {
 
   getCatalogRepresentations(params: IQueryParams = {}) {
     return this._crud_repr.query('catalog/representations', params);
+  }
+
+  downloadCatalogExcel(params: IQueryParams = {}) {
+    return this._download.download('excel/catalogs', params);
+  }
+
+  uploadCatalogExcel(file: File, params: IQueryParams = {}) {
+    return this._upload.upload('excel/catalogs', file, params);
   }
 }

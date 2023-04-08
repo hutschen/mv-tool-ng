@@ -21,6 +21,8 @@ import { ProjectDialogService } from './project-dialog.component';
 import { ProjectDataFrame } from '../shared/data/project/project-frame';
 import { QueryParamsService } from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
+import { DownloadDialogService } from '../shared/components/download-dialog.component';
+import { UploadDialogService } from '../shared/components/upload-dialog.component';
 
 @Component({
   selector: 'mvtool-project-table',
@@ -36,6 +38,8 @@ export class ProjectTableComponent implements OnInit {
     protected _queryParamsService: QueryParamsService,
     protected _projectService: ProjectService,
     protected _projectDialogService: ProjectDialogService,
+    protected _downloadDialogService: DownloadDialogService,
+    protected _uploadDialogService: UploadDialogService,
     protected _confirmDialogService: ConfirmDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService
   ) {}
@@ -75,6 +79,32 @@ export class ProjectTableComponent implements OnInit {
     if (confirmed) {
       await firstValueFrom(this._projectService.deleteProject(project.id));
       this.dataFrame.removeItem(project);
+    }
+  }
+
+  async onExportProjectsExcel(): Promise<void> {
+    const dialogRef = this._downloadDialogService.openDownloadDialog(
+      this._projectService.downloadProjectsExcel({
+        // TODO: This is a quick solution to get the query params
+        // In future, query params should be cached to avoid running the pipe
+        ...(await firstValueFrom(this.dataFrame.search.queryParams$)),
+        ...(await firstValueFrom(this.dataFrame.columns.filterQueryParams$)),
+        ...(await firstValueFrom(this.dataFrame.sort.queryParams$)),
+      }),
+      'projects.xlsx'
+    );
+    await firstValueFrom(dialogRef.afterClosed());
+  }
+
+  async onImportProjectsExcel(): Promise<void> {
+    const dialogRef = this._uploadDialogService.openUploadDialog(
+      (file: File) => {
+        return this._projectService.uploadProjectsExcel(file);
+      }
+    );
+    const uploadState = await firstValueFrom(dialogRef.afterClosed());
+    if (uploadState && uploadState.state === 'done') {
+      this.dataFrame.reload();
     }
   }
 

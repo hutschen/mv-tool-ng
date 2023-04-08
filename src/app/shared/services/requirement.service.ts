@@ -233,16 +233,16 @@ export class RequirementService {
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }
 
-  downloadRequirementsExcel(projectId: number): Observable<IDownloadState> {
-    const url = `${this.getRequirementsUrl(projectId)}/excel`;
-    return this._download.download(url);
+  downloadRequirementsExcel(
+    params: IQueryParams = {}
+  ): Observable<IDownloadState> {
+    return this._download.download('excel/requirements', params);
   }
 
   uploadRequirementsExcel(
-    projectId: number,
-    file: File
+    file: File,
+    params: IQueryParams = {}
   ): Observable<IUploadState> {
-    const url = `${this.getRequirementsUrl(projectId)}/excel`;
-    return this._upload.upload(url, file);
+    return this._upload.upload('excel/requirements', file, params);
   }
 }

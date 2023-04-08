@@ -20,6 +20,8 @@
   <mvtool-table-toolbar
     (refresh)="this.dataFrame.reload()"
     (create)="onCreateProject()"
+    (upload)="onImportProjectsExcel()"
+    (download)="onExportProjectsExcel()"
     [(search)]="dataFrame.search.pattern"
     searchLabel="Search Projects"
     createLabel="Create Project"
