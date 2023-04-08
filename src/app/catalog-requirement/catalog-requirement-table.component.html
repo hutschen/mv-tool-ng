@@ -20,6 +20,8 @@
   <mvtool-table-toolbar
     (refresh)="this.dataFrame.reload()"
     (create)="onCreateCatalogRequirement()"
+    (upload)="onImportCatalogRequirementsExcel()"
+    (download)="onExportCatalogRequirementsExcel()"
     [(search)]="dataFrame.search.pattern"
     searchLabel="Search Catalog Requirements"
     createLabel="Create Catalog Requirement"

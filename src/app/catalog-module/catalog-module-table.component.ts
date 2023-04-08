@@ -26,6 +26,7 @@ import { CatalogModuleDialogService } from './catalog-module-dialog.component';
 import { QueryParamsService } from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { CatalogModuleDataFrame } from '../shared/data/catalog-module/catalog-module-frame';
+import { DownloadDialogService } from '../shared/components/download-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-module-table',
@@ -47,6 +48,7 @@ export class CatalogModuleTableComponent implements OnInit {
     protected _catalogModuleService: CatalogModuleService,
     protected _catalogModuleDialogService: CatalogModuleDialogService,
     protected _uploadDialogService: UploadDialogService,
+    protected _downloadDialogService: DownloadDialogService,
     protected _confirmDialogService: ConfirmDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService
   ) {}
@@ -102,6 +104,43 @@ export class CatalogModuleTableComponent implements OnInit {
         this._catalogModuleService.deleteCatalogModule(catalogModule.id)
       );
       this.dataFrame.removeItem(catalogModule);
+    }
+  }
+
+  async onExportCatalogModulesExcel(): Promise<void> {
+    if (this.catalog) {
+      const dialogRef = this._downloadDialogService.openDownloadDialog(
+        this._catalogModuleService.downloadCatalogModuleExcel({
+          catalog_ids: this.catalog.id,
+          // TODO: This is a quick solution to get the query params.
+          // In future, query params should be cached to avoid running the pipe
+          ...(await firstValueFrom(this.dataFrame.search.queryParams$)),
+          ...(await firstValueFrom(this.dataFrame.columns.filterQueryParams$)),
+          ...(await firstValueFrom(this.dataFrame.sort.queryParams$)),
+        }),
+        'catalog_modules.xlsx'
+      );
+      await firstValueFrom(dialogRef.afterClosed());
+    } else {
+      throw new Error('Catalog is undefined');
+    }
+  }
+
+  async onImportCatalogModulesExcel(): Promise<void> {
+    const dialogRef = this._uploadDialogService.openUploadDialog(
+      (file: File) => {
+        if (this.catalog) {
+          return this._catalogModuleService.uploadCatalogModuleExcel(file, {
+            fallback_catalog_id: this.catalog.id,
+          });
+        } else {
+          throw new Error('Catalog is undefined');
+        }
+      }
+    );
+    const uploadState = await firstValueFrom(dialogRef.afterClosed());
+    if (uploadState && uploadState.state === 'done') {
+      this.dataFrame.reload();
     }
   }
 

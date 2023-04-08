@@ -13,10 +13,9 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { firstValueFrom, Observable, ReplaySubject } from 'rxjs';
+import { Component, Input, OnInit } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
-import { TableColumns } from '../shared/table-columns';
 import { CatalogModule } from '../shared/services/catalog-module.service';
 import {
   CatalogRequirement,
@@ -26,6 +25,8 @@ import { CatalogRequirementDialogService } from './catalog-requirement-dialog.co
 import { QueryParamsService } from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { CatalogRequirementDataFrame } from '../shared/data/catalog-requirement/catalog-requirement-frame';
+import { DownloadDialogService } from '../shared/components/download-dialog.component';
+import { UploadDialogService } from '../shared/components/upload-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-requirement-table',
@@ -45,6 +46,8 @@ export class CatalogRequirementTableComponent implements OnInit {
     protected _queryParamsService: QueryParamsService,
     protected _catalogRequirementService: CatalogRequirementService,
     protected _catalogRequirementDialogService: CatalogRequirementDialogService,
+    protected _downloadDialogService: DownloadDialogService,
+    protected _uploadDialogService: UploadDialogService,
     protected _confirmDialogService: ConfirmDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService
   ) {}
@@ -106,6 +109,44 @@ export class CatalogRequirementTableComponent implements OnInit {
         )
       );
       this.dataFrame.removeItem(catalogRequirement);
+    }
+  }
+
+  async onExportCatalogRequirementsExcel(): Promise<void> {
+    if (this.catalogModule) {
+      const dialogRef = this._downloadDialogService.openDownloadDialog(
+        this._catalogRequirementService.downloadCatalogRequirementExcel({
+          catalog_module_ids: this.catalogModule.id,
+          // TODO: This is a quick solution to get the query params.
+          // In future, query params should be cached to avoid running the pipe
+          ...(await firstValueFrom(this.dataFrame.search.queryParams$)),
+          ...(await firstValueFrom(this.dataFrame.columns.filterQueryParams$)),
+          ...(await firstValueFrom(this.dataFrame.sort.queryParams$)),
+        }),
+        'catalog-requirements.xlsx'
+      );
+      await firstValueFrom(dialogRef.afterClosed());
+    } else {
+      throw new Error('Catalog module is undefined');
+    }
+  }
+
+  async onImportCatalogRequirementsExcel(): Promise<void> {
+    const dialogRef = this._uploadDialogService.openUploadDialog(
+      (file: File) => {
+        if (this.catalogModule) {
+          return this._catalogRequirementService.uploadCatalogRequirementExcel(
+            file,
+            { fallback_catalog_module_id: this.catalogModule.id }
+          );
+        } else {
+          throw new Error('Catalog module is undefined');
+        }
+      }
+    );
+    const uploadState = await firstValueFrom(dialogRef.afterClosed());
+    if (uploadState && uploadState.state === 'done') {
+      this.dataFrame.reload();
     }
   }
 
