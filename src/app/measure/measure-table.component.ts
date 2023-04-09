@@ -32,6 +32,7 @@ import { CompletionDialogService } from './completion-dialog.component';
 import { MeasureDialogService } from './measure-dialog.component';
 import { VerificationDialogService } from './verification-dialog.component';
 import { combineQueryParams } from '../shared/combine-query-params';
+import { DataSelection } from '../shared/data/selection';
 
 @Component({
   selector: 'mvtool-http-measure-table',
@@ -45,6 +46,7 @@ import { combineQueryParams } from '../shared/combine-query-params';
 })
 export class MeasureTableComponent implements OnInit {
   dataFrame!: MeasureDataFrame;
+  marked!: DataSelection<Measure>;
   exportQueryParams$!: Observable<IQueryParams>;
   @Input() requirement?: Requirement;
 
@@ -64,15 +66,22 @@ export class MeasureTableComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.requirement) throw new Error('Requirement is undefined');
+    const initialQueryParams = this._queryParamsService.getQueryParams();
+
     this.dataFrame = new MeasureDataFrame(
       this._measureService,
       this._documentService,
       this.requirement,
-      this._queryParamsService.getQueryParams()
+      initialQueryParams
     );
-    this._queryParamsService
-      .syncQueryParams(this.dataFrame.queryParams$)
-      .subscribe();
+    this.marked = new DataSelection('_marked', true, initialQueryParams);
+
+    // Sync query params
+    const syncQueryParams$ = combineQueryParams([
+      this.dataFrame.queryParams$,
+      this.marked.queryParams$,
+    ]);
+    this._queryParamsService.syncQueryParams(syncQueryParams$).subscribe();
 
     // Define export query params
     this.exportQueryParams$ = combineQueryParams([
