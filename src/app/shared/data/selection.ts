@@ -15,9 +15,8 @@
 
 import { SelectionModel } from '@angular/cdk/collections';
 import { IDataItem } from './data';
-import { Observable, map, shareReplay } from 'rxjs';
+import { Observable, concat, map, of, shareReplay } from 'rxjs';
 import { IQueryParams } from '../services/query-params.service';
-import { isNumber, isString } from 'radash';
 
 export class DataSelection<T extends IDataItem> {
   protected _selection: SelectionModel<T['id']>;
@@ -26,14 +25,17 @@ export class DataSelection<T extends IDataItem> {
   constructor(
     public readonly name: string,
     multiple: boolean = false,
-    initQueryParams: IQueryParams = {}
+    initQueryParams: IQueryParams = {},
+    public readonly idType: 'number' | 'string' = 'number'
   ) {
     this._selection = new SelectionModel(
       multiple,
       this.__evalQueryParams(initQueryParams)
     );
-    this.queryParams$ = this._selection.changed.pipe(
-      map((selectionChange) => selectionChange.source.selected),
+    this.queryParams$ = concat(
+      of(this._selection.selected), // emit initial value
+      this._selection.changed.pipe(map((e) => e.source.selected))
+    ).pipe(
       map((selected) => (selected.length > 0 ? { [this.name]: selected } : {})),
       shareReplay(1)
     );
