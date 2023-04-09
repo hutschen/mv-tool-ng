@@ -72,4 +72,8 @@ export class DataSelection<T extends IDataItem> {
   get selected(): T['id'][] {
     return this._selection.selected;
   }
+
+  clear(): void {
+    this._selection.clear();
+  }
 }

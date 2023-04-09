@@ -134,6 +134,8 @@
           [clearFiltersDisabled]="!(dataFrame.columns.areFiltersSet$ | async)"
           (clearSort)="dataFrame.sort.clearSort()"
           [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
+          (clearMarkers)="marked.clear()"
+          [clearMarkersDisabled]="!marked.selected.length"
         ></mvtool-table-options>
       </th>
       <td mat-cell *matCellDef="let requirement">
