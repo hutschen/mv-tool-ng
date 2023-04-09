@@ -43,11 +43,12 @@ export class DataSelection<T extends IDataItem> {
 
   private __evalQueryParams(queryParams: IQueryParams): T['id'][] {
     const value = queryParams[this.name];
-    if (value) {
+    if (value !== undefined) {
       const ids = Array.isArray(value) ? value : [value];
-      if (ids.every(isNumber) || ids.every(isString)) {
-        // FIXME: It is not guaranteed that the type of the ids matches the type T['id'].
+      if (ids.every((id) => typeof id === this.idType)) {
         return ids;
+      } else if ('string' === this.idType) {
+        return ids.map((id) => String(id));
       }
     }
     return [];
