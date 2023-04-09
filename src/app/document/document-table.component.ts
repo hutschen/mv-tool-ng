@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
@@ -22,8 +22,12 @@ import { DocumentService, Document } from '../shared/services/document.service';
 import { Project } from '../shared/services/project.service';
 import { DocumentDialogService } from './document-dialog.component';
 import { DocumentDataFrame } from '../shared/data/document/document-frame';
-import { QueryParamsService } from '../shared/services/query-params.service';
+import {
+  IQueryParams,
+  QueryParamsService,
+} from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
+import { combineQueryParams } from '../shared/combine-query-params';
 
 @Component({
   selector: 'mvtool-document-table',
@@ -37,6 +41,7 @@ import { HideColumnsDialogService } from '../shared/components/hide-columns-dial
 })
 export class DocumentTableComponent implements OnInit {
   dataFrame!: DocumentDataFrame;
+  exportQueryParams$!: Observable<IQueryParams>;
   @Input() project?: Project;
 
   constructor(
@@ -59,6 +64,13 @@ export class DocumentTableComponent implements OnInit {
     this._queryParamsService
       .syncQueryParams(this.dataFrame.queryParams$)
       .subscribe();
+
+    // Define export query params
+    this.exportQueryParams$ = combineQueryParams([
+      this.dataFrame.search.queryParams$,
+      this.dataFrame.columns.filterQueryParams$,
+      this.dataFrame.sort.queryParams$,
+    ]);
   }
 
   protected async _createOrEditDocument(document?: Document) {
@@ -101,11 +113,7 @@ export class DocumentTableComponent implements OnInit {
       const dialogRef = this._downloadDialogService.openDownloadDialog(
         this._documentService.downloadDocumentExcel({
           project_ids: this.project.id,
-          // TODO: This is a quick solution to get the query params.
-          // In future, query params should be cached to avoid running the pipe
-          ...(await firstValueFrom(this.dataFrame.search.queryParams$)),
-          ...(await firstValueFrom(this.dataFrame.columns.filterQueryParams$)),
-          ...(await firstValueFrom(this.dataFrame.sort.queryParams$)),
+          ...(await firstValueFrom(this.exportQueryParams$)),
         }),
         'documents.xlsx'
       );

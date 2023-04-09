@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import {
@@ -23,10 +23,14 @@ import {
 } from '../shared/services/catalog-module.service';
 import { Catalog } from '../shared/services/catalog.service';
 import { CatalogModuleDialogService } from './catalog-module-dialog.component';
-import { QueryParamsService } from '../shared/services/query-params.service';
+import {
+  IQueryParams,
+  QueryParamsService,
+} from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { CatalogModuleDataFrame } from '../shared/data/catalog-module/catalog-module-frame';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
+import { combineQueryParams } from '../shared/combine-query-params';
 
 @Component({
   selector: 'mvtool-catalog-module-table',
@@ -40,6 +44,7 @@ import { DownloadDialogService } from '../shared/components/download-dialog.comp
 })
 export class CatalogModuleTableComponent implements OnInit {
   dataFrame!: CatalogModuleDataFrame;
+  exportQueryParams$!: Observable<IQueryParams>;
   @Input() catalog?: Catalog;
   @Output() clickCatalogModule = new EventEmitter<CatalogModule>();
 
@@ -63,6 +68,13 @@ export class CatalogModuleTableComponent implements OnInit {
     this._queryParamsService
       .syncQueryParams(this.dataFrame.queryParams$)
       .subscribe();
+
+    // Define export query params
+    this.exportQueryParams$ = combineQueryParams([
+      this.dataFrame.search.queryParams$,
+      this.dataFrame.columns.filterQueryParams$,
+      this.dataFrame.sort.queryParams$,
+    ]);
   }
 
   protected async _createOrEditCatalogModule(
@@ -112,11 +124,7 @@ export class CatalogModuleTableComponent implements OnInit {
       const dialogRef = this._downloadDialogService.openDownloadDialog(
         this._catalogModuleService.downloadCatalogModuleExcel({
           catalog_ids: this.catalog.id,
-          // TODO: This is a quick solution to get the query params.
-          // In future, query params should be cached to avoid running the pipe
-          ...(await firstValueFrom(this.dataFrame.search.queryParams$)),
-          ...(await firstValueFrom(this.dataFrame.columns.filterQueryParams$)),
-          ...(await firstValueFrom(this.dataFrame.sort.queryParams$)),
+          ...(await firstValueFrom(this.exportQueryParams$)),
         }),
         'catalog_modules.xlsx'
       );
