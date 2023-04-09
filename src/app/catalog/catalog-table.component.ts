@@ -27,6 +27,7 @@ import { HideColumnsDialogService } from '../shared/components/hide-columns-dial
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { combineQueryParams } from '../shared/combine-query-params';
+import { DataSelection } from '../shared/data/selection';
 
 @Component({
   selector: 'mvtool-catalog-table',
@@ -40,6 +41,7 @@ import { combineQueryParams } from '../shared/combine-query-params';
 })
 export class CatalogTableComponent implements OnInit {
   dataFrame!: CatalogDataFrame;
+  marked!: DataSelection<Catalog>;
   exportQueryParams$!: Observable<IQueryParams>;
   @Output() clickCatalog = new EventEmitter<Catalog>();
 
@@ -54,13 +56,21 @@ export class CatalogTableComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    const initialQueryParams = this._queryParamsService.getQueryParams();
+
+    // Create data frame and marked selection
     this.dataFrame = new CatalogDataFrame(
       this._catalogService,
-      this._queryParamsService.getQueryParams()
+      initialQueryParams
     );
-    this._queryParamsService
-      .syncQueryParams(this.dataFrame.queryParams$)
-      .subscribe();
+    this.marked = new DataSelection('_marked', true, initialQueryParams);
+
+    // Sync query params
+    const syncQueryParams$ = combineQueryParams([
+      this.dataFrame.queryParams$,
+      this.marked.queryParams$,
+    ]);
+    this._queryParamsService.syncQueryParams(syncQueryParams$).subscribe();
 
     // Define export query params
     this.exportQueryParams$ = combineQueryParams([
