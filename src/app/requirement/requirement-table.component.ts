@@ -14,13 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import {
-  Observable,
-  combineLatest,
-  firstValueFrom,
-  map,
-  shareReplay,
-} from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
@@ -43,6 +37,7 @@ import { CatalogModuleService } from '../shared/services/catalog-module.service'
 import { TargetObjectService } from '../shared/services/target-object.service';
 import { MilestoneService } from '../shared/services/milestone.service';
 import { DataSelection } from '../shared/data/selection';
+import { combineQueryParams } from '../shared/combine-query-params';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -93,31 +88,18 @@ export class RequirementTableComponent implements OnInit {
     this.marked = new DataSelection('_marked', true, initialQueryParams);
 
     // Sync query params with query params service
-    const queryParams$ = combineLatest([
+    const syncQueryParams$ = combineQueryParams([
       this.dataFrame.queryParams$,
       this.marked.queryParams$,
-    ]).pipe(
-      map(([dataFrameQueryParams, markedQueryParams]) => ({
-        ...dataFrameQueryParams,
-        ...markedQueryParams,
-      }))
-    );
-    this._queryParamsService.syncQueryParams(queryParams$).subscribe();
+    ]);
+    this._queryParamsService.syncQueryParams(syncQueryParams$).subscribe();
 
-    // Export query params
-    // TODO: Implement helper function to combine query params observables
-    this.exportQueryParams$ = combineLatest([
+    // Define export query params
+    this.exportQueryParams$ = combineQueryParams([
       this.dataFrame.search.queryParams$,
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
-    ]).pipe(
-      map(([searchQueryParams, filterQueryParams, sortQueryParams]) => ({
-        ...searchQueryParams,
-        ...filterQueryParams,
-        ...sortQueryParams,
-      })),
-      shareReplay(1)
-    );
+    ]);
   }
 
   protected async _createOrEditRequirement(
