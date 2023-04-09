@@ -31,6 +31,7 @@ import { HideColumnsDialogService } from '../shared/components/hide-columns-dial
 import { CatalogModuleDataFrame } from '../shared/data/catalog-module/catalog-module-frame';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { combineQueryParams } from '../shared/combine-query-params';
+import { DataSelection } from '../shared/data/selection';
 
 @Component({
   selector: 'mvtool-catalog-module-table',
@@ -44,6 +45,7 @@ import { combineQueryParams } from '../shared/combine-query-params';
 })
 export class CatalogModuleTableComponent implements OnInit {
   dataFrame!: CatalogModuleDataFrame;
+  marked!: DataSelection<CatalogModule>;
   exportQueryParams$!: Observable<IQueryParams>;
   @Input() catalog?: Catalog;
   @Output() clickCatalogModule = new EventEmitter<CatalogModule>();
@@ -60,14 +62,22 @@ export class CatalogModuleTableComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     if (!this.catalog) throw new Error('catalog is undefined');
+    const initialQueryParams = this._queryParamsService.getQueryParams();
+
+    // Create data frame and marked selection
     this.dataFrame = new CatalogModuleDataFrame(
       this._catalogModuleService,
       this.catalog,
-      this._queryParamsService.getQueryParams()
+      initialQueryParams
     );
-    this._queryParamsService
-      .syncQueryParams(this.dataFrame.queryParams$)
-      .subscribe();
+    this.marked = new DataSelection('_marked', true, initialQueryParams);
+
+    // Sync query params with query params service
+    const syncQueryParams$ = combineQueryParams([
+      this.dataFrame.queryParams$,
+      this.marked.queryParams$,
+    ]);
+    this._queryParamsService.syncQueryParams(syncQueryParams$).subscribe();
 
     // Define export query params
     this.exportQueryParams$ = combineQueryParams([
