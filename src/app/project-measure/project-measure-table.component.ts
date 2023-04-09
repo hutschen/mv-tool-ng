@@ -36,6 +36,7 @@ import {
 import { RequirementService } from '../shared/services/requirement.service';
 import { TargetObjectService } from '../shared/services/target-object.service';
 import { combineQueryParams } from '../shared/combine-query-params';
+import { DataSelection } from '../shared/data/selection';
 
 @Component({
   selector: 'mvtool-project-measure-table',
@@ -49,6 +50,7 @@ import { combineQueryParams } from '../shared/combine-query-params';
 })
 export class ProjectMeasureTableComponent implements OnInit {
   dataFrame!: MeasureDataFrame;
+  marked!: DataSelection<Measure>;
   exportQueryParams$!: Observable<IQueryParams>;
   @Input() project!: Project;
 
@@ -72,20 +74,27 @@ export class ProjectMeasureTableComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.project) throw new Error('project is undefined');
+    const initialQueryParams = this._queryParamsService.getQueryParams();
+
     this.dataFrame = new MeasureDataFrame(
       this._measureService,
       this._documentService,
       this.project,
-      this._queryParamsService.getQueryParams(),
+      initialQueryParams,
       this._catalogService,
       this._catalogModuleService,
       this._requirementService,
       this._milestoneService,
       this._targetObjectService
     );
-    this._queryParamsService
-      .syncQueryParams(this.dataFrame.queryParams$)
-      .subscribe();
+    this.marked = new DataSelection('_marked', true, initialQueryParams);
+
+    // Sync query params with query params service
+    const syncQueryParams$ = combineQueryParams([
+      this.dataFrame.queryParams$,
+      this.marked.queryParams$,
+    ]);
+    this._queryParamsService.syncQueryParams(syncQueryParams$).subscribe();
 
     // Define export query params
     this.exportQueryParams$ = combineQueryParams([

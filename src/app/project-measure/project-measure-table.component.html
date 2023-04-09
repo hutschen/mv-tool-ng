@@ -30,6 +30,7 @@
 <div class="mat-elevation-z3 fx-column">
   <mvtool-table
     [dataFrame]="dataFrame"
+    [marked]="marked"
     noContentText="No measures found."
     loadingText="Loading measures..."
     matSort
@@ -161,6 +162,8 @@
           [clearFiltersDisabled]="!(dataFrame.columns.areFiltersSet$ | async)"
           (clearSort)="dataFrame.sort.clearSort()"
           [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
+          (clearMarkers)="marked.clear()"
+          [clearMarkersDisabled]="!marked.selected.length"
         ></mvtool-table-options>
       </th>
       <td mat-cell *matCellDef="let measure">
@@ -170,6 +173,8 @@
           (editCompliance)="onEditCompliance(measure)"
           (editCompletion)="onEditCompletion(measure)"
           (editVerification)="onEditVerification(measure)"
+          (toggleMarker)="marked.toggle(measure)"
+          [isMarked]="marked.isSelected(measure)"
         >
         </mvtool-table-row-options>
       </td>
