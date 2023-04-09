@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { combineLatest, firstValueFrom, map } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
@@ -33,6 +33,7 @@ import { CatalogService } from '../shared/services/catalog.service';
 import { CatalogModuleService } from '../shared/services/catalog-module.service';
 import { TargetObjectService } from '../shared/services/target-object.service';
 import { MilestoneService } from '../shared/services/milestone.service';
+import { DataSelection } from '../shared/data/selection';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -45,6 +46,7 @@ import { MilestoneService } from '../shared/services/milestone.service';
 })
 export class RequirementTableComponent implements OnInit {
   dataFrame!: RequirementDataFrame;
+  marked!: DataSelection<Requirement>;
   @Input() project?: Project;
   @Output() clickRequirement = new EventEmitter<Requirement>();
 
@@ -66,6 +68,7 @@ export class RequirementTableComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     if (!this.project) throw new Error('Project is undefined');
+    const initialQueryParams = this._queryParamsService.getQueryParams();
     this.dataFrame = new RequirementDataFrame(
       this._requirementService,
       this._catalogService,
@@ -73,11 +76,19 @@ export class RequirementTableComponent implements OnInit {
       this._milestoneService,
       this._targetObjectService,
       this.project,
-      this._queryParamsService.getQueryParams()
+      initialQueryParams
     );
-    this._queryParamsService
-      .syncQueryParams(this.dataFrame.queryParams$)
-      .subscribe();
+    this.marked = new DataSelection('_marked', true, initialQueryParams);
+    const queryParams$ = combineLatest([
+      this.dataFrame.queryParams$,
+      this.marked.queryParams$,
+    ]).pipe(
+      map(([dataFrameQueryParams, markedQueryParams]) => ({
+        ...dataFrameQueryParams,
+        ...markedQueryParams,
+      }))
+    );
+    this._queryParamsService.syncQueryParams(queryParams$).subscribe();
   }
 
   protected async _createOrEditRequirement(

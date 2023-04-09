@@ -62,7 +62,7 @@
     <tr
       mat-row
       [class.clickable-row]="clickRow.observed"
-      [class.highlight]="highlighted.isSelected(row.id)"
+      [class.marked]="marked?.isSelected(row)"
       *matRowDef="let row; columns: dataFrame.columnNames$ | async"
       (click)="clickRow.emit(row)"
     ></tr>

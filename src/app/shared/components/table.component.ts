@@ -25,7 +25,7 @@ import {
 } from '@angular/core';
 import { MatColumnDef, MatTable } from '@angular/material/table';
 import { DataColumn, DataFrame, IDataItem } from '../data/data';
-import { SelectionModel } from '@angular/cdk/collections';
+import { DataSelection } from '../data/selection';
 
 @Component({
   selector: 'mvtool-table',
@@ -38,7 +38,7 @@ import { SelectionModel } from '@angular/cdk/collections';
   styles: [
     '.clickable-row { cursor: pointer; }',
     '.clickable-row:hover { background-color: rgba(0,0,0,0.04) !important; }',
-    '.highlight { background-color: rgba(0,0,0,0.08) !important; }',
+    '.marked { background-color: rgba(0,0,0,0.08) !important; }',
   ],
 })
 export class TableComponent<T extends IDataItem> implements AfterContentInit {
@@ -53,7 +53,7 @@ export class TableComponent<T extends IDataItem> implements AfterContentInit {
   @ContentChildren(MatColumnDef) matColumnDefs!: QueryList<MatColumnDef>;
 
   columnsToAutoCreate: DataColumn<T>[] = [];
-  highlighted: SelectionModel<number> = new SelectionModel<number>(true, []);
+  @Input() marked?: DataSelection<T>;
 
   constructor() {}
 

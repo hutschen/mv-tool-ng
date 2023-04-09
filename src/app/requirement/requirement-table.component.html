@@ -23,7 +23,6 @@
     [(search)]="dataFrame.search.pattern"
     searchLabel="Search Requirements"
     createLabel="Create Requirement"
-    #tableToolbar
   >
     <button mat-button [matMenuTriggerFor]="importMenu">
       <mat-icon>file_upload</mat-icon>
@@ -47,6 +46,7 @@
 <div class="mat-elevation-z3 fx-column">
   <mvtool-table
     [dataFrame]="dataFrame"
+    [marked]="marked"
     (create)="onCreateRequirement()"
     noContentText="No requirements found."
     loadingText="Loading requirements..."
@@ -55,7 +55,6 @@
     (matSortChange)="dataFrame.sort.setSort($event)"
     [matSortActive]="(dataFrame.sort.active$ | async) ?? ''"
     [matSortDirection]="(dataFrame.sort.direction$ | async) ?? ''"
-    #table
   >
     <!-- Compliance column -->
     <ng-container
@@ -146,15 +145,12 @@
             <mat-icon>assured_workload</mat-icon>
             Set compliance status
           </button>
-          <button
-            mat-menu-item
-            (click)="table.highlighted.toggle(requirement.id)"
-          >
-            <span *ngIf="!table.highlighted.isSelected(requirement.id)">
+          <button mat-menu-item (click)="marked.toggle(requirement)">
+            <span *ngIf="!marked.isSelected(requirement)">
               <mat-icon>bookmark_add</mat-icon>
               Set marker
             </span>
-            <span *ngIf="table.highlighted.isSelected(requirement.id)">
+            <span *ngIf="marked.isSelected(requirement)">
               <mat-icon>bookmark_remove</mat-icon>
               Remove marker
             </span>
