@@ -141,24 +141,11 @@
       <td mat-cell *matCellDef="let requirement">
         <mvtool-table-row-options
           (edit)="onEditRequirement(requirement)"
+          (editCompliance)="onEditCompliance(requirement)"
           (delete)="onDeleteRequirement(requirement)"
+          (toggleMarker)="marked.toggle(requirement)"
+          [isMarked]="marked.isSelected(requirement)"
         >
-          <button mat-menu-item (click)="onEditCompliance(requirement)">
-            <mat-icon>assured_workload</mat-icon>
-            Set compliance status
-          </button>
-          <button mat-menu-item (click)="marked.toggle(requirement)">
-            <span *ngIf="!marked.isSelected(requirement)">
-              <mat-icon>bookmark_add</mat-icon>
-              Set marker
-            </span>
-            <span *ngIf="marked.isSelected(requirement)">
-              <mat-icon>bookmark_remove</mat-icon>
-              Remove marker
-            </span>
-          </button>
-
-          <mat-divider></mat-divider>
         </mvtool-table-row-options>
       </td>
     </ng-container>

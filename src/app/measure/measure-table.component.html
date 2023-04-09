@@ -170,20 +170,10 @@
         <mvtool-table-row-options
           (edit)="onEditMeasure(measure)"
           (delete)="onDeleteMeasure(measure)"
+          (editCompliance)="onEditCompliance(measure)"
+          (editCompletion)="onEditCompletion(measure)"
+          (editVerification)="onEditVerification(measure)"
         >
-          <button mat-menu-item (click)="onEditCompliance(measure)">
-            <mat-icon>assured_workload</mat-icon>
-            Set compliance status
-          </button>
-          <button mat-menu-item (click)="onEditCompletion(measure)">
-            <mat-icon>check_circle</mat-icon>
-            Set completion status
-          </button>
-          <button mat-menu-item (click)="onEditVerification(measure)">
-            <mat-icon>verified</mat-icon>
-            Set verification status
-          </button>
-          <mat-divider></mat-divider>
         </mvtool-table-row-options>
       </td>
     </ng-container>
