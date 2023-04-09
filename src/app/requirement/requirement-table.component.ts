@@ -14,7 +14,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { combineLatest, firstValueFrom, map } from 'rxjs';
+import {
+  Observable,
+  combineLatest,
+  firstValueFrom,
+  map,
+  shareReplay,
+} from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
@@ -27,7 +33,10 @@ import { ComplianceDialogService } from '../shared/components/compliance-dialog.
 import { RequirementDialogService } from './requirement-dialog.component';
 import { RequirementImportDialogService } from './requirement-import-dialog.component';
 import { RequirementDataFrame } from '../shared/data/requirement/requirement-frame';
-import { QueryParamsService } from '../shared/services/query-params.service';
+import {
+  IQueryParams,
+  QueryParamsService,
+} from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { CatalogService } from '../shared/services/catalog.service';
 import { CatalogModuleService } from '../shared/services/catalog-module.service';
@@ -47,6 +56,7 @@ import { DataSelection } from '../shared/data/selection';
 export class RequirementTableComponent implements OnInit {
   dataFrame!: RequirementDataFrame;
   marked!: DataSelection<Requirement>;
+  exportQueryParams$!: Observable<IQueryParams>;
   @Input() project?: Project;
   @Output() clickRequirement = new EventEmitter<Requirement>();
 
@@ -69,6 +79,8 @@ export class RequirementTableComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     if (!this.project) throw new Error('Project is undefined');
     const initialQueryParams = this._queryParamsService.getQueryParams();
+
+    // Create data frame and marked selection
     this.dataFrame = new RequirementDataFrame(
       this._requirementService,
       this._catalogService,
@@ -79,6 +91,8 @@ export class RequirementTableComponent implements OnInit {
       initialQueryParams
     );
     this.marked = new DataSelection('_marked', true, initialQueryParams);
+
+    // Sync query params with query params service
     const queryParams$ = combineLatest([
       this.dataFrame.queryParams$,
       this.marked.queryParams$,
@@ -89,6 +103,21 @@ export class RequirementTableComponent implements OnInit {
       }))
     );
     this._queryParamsService.syncQueryParams(queryParams$).subscribe();
+
+    // Export query params
+    // TODO: Implement helper function to combine query params observables
+    this.exportQueryParams$ = combineLatest([
+      this.dataFrame.search.queryParams$,
+      this.dataFrame.columns.filterQueryParams$,
+      this.dataFrame.sort.queryParams$,
+    ]).pipe(
+      map(([searchQueryParams, filterQueryParams, sortQueryParams]) => ({
+        ...searchQueryParams,
+        ...filterQueryParams,
+        ...sortQueryParams,
+      })),
+      shareReplay(1)
+    );
   }
 
   protected async _createOrEditRequirement(
@@ -146,11 +175,7 @@ export class RequirementTableComponent implements OnInit {
       const dialogRef = this._downloadDialogService.openDownloadDialog(
         this._requirementService.downloadRequirementsExcel({
           project_ids: this.project.id,
-          // TODO: This is a quick solution to get the query params.
-          // In future, query params should be cached to avoid running the pipe
-          ...(await firstValueFrom(this.dataFrame.search.queryParams$)),
-          ...(await firstValueFrom(this.dataFrame.columns.filterQueryParams$)),
-          ...(await firstValueFrom(this.dataFrame.sort.queryParams$)),
+          ...(await firstValueFrom(this.exportQueryParams$)),
         }),
         'requirements.xlsx'
       );
