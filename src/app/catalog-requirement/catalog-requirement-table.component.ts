@@ -31,6 +31,7 @@ import { CatalogRequirementDataFrame } from '../shared/data/catalog-requirement/
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { combineQueryParams } from '../shared/combine-query-params';
+import { DataSelection } from '../shared/data/selection';
 
 @Component({
   selector: 'mvtool-catalog-requirement-table',
@@ -44,6 +45,7 @@ import { combineQueryParams } from '../shared/combine-query-params';
 })
 export class CatalogRequirementTableComponent implements OnInit {
   dataFrame!: CatalogRequirementDataFrame;
+  marked!: DataSelection<CatalogRequirement>;
   exportQueryParams$!: Observable<IQueryParams>;
   @Input() catalogModule?: CatalogModule;
 
@@ -59,14 +61,22 @@ export class CatalogRequirementTableComponent implements OnInit {
 
   ngOnInit() {
     if (!this.catalogModule) throw new Error('catalog module is undefined');
+    const initialQueryParams = this._queryParamsService.getQueryParams();
+
+    // Create data frame and marked selection
     this.dataFrame = new CatalogRequirementDataFrame(
       this._catalogRequirementService,
       this.catalogModule,
-      this._queryParamsService.getQueryParams()
+      initialQueryParams
     );
-    this._queryParamsService
-      .syncQueryParams(this.dataFrame.queryParams$)
-      .subscribe();
+    this.marked = new DataSelection('_marked', true, initialQueryParams);
+
+    // Sync query params with query params service
+    const syncQueryParams$ = combineQueryParams([
+      this.dataFrame.queryParams$,
+      this.marked.queryParams$,
+    ]);
+    this._queryParamsService.syncQueryParams(syncQueryParams$).subscribe();
 
     // Define export query params
     this.exportQueryParams$ = combineQueryParams([
