@@ -38,6 +38,7 @@ import { DataSelection } from '../shared/data/selection';
 export class ProjectTableComponent implements OnInit {
   dataFrame!: ProjectDataFrame;
   marked!: DataSelection<Project>;
+  expanded!: DataSelection<Project>;
   exportQueryParams$!: Observable<IQueryParams>;
   @Output() clickProject = new EventEmitter<Project>();
 
@@ -54,17 +55,19 @@ export class ProjectTableComponent implements OnInit {
   async ngOnInit() {
     const initialQueryParams = this._queryParamsService.getQueryParams();
 
-    // Create data frame and marked selection
+    // Create data frame, marked and expanded selection
     this.dataFrame = new ProjectDataFrame(
       this._projectService,
       initialQueryParams
     );
     this.marked = new DataSelection('_marked', true, initialQueryParams);
+    this.expanded = new DataSelection('_expanded', false, initialQueryParams);
 
     // Sync query params with query params service
     const syncQueryParams$ = combineQueryParams([
       this.dataFrame.queryParams$,
       this.marked.queryParams$,
+      this.expanded.queryParams$,
     ]);
     this._queryParamsService.syncQueryParams(syncQueryParams$).subscribe();
 
