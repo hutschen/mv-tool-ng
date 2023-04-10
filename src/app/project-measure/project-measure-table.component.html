@@ -31,6 +31,7 @@
   <mvtool-table
     [dataFrame]="dataFrame"
     [marked]="marked"
+    [expanded]="expanded"
     noContentText="No measures found."
     loadingText="Loading measures..."
     matSort
@@ -175,6 +176,8 @@
           (editVerification)="onEditVerification(measure)"
           (toggleMarker)="marked.toggle(measure)"
           [isMarked]="marked.isSelected(measure)"
+          (toggleExpansion)="expanded.toggle(measure)"
+          [isExpanded]="expanded.isSelected(measure)"
         >
         </mvtool-table-row-options>
       </td>
