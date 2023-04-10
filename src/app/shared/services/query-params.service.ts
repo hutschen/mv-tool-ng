@@ -16,7 +16,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { isEmpty, mapValues } from 'radash';
-import { Observable, from, tap, debounceTime } from 'rxjs';
+import { Observable, from, debounceTime } from 'rxjs';
 import { exhaustLatestMap } from '../exhaust-latest-map';
 
 interface IRawQueryParams {
@@ -51,9 +51,9 @@ function convertToInt(value: string): number {
 function convertRawQueryParams(rawQueryParams: IRawQueryParams): IQueryParams {
   return mapValues(rawQueryParams, (value) => {
     if (Array.isArray(value)) {
-      if (value.every((v) => isBool(v))) {
+      if (value.every(isBool)) {
         return value.map((v) => convertToBool(v));
-      } else if (value.every((v) => isInt(v))) {
+      } else if (value.every(isInt)) {
         return value.map((v) => convertToInt(v));
       } else {
         return value;

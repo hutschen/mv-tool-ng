@@ -20,6 +20,8 @@
   <mvtool-table-toolbar
     (refresh)="this.dataFrame.reload()"
     (create)="onCreateCatalog()"
+    (upload)="onImportCatalogs()"
+    (download)="onExportCatalogs()"
     [(search)]="dataFrame.search.pattern"
     searchLabel="Search Catalogs"
     createLabel="Create Catalog"
@@ -30,6 +32,8 @@
   <!-- Catalogs table -->
   <mvtool-table
     [dataFrame]="dataFrame"
+    [marked]="marked"
+    [expanded]="expanded"
     (create)="onCreateCatalog()"
     noContentText="No catalogs found."
     loadingText="Loading catalogs..."
@@ -49,12 +53,18 @@
           [clearFiltersDisabled]="!(dataFrame.columns.areFiltersSet$ | async)"
           (clearSort)="dataFrame.sort.clearSort()"
           [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
+          (clearMarkers)="marked.clear()"
+          [clearMarkersDisabled]="!marked.selected.length"
         ></mvtool-table-options>
       </th>
       <td mat-cell *matCellDef="let catalog">
         <mvtool-table-row-options
           (edit)="onEditCatalog(catalog)"
           (delete)="onDeleteCatalog(catalog)"
+          (toggleMarker)="marked.toggle(catalog)"
+          [isMarked]="marked.isSelected(catalog)"
+          (toggleExpansion)="expanded.toggle(catalog)"
+          [isExpanded]="expanded.isSelected(catalog)"
         >
         </mvtool-table-row-options>
       </td>

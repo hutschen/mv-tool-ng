@@ -14,14 +14,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  CanActivate,
-  Router,
-  RouterStateSnapshot,
-} from '@angular/router';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
+import { isInt, toInt } from 'radash';
 
-abstract class IdGuard implements CanActivate {
+abstract class IdGuard {
   protected _router: Router;
   protected _idParamName: string;
 
@@ -30,13 +26,13 @@ abstract class IdGuard implements CanActivate {
     this._idParamName = idParamName;
   }
 
-  canActivate(route: ActivatedRouteSnapshot, _: RouterStateSnapshot): boolean {
-    const id = route.paramMap.get(this._idParamName);
-    if (isNaN(Number(id)) || Number(id) < 0) {
+  canActivate(route: ActivatedRouteSnapshot): boolean {
+    const id = toInt(route.paramMap.get(this._idParamName), 0);
+    if (0 < id) {
+      return true;
+    } else {
       this._router.navigate(['/']);
       return false;
-    } else {
-      return true;
     }
   }
 }

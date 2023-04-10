@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
@@ -23,11 +23,16 @@ import { UploadDialogService } from '../shared/components/upload-dialog.componen
 import { MeasureDataFrame } from '../shared/data/measure/measure-frame';
 import { DocumentService } from '../shared/services/document.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
-import { QueryParamsService } from '../shared/services/query-params.service';
+import {
+  IQueryParams,
+  QueryParamsService,
+} from '../shared/services/query-params.service';
 import { Requirement } from '../shared/services/requirement.service';
 import { CompletionDialogService } from './completion-dialog.component';
 import { MeasureDialogService } from './measure-dialog.component';
 import { VerificationDialogService } from './verification-dialog.component';
+import { combineQueryParams } from '../shared/combine-query-params';
+import { DataSelection } from '../shared/data/selection';
 
 @Component({
   selector: 'mvtool-http-measure-table',
@@ -40,8 +45,11 @@ import { VerificationDialogService } from './verification-dialog.component';
   styles: [],
 })
 export class MeasureTableComponent implements OnInit {
-  @Input() requirement?: Requirement;
   dataFrame!: MeasureDataFrame;
+  marked!: DataSelection<Measure>;
+  expanded!: DataSelection<Measure>;
+  exportQueryParams$!: Observable<IQueryParams>;
+  @Input() requirement?: Requirement;
 
   constructor(
     protected _queryParamsService: QueryParamsService,
@@ -59,15 +67,32 @@ export class MeasureTableComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.requirement) throw new Error('Requirement is undefined');
+    const initialQueryParams = this._queryParamsService.getQueryParams();
+
+    // Create data frame, marked and expanded selection
     this.dataFrame = new MeasureDataFrame(
       this._measureService,
       this._documentService,
       this.requirement,
-      this._queryParamsService.getQueryParams()
+      initialQueryParams
     );
-    this._queryParamsService
-      .syncQueryParams(this.dataFrame.queryParams$)
-      .subscribe();
+    this.marked = new DataSelection('_marked', true, initialQueryParams);
+    this.expanded = new DataSelection('_expanded', false, initialQueryParams);
+
+    // Sync query params
+    const syncQueryParams$ = combineQueryParams([
+      this.dataFrame.queryParams$,
+      this.marked.queryParams$,
+      this.expanded.queryParams$,
+    ]);
+    this._queryParamsService.syncQueryParams(syncQueryParams$).subscribe();
+
+    // Define export query params
+    this.exportQueryParams$ = combineQueryParams([
+      this.dataFrame.search.queryParams$,
+      this.dataFrame.columns.filterQueryParams$,
+      this.dataFrame.sort.queryParams$,
+    ]);
   }
 
   protected async _createOrEditMeasure(measure?: Measure): Promise<void> {
@@ -135,7 +160,10 @@ export class MeasureTableComponent implements OnInit {
   async onExportMeasures(): Promise<void> {
     if (this.requirement) {
       const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._measureService.downloadMeasureExcel(this.requirement.id),
+        this._measureService.downloadMeasureExcel({
+          requirement_ids: this.requirement.id,
+          ...(await firstValueFrom(this.exportQueryParams$)),
+        }),
         'measure.xlsx'
       );
       await firstValueFrom(dialogRef.afterClosed());
@@ -148,17 +176,16 @@ export class MeasureTableComponent implements OnInit {
     const dialogRef = this._uploadDialogService.openUploadDialog(
       (file: File) => {
         if (this.requirement) {
-          return this._measureService.uploadMeasureExcel(
-            this.requirement.id,
-            file
-          );
+          return this._measureService.uploadMeasureExcel(file, {
+            fallback_requirement_id: this.requirement.id,
+          });
         } else {
           throw new Error('Requirement is undefined');
         }
       }
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());
-    if (uploadState && uploadState.state == 'done') {
+    if (uploadState && uploadState.state === 'done') {
       this.dataFrame.reload();
     }
   }

@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
@@ -22,8 +22,13 @@ import { DocumentService, Document } from '../shared/services/document.service';
 import { Project } from '../shared/services/project.service';
 import { DocumentDialogService } from './document-dialog.component';
 import { DocumentDataFrame } from '../shared/data/document/document-frame';
-import { QueryParamsService } from '../shared/services/query-params.service';
+import {
+  IQueryParams,
+  QueryParamsService,
+} from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
+import { combineQueryParams } from '../shared/combine-query-params';
+import { DataSelection } from '../shared/data/selection';
 
 @Component({
   selector: 'mvtool-document-table',
@@ -37,6 +42,9 @@ import { HideColumnsDialogService } from '../shared/components/hide-columns-dial
 })
 export class DocumentTableComponent implements OnInit {
   dataFrame!: DocumentDataFrame;
+  marked!: DataSelection<Document>;
+  expanded!: DataSelection<Document>;
+  exportQueryParams$!: Observable<IQueryParams>;
   @Input() project?: Project;
 
   constructor(
@@ -51,14 +59,31 @@ export class DocumentTableComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.project) throw new Error('Project is undefined');
+    const initialQueryParams = this._queryParamsService.getQueryParams();
+
+    // Create data frame, marked and expanded selection
     this.dataFrame = new DocumentDataFrame(
       this._documentService,
       this.project,
-      this._queryParamsService.getQueryParams()
+      initialQueryParams
     );
-    this._queryParamsService
-      .syncQueryParams(this.dataFrame.queryParams$)
-      .subscribe();
+    this.marked = new DataSelection('_marked', true, initialQueryParams);
+    this.expanded = new DataSelection('_expanded', false, initialQueryParams);
+
+    // Sync query params with query params service
+    const syncQueryParams$ = combineQueryParams([
+      this.dataFrame.search.queryParams$,
+      this.marked.queryParams$,
+      this.expanded.queryParams$,
+    ]);
+    this._queryParamsService.syncQueryParams(syncQueryParams$).subscribe();
+
+    // Define export query params
+    this.exportQueryParams$ = combineQueryParams([
+      this.dataFrame.search.queryParams$,
+      this.dataFrame.columns.filterQueryParams$,
+      this.dataFrame.sort.queryParams$,
+    ]);
   }
 
   protected async _createOrEditDocument(document?: Document) {
@@ -99,7 +124,10 @@ export class DocumentTableComponent implements OnInit {
   async onExportDocuments(): Promise<void> {
     if (this.project) {
       const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._documentService.downloadDocumentExcel(this.project.id),
+        this._documentService.downloadDocumentExcel({
+          project_ids: this.project.id,
+          ...(await firstValueFrom(this.exportQueryParams$)),
+        }),
         'documents.xlsx'
       );
       await firstValueFrom(dialogRef.afterClosed());
@@ -112,17 +140,16 @@ export class DocumentTableComponent implements OnInit {
     const dialogRef = this._uploadDialogService.openUploadDialog(
       (file: File) => {
         if (this.project) {
-          return this._documentService.uploadDocumentExcel(
-            this.project.id,
-            file
-          );
+          return this._documentService.uploadDocumentExcel(file, {
+            fallback_project_id: this.project.id,
+          });
         } else {
           throw new Error('Project is undefined');
         }
       }
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());
-    if (uploadState && uploadState.state == 'done') {
+    if (uploadState && uploadState.state === 'done') {
       this.dataFrame.reload();
     }
   }

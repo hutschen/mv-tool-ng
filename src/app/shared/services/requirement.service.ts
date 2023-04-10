@@ -25,13 +25,15 @@ import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
 import { IUploadState, UploadService } from './upload.service';
 
+export type ComplianceStatus = 'C' | 'PC' | 'NC' | 'N/A';
+
 export interface IRequirementInput {
   reference?: string | null;
   summary: string;
   description?: string | null;
   target_object?: string | null;
   milestone?: string | null;
-  compliance_status?: string | null;
+  compliance_status?: ComplianceStatus | null;
   compliance_comment?: string | null;
   catalog_requirement_id?: number | null;
 }
@@ -43,8 +45,8 @@ export interface IRequirement {
   description?: string | null;
   target_object?: string | null;
   milestone?: string | null;
-  compliance_status?: string | null;
-  compliance_status_hint?: string | null;
+  compliance_status?: ComplianceStatus | null;
+  compliance_status_hint?: ComplianceStatus | null;
   compliance_comment?: string | null;
   project: IProject;
   catalog_requirement?: ICatalogRequirement | null;
@@ -59,8 +61,8 @@ export class Requirement implements IRequirement {
   description: string | null;
   target_object: string | null;
   milestone: string | null;
-  compliance_status: string | null;
-  compliance_status_hint: string | null;
+  compliance_status: ComplianceStatus | null;
+  compliance_status_hint: ComplianceStatus | null;
   compliance_comment: string | null;
   project: Project;
   catalog_requirement: CatalogRequirement | null;
@@ -111,6 +113,19 @@ export class Requirement implements IRequirement {
       return null;
     } else {
       return Math.round(this.verification_progress * 100);
+    }
+  }
+
+  get completionProgressColor(): string | null {
+    switch (this.completion_progress) {
+      case null:
+        return null;
+      case 0:
+        return 'warn';
+      case 1:
+        return 'primary';
+      default:
+        return 'accent';
     }
   }
 
@@ -218,16 +233,16 @@ export class RequirementService {
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }
 
-  downloadRequirementsExcel(projectId: number): Observable<IDownloadState> {
-    const url = `${this.getRequirementsUrl(projectId)}/excel`;
-    return this._download.download(url);
+  downloadRequirementsExcel(
+    params: IQueryParams = {}
+  ): Observable<IDownloadState> {
+    return this._download.download('excel/requirements', params);
   }
 
   uploadRequirementsExcel(
-    projectId: number,
-    file: File
+    file: File,
+    params: IQueryParams = {}
   ): Observable<IUploadState> {
-    const url = `${this.getRequirementsUrl(projectId)}/excel`;
-    return this._upload.upload(url, file);
+    return this._upload.upload('excel/requirements', file, params);
   }
 }

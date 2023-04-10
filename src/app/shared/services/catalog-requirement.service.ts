@@ -22,6 +22,8 @@ import {
 } from './catalog-module.service';
 import { CRUDService, IPage } from './crud.service';
 import { IQueryParams } from './query-params.service';
+import { DownloadService } from './download.service';
+import { UploadService } from './upload.service';
 
 export interface ICatalogRequirementInput {
   reference?: string | null;
@@ -91,6 +93,8 @@ export class CatalogRequirementService {
     >,
     protected _crud_str: CRUDService<null, string>,
     protected _crud_repr: CRUDService<null, ICatalogRequirementRepresentation>,
+    protected _download: DownloadService,
+    protected _upload: UploadService,
     protected _catalogModules: CatalogModuleService
   ) {}
 
@@ -174,5 +178,13 @@ export class CatalogRequirementService {
 
   getCatalogRequirementRepresentations(params: IQueryParams = {}) {
     return this._crud_repr.query('catalog-requirement/representations', params);
+  }
+
+  downloadCatalogRequirementExcel(params: IQueryParams = {}) {
+    return this._download.download('excel/catalog-requirements', params);
+  }
+
+  uploadCatalogRequirementExcel(file: File, params: IQueryParams = {}) {
+    return this._upload.upload('excel/catalog-requirements', file, params);
   }
 }

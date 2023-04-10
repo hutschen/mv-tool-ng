@@ -13,21 +13,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import {
-  ActivatedRouteSnapshot,
-  Router,
-  RouterStateSnapshot,
-} from '@angular/router';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { ProjectIdGuard } from './id.guard';
 
 describe('IdGuard', () => {
   let sut: ProjectIdGuard;
   let routerMock: jasmine.SpyObj<Router>;
-  let stateMock: RouterStateSnapshot;
 
   beforeEach(() => {
     routerMock = jasmine.createSpyObj('Router', ['navigate']);
-    stateMock = { url: 'test' } as RouterStateSnapshot;
     sut = new ProjectIdGuard(routerMock);
   });
 
@@ -36,28 +30,25 @@ describe('IdGuard', () => {
   });
 
   it('should return true when id is valid', () => {
-    const result = sut.canActivate(
-      { paramMap: { get: (_: string) => '1' } } as ActivatedRouteSnapshot,
-      stateMock
-    );
+    const result = sut.canActivate({
+      paramMap: { get: (_: string) => '1' },
+    } as ActivatedRouteSnapshot);
     expect(result).toEqual(true);
     expect(routerMock.navigate).not.toHaveBeenCalled();
   });
 
   it('should return false when id is negative', () => {
-    const result = sut.canActivate(
-      { paramMap: { get: (_: string) => '-1' } } as ActivatedRouteSnapshot,
-      stateMock
-    );
+    const result = sut.canActivate({
+      paramMap: { get: (_: string) => '-1' },
+    } as ActivatedRouteSnapshot);
     expect(result).toEqual(false);
     expect(routerMock.navigate).toHaveBeenCalledWith(['/']);
   });
 
   it('should return false when id is not a number', () => {
-    const result = sut.canActivate(
-      { paramMap: { get: (_: string) => 'test' } } as ActivatedRouteSnapshot,
-      stateMock
-    );
+    const result = sut.canActivate({
+      paramMap: { get: (_: string) => 'test' },
+    } as ActivatedRouteSnapshot);
     expect(result).toEqual(false);
     expect(routerMock.navigate).toHaveBeenCalledWith(['/']);
   });

@@ -42,3 +42,11 @@ See also https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-line-clamp */
   text-overflow: unset;
   white-space: unset;
 }
+
+.expand .expandable,
+.expand .expandable-lines {
+  overflow: unset !important;
+  text-overflow: unset !important;
+  white-space: unset !important;
+  -webkit-line-clamp: unset !important;
+}

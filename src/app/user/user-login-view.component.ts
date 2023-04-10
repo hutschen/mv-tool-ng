@@ -20,13 +20,13 @@ import { Router } from '@angular/router';
   selector: 'mvtool-user-login-view',
   template: `
     <div class="content fx-column fx-center-center">
-      <mat-card class="user-login-card">
+      <mat-card class="user-login-card margin-y padding-x-half padding-y-half">
         <mvtool-user-login (loggedIn)="onLoggedIn()"></mvtool-user-login>
       </mat-card>
     </div>
   `,
-  styleUrls: ['../shared/styles/flex.scss'],
-  styles: ['.user-login-card { width: 500px; margin: 20px; }'],
+  styleUrls: ['../shared/styles/flex.scss', '../shared/styles/spacing.scss'],
+  styles: ['.user-login-card { width: 500px; }'],
 })
 export class UserLoginViewComponent implements OnInit {
   constructor(protected _router: Router) {}

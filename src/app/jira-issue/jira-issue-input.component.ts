@@ -35,8 +35,12 @@ import {
       <!-- A Jira issue is linked -->
       <div *ngIf="measure.hasLinkedJiraIssue">
         <!-- User has permission to view Jira issue -->
-        <div *ngIf="measure.jira_issue">
-          <button mat-button [matMenuTriggerFor]="editJiraIssueMenu">
+        <div *ngIf="measure.jira_issue" class="indicator">
+          <button
+            mat-button
+            [color]="measure.jira_issue.status.completed ? 'primary' : 'warn'"
+            [matMenuTriggerFor]="editJiraIssueMenu"
+          >
             <mat-icon *ngIf="measure.jira_issue.status.completed"
               >check
             </mat-icon>

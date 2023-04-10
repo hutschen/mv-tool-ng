@@ -1,0 +1,91 @@
+// Copyright (C) 2023 Helmar Hutschenreuter
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+@import "../styles/variables";
+
+.margin-x {
+  margin-left: $spacing-x;
+  margin-right: $spacing-x;
+}
+
+.margin-x-btn-container {
+  margin-left: calc($spacing-x - $mat-button-padding-x);
+  margin-right: calc($spacing-x - $mat-button-padding-x);
+}
+
+.margin-l-toolbar-first-child {
+  margin-left: $spacing-x - $mat-toolbar-padding-x;
+}
+
+.margin-r-toolbar-last-child {
+  margin-right: $spacing-x - $mat-toolbar-padding-x;
+}
+
+.margin-l-btn-container {
+  margin-left: calc($spacing-x - $mat-button-padding-x);
+}
+
+.margin-r-btn-container {
+  margin-right: calc($spacing-x - $mat-button-padding-x);
+}
+
+.margin-y {
+  margin-top: $spacing-y;
+  margin-bottom: $spacing-y;
+}
+
+.margin-x-half {
+  margin-left: calc($spacing-x/2);
+  margin-right: calc($spacing-x/2);
+}
+
+.margin-y-half {
+  margin-top: calc($spacing-y/2);
+  margin-bottom: calc($spacing-y/2);
+}
+
+.margin-x-quarter {
+  margin-left: calc($spacing-x/4);
+  margin-right: calc($spacing-x/4);
+}
+
+.margin-y-quarter {
+  margin-top: calc($spacing-y/4);
+  margin-bottom: calc($spacing-y/4);
+}
+
+.no-margin {
+  margin: 0;
+}
+
+.padding-x {
+  padding-left: $spacing-x;
+  padding-right: $spacing-x;
+}
+
+.padding-y {
+  padding-top: $spacing-y;
+  padding-bottom: $spacing-y;
+}
+
+.padding-x-half {
+  padding-left: calc($spacing-x/2);
+  padding-right: calc($spacing-x/2);
+}
+
+.padding-y-half {
+  padding-top: calc($spacing-y/2);
+  padding-bottom: calc($spacing-y/2);
+}

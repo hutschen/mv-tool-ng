@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { NgModule } from '@angular/core';
+import { inject, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProjectMeasureViewComponent } from './project-measure-view.component';
 import { ProjectMeasureTableComponent } from './project-measure-table.component';
@@ -21,14 +21,17 @@ import { AuthGuard } from '../shared/guards/auth.guard';
 import { ProjectIdGuard } from '../shared/guards/id.guard';
 import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
-import { RouterModule } from '@angular/router';
+import { CanActivateFn, RouterModule } from '@angular/router';
 import { ProjectModule } from '../project/project.module';
 import { JiraIssueModule } from '../jira-issue/jira-issue.module';
 
 const routes = [
   {
     path: 'projects/:projectId/measures',
-    canActivate: [AuthGuard, ProjectIdGuard],
+    canActivate: [
+      () => inject(AuthGuard).canActivate(),
+      (route) => inject(ProjectIdGuard).canActivate(route),
+    ] as CanActivateFn[],
     component: ProjectMeasureViewComponent,
   },
 ];

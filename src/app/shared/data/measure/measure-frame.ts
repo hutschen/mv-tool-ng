@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { combineLatest, map, Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import {
   FilterByPattern,
@@ -37,7 +37,6 @@ import {
   MilestoneField,
   RequirementField,
   TargetObjectField,
-  VerifiedField,
 } from '../measure/measure-fields';
 import {
   CompletionCommentColumn,
@@ -253,14 +252,22 @@ export class MeasureDataFrame extends DataFrame<Measure> {
       initQueryParams
     );
 
-    // Verified column
-    const verifiedColumn = new DataColumn(
-      new VerifiedField(),
+    // Verification status column
+    const verificationStatusColumn = new DataColumn(
+      new StatusField('verification_status', 'Verification'),
       new Filters(
-        'Verified',
+        'Verification Statuses',
         undefined,
-        undefined,
-        new FilterForExistence('verified', initQueryParams)
+        new FilterByValues(
+          'verification_statuses',
+          [
+            { value: 'verified', label: 'Verified' },
+            { value: 'partially verified', label: 'Partially Verified' },
+            { value: 'not verified', label: 'Not Verified' },
+          ],
+          initQueryParams
+        ),
+        new FilterForExistence('has_verification_status', initQueryParams)
       ),
       initQueryParams
     );
@@ -272,13 +279,13 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         new SummaryColumn(initQueryParams),
         new DescriptionColumn(initQueryParams),
         documentColumn,
-        jiraIssueColumn,
         new ComplianceStatusColumn(initQueryParams),
         new ComplianceCommentColumn(initQueryParams),
+        jiraIssueColumn,
         completionStatusColumn,
         new CompletionCommentColumn(initQueryParams),
         verificationMethodColumn,
-        verifiedColumn,
+        verificationStatusColumn,
         new VerificationCommentColumn(initQueryParams),
         new PlaceholderColumn('options', 'Options'),
       ],

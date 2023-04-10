@@ -32,6 +32,8 @@
 <div class="mat-elevation-z3 fx-column">
   <mvtool-table
     [dataFrame]="dataFrame"
+    [marked]="marked"
+    [expanded]="expanded"
     (create)="onCreateMeasure()"
     noContentText="No measures found."
     loadingText="Loading measures..."
@@ -70,9 +72,10 @@
           {{ column.label }}
         </mvtool-filter-header>
       </th>
-      <td mat-cell *matCellDef="let measure">
+      <td mat-cell *matCellDef="let measure" class="indicator">
         <button
           mat-button
+          [color]="measure.completionStatusColor"
           matTooltip="Click to set completion status"
           (click)="onEditCompletion(measure); $event.stopImmediatePropagation()"
         >
@@ -104,7 +107,7 @@
       </td>
     </ng-container>
 
-    <!-- Verification status column -->
+    <!-- Verification method column -->
     <ng-container
       *ngIf="dataFrame.columns.getColumn('verification_method') as column"
       [matColumnDef]="column.name"
@@ -127,9 +130,9 @@
       </td>
     </ng-container>
 
-    <!-- Verified column -->
+    <!-- Verification status column -->
     <ng-container
-      *ngIf="dataFrame.columns.getColumn('verified') as column"
+      *ngIf="dataFrame.columns.getColumn('verification_status') as column"
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -137,9 +140,10 @@
           {{ column.label }}
         </mvtool-filter-header>
       </th>
-      <td mat-cell *matCellDef="let measure">
+      <td mat-cell *matCellDef="let measure" class="indicator">
         <button
-          mat-icon-button
+          mat-button
+          [color]="measure.verificationStatusColor"
           (click)="
             onEditVerification(measure); $event.stopImmediatePropagation()
           "
@@ -147,6 +151,7 @@
         >
           <mat-icon *ngIf="measure.verified">check</mat-icon>
           <mat-icon *ngIf="!measure.verified">close</mat-icon>
+          {{ column.field.toStr(measure) | titlecase }}
         </button>
       </td>
     </ng-container>
@@ -161,26 +166,22 @@
           [clearFiltersDisabled]="!(dataFrame.columns.areFiltersSet$ | async)"
           (clearSort)="dataFrame.sort.clearSort()"
           [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
+          (clearMarkers)="marked.clear()"
+          [clearMarkersDisabled]="!marked.selected.length"
         ></mvtool-table-options>
       </th>
       <td mat-cell *matCellDef="let measure">
         <mvtool-table-row-options
           (edit)="onEditMeasure(measure)"
           (delete)="onDeleteMeasure(measure)"
+          (editCompliance)="onEditCompliance(measure)"
+          (editCompletion)="onEditCompletion(measure)"
+          (editVerification)="onEditVerification(measure)"
+          (toggleMarker)="marked.toggle(measure)"
+          [isMarked]="marked.isSelected(measure)"
+          (toggleExpansion)="expanded.toggle(measure)"
+          [isExpanded]="expanded.isSelected(measure)"
         >
-          <button mat-menu-item (click)="onEditCompliance(measure)">
-            <mat-icon>assured_workload</mat-icon>
-            Set compliance status
-          </button>
-          <button mat-menu-item (click)="onEditCompletion(measure)">
-            <mat-icon>check_circle</mat-icon>
-            Set completion status
-          </button>
-          <button mat-menu-item (click)="onEditVerification(measure)">
-            <mat-icon>verified</mat-icon>
-            Set verification status
-          </button>
-          <mat-divider></mat-divider>
         </mvtool-table-row-options>
       </td>
     </ng-container>

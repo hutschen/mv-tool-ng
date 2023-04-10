@@ -23,6 +23,7 @@ import { Injectable } from '@angular/core';
 import { Observable, scan } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from './auth.service';
+import { IQueryParams } from './query-params.service';
 
 export interface IUploadState {
   state: 'pending' | 'in_progress' | 'done';
@@ -66,7 +67,11 @@ export class UploadService {
     }
   }
 
-  upload(relativeUrl: string, file: File): Observable<IUploadState> {
+  upload(
+    relativeUrl: string,
+    file: File,
+    params: IQueryParams = {}
+  ): Observable<IUploadState> {
     const initialState: IUploadState = {
       state: 'pending',
       progress: 0,
@@ -80,6 +85,7 @@ export class UploadService {
           Authorization: `Bearer ${this._auth.accessToken.access_token}`,
         }),
         observe: 'events',
+        params: params,
         reportProgress: true,
       })
       .pipe(scan(this._caculateState, initialState));

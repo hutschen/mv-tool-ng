@@ -48,6 +48,7 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
+
     <!-- Compliance Comment Input -->
     <mat-form-field appearance="fill">
       <mat-label>Compliance Comment</mat-label>
@@ -55,7 +56,7 @@
         name="complianceComment"
         matInput
         [(ngModel)]="itemInput.compliance_comment"
-        [disabled]="complianceCommentDisabled"
+        [disabled]="!complianceStatus"
       ></textarea>
     </mat-form-field>
   </div>

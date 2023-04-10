@@ -39,9 +39,9 @@ $light-theme: mat.define-light-theme(
 );
 
 // Define a dark theme
-$dark-primary: mat.define-palette(mat.$pink-palette);
+$dark-primary: $light-accent;
 $dark-accent: mat.define-palette(mat.$blue-grey-palette);
-$dark-warn: mat.define-palette(mat.$red-palette);
+$dark-warn: $light-warn;
 $dark-theme: mat.define-dark-theme(
   (
     color: (
@@ -52,14 +52,48 @@ $dark-theme: mat.define-dark-theme(
   )
 );
 
+// Define indicator light theme
+$indicator-light-primary: mat.define-palette(mat.$teal-palette);
+$indicator-light-accent: $light-primary;
+$indicator-light-warn: $light-primary;
+$indicator-light-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $indicator-light-primary,
+      accent: $indicator-light-accent,
+      warn: $indicator-light-warn,
+    ),
+  )
+);
+
+// Define indicator dark theme
+$indicator-dark-primary: mat.define-palette(mat.$lime-palette);
+$indicator-dark-accent: $dark-primary;
+$indicator-dark-warn: $dark-primary;
+$indicator-dark-theme: mat.define-dark-theme(
+  (
+    color: (
+      primary: $indicator-dark-primary,
+      accent: $indicator-dark-accent,
+      warn: $indicator-dark-warn,
+    ),
+  )
+);
+
 // Apply the light theme by default
 @include mat.all-component-themes($light-theme);
 
+.indicator {
+  @include mat.all-component-colors($indicator-light-theme);
+}
+
 // Apply the dark theme only when the user prefers dark themes
 @media (prefers-color-scheme: dark) {
-  // @include mat.core-color($dark-theme);
-  // @include mat.button-color($dark-theme);
   @include mat.all-component-colors($dark-theme);
+
+  .indicator {
+    @include mat.all-component-colors($indicator-dark-theme);
+  }
 }
 
 html,
@@ -70,4 +104,9 @@ body {
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+// Don't wrap text in buttons
+.mat-mdc-button-base {
+  white-space: nowrap;
 }

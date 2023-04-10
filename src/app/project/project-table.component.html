@@ -20,6 +20,8 @@
   <mvtool-table-toolbar
     (refresh)="this.dataFrame.reload()"
     (create)="onCreateProject()"
+    (upload)="onImportProjectsExcel()"
+    (download)="onExportProjectsExcel()"
     [(search)]="dataFrame.search.pattern"
     searchLabel="Search Projects"
     createLabel="Create Project"
@@ -31,6 +33,8 @@
 <div class="mat-elevation-z3 fx-column">
   <mvtool-table
     [dataFrame]="dataFrame"
+    [marked]="marked"
+    [expanded]="expanded"
     (create)="onCreateProject()"
     noContentText="No projects found."
     loadingText="Loading projects..."
@@ -71,11 +75,13 @@
         mat-cell
         *matCellDef="let project"
         [matTooltip]="column.field.toStr(project)"
+        class="indicator"
       >
         <mat-progress-bar
           *ngIf="column.field.toBool(project)"
           mode="determinate"
           [value]="column.field.toValue(project)"
+          [color]="project.completionProgressColor"
         >
         </mat-progress-bar>
       </td>
@@ -90,12 +96,18 @@
           [clearFiltersDisabled]="!(dataFrame.columns.areFiltersSet$ | async)"
           (clearSort)="dataFrame.sort.clearSort()"
           [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
+          (clearMarkers)="marked.clear()"
+          [clearMarkersDisabled]="!marked.selected.length"
         ></mvtool-table-options>
       </th>
       <td mat-cell *matCellDef="let project">
         <mvtool-table-row-options
           (edit)="onEditProject(project)"
           (delete)="onDeleteProject(project)"
+          (toggleMarker)="marked.toggle(project)"
+          [isMarked]="marked.isSelected(project)"
+          (toggleExpansion)="expanded.toggle(project)"
+          [isExpanded]="expanded.isSelected(project)"
         >
         </mvtool-table-row-options>
       </td>

@@ -18,7 +18,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 @Component({
   selector: 'mvtool-table-toolbar',
   template: `
-    <div class="fx-row fx-space-between-center">
+    <div class="fx-row fx-space-between-center margin-l-btn-container">
       <div class="fx-row fx-start-center">
         <!-- Button to refresh table -->
         <button *ngIf="refresh.observed" mat-button (click)="refresh.emit()">
@@ -69,7 +69,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
       </div>
     </div>
   `,
-  styleUrls: ['../styles/flex.scss'],
+  styleUrls: ['../styles/flex.scss', '../styles/spacing.scss'],
   styles: [],
 })
 export class TableToolbarComponent {

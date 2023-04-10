@@ -18,7 +18,8 @@ import { map, Observable } from 'rxjs';
 import { Catalog, CatalogService, ICatalog } from './catalog.service';
 import { CRUDService, IPage } from './crud.service';
 import { IQueryParams } from './query-params.service';
-import { IUploadState, UploadService } from './upload.service';
+import { UploadService } from './upload.service';
+import { DownloadService } from './download.service';
 
 export interface ICatalogModuleInput {
   reference: string | null;
@@ -72,6 +73,7 @@ export class CatalogModuleService {
     >,
     protected _crud_str: CRUDService<null, string>,
     protected _crud_repr: CRUDService<null, ICatalogModuleRepresentation>,
+    protected _download: DownloadService,
     protected _upload: UploadService,
     protected _catalogs: CatalogService
   ) {}
@@ -144,7 +146,15 @@ export class CatalogModuleService {
     return this._crud_repr.query('catalog-module/representations', params);
   }
 
-  uploadGSBaustein(catalogId: number, file: File): Observable<IUploadState> {
+  downloadCatalogModuleExcel(params: IQueryParams) {
+    return this._download.download('excel/catalog-modules', params);
+  }
+
+  uploadCatalogModuleExcel(file: File, params: IQueryParams) {
+    return this._upload.upload('excel/catalog-modules', file, params);
+  }
+
+  uploadGSBaustein(catalogId: number, file: File) {
     const url = `${this.getCatalogModulesUrl(catalogId)}/gs-baustein`;
     return this._upload.upload(url, file);
   }

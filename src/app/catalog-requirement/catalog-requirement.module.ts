@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { NgModule } from '@angular/core';
+import { inject, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CatalogRequirementTableComponent } from './catalog-requirement-table.component';
 import { CatalogRequirementDialogComponent } from './catalog-requirement-dialog.component';
@@ -21,14 +21,17 @@ import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
 import { CatalogRequirementViewComponent } from './catalog-requirement-view.component';
 import { CatalogModuleModule } from '../catalog-module/catalog-module.module';
-import { RouterModule } from '@angular/router';
+import { CanActivateFn, RouterModule } from '@angular/router';
 import { AuthGuard } from '../shared/guards/auth.guard';
 import { CatalogModuleIdGuard } from '../shared/guards/id.guard';
 
 const routes = [
   {
     path: 'catalog-modules/:catalogModuleId/catalog-requirements',
-    canActivate: [AuthGuard, CatalogModuleIdGuard],
+    canActivate: [
+      () => inject(AuthGuard).canActivate(),
+      (route) => inject(CatalogModuleIdGuard).canActivate(route),
+    ] as CanActivateFn[],
     component: CatalogRequirementViewComponent,
   },
 ];
