@@ -32,6 +32,7 @@
   <!-- Documents table -->
   <mvtool-table
     [dataFrame]="dataFrame"
+    [marked]="marked"
     (create)="onCreateDocument()"
     noContentText="No documents found."
     loadingText="Loading documents..."
@@ -50,12 +51,16 @@
           [clearFiltersDisabled]="!(dataFrame.columns.areFiltersSet$ | async)"
           (clearSort)="dataFrame.sort.clearSort()"
           [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
+          (clearMarkers)="marked.clear()"
+          [clearMarkersDisabled]="!marked.selected.length"
         ></mvtool-table-options>
       </th>
       <td mat-cell *matCellDef="let document">
         <mvtool-table-row-options
           (edit)="onEditDocument(document)"
           (delete)="onDeleteDocument(document)"
+          (toggleMarker)="marked.toggle(document)"
+          [isMarked]="marked.isSelected(document)"
         >
         </mvtool-table-row-options>
       </td>

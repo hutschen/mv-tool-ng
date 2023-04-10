@@ -14,15 +14,20 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { Catalog, CatalogService } from '../shared/services/catalog.service';
 import { CatalogDialogService } from './catalog-dialog.component';
 import { CatalogDataFrame } from '../shared/data/catalog/catalog-frame';
-import { QueryParamsService } from '../shared/services/query-params.service';
+import {
+  IQueryParams,
+  QueryParamsService,
+} from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
+import { combineQueryParams } from '../shared/combine-query-params';
+import { DataSelection } from '../shared/data/selection';
 
 @Component({
   selector: 'mvtool-catalog-table',
@@ -36,6 +41,8 @@ import { UploadDialogService } from '../shared/components/upload-dialog.componen
 })
 export class CatalogTableComponent implements OnInit {
   dataFrame!: CatalogDataFrame;
+  marked!: DataSelection<Catalog>;
+  exportQueryParams$!: Observable<IQueryParams>;
   @Output() clickCatalog = new EventEmitter<Catalog>();
 
   constructor(
@@ -49,13 +56,28 @@ export class CatalogTableComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    const initialQueryParams = this._queryParamsService.getQueryParams();
+
+    // Create data frame and marked selection
     this.dataFrame = new CatalogDataFrame(
       this._catalogService,
-      this._queryParamsService.getQueryParams()
+      initialQueryParams
     );
-    this._queryParamsService
-      .syncQueryParams(this.dataFrame.queryParams$)
-      .subscribe();
+    this.marked = new DataSelection('_marked', true, initialQueryParams);
+
+    // Sync query params
+    const syncQueryParams$ = combineQueryParams([
+      this.dataFrame.queryParams$,
+      this.marked.queryParams$,
+    ]);
+    this._queryParamsService.syncQueryParams(syncQueryParams$).subscribe();
+
+    // Define export query params
+    this.exportQueryParams$ = combineQueryParams([
+      this.dataFrame.search.queryParams$,
+      this.dataFrame.columns.filterQueryParams$,
+      this.dataFrame.sort.queryParams$,
+    ]);
   }
 
   protected async _createOrEditCatalog(catalog?: Catalog): Promise<void> {
@@ -89,11 +111,7 @@ export class CatalogTableComponent implements OnInit {
   async onExportCatalogs(): Promise<void> {
     const dialogRef = this._downloadDialogService.openDownloadDialog(
       this._catalogService.downloadCatalogExcel({
-        // TODO: This is a quick solution to get the query params.
-        // In future, query params should be cached to avoid running the pipe
-        ...(await firstValueFrom(this.dataFrame.search.queryParams$)),
-        ...(await firstValueFrom(this.dataFrame.columns.filterQueryParams$)),
-        ...(await firstValueFrom(this.dataFrame.sort.queryParams$)),
+        ...(await firstValueFrom(this.exportQueryParams$)),
       }),
       'catalogs.xlsx'
     );

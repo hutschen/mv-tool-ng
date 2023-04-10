@@ -60,13 +60,6 @@ export class FilterByPattern {
     return '';
   }
 
-  set queryParams(queryParams: IQueryParams) {
-    const raw = queryParams[this.name] as string | string[] | undefined;
-    if (raw) {
-      this.pattern = Array.isArray(raw) ? raw[0] : raw;
-    }
-  }
-
   set pattern(pattern: string) {
     this._patternSubject.next(pattern);
   }
@@ -209,20 +202,6 @@ export class FilterForExistence {
     const exists = queryParams[this.name];
     if (typeof exists === 'boolean') return exists;
     else return null;
-  }
-
-  set queryParams(queryParams: IQueryParams) {
-    switch (queryParams[this.name] as unknown) {
-      case 'true':
-        this.exists = true;
-        break;
-      case 'false':
-        this.exists = false;
-        break;
-      default:
-        this.exists = null;
-        break;
-    }
   }
 
   set exists(exists: boolean | null) {

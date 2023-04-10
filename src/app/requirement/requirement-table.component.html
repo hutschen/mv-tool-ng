@@ -23,7 +23,6 @@
     [(search)]="dataFrame.search.pattern"
     searchLabel="Search Requirements"
     createLabel="Create Requirement"
-    #tableToolbar
   >
     <button mat-button [matMenuTriggerFor]="importMenu">
       <mat-icon>file_upload</mat-icon>
@@ -47,6 +46,7 @@
 <div class="mat-elevation-z3 fx-column">
   <mvtool-table
     [dataFrame]="dataFrame"
+    [marked]="marked"
     (create)="onCreateRequirement()"
     noContentText="No requirements found."
     loadingText="Loading requirements..."
@@ -134,18 +134,18 @@
           [clearFiltersDisabled]="!(dataFrame.columns.areFiltersSet$ | async)"
           (clearSort)="dataFrame.sort.clearSort()"
           [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
+          (clearMarkers)="marked.clear()"
+          [clearMarkersDisabled]="!marked.selected.length"
         ></mvtool-table-options>
       </th>
       <td mat-cell *matCellDef="let requirement">
         <mvtool-table-row-options
           (edit)="onEditRequirement(requirement)"
+          (editCompliance)="onEditCompliance(requirement)"
           (delete)="onDeleteRequirement(requirement)"
+          (toggleMarker)="marked.toggle(requirement)"
+          [isMarked]="marked.isSelected(requirement)"
         >
-          <button mat-menu-item (click)="onEditCompliance(requirement)">
-            <mat-icon>assured_workload</mat-icon>
-            Set compliance status
-          </button>
-          <mat-divider></mat-divider>
         </mvtool-table-row-options>
       </td>
     </ng-container>
