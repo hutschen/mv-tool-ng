@@ -43,8 +43,8 @@ See also https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-line-clamp */
   white-space: unset;
 }
 
-.disable-truncation .truncate,
-.disable-truncation .truncate-lines {
+.expand .expandable,
+.expand .expandable-lines {
   overflow: unset !important;
   text-overflow: unset !important;
   white-space: unset !important;

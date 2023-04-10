@@ -54,6 +54,7 @@ export class TableComponent<T extends IDataItem> implements AfterContentInit {
 
   columnsToAutoCreate: DataColumn<T>[] = [];
   @Input() marked?: DataSelection<T>;
+  @Input() expanded?: DataSelection<T>;
 
   constructor() {}
 
