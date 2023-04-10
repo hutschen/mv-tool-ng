@@ -24,13 +24,25 @@
     searchLabel="Search Catalog Modules"
     createLabel="Create Catalog Module"
   >
-    <button
-      mat-button
-      (click)="onImportGSBaustein()"
-      matTooltip="Import an official Baustein Word document of the German BSI"
-    >
+    <button mat-button [matMenuTriggerFor]="importMenu">
       <mat-icon>file_upload</mat-icon>
-      Import GS Baustein
+      Import
+    </button>
+    <mat-menu #importMenu="matMenu">
+      <button mat-menu-item (click)="onImportCatalogModulesExcel()">
+        Import Excel
+      </button>
+      <button
+        mat-menu-item
+        (click)="onImportGSBaustein()"
+        matTooltip="Import an official Baustein Word document of the German BSI"
+      >
+        Import from Catalog
+      </button>
+    </mat-menu>
+    <button mat-button (click)="onExportCatalogModulesExcel()">
+      <mat-icon>file_download</mat-icon>
+      Export Excel
     </button>
   </mvtool-table-toolbar>
 </div>
@@ -38,6 +50,8 @@
 <div class="mat-elevation-z3 fx-column">
   <mvtool-table
     [dataFrame]="dataFrame"
+    [marked]="marked"
+    [expanded]="expanded"
     (create)="onCreateCatalogModule()"
     noContentText="No catalog modules found."
     loadingText="Loading catalog modules..."
@@ -57,12 +71,18 @@
           [clearFiltersDisabled]="!(dataFrame.columns.areFiltersSet$ | async)"
           (clearSort)="dataFrame.sort.clearSort()"
           [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
+          (clearMarkers)="marked.clear()"
+          [clearMarkersDisabled]="!marked.selected.length"
         ></mvtool-table-options>
       </th>
       <td mat-cell *matCellDef="let catalogModule">
         <mvtool-table-row-options
           (edit)="onEditCatalogModule(catalogModule)"
           (delete)="onDeleteCatalogModule(catalogModule)"
+          (toggleMarker)="marked.toggle(catalogModule)"
+          [isMarked]="marked.isSelected(catalogModule)"
+          (toggleExpansion)="expanded.toggle(catalogModule)"
+          [isExpanded]="expanded.isSelected(catalogModule)"
         >
         </mvtool-table-row-options>
       </td>

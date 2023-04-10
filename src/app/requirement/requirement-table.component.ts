@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
@@ -27,12 +27,17 @@ import { ComplianceDialogService } from '../shared/components/compliance-dialog.
 import { RequirementDialogService } from './requirement-dialog.component';
 import { RequirementImportDialogService } from './requirement-import-dialog.component';
 import { RequirementDataFrame } from '../shared/data/requirement/requirement-frame';
-import { QueryParamsService } from '../shared/services/query-params.service';
+import {
+  IQueryParams,
+  QueryParamsService,
+} from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { CatalogService } from '../shared/services/catalog.service';
 import { CatalogModuleService } from '../shared/services/catalog-module.service';
 import { TargetObjectService } from '../shared/services/target-object.service';
 import { MilestoneService } from '../shared/services/milestone.service';
+import { DataSelection } from '../shared/data/selection';
+import { combineQueryParams } from '../shared/combine-query-params';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -45,6 +50,9 @@ import { MilestoneService } from '../shared/services/milestone.service';
 })
 export class RequirementTableComponent implements OnInit {
   dataFrame!: RequirementDataFrame;
+  marked!: DataSelection<Requirement>;
+  expanded!: DataSelection<Requirement>;
+  exportQueryParams$!: Observable<IQueryParams>;
   @Input() project?: Project;
   @Output() clickRequirement = new EventEmitter<Requirement>();
 
@@ -66,6 +74,9 @@ export class RequirementTableComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     if (!this.project) throw new Error('Project is undefined');
+    const initialQueryParams = this._queryParamsService.getQueryParams();
+
+    // Create data frame, marked and expanded selection
     this.dataFrame = new RequirementDataFrame(
       this._requirementService,
       this._catalogService,
@@ -73,11 +84,25 @@ export class RequirementTableComponent implements OnInit {
       this._milestoneService,
       this._targetObjectService,
       this.project,
-      this._queryParamsService.getQueryParams()
+      initialQueryParams
     );
-    this._queryParamsService
-      .syncQueryParams(this.dataFrame.queryParams$)
-      .subscribe();
+    this.marked = new DataSelection('_marked', true, initialQueryParams);
+    this.expanded = new DataSelection('_expanded', false, initialQueryParams);
+
+    // Sync query params with query params service
+    const syncQueryParams$ = combineQueryParams([
+      this.dataFrame.queryParams$,
+      this.marked.queryParams$,
+      this.expanded.queryParams$,
+    ]);
+    this._queryParamsService.syncQueryParams(syncQueryParams$).subscribe();
+
+    // Define export query params
+    this.exportQueryParams$ = combineQueryParams([
+      this.dataFrame.search.queryParams$,
+      this.dataFrame.columns.filterQueryParams$,
+      this.dataFrame.sort.queryParams$,
+    ]);
   }
 
   protected async _createOrEditRequirement(
@@ -133,7 +158,10 @@ export class RequirementTableComponent implements OnInit {
   async onExportRequirementsExcel(): Promise<void> {
     if (this.project) {
       const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._requirementService.downloadRequirementsExcel(this.project.id),
+        this._requirementService.downloadRequirementsExcel({
+          project_ids: this.project.id,
+          ...(await firstValueFrom(this.exportQueryParams$)),
+        }),
         'requirements.xlsx'
       );
       await firstValueFrom(dialogRef.afterClosed());
@@ -146,17 +174,16 @@ export class RequirementTableComponent implements OnInit {
     const dialogRef = this._uploadDialogService.openUploadDialog(
       (file: File) => {
         if (this.project) {
-          return this._requirementService.uploadRequirementsExcel(
-            this.project.id,
-            file
-          );
+          return this._requirementService.uploadRequirementsExcel(file, {
+            fallback_project_id: this.project.id,
+          });
         } else {
           throw new Error('Project is undefined');
         }
       }
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());
-    if (uploadState && uploadState.state == 'done') {
+    if (uploadState && uploadState.state === 'done') {
       this.dataFrame.reload();
     }
   }

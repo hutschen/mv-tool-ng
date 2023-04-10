@@ -55,6 +55,15 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
           <mat-icon>sort_off</mat-icon>
           Clear sort
         </button>
+        <button
+          mat-menu-item
+          *ngIf="clearMarkers.observed"
+          (click)="clearMarkers.emit($event)"
+          [disabled]="clearMarkersDisabled"
+        >
+          <mat-icon>bookmark_remove</mat-icon>
+          Clear markers
+        </button>
         <ng-content></ng-content>
       </mat-menu>
     </div>
@@ -66,9 +75,11 @@ export class TableOptionsComponent implements OnInit {
   @Output() hideColumns = new EventEmitter<Event>();
   @Output() clearFilters = new EventEmitter<Event>();
   @Output() clearSort = new EventEmitter<Event>();
+  @Output() clearMarkers = new EventEmitter<Event>();
   @Input() clearFiltersDisabled: boolean = false;
   @Input() clearSortDisabled: boolean = false;
   @Input() hideColumnsDisabled: boolean = false;
+  @Input() clearMarkersDisabled: boolean = false;
 
   constructor() {}
 
@@ -78,7 +89,8 @@ export class TableOptionsComponent implements OnInit {
     return Boolean(
       this.hideColumns.observed ||
         this.clearFilters.observed ||
-        this.clearSort.observed
+        this.clearSort.observed ||
+        this.clearMarkers.observed
     );
   }
 }

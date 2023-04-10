@@ -39,19 +39,21 @@ interface IBreadcrumb {
   selector: 'mvtool-breadcrumb-trail',
   template: `
     <ng-container *ngIf="breadcrumbs$ | async as breadcrumbs">
-      <div *ngIf="breadcrumbs.length">
-        <div class="fx-row">
+      <ng-container *ngIf="breadcrumbs.length">
+        <div class="fx-row fx-gap-5 margin-x-btn-container">
           <div
-            class="breadcrumb-trail"
+            class="fx-row fx-gap-5 fx-center-center margin-y-quarter"
             *ngFor="let breadcrumb of breadcrumbs; let i = index"
           >
-            <div *ngIf="!breadcrumb.alternativeBreadcrumbs?.length">
+            <!-- Breadcrumb without alternative breadcrumbs -->
+            <ng-container *ngIf="!breadcrumb.alternativeBreadcrumbs?.length">
               <button mat-button [routerLink]="breadcrumb.navigationCommands">
                 {{ breadcrumb.displayText | truncate : 25 }}
               </button>
-              <span *ngIf="i < breadcrumbs.length - 1">&sol;</span>
-            </div>
-            <div *ngIf="breadcrumb.alternativeBreadcrumbs?.length">
+            </ng-container>
+
+            <!-- Breadcrumb with alternative breadcrumbs -->
+            <ng-container *ngIf="breadcrumb.alternativeBreadcrumbs?.length">
               <button mat-button [matMenuTriggerFor]="menu">
                 {{ breadcrumb.displayText | truncate : 25 }}
                 <mat-icon>expand_more</mat-icon>
@@ -67,15 +69,18 @@ interface IBreadcrumb {
                   {{ altBreadcrumb.displayText | truncate : 25 }}
                 </button>
               </mat-menu>
-            </div>
+            </ng-container>
+
+            <!-- Path separator symbol -->
+            <div *ngIf="i < breadcrumbs.length - 1">&sol;</div>
           </div>
         </div>
         <mat-divider></mat-divider>
-      </div>
+      </ng-container>
     </ng-container>
   `,
-  styleUrls: ['./shared/styles/flex.scss'],
-  styles: ['.breadcrumb-trail { padding: 5px 2px; }'],
+  styleUrls: ['./shared/styles/flex.scss', './shared/styles/spacing.scss'],
+  styles: [],
 })
 export class BreadcrumbTrailComponent {
   breadcrumbs$: Observable<IBreadcrumb[]>;

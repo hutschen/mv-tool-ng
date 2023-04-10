@@ -20,6 +20,8 @@
   <mvtool-table-toolbar
     (refresh)="this.dataFrame.reload()"
     (create)="onCreateCatalogRequirement()"
+    (upload)="onImportCatalogRequirementsExcel()"
+    (download)="onExportCatalogRequirementsExcel()"
     [(search)]="dataFrame.search.pattern"
     searchLabel="Search Catalog Requirements"
     createLabel="Create Catalog Requirement"
@@ -30,6 +32,8 @@
 <div class="mat-elevation-z3 fx-column">
   <mvtool-table
     [dataFrame]="dataFrame"
+    [marked]="marked"
+    [expanded]="expanded"
     (create)="onCreateCatalogRequirement()"
     noContentText="No catalog requirements found."
     loadingText="Loading catalog requirements..."
@@ -48,12 +52,18 @@
           [clearFiltersDisabled]="!(dataFrame.columns.areFiltersSet$ | async)"
           (clearSort)="dataFrame.sort.clearSort()"
           [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
+          (clearMarkers)="marked.clear()"
+          [clearMarkersDisabled]="!marked.selected.length"
         ></mvtool-table-options>
       </th>
       <td mat-cell *matCellDef="let catalogRequirement">
         <mvtool-table-row-options
           (edit)="onEditCatalogRequirement(catalogRequirement)"
           (delete)="onDeleteCatalogRequirement(catalogRequirement)"
+          (toggleMarker)="marked.toggle(catalogRequirement)"
+          [isMarked]="marked.isSelected(catalogRequirement)"
+          (toggleExpansion)="expanded.toggle(catalogRequirement)"
+          [isExpanded]="expanded.isSelected(catalogRequirement)"
         >
         </mvtool-table-row-options>
       </td>

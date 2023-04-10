@@ -18,26 +18,34 @@ import { map, Observable } from 'rxjs';
 import { CRUDService, IPage } from './crud.service';
 import { IQueryParams } from './query-params.service';
 import { IDocument, Document } from './document.service';
-import { DownloadService, IDownloadState } from './download.service';
+import { DownloadService } from './download.service';
 import { IJiraIssue } from './jira-issue.service';
 import {
+  ComplianceStatus,
   IRequirement,
   Requirement,
   RequirementService,
 } from './requirement.service';
-import { IUploadState, UploadService } from './upload.service';
+import { UploadService } from './upload.service';
+
+export type CompletionStatus = 'open' | 'in progress' | 'completed';
+export type VerificationMethod = 'R' | 'T' | 'I';
+export type VerificationStatus =
+  | 'verified'
+  | 'partially verified'
+  | 'not verified';
 
 export interface IMeasureInput {
   reference?: string | null;
   summary: string;
   description?: string | null;
-  compliance_status?: string | null;
+  compliance_status?: ComplianceStatus | null;
   compliance_comment?: string | null;
-  completion_status?: string | null;
+  completion_status?: CompletionStatus | null;
   completion_comment?: string | null;
-  verification_method?: string | null;
+  verification_method?: VerificationMethod | null;
+  verification_status?: VerificationStatus | null;
   verification_comment?: string | null;
-  verified: boolean;
   jira_issue_id?: string | null;
   document_id?: number | null;
 }
@@ -47,13 +55,13 @@ export interface IMeasure {
   reference?: string | null;
   summary: string;
   description?: string | null;
-  compliance_status?: string | null;
+  compliance_status?: ComplianceStatus | null;
   compliance_comment?: string | null;
-  completion_status?: string | null;
+  completion_status?: CompletionStatus | null;
   completion_comment?: string | null;
-  verification_method?: string | null;
+  verification_method?: VerificationMethod | null;
+  verification_status?: VerificationStatus | null;
   verification_comment?: string | null;
-  verified: boolean;
   jira_issue_id?: string | null;
   jira_issue?: IJiraIssue | null;
   requirement: IRequirement;
@@ -65,13 +73,13 @@ export class Measure implements IMeasure {
   reference: string | null;
   summary: string;
   description: string | null;
-  compliance_status: string | null;
+  compliance_status: ComplianceStatus | null;
   compliance_comment: string | null;
-  completion_status: string | null;
+  completion_status: CompletionStatus | null;
   completion_comment: string | null;
-  verification_method: string | null;
+  verification_method: VerificationMethod | null;
+  verification_status: VerificationStatus | null;
   verification_comment: string | null;
-  verified: boolean;
   jira_issue_id: string | null;
   jira_issue: IJiraIssue | null;
   requirement: Requirement;
@@ -86,9 +94,9 @@ export class Measure implements IMeasure {
     this.compliance_comment = measure.compliance_comment ?? null;
     this.completion_status = measure.completion_status ?? null;
     this.completion_comment = measure.completion_comment ?? null;
+    this.verification_status = measure.verification_status ?? null;
     this.verification_method = measure.verification_method ?? null;
     this.verification_comment = measure.verification_comment ?? null;
-    this.verified = measure.verified;
     this.jira_issue_id = measure.jira_issue_id ?? null;
     this.jira_issue = measure.jira_issue ?? null;
     this.requirement = new Requirement(measure.requirement);
@@ -106,7 +114,7 @@ export class Measure implements IMeasure {
       completion_comment: this.completion_comment,
       verification_method: this.verification_method,
       verification_comment: this.verification_comment,
-      verified: this.verified,
+      verification_status: this.verification_status,
       jira_issue_id: this.jira_issue_id,
       document_id: this.document ? this.document.id : null,
     };
@@ -114,6 +122,36 @@ export class Measure implements IMeasure {
 
   get completed(): boolean {
     return this.completion_status === 'completed';
+  }
+
+  get completionStatusColor(): string | null {
+    switch (this.completion_status) {
+      case 'completed':
+        return 'primary';
+      case 'in progress':
+        return 'accent';
+      case 'open':
+        return 'warn';
+      default:
+        return null;
+    }
+  }
+
+  get verificationStatusColor(): string | null {
+    switch (this.verification_status) {
+      case 'verified':
+        return 'primary';
+      case 'partially verified':
+        return 'accent';
+      case 'not verified':
+        return 'warn';
+      default:
+        return null;
+    }
+  }
+
+  get verified(): boolean {
+    return this.verification_status === 'verified';
   }
 
   get hasLinkedJiraIssue(): boolean {
@@ -202,21 +240,11 @@ export class MeasureService {
     return this._crud_str.query('measure/references', params);
   }
 
-  downloadProjectMeasureExcel(projectId: number): Observable<IDownloadState> {
-    const url = `projects/${projectId}/measures/excel`;
-    return this._download.download(url);
+  downloadMeasureExcel(params: IQueryParams = {}) {
+    return this._download.download('excel/measures', params);
   }
 
-  downloadMeasureExcel(requirementId: number): Observable<IDownloadState> {
-    const url = `${this.getMeasuresUrl(requirementId)}/excel`;
-    return this._download.download(url);
-  }
-
-  uploadMeasureExcel(
-    requirementId: number,
-    file: File
-  ): Observable<IUploadState> {
-    const url = `${this.getMeasuresUrl(requirementId)}/excel`;
-    return this._upload.upload(url, file);
+  uploadMeasureExcel(file: File, params: IQueryParams = {}) {
+    return this._upload.upload('excel/measures', file, params);
   }
 }

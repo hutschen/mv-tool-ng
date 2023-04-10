@@ -66,6 +66,7 @@ export class JiraIssueSelectDialogService {
             </mat-option>
           </mat-autocomplete>
           <mat-spinner
+            class="loading-spinner"
             *ngIf="!jiraIssuesLoaded"
             matSuffix
             diameter="20"
@@ -94,7 +95,7 @@ export class JiraIssueSelectDialogService {
     </div>
   `,
   styleUrls: ['../shared/styles/flex.scss'],
-  styles: [],
+  styles: ['.loading-spinner { margin-right: 8px; }'],
 })
 export class JiraIssueSelectDialogComponent implements OnInit {
   jiraProject: IJiraProject;
