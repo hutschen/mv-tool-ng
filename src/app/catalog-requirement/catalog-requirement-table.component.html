@@ -33,6 +33,7 @@
   <mvtool-table
     [dataFrame]="dataFrame"
     [marked]="marked"
+    [expanded]="expanded"
     (create)="onCreateCatalogRequirement()"
     noContentText="No catalog requirements found."
     loadingText="Loading catalog requirements..."
@@ -61,6 +62,8 @@
           (delete)="onDeleteCatalogRequirement(catalogRequirement)"
           (toggleMarker)="marked.toggle(catalogRequirement)"
           [isMarked]="marked.isSelected(catalogRequirement)"
+          (toggleExpansion)="expanded.toggle(catalogRequirement)"
+          [isExpanded]="expanded.isSelected(catalogRequirement)"
         >
         </mvtool-table-row-options>
       </td>

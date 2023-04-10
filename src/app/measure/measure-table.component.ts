@@ -47,6 +47,7 @@ import { DataSelection } from '../shared/data/selection';
 export class MeasureTableComponent implements OnInit {
   dataFrame!: MeasureDataFrame;
   marked!: DataSelection<Measure>;
+  expanded!: DataSelection<Measure>;
   exportQueryParams$!: Observable<IQueryParams>;
   @Input() requirement?: Requirement;
 
@@ -68,6 +69,7 @@ export class MeasureTableComponent implements OnInit {
     if (!this.requirement) throw new Error('Requirement is undefined');
     const initialQueryParams = this._queryParamsService.getQueryParams();
 
+    // Create data frame, marked and expanded selection
     this.dataFrame = new MeasureDataFrame(
       this._measureService,
       this._documentService,
@@ -75,11 +77,13 @@ export class MeasureTableComponent implements OnInit {
       initialQueryParams
     );
     this.marked = new DataSelection('_marked', true, initialQueryParams);
+    this.expanded = new DataSelection('_expanded', false, initialQueryParams);
 
     // Sync query params
     const syncQueryParams$ = combineQueryParams([
       this.dataFrame.queryParams$,
       this.marked.queryParams$,
+      this.expanded.queryParams$,
     ]);
     this._queryParamsService.syncQueryParams(syncQueryParams$).subscribe();
 

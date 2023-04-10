@@ -33,11 +33,10 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
           <mat-icon>edit_note</mat-icon>
           Edit
         </button>
+        <mat-divider></mat-divider>
 
-        <!-- Special options container -->
-        <ng-container *ngIf="hasSpecialOptions">
-          <mat-divider></mat-divider>
-
+        <!-- Additional view options container -->
+        <ng-container *ngIf="hasAdditionalViewOptions">
           <!-- Toggle marker -->
           <ng-container *ngIf="toggleMarker.observed">
             <button mat-menu-item (click)="toggleMarker.emit()">
@@ -52,6 +51,25 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
             </button>
           </ng-container>
 
+          <!-- Toggle expansion -->
+          <ng-container *ngIf="toggleExpansion.observed">
+            <button mat-menu-item (click)="toggleExpansion.emit()">
+              <span *ngIf="!isExpanded">
+                <mat-icon>unfold_more</mat-icon>
+                Expand
+              </span>
+              <span *ngIf="isExpanded">
+                <mat-icon>unfold_less</mat-icon>
+                Collapse
+              </span>
+            </button>
+          </ng-container>
+
+          <mat-divider></mat-divider>
+        </ng-container>
+
+        <!-- Additional edit options container -->
+        <ng-container *ngIf="hasAdditionalEditOptions">
           <!-- Edit compliance -->
           <button
             *ngIf="editCompliance.observed"
@@ -109,17 +127,22 @@ export class TableRowOptionsComponent {
   @Output() editCompletion = new EventEmitter<void>();
   @Output() editVerification = new EventEmitter<void>();
   @Output() toggleMarker = new EventEmitter<void>();
+  @Output() toggleExpansion = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
   @Input() isMarked: boolean = false;
+  @Input() isExpanded: boolean = false;
 
   constructor() {}
 
-  get hasSpecialOptions(): boolean {
+  get hasAdditionalViewOptions(): boolean {
+    return this.toggleMarker.observed || this.toggleExpansion.observed;
+  }
+
+  get hasAdditionalEditOptions(): boolean {
     return (
       this.editCompliance.observed ||
       this.editCompletion.observed ||
-      this.editVerification.observed ||
-      this.toggleMarker.observed
+      this.editVerification.observed
     );
   }
 }

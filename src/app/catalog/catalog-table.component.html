@@ -33,6 +33,7 @@
   <mvtool-table
     [dataFrame]="dataFrame"
     [marked]="marked"
+    [expanded]="expanded"
     (create)="onCreateCatalog()"
     noContentText="No catalogs found."
     loadingText="Loading catalogs..."
@@ -62,6 +63,8 @@
           (delete)="onDeleteCatalog(catalog)"
           (toggleMarker)="marked.toggle(catalog)"
           [isMarked]="marked.isSelected(catalog)"
+          (toggleExpansion)="expanded.toggle(catalog)"
+          [isExpanded]="expanded.isSelected(catalog)"
         >
         </mvtool-table-row-options>
       </td>

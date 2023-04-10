@@ -34,6 +34,7 @@
   <mvtool-table
     [dataFrame]="dataFrame"
     [marked]="marked"
+    [expanded]="expanded"
     (create)="onCreateProject()"
     noContentText="No projects found."
     loadingText="Loading projects..."
@@ -105,6 +106,8 @@
           (delete)="onDeleteProject(project)"
           (toggleMarker)="marked.toggle(project)"
           [isMarked]="marked.isSelected(project)"
+          (toggleExpansion)="expanded.toggle(project)"
+          [isExpanded]="expanded.isSelected(project)"
         >
         </mvtool-table-row-options>
       </td>

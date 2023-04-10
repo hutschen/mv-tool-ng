@@ -42,6 +42,7 @@ import { DataSelection } from '../shared/data/selection';
 export class CatalogTableComponent implements OnInit {
   dataFrame!: CatalogDataFrame;
   marked!: DataSelection<Catalog>;
+  expanded!: DataSelection<Catalog>;
   exportQueryParams$!: Observable<IQueryParams>;
   @Output() clickCatalog = new EventEmitter<Catalog>();
 
@@ -58,17 +59,19 @@ export class CatalogTableComponent implements OnInit {
   ngOnInit() {
     const initialQueryParams = this._queryParamsService.getQueryParams();
 
-    // Create data frame and marked selection
+    // Create data frame, marked and expanded selection
     this.dataFrame = new CatalogDataFrame(
       this._catalogService,
       initialQueryParams
     );
     this.marked = new DataSelection('_marked', true, initialQueryParams);
+    this.expanded = new DataSelection('_expanded', false, initialQueryParams);
 
     // Sync query params
     const syncQueryParams$ = combineQueryParams([
       this.dataFrame.queryParams$,
       this.marked.queryParams$,
+      this.expanded.queryParams$,
     ]);
     this._queryParamsService.syncQueryParams(syncQueryParams$).subscribe();
 

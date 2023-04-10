@@ -51,6 +51,7 @@ import { combineQueryParams } from '../shared/combine-query-params';
 export class RequirementTableComponent implements OnInit {
   dataFrame!: RequirementDataFrame;
   marked!: DataSelection<Requirement>;
+  expanded!: DataSelection<Requirement>;
   exportQueryParams$!: Observable<IQueryParams>;
   @Input() project?: Project;
   @Output() clickRequirement = new EventEmitter<Requirement>();
@@ -75,7 +76,7 @@ export class RequirementTableComponent implements OnInit {
     if (!this.project) throw new Error('Project is undefined');
     const initialQueryParams = this._queryParamsService.getQueryParams();
 
-    // Create data frame and marked selection
+    // Create data frame, marked and expanded selection
     this.dataFrame = new RequirementDataFrame(
       this._requirementService,
       this._catalogService,
@@ -86,11 +87,13 @@ export class RequirementTableComponent implements OnInit {
       initialQueryParams
     );
     this.marked = new DataSelection('_marked', true, initialQueryParams);
+    this.expanded = new DataSelection('_expanded', false, initialQueryParams);
 
     // Sync query params with query params service
     const syncQueryParams$ = combineQueryParams([
       this.dataFrame.queryParams$,
       this.marked.queryParams$,
+      this.expanded.queryParams$,
     ]);
     this._queryParamsService.syncQueryParams(syncQueryParams$).subscribe();
 
