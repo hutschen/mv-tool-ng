@@ -47,6 +47,7 @@
   <mvtool-table
     [dataFrame]="dataFrame"
     [marked]="marked"
+    [expanded]="expanded"
     (create)="onCreateRequirement()"
     noContentText="No requirements found."
     loadingText="Loading requirements..."
@@ -145,6 +146,8 @@
           (delete)="onDeleteRequirement(requirement)"
           (toggleMarker)="marked.toggle(requirement)"
           [isMarked]="marked.isSelected(requirement)"
+          (toggleExpansion)="expanded.toggle(requirement)"
+          [isExpanded]="expanded.isSelected(requirement)"
         >
         </mvtool-table-row-options>
       </td>
