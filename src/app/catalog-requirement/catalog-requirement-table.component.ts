@@ -46,6 +46,7 @@ import { DataSelection } from '../shared/data/selection';
 export class CatalogRequirementTableComponent implements OnInit {
   dataFrame!: CatalogRequirementDataFrame;
   marked!: DataSelection<CatalogRequirement>;
+  expanded!: DataSelection<CatalogRequirement>;
   exportQueryParams$!: Observable<IQueryParams>;
   @Input() catalogModule?: CatalogModule;
 
@@ -63,18 +64,20 @@ export class CatalogRequirementTableComponent implements OnInit {
     if (!this.catalogModule) throw new Error('catalog module is undefined');
     const initialQueryParams = this._queryParamsService.getQueryParams();
 
-    // Create data frame and marked selection
+    // Create data frame, marked and expanded selection
     this.dataFrame = new CatalogRequirementDataFrame(
       this._catalogRequirementService,
       this.catalogModule,
       initialQueryParams
     );
     this.marked = new DataSelection('_marked', true, initialQueryParams);
+    this.expanded = new DataSelection('_expanded', false, initialQueryParams);
 
     // Sync query params with query params service
     const syncQueryParams$ = combineQueryParams([
       this.dataFrame.queryParams$,
       this.marked.queryParams$,
+      this.expanded.queryParams$,
     ]);
     this._queryParamsService.syncQueryParams(syncQueryParams$).subscribe();
 
