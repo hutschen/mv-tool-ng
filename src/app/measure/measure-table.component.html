@@ -33,6 +33,7 @@
   <mvtool-table
     [dataFrame]="dataFrame"
     [marked]="marked"
+    [expanded]="expanded"
     (create)="onCreateMeasure()"
     noContentText="No measures found."
     loadingText="Loading measures..."
@@ -178,6 +179,8 @@
           (editVerification)="onEditVerification(measure)"
           (toggleMarker)="marked.toggle(measure)"
           [isMarked]="marked.isSelected(measure)"
+          (toggleExpansion)="expanded.toggle(measure)"
+          [isExpanded]="expanded.isSelected(measure)"
         >
         </mvtool-table-row-options>
       </td>
