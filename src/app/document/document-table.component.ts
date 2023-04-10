@@ -43,6 +43,7 @@ import { DataSelection } from '../shared/data/selection';
 export class DocumentTableComponent implements OnInit {
   dataFrame!: DocumentDataFrame;
   marked!: DataSelection<Document>;
+  expanded!: DataSelection<Document>;
   exportQueryParams$!: Observable<IQueryParams>;
   @Input() project?: Project;
 
@@ -60,18 +61,20 @@ export class DocumentTableComponent implements OnInit {
     if (!this.project) throw new Error('Project is undefined');
     const initialQueryParams = this._queryParamsService.getQueryParams();
 
-    // Create data frame and marked selection
+    // Create data frame, marked and expanded selection
     this.dataFrame = new DocumentDataFrame(
       this._documentService,
       this.project,
       initialQueryParams
     );
     this.marked = new DataSelection('_marked', true, initialQueryParams);
+    this.expanded = new DataSelection('_expanded', false, initialQueryParams);
 
     // Sync query params with query params service
     const syncQueryParams$ = combineQueryParams([
       this.dataFrame.search.queryParams$,
       this.marked.queryParams$,
+      this.expanded.queryParams$,
     ]);
     this._queryParamsService.syncQueryParams(syncQueryParams$).subscribe();
 

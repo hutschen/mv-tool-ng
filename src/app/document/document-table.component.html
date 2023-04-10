@@ -33,6 +33,7 @@
   <mvtool-table
     [dataFrame]="dataFrame"
     [marked]="marked"
+    [expanded]="expanded"
     (create)="onCreateDocument()"
     noContentText="No documents found."
     loadingText="Loading documents..."
@@ -61,6 +62,8 @@
           (delete)="onDeleteDocument(document)"
           (toggleMarker)="marked.toggle(document)"
           [isMarked]="marked.isSelected(document)"
+          (toggleExpansion)="expanded.toggle(document)"
+          [isExpanded]="expanded.isSelected(document)"
         >
         </mvtool-table-row-options>
       </td>
