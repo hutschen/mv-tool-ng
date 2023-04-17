@@ -25,6 +25,7 @@ import {
   Measure,
   MeasureService,
   VerificationMethod,
+  VerificationStatus,
 } from '../shared/services/measure.service';
 
 @Injectable({
@@ -106,9 +107,15 @@ export class VerificationDialogService {
   styles: ['textarea { min-height: 100px; }'],
 })
 export class VerificationDialogComponent {
-  verificationMethods = ['R', 'T', 'I'];
-  verificationStatuses = ['verified', 'partially verified', 'not verified'];
+  verificationMethods: VerificationMethod[] = ['R', 'T', 'I'];
+  verificationStatuses: VerificationStatus[] = [
+    'verified',
+    'partially verified',
+    'not verified',
+  ];
   measureInput: IMeasureInput;
+  protected _preservedVerificationStatus: VerificationStatus | null = null;
+  protected _preservedVerificationComment: string | null = null;
 
   constructor(
     protected _dialogRef: MatDialogRef<VerificationDialogComponent>,
@@ -121,8 +128,25 @@ export class VerificationDialogComponent {
   set verificationMethod(value: VerificationMethod | null) {
     this.measureInput.verification_method = value;
     if (!value) {
+      // Preserve verification status and comment
+      this._preservedVerificationStatus =
+        this.measureInput.verification_status ?? null;
+      this._preservedVerificationComment =
+        this.measureInput.verification_comment ?? null;
+
+      // Clear verification status and comment
       this.measureInput.verification_status = null;
       this.measureInput.verification_comment = null;
+    } else {
+      // Restore verification status and comment if they are not set
+      if (!this.measureInput.verification_status) {
+        this.measureInput.verification_status =
+          this._preservedVerificationStatus;
+      }
+      if (!this.measureInput.verification_comment) {
+        this.measureInput.verification_comment =
+          this._preservedVerificationComment;
+      }
     }
   }
 
