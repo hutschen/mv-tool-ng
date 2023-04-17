@@ -58,6 +58,7 @@ export class ComplianceDialogService {
 export class ComplianceDialogComponent {
   complianceStates = ['C', 'PC', 'NC', 'N/A'];
   itemInput: IRequirementInput | IMeasureInput;
+  protected _preservedComplianceComment: string | null = null;
 
   constructor(
     protected _dialogRef: MatDialogRef<ComplianceDialogComponent>,
@@ -80,7 +81,15 @@ export class ComplianceDialogComponent {
   set complianceStatus(value: ComplianceStatus | null) {
     this.itemInput.compliance_status = value;
     if (!value) {
+      // Preserve and remove the comment
+      this._preservedComplianceComment =
+        this.itemInput.compliance_comment ?? null;
       this.itemInput.compliance_comment = null;
+    } else {
+      // Restore the comment to the preserved one if no comment is set
+      if (!this.itemInput.compliance_comment) {
+        this.itemInput.compliance_comment = this._preservedComplianceComment;
+      }
     }
   }
 
