@@ -36,6 +36,14 @@ describe('StaticOptions', () => {
     });
   });
 
+  it('should indicate that if it is a multiple selection', () => {
+    const instance1 = new StaticOptions(sampleOptions, false);
+    expect(instance1.isMultipleSelection).toBe(false);
+
+    const instance2 = new StaticOptions(sampleOptions, true);
+    expect(instance2.isMultipleSelection).toBe(true);
+  });
+
   it('should get options by values', (done) => {
     const instance = new StaticOptions(sampleOptions);
     instance.getOptions(1, 3).subscribe((options) => {
