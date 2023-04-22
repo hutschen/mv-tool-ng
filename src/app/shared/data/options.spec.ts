@@ -28,13 +28,13 @@ describe('StaticOptions', () => {
     expect(instance).toBeTruthy();
   });
 
-  it('should load initial values', (done) => {
-    const instance = new StaticOptions(sampleOptions, true, [1, 3]);
-    instance.selected$.pipe(take(1)).subscribe((selectedOptions) => {
-      expect(selectedOptions).toEqual([sampleOptions[0], sampleOptions[2]]);
-      done();
-    });
-  });
+  // xit('should load initial values', (done) => {
+  //   const instance = new StaticOptions(sampleOptions, true, [1, 3]);
+  //   instance.selected$.pipe(take(1)).subscribe((selectedOptions) => {
+  //     expect(selectedOptions).toEqual([sampleOptions[0], sampleOptions[2]]);
+  //     done();
+  //   });
+  // });
 
   it('should indicate that if it is a multiple selection', () => {
     const instance1 = new StaticOptions(sampleOptions, false);
@@ -52,6 +52,14 @@ describe('StaticOptions', () => {
     });
   });
 
+  it('should get no options by values when no values are given', (done) => {
+    const instance = new StaticOptions(sampleOptions);
+    instance.getOptions().subscribe((options) => {
+      expect(options).toEqual([]);
+      done();
+    });
+  });
+
   it('should filter options', (done) => {
     const instance = new StaticOptions(sampleOptions);
     instance.filterOptions('1').subscribe((filteredOptions) => {
@@ -60,20 +68,42 @@ describe('StaticOptions', () => {
     });
   });
 
-  it('should select options', (done) => {
+  it('should select options by values', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
-    instance.selected$.pipe(take(2)).subscribe((selectedOptions) => {
-      if (selectedOptions.length === 0) {
+    instance.selectedValues$.pipe(take(1)).subscribe((selectedOptions) => {
+      expect(selectedOptions).toEqual([1, 3]);
+      done();
+    });
+
+    instance.selectValues(1, 3);
+  });
+
+  it('should deselect options by values', (done) => {
+    const instance = new StaticOptions(sampleOptions, true);
+    instance.selectedValues$.pipe(take(2)).subscribe((selectedOptions) => {
+      if (selectedOptions.length === 2) {
         return;
       }
+      expect(selectedOptions).toEqual([1]);
+      done();
+    });
+
+    instance.selectValues(1, 3);
+    instance.deselectValues(3);
+  });
+
+  it('should select options', (done) => {
+    const instance = new StaticOptions(sampleOptions, true);
+    instance.selected$.pipe(take(1)).subscribe((selectedOptions) => {
       expect(selectedOptions).toEqual([sampleOptions[0], sampleOptions[2]]);
       done();
     });
+
     instance.selectOptions(sampleOptions[0], sampleOptions[2]);
   });
 
   it('should deselect options', (done) => {
-    const instance = new StaticOptions(sampleOptions, true, [1, 3]);
+    const instance = new StaticOptions(sampleOptions, true);
     instance.selected$.pipe(take(2)).subscribe((selectedOptions) => {
       if (selectedOptions.length === 2) {
         return;
@@ -81,11 +111,13 @@ describe('StaticOptions', () => {
       expect(selectedOptions).toEqual([sampleOptions[0]]);
       done();
     });
+
+    instance.selectOptions(sampleOptions[0], sampleOptions[2]);
     instance.deselectOptions(sampleOptions[2]);
   });
 
   it('should clear the selection', (done) => {
-    const instance = new StaticOptions(sampleOptions, true, [1, 3]);
+    const instance = new StaticOptions(sampleOptions, true);
     instance.selected$.pipe(take(2)).subscribe((selectedOptions) => {
       if (selectedOptions.length === 2) {
         return;
@@ -93,6 +125,8 @@ describe('StaticOptions', () => {
       expect(selectedOptions).toEqual([]);
       done();
     });
+
+    instance.selectOptions(sampleOptions[0], sampleOptions[2]);
     instance.clearSelection();
   });
 });
