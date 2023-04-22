@@ -17,15 +17,17 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { title } from 'radash';
 import { Observable, map, of, shareReplay } from 'rxjs';
 
+export type OptionValue = string | number;
+
 export interface IOption {
   label: string;
-  value: string | number;
+  value: OptionValue;
 }
 
 export abstract class Options {
   private __selection: SelectionModel<IOption>;
   readonly selected$: Observable<IOption[]>;
-  readonly selectedValues$: Observable<(string | number)[]>;
+  readonly selectedValues$: Observable<OptionValue[]>;
   abstract readonly hasToLoad: boolean;
 
   constructor(multiple: boolean = true) {
@@ -51,14 +53,14 @@ export abstract class Options {
     return this.__selection.isMultipleSelection();
   }
 
-  abstract getOptions(...values: (string | number)[]): Observable<IOption[]>;
+  abstract getOptions(...values: OptionValue[]): Observable<IOption[]>;
 
   abstract filterOptions(
     filter?: string | null,
     limit?: number
   ): Observable<IOption[]>;
 
-  selectValues(...values: (string | number)[]) {
+  selectValues(...values: OptionValue[]) {
     return new Promise<boolean | void>((resolve) => {
       this.getOptions(...values).subscribe((options) => {
         resolve(this.__selection.select(...options));
@@ -66,7 +68,7 @@ export abstract class Options {
     });
   }
 
-  deselectValues(...values: (string | number)[]) {
+  deselectValues(...values: OptionValue[]) {
     return new Promise<boolean | void>((resolve) => {
       this.getOptions(...values).subscribe((options) => {
         resolve(this.__selection.deselect(...options));
@@ -94,7 +96,7 @@ export class StaticOptions extends Options {
     super(multiple);
   }
 
-  getOptions(...values: (string | number)[]): Observable<IOption[]> {
+  getOptions(...values: OptionValue[]): Observable<IOption[]> {
     const valueSet = new Set(values);
     return of(this.options.filter((o) => valueSet.has(o.value)));
   }
