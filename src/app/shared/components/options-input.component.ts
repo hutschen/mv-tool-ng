@@ -22,7 +22,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { IOption, Options } from '../data/options';
+import { IOption, OptionValue, Options } from '../data/options';
 import { FormControl } from '@angular/forms';
 import { ENTER } from '@angular/cdk/keycodes';
 import { Observable, debounceTime, startWith, switchMap, tap } from 'rxjs';
@@ -91,9 +91,7 @@ export class OptionsInputComponent implements OnInit {
   @Input() label = 'Options';
   @Input() placeholder = 'Select options ...';
   @Input() options!: Options;
-  @Output() valueChange = new EventEmitter<
-    string | number | null | (string | number)[]
-  >();
+  @Output() valueChange = new EventEmitter<any | any[]>();
 
   separatorKeysCodes: number[] = [ENTER];
   filterCtrl = new FormControl('');
@@ -125,11 +123,9 @@ export class OptionsInputComponent implements OnInit {
     }
 
     // Emit the value change
-    this.options.selected$.subscribe((options) => {
+    this.options.selectedValues$.subscribe((values) => {
       this.valueChange.emit(
-        this.options.isMultipleSelection
-          ? options.map((option) => option.value)
-          : options[0]?.value ?? null
+        this.options.isMultipleSelection ? values : values[0] ?? null
       );
     });
   }
@@ -137,7 +133,7 @@ export class OptionsInputComponent implements OnInit {
   @Input()
   set value(value: unknown | unknown[]) {
     // Convert the value to an array if it is not already one
-    let values = [] as (string | number)[];
+    let values = [] as OptionValue[];
     if (typeof value === 'string' || typeof value === 'number') {
       values = Array.isArray(value) ? value : [value];
     } else {
@@ -145,9 +141,7 @@ export class OptionsInputComponent implements OnInit {
     }
 
     // Select the options
-    this.options.getOptions(...values).subscribe((options) => {
-      this.options.selectOptions(...options);
-    });
+    this.options.selectValues(...values);
   }
 
   onTokenEnd(event: MatChipInputEvent): void {
