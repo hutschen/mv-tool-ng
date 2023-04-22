@@ -25,11 +25,9 @@ export class DocumentOptions extends Options {
   constructor(
     protected _documentService: DocumentService,
     protected _project: Project,
-    multiple: boolean = true,
-    initDocumentIds: number[] = []
+    multiple: boolean = true
   ) {
-    super(multiple, initDocumentIds);
-    this.loadOptions();
+    super(multiple);
   }
 
   private __loadOptions(queryParams: IQueryParams): Observable<IOption[]> {
@@ -56,10 +54,7 @@ export class DocumentOptions extends Options {
     });
   }
 
-  filterOptions(
-    filter?: string | null | undefined,
-    limit?: number | undefined
-  ): Observable<IOption[]> {
+  filterOptions(filter?: string | null, limit?: number): Observable<IOption[]> {
     // Build query params to request document representations
     const queryParams: IQueryParams = {
       project_ids: this._project.id,
