@@ -37,7 +37,7 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
         <mat-label>{{ label }}</mat-label>
         <mat-chip-grid #chipGrid aria-label="Value selection">
           <mat-chip-row
-            *ngFor="let option of options.selected$ | async"
+            *ngFor="let option of options.selection$ | async"
             (removed)="options.deselectOptions(option)"
           >
             <span class="chip-content">
@@ -113,7 +113,7 @@ export class OptionsInputComponent implements OnInit {
 
     // Dynamically show/hide the filter input if only one option can be selected
     if (!this.options.isMultipleSelection) {
-      this.options.selected$.subscribe((options) => {
+      this.options.selection$.subscribe((options) => {
         if (0 < options.length) {
           this.isfilterInputHidden = true;
         } else {
@@ -123,11 +123,7 @@ export class OptionsInputComponent implements OnInit {
     }
 
     // Emit the value change
-    this.options.selectedValues$.subscribe((values) => {
-      this.valueChange.emit(
-        this.options.isMultipleSelection ? values : values[0] ?? null
-      );
-    });
+    // ... ?
   }
 
   @Input()
@@ -141,7 +137,7 @@ export class OptionsInputComponent implements OnInit {
     }
 
     // Select the options
-    // this.options.selectValues(...values);
+    // ... ?
   }
 
   onTokenEnd(event: MatChipInputEvent): void {

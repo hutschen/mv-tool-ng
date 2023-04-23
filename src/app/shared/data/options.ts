@@ -15,7 +15,7 @@
 
 import { SelectionModel } from '@angular/cdk/collections';
 import { title } from 'radash';
-import { Observable, map, of, shareReplay, startWith } from 'rxjs';
+import { Observable, map, of, startWith } from 'rxjs';
 
 export type OptionValue = string | number;
 
@@ -26,8 +26,6 @@ export interface IOption {
 
 export abstract class Options {
   private __selection: SelectionModel<IOption>;
-  readonly selected$: Observable<IOption[]>;
-  readonly selectedValues$: Observable<OptionValue[]>;
   readonly selectionChanged$: Observable<IOption[]>;
   readonly selection$: Observable<IOption[]>;
   abstract readonly hasToLoad: boolean;
@@ -39,15 +37,6 @@ export abstract class Options {
       undefined,
       undefined,
       (o1: IOption, o2: IOption) => o1.value === o2.value
-    );
-
-    // Define the selected$ options and selectedValues$ observable
-    this.selected$ = this.__selection.changed.pipe(
-      map((e) => e.source.selected),
-      shareReplay(1)
-    );
-    this.selectedValues$ = this.selected$.pipe(
-      map((options) => options.map((o) => o.value))
     );
 
     // Define the selectionChanged$ observable
