@@ -13,8 +13,76 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { combineLatest, forkJoin, take } from 'rxjs';
-import { StaticOptions, StringOptions, IOption } from './options';
+import { forkJoin, take } from 'rxjs';
+import {
+  StaticOptions,
+  StringOptions,
+  IOption,
+  OptionValue,
+  fromOptionValues,
+  toOptionValues,
+} from './options';
+
+describe('toOptionValues', () => {
+  it('should return an array of option values when input is an array of strings or numbers', () => {
+    const input1: unknown = ['a', 'b', 'c'];
+    const input2: unknown = [1, 2, 3];
+
+    const result1 = toOptionValues(input1);
+    const result2 = toOptionValues(input2);
+
+    expect(result1).toEqual(['a', 'b', 'c']);
+    expect(result2).toEqual([1, 2, 3]);
+  });
+
+  it('should return a single element array when input is a single string or number', () => {
+    const input1: unknown = 'a';
+    const input2: unknown = 1;
+
+    const result1 = toOptionValues(input1);
+    const result2 = toOptionValues(input2);
+
+    expect(result1).toEqual(['a']);
+    expect(result2).toEqual([1]);
+  });
+
+  it('should return an empty array for invalid input', () => {
+    const input1: unknown = { key: 'value' };
+    const input2: unknown = undefined;
+    const input3: unknown = null;
+
+    const result1 = toOptionValues(input1);
+    const result2 = toOptionValues(input2);
+    const result3 = toOptionValues(input3);
+
+    expect(result1).toEqual([]);
+    expect(result2).toEqual([]);
+    expect(result3).toEqual([]);
+  });
+});
+
+describe('fromOptionValues', () => {
+  it('should return the same array when multiple is true', () => {
+    const values: OptionValue[] = ['a', 'b', 'c'];
+    const result = fromOptionValues(values, true);
+
+    expect(result).toEqual(['a', 'b', 'c']);
+  });
+
+  it('should return the first element when multiple is false and the array is not empty', () => {
+    const values: OptionValue[] = ['a', 'b', 'c'];
+    const result = fromOptionValues(values, false);
+
+    expect(result).toEqual('a');
+  });
+
+  it('should return null when multiple is false and the array is empty', () => {
+    const values: OptionValue[] = [];
+    const result = fromOptionValues(values, false);
+
+    expect(result).toBeNull();
+  });
+});
 
 describe('StaticOptions', () => {
   const sampleOptions: IOption[] = [
