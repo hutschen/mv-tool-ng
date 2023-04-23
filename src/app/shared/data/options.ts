@@ -68,6 +68,10 @@ export abstract class Options {
     return this.__selection.deselect(...options);
   }
 
+  setSelection(...options: IOption[]) {
+    return this.__selection.setSelection(...options);
+  }
+
   clearSelection() {
     return this.__selection.clear();
   }

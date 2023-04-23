@@ -84,6 +84,16 @@ describe('StaticOptions', () => {
     instance.deselectOptions(sampleOptions[2]);
   });
 
+  it('should set the selection', (done) => {
+    const instance = new StaticOptions(sampleOptions, true);
+    instance.selected$.pipe(take(1)).subscribe((selectedOptions) => {
+      expect(selectedOptions).toEqual([sampleOptions[1]]);
+      done();
+    });
+
+    instance.setSelection(sampleOptions[1]);
+  });
+
   it('should clear the selection', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
     instance.selected$.pipe(take(2)).subscribe((selectedOptions) => {
