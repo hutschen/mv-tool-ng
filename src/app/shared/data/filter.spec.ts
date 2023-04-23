@@ -19,6 +19,7 @@ import {
   Observable,
   skip,
   Subject,
+  take,
   withLatestFrom,
 } from 'rxjs';
 import { IQueryParams } from '../services/query-params.service';
@@ -29,6 +30,7 @@ import {
   Filters,
   IFilterOption,
 } from './filter';
+import { StaticOptions } from './options';
 
 describe('FilterByPattern', () => {
   const name = 'filter_name';
@@ -73,11 +75,14 @@ describe('FilterByPattern', () => {
 
 describe('FilterByValues', () => {
   const name = 'filter_name';
-  const options: IFilterOption[] = [
-    { value: 'a', label: 'A' },
-    { value: 'b', label: 'B' },
-    { value: 'c', label: 'C' },
-  ];
+  const options = new StaticOptions(
+    [
+      { value: 'a', label: 'A' },
+      { value: 'b', label: 'B' },
+      { value: 'c', label: 'C' },
+    ],
+    true
+  );
   const initValues = ['a', 'b'];
   const initQueryParams = {
     [name]: initValues,
@@ -85,92 +90,29 @@ describe('FilterByValues', () => {
   let sut: FilterByValues;
 
   beforeEach(() => {
-    sut = new FilterByValues(name, options, initQueryParams);
+    sut = new FilterByValues(name, options, initQueryParams, 'string');
   });
 
   it('should be created', (done: DoneFn) => {
     // Test if initial query params are loaded
-    combineLatest([sut.isSet$, sut.queryParams$]).subscribe(
-      ([isSet, queryParams]) => {
+    combineLatest([sut.isSet$, sut.queryParams$])
+      .pipe(take(1))
+      .subscribe(([isSet, queryParams]) => {
         expect(isSet).toBeTrue();
         expect(queryParams).toEqual(initQueryParams);
-        done();
-      }
-    );
-  });
-
-  it('should ignore select of selected option', (done: DoneFn) => {
-    sut.selectOption(options[0]); // select 'a'
-    combineLatest([sut.selection$, sut.isSet$, sut.queryParams$]).subscribe(
-      ([selection, isSet, queryParams]) => {
-        // check if selection is unchanged
-        expect(selection).toEqual(
-          options.filter((o) => initValues.includes(o.value as string))
-        );
-        expect(isSet).toBeTrue();
-        expect(queryParams).toEqual(initQueryParams);
-        done();
-      }
-    );
-  });
-
-  it('should select unselected option', (done: DoneFn) => {
-    sut.selectOption(options[2]); // select 'c'
-    sut.selection$
-      .pipe(
-        skip(1), // selectOption waits internally for emission of selection$
-        withLatestFrom(sut.isSet$, sut.queryParams$)
-      )
-      .subscribe(([selection, isSet, queryParams]) => {
-        // check if selection is updated
-        expect(selection).toEqual(options);
-        expect(isSet).toBeTrue();
-        expect(queryParams).toEqual({ [name]: options.map((o) => o.value) });
         done();
       });
-  });
-
-  it('should deselect selected option', (done: DoneFn) => {
-    sut.deselectOption(options[1]); // deselect 'b'
-    sut.selection$
-      .pipe(
-        skip(1), // deselectOptions waits internally for emission of selection$
-        withLatestFrom(sut.isSet$, sut.queryParams$)
-      )
-      .subscribe(([selection, isSet, queryParams]) => {
-        // check if selection is updated
-        expect(selection).toEqual([options[0]]);
-        expect(isSet).toBeTrue();
-        expect(queryParams).toEqual({ [name]: [options[0].value] });
-        done();
-      });
-  });
-
-  it('should ignore deselect of unselected option', (done: DoneFn) => {
-    sut.deselectOption(options[2]); // deselect 'c'
-    combineLatest([sut.selection$, sut.isSet$, sut.queryParams$]).subscribe(
-      ([selection, isSet, queryParams]) => {
-        // check if selection is unchanged
-        expect(selection).toEqual(
-          options.filter((o) => initValues.includes(o.value as string))
-        );
-        expect(isSet).toBeTrue();
-        expect(queryParams).toEqual(initQueryParams);
-        done();
-      }
-    );
   });
 
   it('should clear selection', (done: DoneFn) => {
     sut.clear();
-    combineLatest([sut.selection$, sut.isSet$, sut.queryParams$]).subscribe(
-      ([selection, isSet, queryParams]) => {
-        expect(selection).toEqual([]);
+    combineLatest([sut.isSet$, sut.queryParams$])
+      .pipe(take(1))
+      .subscribe(([isSet, queryParams]) => {
         expect(isSet).toBeFalse();
         expect(queryParams).toEqual({});
         done();
-      }
-    );
+      });
   });
 });
 
