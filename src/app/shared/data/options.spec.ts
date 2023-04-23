@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { take } from 'rxjs';
+import { combineLatest, forkJoin, take } from 'rxjs';
 import { StaticOptions, StringOptions, IOption } from './options';
 
 describe('StaticOptions', () => {
@@ -23,9 +23,15 @@ describe('StaticOptions', () => {
     { label: 'Option 3', value: 3 },
   ];
 
-  it('should create an instance', () => {
+  it('should create an instance', (done) => {
     const instance = new StaticOptions(sampleOptions);
     expect(instance).toBeTruthy();
+
+    // Check if the selection is empty
+    instance.selection$.subscribe((options) => {
+      expect(options).toEqual([]);
+      done();
+    });
   });
 
   it('should indicate that if it is a multiple selection', () => {
@@ -62,8 +68,13 @@ describe('StaticOptions', () => {
 
   it('should select options', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
-    instance.selectionChanged$.pipe(take(1)).subscribe((selectedOptions) => {
-      expect(selectedOptions).toEqual([sampleOptions[0], sampleOptions[2]]);
+
+    forkJoin([
+      instance.selectionChanged$.pipe(take(1)), // select
+      instance.selection$.pipe(take(2)), // initial selection, select
+    ]).subscribe(([selectionChanged, selection]) => {
+      expect(selectionChanged).toEqual([sampleOptions[0], sampleOptions[2]]);
+      expect(selection).toEqual([sampleOptions[0], sampleOptions[2]]);
       done();
     });
 
@@ -72,13 +83,13 @@ describe('StaticOptions', () => {
 
   it('should deselect options', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
-    let firstEmission = true;
-    instance.selectionChanged$.pipe(take(2)).subscribe((selectedOptions) => {
-      if (firstEmission) {
-        firstEmission = false;
-        return;
-      }
-      expect(selectedOptions).toEqual([sampleOptions[0]]);
+
+    forkJoin([
+      instance.selectionChanged$.pipe(take(2)), // select and deselect
+      instance.selection$.pipe(take(3)), // initial selection, select, deselect
+    ]).subscribe(([selectionChanged, selection]) => {
+      expect(selectionChanged).toEqual([sampleOptions[0]]);
+      expect(selection).toEqual([sampleOptions[0]]);
       done();
     });
 
@@ -88,8 +99,13 @@ describe('StaticOptions', () => {
 
   it('should set the selection', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
-    instance.selectionChanged$.pipe(take(1)).subscribe((selectedOptions) => {
-      expect(selectedOptions).toEqual([sampleOptions[1]]);
+
+    forkJoin([
+      instance.selectionChanged$.pipe(take(1)), // set selection
+      instance.selection$.pipe(take(2)), // initial selection, set selection
+    ]).subscribe(([selectionChanged, selection]) => {
+      expect(selectionChanged).toEqual([sampleOptions[1]]);
+      expect(selection).toEqual([sampleOptions[1]]);
       done();
     });
 
@@ -98,13 +114,13 @@ describe('StaticOptions', () => {
 
   it('should clear the selection', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
-    let firstEmission = true;
-    instance.selectionChanged$.pipe(take(2)).subscribe((selectedOptions) => {
-      if (firstEmission) {
-        firstEmission = false;
-        return;
-      }
-      expect(selectedOptions).toEqual([]);
+
+    forkJoin([
+      instance.selectionChanged$.pipe(take(2)), // select, clear selection
+      instance.selection$.pipe(take(3)), // initial selection, select, clear selection
+    ]).subscribe(([selectionChanged, selection]) => {
+      expect(selectionChanged).toEqual([]);
+      expect(selection).toEqual([]);
       done();
     });
 
