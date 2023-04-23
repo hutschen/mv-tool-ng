@@ -24,6 +24,31 @@ export interface IOption {
   value: OptionValue;
 }
 
+export function toOptionValues(raw: unknown): OptionValue[] {
+  if (
+    Array.isArray(raw) &&
+    (raw.every((v) => typeof v === 'string') ||
+      raw.every((v) => typeof v === 'number'))
+  ) {
+    return raw;
+  } else if (typeof raw === 'string' || typeof raw === 'number') {
+    return [raw];
+  } else {
+    return [];
+  }
+}
+
+export function fromOptionValues(
+  values: OptionValue[],
+  multiple: boolean = true
+): null | OptionValue | OptionValue[] {
+  if (multiple) {
+    return values;
+  } else {
+    return values.length > 0 ? values[0] : null;
+  }
+}
+
 export abstract class Options {
   private __selection: SelectionModel<IOption>;
   readonly selectionChanged$: Observable<IOption[]>;
