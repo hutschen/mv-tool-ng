@@ -62,7 +62,7 @@ describe('StaticOptions', () => {
 
   it('should select options', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
-    instance.selected$.pipe(take(1)).subscribe((selectedOptions) => {
+    instance.selectionChanged$.pipe(take(1)).subscribe((selectedOptions) => {
       expect(selectedOptions).toEqual([sampleOptions[0], sampleOptions[2]]);
       done();
     });
@@ -72,8 +72,10 @@ describe('StaticOptions', () => {
 
   it('should deselect options', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
-    instance.selected$.pipe(take(2)).subscribe((selectedOptions) => {
-      if (selectedOptions.length === 2) {
+    let firstEmission = true;
+    instance.selectionChanged$.pipe(take(2)).subscribe((selectedOptions) => {
+      if (firstEmission) {
+        firstEmission = false;
         return;
       }
       expect(selectedOptions).toEqual([sampleOptions[0]]);
@@ -86,7 +88,7 @@ describe('StaticOptions', () => {
 
   it('should set the selection', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
-    instance.selected$.pipe(take(1)).subscribe((selectedOptions) => {
+    instance.selectionChanged$.pipe(take(1)).subscribe((selectedOptions) => {
       expect(selectedOptions).toEqual([sampleOptions[1]]);
       done();
     });
@@ -96,8 +98,10 @@ describe('StaticOptions', () => {
 
   it('should clear the selection', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
-    instance.selected$.pipe(take(2)).subscribe((selectedOptions) => {
-      if (selectedOptions.length === 2) {
+    let firstEmission = true;
+    instance.selectionChanged$.pipe(take(2)).subscribe((selectedOptions) => {
+      if (firstEmission) {
+        firstEmission = false;
         return;
       }
       expect(selectedOptions).toEqual([]);
