@@ -141,7 +141,7 @@ export class OptionsInputComponent implements OnInit {
     }
 
     // Select the options
-    this.options.selectValues(...values);
+    // this.options.selectValues(...values);
   }
 
   onTokenEnd(event: MatChipInputEvent): void {

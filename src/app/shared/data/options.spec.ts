@@ -28,14 +28,6 @@ describe('StaticOptions', () => {
     expect(instance).toBeTruthy();
   });
 
-  // xit('should load initial values', (done) => {
-  //   const instance = new StaticOptions(sampleOptions, true, [1, 3]);
-  //   instance.selected$.pipe(take(1)).subscribe((selectedOptions) => {
-  //     expect(selectedOptions).toEqual([sampleOptions[0], sampleOptions[2]]);
-  //     done();
-  //   });
-  // });
-
   it('should indicate that if it is a multiple selection', () => {
     const instance1 = new StaticOptions(sampleOptions, false);
     expect(instance1.isMultipleSelection).toBe(false);
@@ -66,30 +58,6 @@ describe('StaticOptions', () => {
       expect(filteredOptions).toEqual([sampleOptions[0]]);
       done();
     });
-  });
-
-  it('should select options by values', (done) => {
-    const instance = new StaticOptions(sampleOptions, true);
-    instance.selectedValues$.pipe(take(1)).subscribe((selectedOptions) => {
-      expect(selectedOptions).toEqual([1, 3]);
-      done();
-    });
-
-    instance.selectValues(1, 3);
-  });
-
-  it('should deselect options by values', (done) => {
-    const instance = new StaticOptions(sampleOptions, true);
-    instance.selectedValues$.pipe(take(2)).subscribe((selectedOptions) => {
-      if (selectedOptions.length === 2) {
-        return;
-      }
-      expect(selectedOptions).toEqual([1]);
-      done();
-    });
-
-    instance.selectValues(1, 3);
-    instance.deselectValues(3);
   });
 
   it('should select options', (done) => {

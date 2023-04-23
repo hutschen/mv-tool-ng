@@ -60,22 +60,6 @@ export abstract class Options {
     limit?: number
   ): Observable<IOption[]>;
 
-  selectValues(...values: OptionValue[]) {
-    return new Promise<boolean | void>((resolve) => {
-      this.getOptions(...values).subscribe((options) => {
-        resolve(this.__selection.select(...options));
-      });
-    });
-  }
-
-  deselectValues(...values: OptionValue[]) {
-    return new Promise<boolean | void>((resolve) => {
-      this.getOptions(...values).subscribe((options) => {
-        resolve(this.__selection.deselect(...options));
-      });
-    });
-  }
-
   selectOptions(...options: IOption[]) {
     return this.__selection.select(...options);
   }
