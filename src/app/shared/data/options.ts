@@ -28,6 +28,7 @@ export abstract class Options {
   private __selection: SelectionModel<IOption>;
   readonly selected$: Observable<IOption[]>;
   readonly selectedValues$: Observable<OptionValue[]>;
+  readonly selectionChanged$: Observable<IOption[]>;
   abstract readonly hasToLoad: boolean;
 
   constructor(multiple: boolean = true) {
@@ -46,6 +47,11 @@ export abstract class Options {
     );
     this.selectedValues$ = this.selected$.pipe(
       map((options) => options.map((o) => o.value))
+    );
+
+    // Define the selectionChanged$ observable
+    this.selectionChanged$ = this.__selection.changed.pipe(
+      map((e) => e.source.selected)
     );
   }
 
