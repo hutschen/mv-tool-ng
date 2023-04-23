@@ -29,7 +29,7 @@ import { FilterByValues, IFilterOption } from '../data/filter';
       <p>
         Define a list of specific values. Entries containing these values will
         be filtered out.
-        <span *ngIf="filter.hasToLoadOptions">
+        <span *ngIf="filter.options.hasToLoad">
           The wildcards
           <code matTooltip="matches zero or more characters">*</code> and
           <code matTooltip="matches exactly one character">?</code> can be used
@@ -40,8 +40,8 @@ import { FilterByValues, IFilterOption } from '../data/filter';
         <mat-label>Selected values</mat-label>
         <mat-chip-grid #chipGrid aria-label="Value selection">
           <mat-chip-row
-            *ngFor="let option of filter.selection$ | async"
-            (removed)="filter.deselectOption(option)"
+            *ngFor="let option of filter.options.selection$ | async"
+            (removed)="filter.options.deselectOptions(option)"
           >
             {{ option.label }}
             <button matChipRemove>
@@ -92,9 +92,11 @@ export class FilterByValuesComponent implements OnInit {
   ngOnInit(): void {
     this.options$ = this.valueCtrl.valueChanges.pipe(
       startWith(null),
-      debounceTime(this.filter.hasToLoadOptions ? 250 : 0),
-      tap(() => (this.isLoadingOptions = true && this.filter.hasToLoadOptions)),
-      switchMap((value) => this.filter.getOptions(value, 10)),
+      debounceTime(this.filter.options.hasToLoad ? 250 : 0),
+      tap(
+        () => (this.isLoadingOptions = true && this.filter.options.hasToLoad)
+      ),
+      switchMap((value) => this.filter.options.filterOptions(value, 10)),
       tap(() => (this.isLoadingOptions = false))
     );
   }
@@ -106,7 +108,7 @@ export class FilterByValuesComponent implements OnInit {
   }
 
   onSelectOption(event: MatAutocompleteSelectedEvent) {
-    this.filter.selectOption(event.option.value);
+    this.filter.options.selectOptions(event.option.value);
     this.valueInput.nativeElement.value = '';
     this.valueCtrl.setValue(null);
   }
