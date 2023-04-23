@@ -22,7 +22,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { IOption, OptionValue, Options } from '../data/options';
+import { IOption, Options } from '../data/options';
 import { FormControl } from '@angular/forms';
 import { ENTER } from '@angular/cdk/keycodes';
 import { Observable, debounceTime, startWith, switchMap, tap } from 'rxjs';
@@ -121,23 +121,6 @@ export class OptionsInputComponent implements OnInit {
         }
       });
     }
-
-    // Emit the value change
-    // ... ?
-  }
-
-  @Input()
-  set value(value: unknown | unknown[]) {
-    // Convert the value to an array if it is not already one
-    let values = [] as OptionValue[];
-    if (typeof value === 'string' || typeof value === 'number') {
-      values = Array.isArray(value) ? value : [value];
-    } else {
-      values = [];
-    }
-
-    // Select the options
-    // ... ?
   }
 
   onTokenEnd(event: MatChipInputEvent): void {
