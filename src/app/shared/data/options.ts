@@ -15,7 +15,7 @@
 
 import { SelectionModel } from '@angular/cdk/collections';
 import { title } from 'radash';
-import { Observable, map, of, shareReplay } from 'rxjs';
+import { Observable, map, of, shareReplay, startWith } from 'rxjs';
 
 export type OptionValue = string | number;
 
@@ -29,6 +29,7 @@ export abstract class Options {
   readonly selected$: Observable<IOption[]>;
   readonly selectedValues$: Observable<OptionValue[]>;
   readonly selectionChanged$: Observable<IOption[]>;
+  readonly selection$: Observable<IOption[]>;
   abstract readonly hasToLoad: boolean;
 
   constructor(multiple: boolean = true) {
@@ -52,6 +53,11 @@ export abstract class Options {
     // Define the selectionChanged$ observable
     this.selectionChanged$ = this.__selection.changed.pipe(
       map((e) => e.source.selected)
+    );
+
+    // Define the selection$ observable
+    this.selection$ = this.selectionChanged$.pipe(
+      startWith(this.__selection.selected)
     );
   }
 
