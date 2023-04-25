@@ -96,7 +96,10 @@ export class FilterByValues {
     this.options
       .getOptions(...this.__evalQueryParams(initQueryParams))
       .pipe(takeUntil(this.options.selectionChanged$))
-      .subscribe((options) => this.options.setSelection(...options));
+      .subscribe((options) => {
+        if (options.length > 0) this.options.setSelection(...options);
+        else this._selectionSubject.next([]); // trigger queryParams$ and isSet$ observables
+      });
 
     // Define queryParams$ and isSet$ observables
     this.queryParams$ = this._selectionSubject.pipe(
