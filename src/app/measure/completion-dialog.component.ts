@@ -87,6 +87,7 @@ export class CompletionDialogService {
 export class CompletionDialogComponent {
   completionStatuses = ['open', 'in progress', 'completed'];
   measureInput: IMeasureInput;
+  protected _preservedCompletionComment: string | null = null;
 
   constructor(
     protected _dialogRef: MatDialogRef<CompletionDialogComponent>,
@@ -103,7 +104,15 @@ export class CompletionDialogComponent {
   set completionStatus(value: CompletionStatus | null) {
     this.measureInput.completion_status = value;
     if (!value) {
+      // Preserve and remove the completion comment
+      this._preservedCompletionComment =
+        this.measureInput.completion_comment ?? null;
       this.measureInput.completion_comment = null;
+    } else {
+      // Restore the completion comment if no comment is set
+      if (!this.measureInput.completion_comment) {
+        this.measureInput.completion_comment = this._preservedCompletionComment;
+      }
     }
   }
 

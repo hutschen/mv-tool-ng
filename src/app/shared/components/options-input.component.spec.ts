@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Helmar Hutschenreuter
+// Copyright (C) 2023 Helmar Hutschenreuter
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -15,18 +15,18 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DocumentInputComponent } from './document-input.component';
+import { OptionsInputComponent } from './options-input.component';
 
-describe('DocumentInputComponent', () => {
-  let component: DocumentInputComponent;
-  let fixture: ComponentFixture<DocumentInputComponent>;
+describe('OptionsInputComponent', () => {
+  let component: OptionsInputComponent;
+  let fixture: ComponentFixture<OptionsInputComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DocumentInputComponent],
+      declarations: [OptionsInputComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DocumentInputComponent);
+    fixture = TestBed.createComponent(OptionsInputComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

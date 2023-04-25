@@ -27,6 +27,8 @@ import {
   MeasureService,
 } from '../shared/services/measure.service';
 import { Requirement } from '../shared/services/requirement.service';
+import { DocumentService } from '../shared/services/document.service';
+import { DocumentOptions } from '../shared/data/document/document-options';
 
 export interface IMeasureDialogData {
   requirement: Requirement;
@@ -61,16 +63,24 @@ export class MeasureDialogComponent {
   measureInput: IMeasureInput = {
     summary: '',
   };
+  documentOptions: DocumentOptions;
 
   constructor(
     protected _dialogRef: MatDialogRef<MeasureDialogComponent>,
     protected _measureService: MeasureService,
+    protected _documentService: DocumentService,
     @Inject(MAT_DIALOG_DATA) protected _dialogData: IMeasureDialogData
   ) {
     this.requirement = this._dialogData.requirement;
     if (this._dialogData.measure) {
       this.measureInput = this._dialogData.measure.toMeasureInput();
     }
+
+    this.documentOptions = new DocumentOptions(
+      this._documentService,
+      this.requirement.project,
+      false
+    );
   }
 
   get createMode(): boolean {

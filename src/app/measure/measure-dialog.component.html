@@ -50,10 +50,11 @@
     </mat-form-field>
 
     <!-- Assign document -->
-    <mvtool-document-input
-      [project]="requirement.project"
-      [(documentId)]="measureInput.document_id"
-    >
-    </mvtool-document-input>
+    <mvtool-options-input
+      label="Document"
+      placeholder="Select document"
+      [options]="documentOptions"
+      [(value)]="measureInput.document_id"
+    ></mvtool-options-input>
   </div>
 </mvtool-create-edit-dialog>
