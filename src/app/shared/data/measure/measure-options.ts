@@ -14,16 +14,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Observable, map, of } from 'rxjs';
-import { IOption, Options } from '../options';
-import { DocumentService } from '../../services/document.service';
+import { MeasureService } from '../../services/measure.service';
 import { Project } from '../../services/project.service';
 import { IQueryParams } from '../../services/query-params.service';
+import { IOption, Options } from '../options';
 
-export class DocumentReferenceOptions extends Options {
+export class MeasureReferenceOptions extends Options {
   override readonly hasToLoad = true;
 
   constructor(
-    protected _documentService: DocumentService,
+    protected _measureService: MeasureService,
     protected _project: Project,
     multiple: boolean = true
   ) {
@@ -31,8 +31,8 @@ export class DocumentReferenceOptions extends Options {
   }
 
   private __loadOptions(queryParams: IQueryParams): Observable<IOption[]> {
-    // Request document references and convert them to options
-    return this._documentService.getDocumentReferences(queryParams).pipe(
+    // Request measure references and convert them to options
+    return this._measureService.getMeasureReferences(queryParams).pipe(
       map((references) => {
         if (!Array.isArray(references)) references = references.items;
         return references.map((reference) => ({
@@ -55,7 +55,7 @@ export class DocumentReferenceOptions extends Options {
     filter?: string | null,
     limit?: number
   ): Observable<IOption[]> {
-    // Build query params to request document references
+    // Build query params to request measure references
     const queryParams: IQueryParams = {
       project_ids: this._project.id,
     };
@@ -65,55 +65,6 @@ export class DocumentReferenceOptions extends Options {
       queryParams['page_size'] = limit;
     }
 
-    return this.__loadOptions(queryParams);
-  }
-}
-
-export class DocumentOptions extends Options {
-  override readonly hasToLoad = true;
-
-  constructor(
-    protected _documentService: DocumentService,
-    protected _project: Project,
-    multiple: boolean = true
-  ) {
-    super(multiple);
-  }
-
-  private __loadOptions(queryParams: IQueryParams): Observable<IOption[]> {
-    // Request document representations and convert them to filter options
-    return this._documentService.getDocumentRepresentations(queryParams).pipe(
-      map((documentReprs) => {
-        if (!Array.isArray(documentReprs)) documentReprs = documentReprs.items;
-        return documentReprs.map((dr) => ({
-          value: dr.id,
-          label: (dr.reference ? dr.reference + ' ' : '') + dr.title,
-        }));
-      })
-    );
-  }
-
-  override getOptions(...ids: number[]): Observable<IOption[]> {
-    if (!ids.length) return of([]);
-    return this.__loadOptions({
-      project_ids: this._project.id,
-      ids: ids,
-    });
-  }
-
-  override filterOptions(
-    filter?: string | null,
-    limit?: number
-  ): Observable<IOption[]> {
-    // Build query params to request document representations
-    const queryParams: IQueryParams = {
-      project_ids: this._project.id,
-    };
-    if (filter) queryParams['local_search'] = filter;
-    if (limit) {
-      queryParams['page'] = 1;
-      queryParams['page_size'] = limit;
-    }
     return this.__loadOptions(queryParams);
   }
 }

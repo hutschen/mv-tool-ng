@@ -15,24 +15,22 @@
 
 import { Observable, map, of } from 'rxjs';
 import { IOption, Options } from '../options';
-import { DocumentService } from '../../services/document.service';
-import { Project } from '../../services/project.service';
+import { CatalogService } from '../../services/catalog.service';
 import { IQueryParams } from '../../services/query-params.service';
 
-export class DocumentReferenceOptions extends Options {
+export class CatalogReferenceOptions extends Options {
   override readonly hasToLoad = true;
 
   constructor(
-    protected _documentService: DocumentService,
-    protected _project: Project,
+    protected _catalogService: CatalogService,
     multiple: boolean = true
   ) {
     super(multiple);
   }
 
   private __loadOptions(queryParams: IQueryParams): Observable<IOption[]> {
-    // Request document references and convert them to options
-    return this._documentService.getDocumentReferences(queryParams).pipe(
+    // Request catalog references and convert them to options
+    return this._catalogService.getCatalogReferences(queryParams).pipe(
       map((references) => {
         if (!Array.isArray(references)) references = references.items;
         return references.map((reference) => ({
@@ -45,20 +43,15 @@ export class DocumentReferenceOptions extends Options {
 
   override getOptions(...references: string[]): Observable<IOption[]> {
     if (!references.length) return of([]);
-    return this.__loadOptions({
-      project_ids: this._project.id,
-      references: references,
-    });
+    return this.__loadOptions({ references: references });
   }
 
   override filterOptions(
-    filter?: string | null,
-    limit?: number
+    filter?: string | null | undefined,
+    limit?: number | undefined
   ): Observable<IOption[]> {
-    // Build query params to request document references
-    const queryParams: IQueryParams = {
-      project_ids: this._project.id,
-    };
+    // Build query params to request catalog references
+    const queryParams: IQueryParams = {};
     if (filter) queryParams['local_search'] = filter;
     if (limit) {
       queryParams['page'] = 1;
@@ -69,51 +62,46 @@ export class DocumentReferenceOptions extends Options {
   }
 }
 
-export class DocumentOptions extends Options {
+export class CatalogOptions extends Options {
   override readonly hasToLoad = true;
 
   constructor(
-    protected _documentService: DocumentService,
-    protected _project: Project,
+    protected _catalogService: CatalogService,
     multiple: boolean = true
   ) {
     super(multiple);
   }
 
   private __loadOptions(queryParams: IQueryParams): Observable<IOption[]> {
-    // Request document representations and convert them to filter options
-    return this._documentService.getDocumentRepresentations(queryParams).pipe(
-      map((documentReprs) => {
-        if (!Array.isArray(documentReprs)) documentReprs = documentReprs.items;
-        return documentReprs.map((dr) => ({
-          value: dr.id,
-          label: (dr.reference ? dr.reference + ' ' : '') + dr.title,
+    // Request catalog representations and convert them to options
+    return this._catalogService.getCatalogRepresentations(queryParams).pipe(
+      map((catalogReprs) => {
+        if (!Array.isArray(catalogReprs)) catalogReprs = catalogReprs.items;
+        return catalogReprs.map((cr) => ({
+          value: cr.id,
+          label: (cr.reference ? cr.reference + ' ' : '') + cr.title,
         }));
       })
     );
   }
 
-  override getOptions(...ids: number[]): Observable<IOption[]> {
-    if (!ids.length) return of([]);
-    return this.__loadOptions({
-      project_ids: this._project.id,
-      ids: ids,
-    });
+  override getOptions(...catalogIds: number[]): Observable<IOption[]> {
+    if (!catalogIds.length) return of([]);
+    return this.__loadOptions({ ids: catalogIds });
   }
 
   override filterOptions(
     filter?: string | null,
     limit?: number
   ): Observable<IOption[]> {
-    // Build query params to request document representations
-    const queryParams: IQueryParams = {
-      project_ids: this._project.id,
-    };
+    // Build query params to request catalogs
+    const queryParams: IQueryParams = {};
     if (filter) queryParams['local_search'] = filter;
     if (limit) {
       queryParams['page'] = 1;
       queryParams['page_size'] = limit;
     }
+
     return this.__loadOptions(queryParams);
   }
 }

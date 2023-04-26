@@ -13,8 +13,76 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { take } from 'rxjs';
-import { StaticOptions, StringOptions, IOption } from './options';
+import { forkJoin, take } from 'rxjs';
+import {
+  StaticOptions,
+  StringOptions,
+  IOption,
+  OptionValue,
+  fromOptionValues,
+  toOptionValues,
+} from './options';
+
+describe('toOptionValues', () => {
+  it('should return an array of option values when input is an array of strings or numbers', () => {
+    const input1: unknown = ['a', 'b', 'c'];
+    const input2: unknown = [1, 2, 3];
+
+    const result1 = toOptionValues(input1);
+    const result2 = toOptionValues(input2);
+
+    expect(result1).toEqual(['a', 'b', 'c']);
+    expect(result2).toEqual([1, 2, 3]);
+  });
+
+  it('should return a single element array when input is a single string or number', () => {
+    const input1: unknown = 'a';
+    const input2: unknown = 1;
+
+    const result1 = toOptionValues(input1);
+    const result2 = toOptionValues(input2);
+
+    expect(result1).toEqual(['a']);
+    expect(result2).toEqual([1]);
+  });
+
+  it('should return an empty array for invalid input', () => {
+    const input1: unknown = { key: 'value' };
+    const input2: unknown = undefined;
+    const input3: unknown = null;
+
+    const result1 = toOptionValues(input1);
+    const result2 = toOptionValues(input2);
+    const result3 = toOptionValues(input3);
+
+    expect(result1).toEqual([]);
+    expect(result2).toEqual([]);
+    expect(result3).toEqual([]);
+  });
+});
+
+describe('fromOptionValues', () => {
+  it('should return the same array when multiple is true', () => {
+    const values: OptionValue[] = ['a', 'b', 'c'];
+    const result = fromOptionValues(values, true);
+
+    expect(result).toEqual(['a', 'b', 'c']);
+  });
+
+  it('should return the first element when multiple is false and the array is not empty', () => {
+    const values: OptionValue[] = ['a', 'b', 'c'];
+    const result = fromOptionValues(values, false);
+
+    expect(result).toEqual('a');
+  });
+
+  it('should return null when multiple is false and the array is empty', () => {
+    const values: OptionValue[] = [];
+    const result = fromOptionValues(values, false);
+
+    expect(result).toBeNull();
+  });
+});
 
 describe('StaticOptions', () => {
   const sampleOptions: IOption[] = [
@@ -23,18 +91,16 @@ describe('StaticOptions', () => {
     { label: 'Option 3', value: 3 },
   ];
 
-  it('should create an instance', () => {
+  it('should create an instance', (done) => {
     const instance = new StaticOptions(sampleOptions);
     expect(instance).toBeTruthy();
-  });
 
-  // xit('should load initial values', (done) => {
-  //   const instance = new StaticOptions(sampleOptions, true, [1, 3]);
-  //   instance.selected$.pipe(take(1)).subscribe((selectedOptions) => {
-  //     expect(selectedOptions).toEqual([sampleOptions[0], sampleOptions[2]]);
-  //     done();
-  //   });
-  // });
+    // Check if the selection is empty
+    instance.selection$.subscribe((options) => {
+      expect(options).toEqual([]);
+      done();
+    });
+  });
 
   it('should indicate that if it is a multiple selection', () => {
     const instance1 = new StaticOptions(sampleOptions, false);
@@ -68,34 +134,15 @@ describe('StaticOptions', () => {
     });
   });
 
-  it('should select options by values', (done) => {
-    const instance = new StaticOptions(sampleOptions, true);
-    instance.selectedValues$.pipe(take(1)).subscribe((selectedOptions) => {
-      expect(selectedOptions).toEqual([1, 3]);
-      done();
-    });
-
-    instance.selectValues(1, 3);
-  });
-
-  it('should deselect options by values', (done) => {
-    const instance = new StaticOptions(sampleOptions, true);
-    instance.selectedValues$.pipe(take(2)).subscribe((selectedOptions) => {
-      if (selectedOptions.length === 2) {
-        return;
-      }
-      expect(selectedOptions).toEqual([1]);
-      done();
-    });
-
-    instance.selectValues(1, 3);
-    instance.deselectValues(3);
-  });
-
   it('should select options', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
-    instance.selected$.pipe(take(1)).subscribe((selectedOptions) => {
-      expect(selectedOptions).toEqual([sampleOptions[0], sampleOptions[2]]);
+
+    forkJoin([
+      instance.selectionChanged$.pipe(take(1)), // select
+      instance.selection$.pipe(take(2)), // initial selection, select
+    ]).subscribe(([selectionChanged, selection]) => {
+      expect(selectionChanged).toEqual([sampleOptions[0], sampleOptions[2]]);
+      expect(selection).toEqual([sampleOptions[0], sampleOptions[2]]);
       done();
     });
 
@@ -104,11 +151,13 @@ describe('StaticOptions', () => {
 
   it('should deselect options', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
-    instance.selected$.pipe(take(2)).subscribe((selectedOptions) => {
-      if (selectedOptions.length === 2) {
-        return;
-      }
-      expect(selectedOptions).toEqual([sampleOptions[0]]);
+
+    forkJoin([
+      instance.selectionChanged$.pipe(take(2)), // select and deselect
+      instance.selection$.pipe(take(3)), // initial selection, select, deselect
+    ]).subscribe(([selectionChanged, selection]) => {
+      expect(selectionChanged).toEqual([sampleOptions[0]]);
+      expect(selection).toEqual([sampleOptions[0]]);
       done();
     });
 
@@ -116,13 +165,30 @@ describe('StaticOptions', () => {
     instance.deselectOptions(sampleOptions[2]);
   });
 
+  it('should set the selection', (done) => {
+    const instance = new StaticOptions(sampleOptions, true);
+
+    forkJoin([
+      instance.selectionChanged$.pipe(take(1)), // set selection
+      instance.selection$.pipe(take(2)), // initial selection, set selection
+    ]).subscribe(([selectionChanged, selection]) => {
+      expect(selectionChanged).toEqual([sampleOptions[1]]);
+      expect(selection).toEqual([sampleOptions[1]]);
+      done();
+    });
+
+    instance.setSelection(sampleOptions[1]);
+  });
+
   it('should clear the selection', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
-    instance.selected$.pipe(take(2)).subscribe((selectedOptions) => {
-      if (selectedOptions.length === 2) {
-        return;
-      }
-      expect(selectedOptions).toEqual([]);
+
+    forkJoin([
+      instance.selectionChanged$.pipe(take(2)), // select, clear selection
+      instance.selection$.pipe(take(3)), // initial selection, select, clear selection
+    ]).subscribe(([selectionChanged, selection]) => {
+      expect(selectionChanged).toEqual([]);
+      expect(selection).toEqual([]);
       done();
     });
 

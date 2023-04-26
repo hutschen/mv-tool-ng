@@ -15,7 +15,7 @@
 
 import { SelectionModel } from '@angular/cdk/collections';
 import { title } from 'radash';
-import { Observable, map, of, shareReplay } from 'rxjs';
+import { Observable, map, of, startWith } from 'rxjs';
 
 export type OptionValue = string | number;
 
@@ -24,10 +24,35 @@ export interface IOption {
   value: OptionValue;
 }
 
+export function toOptionValues(raw: unknown): OptionValue[] {
+  if (
+    Array.isArray(raw) &&
+    (raw.every((v) => typeof v === 'string') ||
+      raw.every((v) => typeof v === 'number'))
+  ) {
+    return raw;
+  } else if (typeof raw === 'string' || typeof raw === 'number') {
+    return [raw];
+  } else {
+    return [];
+  }
+}
+
+export function fromOptionValues(
+  values: OptionValue[],
+  multiple: boolean = true
+): null | OptionValue | OptionValue[] {
+  if (multiple) {
+    return values;
+  } else {
+    return values.length > 0 ? values[0] : null;
+  }
+}
+
 export abstract class Options {
   private __selection: SelectionModel<IOption>;
-  readonly selected$: Observable<IOption[]>;
-  readonly selectedValues$: Observable<OptionValue[]>;
+  readonly selectionChanged$: Observable<IOption[]>;
+  readonly selection$: Observable<IOption[]>;
   abstract readonly hasToLoad: boolean;
 
   constructor(multiple: boolean = true) {
@@ -39,13 +64,15 @@ export abstract class Options {
       (o1: IOption, o2: IOption) => o1.value === o2.value
     );
 
-    // Define the selected$ options and selectedValues$ observable
-    this.selected$ = this.__selection.changed.pipe(
-      map((e) => e.source.selected),
-      shareReplay(1)
+    // Define the selectionChanged$ observable
+    this.selectionChanged$ = this.__selection.changed.pipe(
+      map((e) => e.source.selected)
     );
-    this.selectedValues$ = this.selected$.pipe(
-      map((options) => options.map((o) => o.value))
+
+    // Define the selection$ observable
+    this.selection$ = this.selectionChanged$.pipe(
+      startWith(null),
+      map((options) => (options === null ? this.__selection.selected : options))
     );
   }
 
@@ -60,28 +87,16 @@ export abstract class Options {
     limit?: number
   ): Observable<IOption[]>;
 
-  selectValues(...values: OptionValue[]) {
-    return new Promise<boolean | void>((resolve) => {
-      this.getOptions(...values).subscribe((options) => {
-        resolve(this.__selection.select(...options));
-      });
-    });
-  }
-
-  deselectValues(...values: OptionValue[]) {
-    return new Promise<boolean | void>((resolve) => {
-      this.getOptions(...values).subscribe((options) => {
-        resolve(this.__selection.deselect(...options));
-      });
-    });
-  }
-
   selectOptions(...options: IOption[]) {
     return this.__selection.select(...options);
   }
 
   deselectOptions(...options: IOption[]) {
     return this.__selection.deselect(...options);
+  }
+
+  setSelection(...options: IOption[]) {
+    return this.__selection.setSelection(...options);
   }
 
   clearSelection() {

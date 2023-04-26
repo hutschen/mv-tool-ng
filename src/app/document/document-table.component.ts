@@ -72,7 +72,7 @@ export class DocumentTableComponent implements OnInit {
 
     // Sync query params with query params service
     const syncQueryParams$ = combineQueryParams([
-      this.dataFrame.search.queryParams$,
+      this.dataFrame.queryParams$,
       this.marked.queryParams$,
       this.expanded.queryParams$,
     ]);
