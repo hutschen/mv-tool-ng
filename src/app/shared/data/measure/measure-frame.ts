@@ -53,6 +53,13 @@ import { CatalogService } from '../../services/catalog.service';
 import { CatalogModuleService } from '../../services/catalog-module.service';
 import { MilestoneService } from '../../services/milestone.service';
 import { TargetObjectService } from '../../services/target-object.service';
+import { CatalogsFilter } from '../catalog/catalog-filters';
+import { CatalogModulesFilter } from '../catalog-module/catalog-module-filters';
+import {
+  MilestonesFilter,
+  RequirementsFilter,
+  TargetObjectsFilter,
+} from '../requirement/requirement-filters';
 import { StaticOptions, StringOptions } from '../options';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
