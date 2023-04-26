@@ -20,7 +20,7 @@ import { IQueryParams } from '../../services/query-params.service';
 import { TextField } from '../custom/custom-fields';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
 import { DescriptionColumn, TitleColumn } from '../custom/custom-colums';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { DocumentReferencesFilter } from './document-filters';
 
 export class DocumentDataFrame extends DataFrame<Document> {
