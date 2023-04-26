@@ -23,6 +23,7 @@ import {
   of,
   ReplaySubject,
   takeUntil,
+  withLatestFrom,
 } from 'rxjs';
 import { IQueryParams } from '../services/query-params.service';
 import { OptionValue, Options } from './options';
@@ -95,10 +96,18 @@ export class FilterByValues {
     // Set initial selection
     this.options
       .getOptions(...this.__evalQueryParams(initQueryParams))
-      .pipe(takeUntil(this.options.selectionChanged$))
-      .subscribe((options) => {
-        if (options.length > 0) this.options.setSelection(...options);
-        else this._selectionSubject.next([]); // trigger queryParams$ and isSet$ observables
+      .pipe(
+        takeUntil(this.options.selectionChanged$),
+        withLatestFrom(this.options.selection$)
+      )
+      .subscribe(([initSelection, selection]) => {
+        if (!isEqual(initSelection, selection)) {
+          // Initial selection changes selection
+          this.options.setSelection(...initSelection);
+        } else {
+          // Trigger queryParams$ and isSet$ when selection is not changed
+          this._selectionSubject.next(selection.map((o) => o.value));
+        }
       });
 
     // Define queryParams$ and isSet$ observables
