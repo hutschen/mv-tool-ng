@@ -71,7 +71,8 @@ export abstract class Options {
 
     // Define the selection$ observable
     this.selection$ = this.selectionChanged$.pipe(
-      startWith(this.__selection.selected)
+      startWith(null),
+      map((options) => (options === null ? this.__selection.selected : options))
     );
   }
 
