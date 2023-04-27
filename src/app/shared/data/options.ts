@@ -49,6 +49,32 @@ export function fromOptionValues(
   }
 }
 
+export function areSelectedValuesChanged(
+  prevValues: OptionValue[],
+  currValues: OptionValue[]
+): boolean {
+  if (prevValues.length !== currValues.length) {
+    return true;
+  }
+
+  const currValuesSet = new Set(currValues);
+  return prevValues.some((v) => !currValuesSet.has(v));
+}
+
+export function isSelectionChanged(
+  prevSelection: IOption[],
+  currSelection: IOption[]
+): boolean {
+  if (prevSelection.length !== currSelection.length) {
+    return true;
+  }
+
+  return areSelectedValuesChanged(
+    prevSelection.map((o) => o.value),
+    currSelection.map((o) => o.value)
+  );
+}
+
 export abstract class Options {
   private __selection: SelectionModel<IOption>;
   readonly selectionChanged$: Observable<IOption[]>;
