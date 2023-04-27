@@ -21,6 +21,8 @@ import {
   OptionValue,
   fromOptionValues,
   toOptionValues,
+  areSelectedValuesChanged,
+  isSelectionChanged,
 } from './options';
 
 describe('toOptionValues', () => {
@@ -81,6 +83,58 @@ describe('fromOptionValues', () => {
     const result = fromOptionValues(values, false);
 
     expect(result).toBeNull();
+  });
+});
+
+describe('areSelectedValuesChanged', () => {
+  it('should return true when lengths are different', () => {
+    const prevValues: OptionValue[] = [1, 'two'];
+    const currValues: OptionValue[] = [1];
+
+    expect(areSelectedValuesChanged(prevValues, currValues)).toBe(true);
+  });
+
+  it('should return true when values have changed', () => {
+    const prevValues: OptionValue[] = [1, 'two'];
+    const currValues: OptionValue[] = [1, 'three'];
+
+    expect(areSelectedValuesChanged(prevValues, currValues)).toBe(true);
+  });
+
+  it('should return false when values have not changed but order has', () => {
+    const prevValues: OptionValue[] = [1, 'two'];
+    const currValues: OptionValue[] = ['two', 1];
+
+    expect(areSelectedValuesChanged(prevValues, currValues)).toBe(false);
+  });
+
+  it('should return false when values have not changed and order is the same', () => {
+    const prevValues: OptionValue[] = [1, 'two'];
+    const currValues: OptionValue[] = [1, 'two'];
+
+    expect(areSelectedValuesChanged(prevValues, currValues)).toBe(false);
+  });
+});
+
+describe('isSelectionChanged', () => {
+  const prevSelection: IOption[] = [
+    { label: 'One', value: 1 },
+    { label: 'Two', value: 'two' },
+  ];
+
+  it('should return true when lengths are different', () => {
+    const currSelection: IOption[] = [{ label: 'One', value: 1 }];
+
+    expect(isSelectionChanged(prevSelection, currSelection)).toBe(true);
+  });
+
+  it('should return false when values have not changed and order is the same', () => {
+    const currSelection: IOption[] = [
+      { label: 'One', value: 1 },
+      { label: 'Two', value: 'two' },
+    ];
+
+    expect(isSelectionChanged(prevSelection, currSelection)).toBe(false);
   });
 });
 
