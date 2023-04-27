@@ -24,13 +24,26 @@ import {
 } from '@angular/core';
 import {
   IOption,
+  OptionValue,
   Options,
+  areSelectedValuesChanged,
   fromOptionValues,
   toOptionValues,
 } from '../data/options';
 import { FormControl } from '@angular/forms';
 import { ENTER } from '@angular/cdk/keycodes';
-import { Observable, debounceTime, map, startWith, switchMap, tap } from 'rxjs';
+import {
+  Observable,
+  ReplaySubject,
+  debounceTime,
+  filter,
+  map,
+  startWith,
+  switchMap,
+  takeUntil,
+  tap,
+  withLatestFrom,
+} from 'rxjs';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
@@ -96,8 +109,8 @@ export class OptionsInputComponent implements OnInit {
   @Input() label = 'Options';
   @Input() placeholder = 'Select options ...';
   @Input() options!: Options;
-  @Input() value?: unknown;
   @Output() valueChange = new EventEmitter<any | any[]>();
+  protected _valueSubject = new ReplaySubject<OptionValue[]>(1);
 
   separatorKeysCodes: number[] = [ENTER];
   filterCtrl = new FormControl('');
@@ -109,6 +122,7 @@ export class OptionsInputComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
+    // Load options when the filter changes
     this.loadedOptions$ = this.filterCtrl.valueChanges.pipe(
       startWith(null),
       debounceTime(this.options.hasToLoad ? 250 : 0),
@@ -128,23 +142,42 @@ export class OptionsInputComponent implements OnInit {
       });
     }
 
-    // Set the initial value
-    if (this.value !== undefined) {
-      this.options
-        .getOptions(...toOptionValues(this.value))
-        .subscribe((options) => {
-          this.options.setSelection(...options);
+    // Set the incoming value
+    this._valueSubject
+      .pipe(
+        withLatestFrom(this.options.selection$),
+        // Check if selection will be changed by the new value
+        filter(([values, options]) =>
+          areSelectedValuesChanged(
+            values,
+            options.map((o) => o.value)
+          )
+        ),
+        // Load the options corresponding to the new value,
+        // but stop if the selection changes in the meantime
+        switchMap(([values]) =>
+          this.options
+            .getOptions(...values)
+            .pipe(takeUntil(this.options.selectionChanged$))
+        )
+      )
+      .subscribe((options) => {
+        this.options.setSelection(...options);
+      });
 
-          // Update the value when the selection changes
-          this.options.selectionChanged$
-            .pipe(map((options) => options.map((o) => o.value)))
-            .subscribe((values) => {
-              this.valueChange.emit(
-                fromOptionValues(values, this.options.isMultipleSelection)
-              );
-            });
-        });
-    }
+    // Emit the valueChange event when the selection changes
+    this.options.selectionChanged$
+      .pipe(map((options) => options.map((o) => o.value)))
+      .subscribe((values) => {
+        this.valueChange.emit(
+          fromOptionValues(values, this.options.isMultipleSelection)
+        );
+      });
+  }
+
+  @Input()
+  set value(value: unknown | unknown[]) {
+    this._valueSubject.next(toOptionValues(value));
   }
 
   onTokenEnd(event: MatChipInputEvent): void {
