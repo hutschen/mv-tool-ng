@@ -26,7 +26,7 @@ import {
   withLatestFrom,
 } from 'rxjs';
 import { IQueryParams } from '../services/query-params.service';
-import { OptionValue, Options } from './options';
+import { OptionValue, Options, isSelectionChanged } from './options';
 
 export class FilterByPattern {
   protected _patternSubject: BehaviorSubject<string>;
@@ -101,7 +101,7 @@ export class FilterByValues {
         withLatestFrom(this.options.selection$)
       )
       .subscribe(([initSelection, selection]) => {
-        if (!isEqual(initSelection, selection)) {
+        if (isSelectionChanged(initSelection, selection)) {
           // Initial selection changes selection
           this.options.setSelection(...initSelection);
         } else {
