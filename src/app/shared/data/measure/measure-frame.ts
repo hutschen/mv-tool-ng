@@ -61,6 +61,7 @@ import {
   TargetObjectsFilter,
 } from '../requirement/requirement-filters';
 import { StaticOptions, StringOptions } from '../options';
+import { CompletionStatusOptions } from '../custom/custom-options';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   protected _requirement?: Requirement;
@@ -221,7 +222,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         undefined,
         new FilterByValues(
           'completion_statuses',
-          new StringOptions(['open', 'in progress', 'completed'], true),
+          new CompletionStatusOptions(true),
           initQueryParams,
           'string'
         ),
