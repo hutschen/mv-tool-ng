@@ -23,8 +23,8 @@ import {
   FilterForExistence,
   Filters,
 } from '../filter';
-import { StaticOptions } from '../options';
 import { CompletionField, StatusField, TextField } from './custom-fields';
+import { ComplianceStatusOptions } from './custom-options';
 
 export class ComplianceStatusColumn<D extends IDataItem> extends DataColumn<D> {
   constructor(initQueryParams: IQueryParams, optional: boolean = true) {
@@ -35,15 +35,7 @@ export class ComplianceStatusColumn<D extends IDataItem> extends DataColumn<D> {
         undefined,
         new FilterByValues(
           'compliance_statuses',
-          new StaticOptions(
-            [
-              { value: 'C', label: 'Compliant (C)' },
-              { value: 'PC', label: 'Partially Compliant (PC)' },
-              { value: 'NC', label: 'Not Compliant (NC)' },
-              { value: 'N/A', label: 'Not Applicable (N/A)' },
-            ],
-            true
-          ),
+          new ComplianceStatusOptions(true),
           initQueryParams,
           'string'
         ),

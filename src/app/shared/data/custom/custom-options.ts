@@ -13,7 +13,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { StringOptions } from '../options';
+import { StaticOptions, StringOptions } from '../options';
+
+export class ComplianceStatusOptions extends StaticOptions {
+  constructor(multiple: boolean = true) {
+    super(
+      [
+        { value: 'C', label: 'Compliant (C)' },
+        { value: 'PC', label: 'Partially Compliant (PC)' },
+        { value: 'NC', label: 'Not Compliant (NC)' },
+        { value: 'N/A', label: 'Not Applicable (N/A)' },
+      ],
+      multiple
+    );
+  }
+}
 
 export class CompletionStatusOptions extends StringOptions {
   constructor(multiple: boolean = true) {
