@@ -61,7 +61,10 @@ import {
   TargetObjectsFilter,
 } from '../requirement/requirement-filters';
 import { StaticOptions, StringOptions } from '../options';
-import { CompletionStatusOptions } from '../custom/custom-options';
+import {
+  CompletionStatusOptions,
+  VerificationMethodOptions,
+} from '../custom/custom-options';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   protected _requirement?: Requirement;
@@ -239,14 +242,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         undefined,
         new FilterByValues(
           'verification_methods',
-          new StaticOptions(
-            [
-              { value: 'I', label: 'Inspection (I)' },
-              { value: 'T', label: 'Test (T)' },
-              { value: 'R', label: 'Review (R)' },
-            ],
-            true
-          ),
+          new VerificationMethodOptions(true),
           initQueryParams,
           'string'
         ),

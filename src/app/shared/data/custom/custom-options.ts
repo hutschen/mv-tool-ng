@@ -34,3 +34,16 @@ export class CompletionStatusOptions extends StringOptions {
     super(['open', 'in progress', 'completed'], multiple);
   }
 }
+
+export class VerificationMethodOptions extends StaticOptions {
+  constructor(multiple: boolean = true) {
+    super(
+      [
+        { value: 'I', label: 'Inspection (I)' },
+        { value: 'T', label: 'Test (T)' },
+        { value: 'R', label: 'Review (R)' },
+      ],
+      multiple
+    );
+  }
+}
