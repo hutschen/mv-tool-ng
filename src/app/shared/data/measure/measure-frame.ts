@@ -60,10 +60,10 @@ import {
   RequirementsFilter,
   TargetObjectsFilter,
 } from '../requirement/requirement-filters';
-import { StaticOptions, StringOptions } from '../options';
 import {
   CompletionStatusOptions,
   VerificationMethodOptions,
+  VerificationStatusOptions,
 } from '../custom/custom-options';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
@@ -259,10 +259,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         undefined,
         new FilterByValues(
           'verification_statuses',
-          new StringOptions(
-            ['verified', 'partially verified', 'not verified'],
-            true
-          ),
+          new VerificationStatusOptions(true),
           initQueryParams,
           'string'
         ),

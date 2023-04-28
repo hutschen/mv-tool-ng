@@ -47,3 +47,9 @@ export class VerificationMethodOptions extends StaticOptions {
     );
   }
 }
+
+export class VerificationStatusOptions extends StringOptions {
+  constructor(multiple: boolean = true) {
+    super(['verified', 'partially verified', 'not verified'], multiple);
+  }
+}
