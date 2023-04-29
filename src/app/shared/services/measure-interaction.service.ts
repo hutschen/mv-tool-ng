@@ -22,9 +22,10 @@ import { VerificationDialogService } from 'src/app/measure/verification-dialog.c
 import { ConfirmDialogService } from '../components/confirm-dialog.component';
 import { Requirement } from './requirement.service';
 import { Subject, firstValueFrom } from 'rxjs';
+import { IDataItem } from '../data/data';
 
-export interface InteractionChange<T> {
-  item: T;
+export interface Interaction<D extends IDataItem> {
+  item: D;
   action: 'create' | 'update' | 'delete';
 }
 
@@ -32,8 +33,8 @@ export interface InteractionChange<T> {
   providedIn: 'root',
 })
 export class MeasureInteractionService {
-  protected _changesSubject = new Subject<InteractionChange<Measure>>();
-  changes$ = this._changesSubject.asObservable();
+  protected _interactionsSubject = new Subject<Interaction<Measure>>();
+  interactions$ = this._interactionsSubject.asObservable();
 
   constructor(
     protected _measureService: MeasureService,
@@ -55,7 +56,10 @@ export class MeasureInteractionService {
     const resultingMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (resultingMeasure) {
       const action = measure ? 'update' : 'create';
-      this._changesSubject.next({ item: resultingMeasure, action: action });
+      this._interactionsSubject.next({
+        item: resultingMeasure,
+        action: action,
+      });
     }
   }
 
@@ -72,7 +76,7 @@ export class MeasureInteractionService {
       this._complianceDialogService.openComplianceDialog(measure);
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
-      this._changesSubject.next({
+      this._interactionsSubject.next({
         item: updatedMeasure as Measure,
         action: 'update',
       });
@@ -84,7 +88,10 @@ export class MeasureInteractionService {
       this._completionDialogService.openCompletionDialog(measure);
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
-      this._changesSubject.next({ item: updatedMeasure, action: 'update' });
+      this._interactionsSubject.next({
+        item: updatedMeasure,
+        action: 'update',
+      });
     }
   }
 
@@ -93,7 +100,10 @@ export class MeasureInteractionService {
       this._verificationDialogService.openVerificationDialog(measure);
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
-      this._changesSubject.next({ item: updatedMeasure, action: 'update' });
+      this._interactionsSubject.next({
+        item: updatedMeasure,
+        action: 'update',
+      });
     }
   }
 
@@ -105,7 +115,7 @@ export class MeasureInteractionService {
     const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
     if (confirmed) {
       await firstValueFrom(this._measureService.deleteMeasure(measure.id));
-      this._changesSubject.next({ item: measure, action: 'delete' });
+      this._interactionsSubject.next({ item: measure, action: 'delete' });
     }
   }
 }

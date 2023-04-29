@@ -56,7 +56,7 @@ export class MeasureTableComponent implements OnInit {
     protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService
   ) {
-    this._measureInteractionService.changes$.subscribe((change) => {
+    this._measureInteractionService.interactions$.subscribe((change) => {
       switch (change.action) {
         case 'create':
           this.dataFrame.addItem(change.item);
