@@ -34,9 +34,6 @@ import { OptionValue } from '../data/options';
         {{ measure.completion_status ?? 'not set' | titlecase }}
       </button>
       <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="onSetCompletionStatus(measure, null)">
-          None
-        </button>
         <button
           mat-menu-item
           *ngFor="let option of completionStatusOptions.filterOptions() | async"
@@ -62,13 +59,10 @@ export class CompletionStatusComponent {
 
   constructor(readonly measureInteractions: MeasureInteractionService) {}
 
-  onSetCompletionStatus(
-    measure: Measure,
-    completionStatus: OptionValue | null
-  ) {
+  onSetCompletionStatus(measure: Measure, completionStatus: OptionValue) {
     this.measureInteractions.onSetCompletionStatus(
       measure,
-      completionStatus as CompletionStatus | null
+      completionStatus as CompletionStatus
     );
   }
 }
