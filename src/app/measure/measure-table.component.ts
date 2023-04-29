@@ -51,10 +51,10 @@ export class MeasureTableComponent implements OnInit {
     protected _queryParamsService: QueryParamsService,
     protected _measureService: MeasureService,
     protected _documentService: DocumentService,
-    protected _measureInteractionService: MeasureInteractionService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
-    protected _hideColumnsDialogService: HideColumnsDialogService
+    protected _hideColumnsDialogService: HideColumnsDialogService,
+    readonly measureInteractions: MeasureInteractionService
   ) {}
 
   ngOnInit(): void {
@@ -72,7 +72,7 @@ export class MeasureTableComponent implements OnInit {
     this.expanded = new DataSelection('_expanded', false, initialQueryParams);
 
     // Sync interactions
-    this.dataFrame.syncInteractions(this._measureInteractionService);
+    this.dataFrame.syncInteractions(this.measureInteractions);
 
     // Sync query params
     const syncQueryParams$ = combineQueryParams([
@@ -92,23 +92,23 @@ export class MeasureTableComponent implements OnInit {
 
   async onCreateMeasure(): Promise<void> {
     if (!this.requirement) throw new Error('Requirement is undefined');
-    await this._measureInteractionService.onCreateMeasure(this.requirement);
+    await this.measureInteractions.onCreateMeasure(this.requirement);
   }
 
   onEditMeasure = (measure: Measure) =>
-    this._measureInteractionService.onEditMeasure(measure);
+    this.measureInteractions.onEditMeasure(measure);
 
   onEditCompliance = (measure: Measure) =>
-    this._measureInteractionService.onEditCompliance(measure);
+    this.measureInteractions.onEditCompliance(measure);
 
   onEditCompletion = (measure: Measure) =>
-    this._measureInteractionService.onEditCompletion(measure);
+    this.measureInteractions.onEditCompletion(measure);
 
   onEditVerification = (measure: Measure) =>
-    this._measureInteractionService.onEditVerification(measure);
+    this.measureInteractions.onEditVerification(measure);
 
   onDeleteMeasure = (measure: Measure) =>
-    this._measureInteractionService.onDeleteMeasure(measure);
+    this.measureInteractions.onDeleteMeasure(measure);
 
   async onExportMeasures(): Promise<void> {
     if (this.requirement) {
