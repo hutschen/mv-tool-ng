@@ -13,11 +13,33 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Measure } from '../services/measure.service';
+import { MeasureInteractionService } from '../services/measure-interaction.service';
 
 @Component({
   selector: 'mvtool-completion-status',
-  template: ` <p>completion-status works!</p> `,
+  template: `
+    <div class="indicator">
+      <button
+        mat-button
+        [color]="measure.completionStatusColor"
+        matTooltip="Click to set completion status"
+        (click)="
+          measureInteractions.onEditCompletion(measure);
+          $event.stopImmediatePropagation()
+        "
+      >
+        <mat-icon *ngIf="measure.completed">check</mat-icon>
+        <mat-icon *ngIf="!measure.completed">close</mat-icon>
+        {{ measure.completion_status ?? 'not set' | titlecase }}
+      </button>
+    </div>
+  `,
   styles: [],
 })
-export class CompletionStatusComponent {}
+export class CompletionStatusComponent {
+  @Input() measure!: Measure;
+
+  constructor(readonly measureInteractions: MeasureInteractionService) {}
+}

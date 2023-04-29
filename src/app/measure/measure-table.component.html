@@ -72,20 +72,10 @@
           {{ column.label }}
         </mvtool-filter-header>
       </th>
-      <td mat-cell *matCellDef="let measure" class="indicator">
-        <button
-          mat-button
-          [color]="measure.completionStatusColor"
-          matTooltip="Click to set completion status"
-          (click)="
-            measureInteractions.onEditCompletion(measure);
-            $event.stopImmediatePropagation()
-          "
-        >
-          <mat-icon *ngIf="measure.completed">check</mat-icon>
-          <mat-icon *ngIf="!measure.completed">close</mat-icon>
-          {{ column.field.toStr(measure) | titlecase }}
-        </button>
+      <td mat-cell *matCellDef="let measure">
+        <mvtool-completion-status
+          [measure]="measure"
+        ></mvtool-completion-status>
       </td>
     </ng-container>
 
