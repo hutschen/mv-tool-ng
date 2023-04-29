@@ -14,7 +14,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { CompletionStatus, Measure, MeasureService } from './measure.service';
+import {
+  CompletionStatus,
+  Measure,
+  MeasureService,
+  VerificationMethod,
+} from './measure.service';
 import { MeasureDialogService } from 'src/app/measure/measure-dialog.component';
 import { ComplianceDialogService } from '../components/compliance-dialog.component';
 import { CompletionDialogService } from 'src/app/measure/completion-dialog.component';
@@ -134,6 +139,20 @@ export class MeasureInteractionService implements InteractionService<Measure> {
   ) {
     const measureInput = measure.toMeasureInput();
     measureInput.completion_status = completionStatus;
+    this._interactionsSubject.next({
+      item: await firstValueFrom(
+        this._measureService.updateMeasure(measure.id, measureInput)
+      ),
+      action: 'update',
+    });
+  }
+
+  async onSetVerificationMethod(
+    measure: Measure,
+    verificationMethod: VerificationMethod | null
+  ) {
+    const measureInput = measure.toMeasureInput();
+    measureInput.verification_method = verificationMethod;
     this._interactionsSubject.next({
       item: await firstValueFrom(
         this._measureService.updateMeasure(measure.id, measureInput)
