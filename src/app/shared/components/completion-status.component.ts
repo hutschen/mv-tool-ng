@@ -16,6 +16,7 @@
 import { Component, Input } from '@angular/core';
 import { Measure } from '../services/measure.service';
 import { MeasureInteractionService } from '../services/measure-interaction.service';
+import { CompletionStatusOptions } from '../data/custom/custom-options';
 
 @Component({
   selector: 'mvtool-completion-status',
@@ -23,23 +24,39 @@ import { MeasureInteractionService } from '../services/measure-interaction.servi
     <div class="indicator">
       <button
         mat-button
+        [matMenuTriggerFor]="menu"
         [color]="measure.completionStatusColor"
-        matTooltip="Click to set completion status"
-        (click)="
-          measureInteractions.onEditCompletion(measure);
-          $event.stopImmediatePropagation()
-        "
+        (click)="$event.stopImmediatePropagation()"
       >
         <mat-icon *ngIf="measure.completed">check</mat-icon>
         <mat-icon *ngIf="!measure.completed">close</mat-icon>
         {{ measure.completion_status ?? 'not set' | titlecase }}
       </button>
+      <mat-menu #menu="matMenu">
+        <button
+          mat-menu-item
+          *ngFor="let option of completionStatusOptions.filterOptions() | async"
+        >
+          <mat-icon *ngIf="option.value === 'completed'">check</mat-icon>
+          <mat-icon *ngIf="option.value !== 'completed'">close</mat-icon>
+          {{ option.label }}
+        </button>
+        <mat-divider></mat-divider>
+        <button
+          mat-menu-item
+          (click)="measureInteractions.onEditCompletion(measure)"
+        >
+          <mat-icon>check_circle</mat-icon>
+          Edit Completion
+        </button>
+      </mat-menu>
     </div>
   `,
   styles: [],
 })
 export class CompletionStatusComponent {
   @Input() measure!: Measure;
+  completionStatusOptions = new CompletionStatusOptions(false);
 
   constructor(readonly measureInteractions: MeasureInteractionService) {}
 }
