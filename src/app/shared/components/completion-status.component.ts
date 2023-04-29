@@ -14,9 +14,10 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
-import { Measure } from '../services/measure.service';
+import { Measure, CompletionStatus } from '../services/measure.service';
 import { MeasureInteractionService } from '../services/measure-interaction.service';
 import { CompletionStatusOptions } from '../data/custom/custom-options';
+import { OptionValue } from '../data/options';
 
 @Component({
   selector: 'mvtool-completion-status',
@@ -33,12 +34,14 @@ import { CompletionStatusOptions } from '../data/custom/custom-options';
         {{ measure.completion_status ?? 'not set' | titlecase }}
       </button>
       <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="onSetCompletionStatus(measure, null)">
+          None
+        </button>
         <button
           mat-menu-item
           *ngFor="let option of completionStatusOptions.filterOptions() | async"
+          (click)="onSetCompletionStatus(measure, option.value)"
         >
-          <mat-icon *ngIf="option.value === 'completed'">check</mat-icon>
-          <mat-icon *ngIf="option.value !== 'completed'">close</mat-icon>
           {{ option.label }}
         </button>
         <mat-divider></mat-divider>
@@ -46,7 +49,6 @@ import { CompletionStatusOptions } from '../data/custom/custom-options';
           mat-menu-item
           (click)="measureInteractions.onEditCompletion(measure)"
         >
-          <mat-icon>check_circle</mat-icon>
           Edit Completion
         </button>
       </mat-menu>
@@ -59,4 +61,14 @@ export class CompletionStatusComponent {
   completionStatusOptions = new CompletionStatusOptions(false);
 
   constructor(readonly measureInteractions: MeasureInteractionService) {}
+
+  onSetCompletionStatus(
+    measure: Measure,
+    completionStatus: OptionValue | null
+  ) {
+    this.measureInteractions.onSetCompletionStatus(
+      measure,
+      completionStatus as CompletionStatus | null
+    );
+  }
 }
