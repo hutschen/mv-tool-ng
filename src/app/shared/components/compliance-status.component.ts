@@ -18,20 +18,34 @@ import { Measure } from '../services/measure.service';
 import { ComplianceStatusOptions } from '../data/custom/custom-options';
 import { MeasureInteractionService } from '../services/measure-interaction.service';
 import { OptionValue } from '../data/options';
+import { ComplianceStatus } from '../services/requirement.service';
 
 @Component({
   selector: 'mvtool-compliance-status',
   template: `
     <button
       mat-button
-      matTooltip="Click to set compliance status"
-      (click)="
-        measureInteractions.onEditCompliance(measure);
-        $event.stopImmediatePropagation()
-      "
+      [matMenuTriggerFor]="menu"
+      (click)="$event.stopImmediatePropagation()"
     >
       {{ measure.compliance_status ?? 'Not Set' }}
     </button>
+    <mat-menu #menu="matMenu">
+      <button
+        mat-menu-item
+        *ngFor="let option of complianceStatusOptions.filterOptions() | async"
+        (click)="onSetComplianceStatus(measure, option.value)"
+      >
+        {{ option.label }}
+      </button>
+      <mat-divider></mat-divider>
+      <button
+        mat-menu-item
+        (click)="measureInteractions.onEditCompliance(measure)"
+      >
+        Edit Compliance
+      </button>
+    </mat-menu>
   `,
   styles: [],
 })
@@ -41,5 +55,10 @@ export class ComplianceStatusComponent {
 
   constructor(readonly measureInteractions: MeasureInteractionService) {}
 
-  onSetComplianceStatus(measure: Measure, value: OptionValue | null) {}
+  onSetComplianceStatus(measure: Measure, value: OptionValue) {
+    this.measureInteractions.onSetComplianceStatus(
+      measure,
+      value as ComplianceStatus
+    );
+  }
 }
