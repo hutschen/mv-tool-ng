@@ -55,21 +55,7 @@ export class MeasureTableComponent implements OnInit {
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService
-  ) {
-    this._measureInteractionService.interactions$.subscribe((change) => {
-      switch (change.action) {
-        case 'create':
-          this.dataFrame.addItem(change.item);
-          break;
-        case 'update':
-          this.dataFrame.updateItem(change.item);
-          break;
-        case 'delete':
-          this.dataFrame.removeItem(change.item);
-          break;
-      }
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
     if (!this.requirement) throw new Error('Requirement is undefined');
@@ -84,6 +70,9 @@ export class MeasureTableComponent implements OnInit {
     );
     this.marked = new DataSelection('_marked', true, initialQueryParams);
     this.expanded = new DataSelection('_expanded', false, initialQueryParams);
+
+    // Sync interactions
+    this.dataFrame.syncInteractions(this._measureInteractionService);
 
     // Sync query params
     const syncQueryParams$ = combineQueryParams([

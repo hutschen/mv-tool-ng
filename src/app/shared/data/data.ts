@@ -34,6 +34,7 @@ import { Search } from './search';
 import { IQueryParams } from '../services/query-params.service';
 import { Sorting } from './sort';
 import { IPage } from '../services/crud.service';
+import { InteractionService } from './interaction';
 
 export interface IDataItem {
   id: number | string;
@@ -429,6 +430,22 @@ export class DataFrame<D extends IDataItem> {
       return true;
     }
     return false;
+  }
+
+  syncInteractions(interactionService: InteractionService<D>) {
+    interactionService.interactions$.subscribe((interaction) => {
+      switch (interaction.action) {
+        case 'create':
+          this.addItem(interaction.item);
+          break;
+        case 'update':
+          this.updateItem(interaction.item);
+          break;
+        case 'delete':
+          this.removeItem(interaction.item);
+          break;
+      }
+    });
   }
 
   reload(): void {
