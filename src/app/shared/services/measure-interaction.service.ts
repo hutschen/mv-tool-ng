@@ -22,17 +22,12 @@ import { VerificationDialogService } from 'src/app/measure/verification-dialog.c
 import { ConfirmDialogService } from '../components/confirm-dialog.component';
 import { Requirement } from './requirement.service';
 import { Subject, firstValueFrom } from 'rxjs';
-import { IDataItem } from '../data/data';
-
-export interface Interaction<D extends IDataItem> {
-  item: D;
-  action: 'create' | 'update' | 'delete';
-}
+import { Interaction, InteractionService } from '../data/interaction';
 
 @Injectable({
   providedIn: 'root',
 })
-export class MeasureInteractionService {
+export class MeasureInteractionService implements InteractionService<Measure> {
   protected _interactionsSubject = new Subject<Interaction<Measure>>();
   interactions$ = this._interactionsSubject.asObservable();
 
