@@ -38,6 +38,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TableOptionsComponent } from './components/table-options.component';
 import { HideColumnsDialogComponent } from './components/hide-columns-dialog.component';
 import { OptionsInputComponent } from './components/options-input.component';
+import { CompletionStatusComponent } from './components/completion-status.component';
 
 @NgModule({
   declarations: [
@@ -61,6 +62,7 @@ import { OptionsInputComponent } from './components/options-input.component';
     TableOptionsComponent,
     HideColumnsDialogComponent,
     OptionsInputComponent,
+    CompletionStatusComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
@@ -77,6 +79,7 @@ import { OptionsInputComponent } from './components/options-input.component';
     FilterHeaderComponent,
     HideColumnsDialogComponent,
     OptionsInputComponent,
+    CompletionStatusComponent,
   ],
 })
 export class SharedModule {}
