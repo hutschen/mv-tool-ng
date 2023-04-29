@@ -263,6 +263,7 @@ export class DataColumns<D extends IDataItem> {
   }
 }
 
+// TODO: make this class abstract
 export class DataFrame<D extends IDataItem> {
   public readonly columns: DataColumns<D>;
   protected _isLoadingData: boolean = false;
@@ -372,10 +373,6 @@ export class DataFrame<D extends IDataItem> {
   get isLoading(): boolean {
     return this._isLoadingData || this._isLoadingColumns;
   }
-
-  // set length(length: number) {
-  //   this._lengthSubject.next(length);
-  // }
 
   get length(): number {
     return this._lengthSubject.value;
