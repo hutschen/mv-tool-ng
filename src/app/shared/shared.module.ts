@@ -39,6 +39,7 @@ import { TableOptionsComponent } from './components/table-options.component';
 import { HideColumnsDialogComponent } from './components/hide-columns-dialog.component';
 import { OptionsInputComponent } from './components/options-input.component';
 import { CompletionStatusComponent } from './components/completion-status.component';
+import { ComplianceStatusComponent } from './components/compliance-status.component';
 
 @NgModule({
   declarations: [
@@ -63,6 +64,7 @@ import { CompletionStatusComponent } from './components/completion-status.compon
     HideColumnsDialogComponent,
     OptionsInputComponent,
     CompletionStatusComponent,
+    ComplianceStatusComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
@@ -80,6 +82,7 @@ import { CompletionStatusComponent } from './components/completion-status.compon
     HideColumnsDialogComponent,
     OptionsInputComponent,
     CompletionStatusComponent,
+    ComplianceStatusComponent,
   ],
 })
 export class SharedModule {}
