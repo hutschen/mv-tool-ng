@@ -188,6 +188,14 @@ describe('StaticOptions', () => {
     });
   });
 
+  it('should get all options when no filter is given', (done) => {
+    const instance = new StaticOptions(sampleOptions);
+    instance.filterOptions().subscribe((filteredOptions) => {
+      expect(filteredOptions).toEqual(sampleOptions);
+      done();
+    });
+  });
+
   it('should select options', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
 
