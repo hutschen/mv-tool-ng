@@ -1,4 +1,3 @@
-import { Component } from '@angular/core';
 // Copyright (C) 2023 Helmar Hutschenreuter
 //
 // This program is free software: you can redistribute it and/or modify
@@ -14,16 +13,28 @@ import { Component } from '@angular/core';
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { Component, Input } from '@angular/core';
+import { Measure } from '../services/measure.service';
+import { MeasureInteractionService } from '../services/measure-interaction.service';
+
 @Component({
   selector: 'mvtool-verification-method',
   template: `
-    <p>
-      verification-method works!
-    </p>
+    <button
+      mat-button
+      matTooltip="Click to set verification status"
+      (click)="
+        measureInteractions.onEditVerification(measure);
+        $event.stopImmediatePropagation()
+      "
+    >
+      {{ measure.verification_method ?? 'not set' | titlecase }}
+    </button>
   `,
-  styles: [
-  ]
+  styles: [],
 })
 export class VerificationMethodComponent {
+  @Input() measure!: Measure;
 
+  constructor(readonly measureInteractions: MeasureInteractionService) {}
 }

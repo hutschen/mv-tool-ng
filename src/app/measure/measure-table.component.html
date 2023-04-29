@@ -107,16 +107,9 @@
         </mvtool-filter-header>
       </th>
       <td mat-cell *matCellDef="let measure">
-        <button
-          mat-button
-          matTooltip="Click to set verification status"
-          (click)="
-            measureInteractions.onEditVerification(measure);
-            $event.stopImmediatePropagation()
-          "
-        >
-          {{ column.field.toStr(measure) }}
-        </button>
+        <mvtool-verification-method
+          [measure]="measure"
+        ></mvtool-verification-method>
       </td>
     </ng-container>
 
