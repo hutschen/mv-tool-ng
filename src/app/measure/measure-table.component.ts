@@ -45,7 +45,7 @@ export class MeasureTableComponent implements OnInit {
   marked!: DataSelection<Measure>;
   expanded!: DataSelection<Measure>;
   exportQueryParams$!: Observable<IQueryParams>;
-  @Input() requirement?: Requirement;
+  @Input() requirement!: Requirement;
 
   constructor(
     protected _queryParamsService: QueryParamsService,
@@ -89,26 +89,6 @@ export class MeasureTableComponent implements OnInit {
       this.dataFrame.sort.queryParams$,
     ]);
   }
-
-  async onCreateMeasure(): Promise<void> {
-    if (!this.requirement) throw new Error('Requirement is undefined');
-    await this.measureInteractions.onCreateMeasure(this.requirement);
-  }
-
-  onEditMeasure = (measure: Measure) =>
-    this.measureInteractions.onEditMeasure(measure);
-
-  onEditCompliance = (measure: Measure) =>
-    this.measureInteractions.onEditCompliance(measure);
-
-  onEditCompletion = (measure: Measure) =>
-    this.measureInteractions.onEditCompletion(measure);
-
-  onEditVerification = (measure: Measure) =>
-    this.measureInteractions.onEditVerification(measure);
-
-  onDeleteMeasure = (measure: Measure) =>
-    this.measureInteractions.onDeleteMeasure(measure);
 
   async onExportMeasures(): Promise<void> {
     if (this.requirement) {
