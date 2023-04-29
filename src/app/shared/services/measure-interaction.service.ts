@@ -20,7 +20,7 @@ import { ComplianceDialogService } from '../components/compliance-dialog.compone
 import { CompletionDialogService } from 'src/app/measure/completion-dialog.component';
 import { VerificationDialogService } from 'src/app/measure/verification-dialog.component';
 import { ConfirmDialogService } from '../components/confirm-dialog.component';
-import { Requirement } from './requirement.service';
+import { ComplianceStatus, Requirement } from './requirement.service';
 import { Subject, firstValueFrom } from 'rxjs';
 import { Interaction, InteractionService } from '../data/interaction';
 
@@ -112,6 +112,20 @@ export class MeasureInteractionService implements InteractionService<Measure> {
       await firstValueFrom(this._measureService.deleteMeasure(measure.id));
       this._interactionsSubject.next({ item: measure, action: 'delete' });
     }
+  }
+
+  async onSetComplianceStatus(
+    measure: Measure,
+    complianceStatus: ComplianceStatus | null
+  ) {
+    const measureInput = measure.toMeasureInput();
+    measureInput.compliance_status = complianceStatus;
+    this._interactionsSubject.next({
+      item: await firstValueFrom(
+        this._measureService.updateMeasure(measure.id, measureInput)
+      ),
+      action: 'update',
+    });
   }
 
   async onSetCompletionStatus(
