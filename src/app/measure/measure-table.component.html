@@ -90,16 +90,9 @@
         </mvtool-filter-header>
       </th>
       <td mat-cell *matCellDef="let measure">
-        <button
-          mat-button
-          matTooltip="Click to set compliance status"
-          (click)="
-            measureInteractions.onEditCompliance(measure);
-            $event.stopImmediatePropagation()
-          "
-        >
-          {{ column.field.toStr(measure) }}
-        </button>
+        <mvtool-compliance-status
+          [measure]="measure"
+        ></mvtool-compliance-status>
       </td>
     </ng-container>
 

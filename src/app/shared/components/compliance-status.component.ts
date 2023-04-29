@@ -13,11 +13,33 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { Measure } from '../services/measure.service';
+import { ComplianceStatusOptions } from '../data/custom/custom-options';
+import { MeasureInteractionService } from '../services/measure-interaction.service';
+import { OptionValue } from '../data/options';
 
 @Component({
   selector: 'mvtool-compliance-status',
-  template: ` <p>compliance-status works!</p> `,
+  template: `
+    <button
+      mat-button
+      matTooltip="Click to set compliance status"
+      (click)="
+        measureInteractions.onEditCompliance(measure);
+        $event.stopImmediatePropagation()
+      "
+    >
+      {{ measure.compliance_status ?? 'Not Set' }}
+    </button>
+  `,
   styles: [],
 })
-export class ComplianceStatusComponent {}
+export class ComplianceStatusComponent {
+  @Input() measure!: Measure;
+  complianceStatusOptions = new ComplianceStatusOptions(false);
+
+  constructor(readonly measureInteractions: MeasureInteractionService) {}
+
+  onSetComplianceStatus(measure: Measure, value: OptionValue | null) {}
+}
