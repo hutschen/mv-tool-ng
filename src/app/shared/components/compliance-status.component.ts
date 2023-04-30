@@ -14,11 +14,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
-import { Measure } from '../services/measure.service';
 import { ComplianceStatusOptions } from '../data/custom/custom-options';
-import { MeasureInteractionService } from '../services/measure-interaction.service';
 import { OptionValue } from '../data/options';
 import { ComplianceStatus } from '../services/requirement.service';
+import {
+  ComplianceInteractionService,
+  CompliantItem,
+} from '../compliance-interaction';
 
 @Component({
   selector: 'mvtool-compliance-status',
@@ -28,20 +30,20 @@ import { ComplianceStatus } from '../services/requirement.service';
       [matMenuTriggerFor]="menu"
       (click)="$event.stopImmediatePropagation()"
     >
-      {{ measure.compliance_status ?? 'Not Set' }}
+      {{ item.compliance_status ?? 'Not Set' }}
     </button>
     <mat-menu #menu="matMenu">
       <button
         mat-menu-item
         *ngFor="let option of complianceStatusOptions.filterOptions() | async"
-        (click)="onSetComplianceStatus(measure, option.value)"
+        (click)="onSetComplianceStatus(item, option.value)"
       >
         {{ option.label }}
       </button>
       <mat-divider></mat-divider>
       <button
         mat-menu-item
-        (click)="measureInteractions.onEditCompliance(measure)"
+        (click)="complianceInteractions.onEditCompliance(item)"
       >
         Edit Compliance
       </button>
@@ -50,14 +52,15 @@ import { ComplianceStatus } from '../services/requirement.service';
   styles: [],
 })
 export class ComplianceStatusComponent {
-  @Input() measure!: Measure;
+  @Input() item!: CompliantItem;
+  @Input() complianceInteractions!: ComplianceInteractionService;
   complianceStatusOptions = new ComplianceStatusOptions(false);
 
-  constructor(readonly measureInteractions: MeasureInteractionService) {}
+  constructor() {}
 
-  onSetComplianceStatus(measure: Measure, value: OptionValue) {
-    this.measureInteractions.onSetComplianceStatus(
-      measure,
+  onSetComplianceStatus(item: CompliantItem, value: OptionValue) {
+    this.complianceInteractions.onSetComplianceStatus(
+      item,
       value as ComplianceStatus
     );
   }
