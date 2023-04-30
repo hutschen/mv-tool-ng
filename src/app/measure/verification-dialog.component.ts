@@ -27,6 +27,10 @@ import {
   VerificationMethod,
   VerificationStatus,
 } from '../shared/services/measure.service';
+import {
+  VerificationMethodOptions,
+  VerificationStatusOptions,
+} from '../shared/data/custom/custom-options';
 
 @Injectable({
   providedIn: 'root',
@@ -64,10 +68,12 @@ export class VerificationDialogService {
           >
             <mat-option [value]="null">None</mat-option>
             <mat-option
-              *ngFor="let method of verificationMethods"
-              [value]="method"
+              *ngFor="
+                let option of verificationMethodOptions.filterOptions() | async
+              "
+              [value]="option.value"
             >
-              {{ method }}
+              {{ option.label }}
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -82,10 +88,12 @@ export class VerificationDialogService {
           >
             <mat-option [value]="null">None</mat-option>
             <mat-option
-              *ngFor="let status of verificationStatuses"
-              [value]="status"
+              *ngFor="
+                let option of verificationStatusOptions.filterOptions() | async
+              "
+              [value]="option.value"
             >
-              {{ status | titlecase }}
+              {{ option.label }}
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -107,12 +115,8 @@ export class VerificationDialogService {
   styles: ['textarea { min-height: 100px; }'],
 })
 export class VerificationDialogComponent {
-  verificationMethods: VerificationMethod[] = ['R', 'T', 'I'];
-  verificationStatuses: VerificationStatus[] = [
-    'verified',
-    'partially verified',
-    'not verified',
-  ];
+  verificationMethodOptions = new VerificationMethodOptions(false);
+  verificationStatusOptions = new VerificationStatusOptions(false);
   measureInput: IMeasureInput;
   protected _preservedVerificationStatus: VerificationStatus | null = null;
   protected _preservedVerificationComment: string | null = null;

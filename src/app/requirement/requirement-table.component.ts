@@ -15,7 +15,6 @@
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
-import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { Project } from '../shared/services/project.service';
@@ -23,8 +22,6 @@ import {
   Requirement,
   RequirementService,
 } from '../shared/services/requirement.service';
-import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
-import { RequirementDialogService } from './requirement-dialog.component';
 import { RequirementImportDialogService } from './requirement-import-dialog.component';
 import { RequirementDataFrame } from '../shared/data/requirement/requirement-frame';
 import {
@@ -38,6 +35,7 @@ import { TargetObjectService } from '../shared/services/target-object.service';
 import { MilestoneService } from '../shared/services/milestone.service';
 import { DataSelection } from '../shared/data/selection';
 import { combineQueryParams } from '../shared/combine-query-params';
+import { RequirementInteractionService } from '../shared/services/requirement-interaction.service';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -53,7 +51,7 @@ export class RequirementTableComponent implements OnInit {
   marked!: DataSelection<Requirement>;
   expanded!: DataSelection<Requirement>;
   exportQueryParams$!: Observable<IQueryParams>;
-  @Input() project?: Project;
+  @Input() project!: Project;
   @Output() clickRequirement = new EventEmitter<Requirement>();
 
   constructor(
@@ -63,13 +61,11 @@ export class RequirementTableComponent implements OnInit {
     protected _catalogModuleService: CatalogModuleService,
     protected _milestoneService: MilestoneService,
     protected _targetObjectService: TargetObjectService,
-    protected _requirementDialogService: RequirementDialogService,
-    protected _complianceDialogService: ComplianceDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _requirementImportDialogService: RequirementImportDialogService,
-    protected _confirmDialogService: ConfirmDialogService,
-    protected _hideColumnsDialogService: HideColumnsDialogService
+    protected _hideColumnsDialogService: HideColumnsDialogService,
+    readonly requirementInteractions: RequirementInteractionService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -89,6 +85,9 @@ export class RequirementTableComponent implements OnInit {
     this.marked = new DataSelection('_marked', true, initialQueryParams);
     this.expanded = new DataSelection('_expanded', false, initialQueryParams);
 
+    // Sync interactions
+    this.dataFrame.syncInteractions(this.requirementInteractions);
+
     // Sync query params with query params service
     const syncQueryParams$ = combineQueryParams([
       this.dataFrame.queryParams$,
@@ -103,56 +102,6 @@ export class RequirementTableComponent implements OnInit {
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
     ]);
-  }
-
-  protected async _createOrEditRequirement(
-    requirement?: Requirement
-  ): Promise<void> {
-    if (this.project) {
-      const dialogRef = this._requirementDialogService.openRequirementDialog(
-        this.project,
-        requirement
-      );
-      const resultingRequirement = await firstValueFrom(
-        dialogRef.afterClosed()
-      );
-      if (resultingRequirement) {
-        this.dataFrame.addOrUpdateItem(resultingRequirement);
-      }
-    } else {
-      throw new Error('Project is undefined');
-    }
-  }
-
-  async onCreateRequirement(): Promise<void> {
-    await this._createOrEditRequirement();
-  }
-
-  async onEditRequirement(requirement: Requirement): Promise<void> {
-    await this._createOrEditRequirement(requirement);
-  }
-
-  async onEditCompliance(requirement: Requirement): Promise<void> {
-    const dialogRef =
-      this._complianceDialogService.openComplianceDialog(requirement);
-    const updatedRequirement = await firstValueFrom(dialogRef.afterClosed());
-    if (updatedRequirement) {
-      this.dataFrame.updateItem(updatedRequirement as Requirement);
-    }
-  }
-
-  async onDeleteRequirement(requirement: Requirement): Promise<void> {
-    const confirmDialogRef = this._confirmDialogService.openConfirmDialog(
-      'Delete Requirement',
-      `Do you really want to delete requirement "${requirement.summary}"?`
-    );
-    const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
-    if (confirmed) {
-      await firstValueFrom(
-        this._requirementService.deleteRequirement(requirement.id)
-      );
-      this.dataFrame.removeItem(requirement);
-    }
   }
 
   async onExportRequirementsExcel(): Promise<void> {

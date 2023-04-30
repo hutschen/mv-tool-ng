@@ -15,11 +15,6 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
-import { CompletionDialogService } from '../measure/completion-dialog.component';
-import { MeasureDialogService } from '../measure/measure-dialog.component';
-import { VerificationDialogService } from '../measure/verification-dialog.component';
-import { ComplianceDialogService } from '../shared/components/compliance-dialog.component';
-import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { MeasureDataFrame } from '../shared/data/measure/measure-frame';
@@ -37,6 +32,7 @@ import { RequirementService } from '../shared/services/requirement.service';
 import { TargetObjectService } from '../shared/services/target-object.service';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
+import { MeasureInteractionService } from '../shared/services/measure-interaction.service';
 
 @Component({
   selector: 'mvtool-project-measure-table',
@@ -64,13 +60,9 @@ export class ProjectMeasureTableComponent implements OnInit {
     protected _milestoneService: MilestoneService,
     protected _targetObjectService: TargetObjectService,
     protected _documentService: DocumentService,
-    protected _measureDialogService: MeasureDialogService,
-    protected _complianceDialogService: ComplianceDialogService,
-    protected _completionDialogService: CompletionDialogService,
-    protected _verificationDialogService: VerificationDialogService,
     protected _downloadDialogService: DownloadDialogService,
-    protected _confirmDialogService: ConfirmDialogService,
-    protected _hideColumnsDialogService: HideColumnsDialogService
+    protected _hideColumnsDialogService: HideColumnsDialogService,
+    readonly measureInteractions: MeasureInteractionService
   ) {}
 
   ngOnInit(): void {
@@ -92,6 +84,9 @@ export class ProjectMeasureTableComponent implements OnInit {
     this.marked = new DataSelection('_marked', true, initialQueryParams);
     this.expanded = new DataSelection('_expanded', false, initialQueryParams);
 
+    // Sync interactions
+    this.dataFrame.syncInteractions(this.measureInteractions);
+
     // Sync query params with query params service
     const syncQueryParams$ = combineQueryParams([
       this.dataFrame.queryParams$,
@@ -106,60 +101,6 @@ export class ProjectMeasureTableComponent implements OnInit {
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
     ]);
-  }
-
-  async onEditCompliance(measure: Measure): Promise<void> {
-    const dialogRef =
-      this._complianceDialogService.openComplianceDialog(measure);
-    const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
-    if (updatedMeasure) {
-      this.dataFrame.updateItem(updatedMeasure as Measure);
-    }
-  }
-
-  async onEditCompletion(measure: Measure): Promise<void> {
-    const dialogRef =
-      this._completionDialogService.openCompletionDialog(measure);
-    const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
-    if (updatedMeasure) {
-      this.dataFrame.updateItem(updatedMeasure as Measure);
-    }
-  }
-
-  async onEditVerification(measure: Measure): Promise<void> {
-    const dialogRef =
-      this._verificationDialogService.openVerificationDialog(measure);
-    const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
-    if (updatedMeasure) {
-      this.dataFrame.updateItem(updatedMeasure as Measure);
-    }
-  }
-
-  async onEditMeasure(measure: Measure): Promise<void> {
-    if (this.project) {
-      const dialogRef = this._measureDialogService.openMeasureDialog(
-        measure.requirement, // TODO: this is a temporary hack, it is better when requirement is not required
-        measure
-      );
-      const resultingMeasure = await firstValueFrom(dialogRef.afterClosed());
-      if (resultingMeasure) {
-        this.dataFrame.updateItem(resultingMeasure);
-      }
-    } else {
-      throw new Error('Project is undefined');
-    }
-  }
-
-  async onDeleteMeasure(measure: Measure): Promise<void> {
-    const confirmDialogRef = this._confirmDialogService.openConfirmDialog(
-      'Delete Measure',
-      `Do you really want to delete measure "${measure.summary}"?`
-    );
-    const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
-    if (confirmed) {
-      await firstValueFrom(this._measureService.deleteMeasure(measure.id));
-      this.dataFrame.removeItem(measure);
-    }
   }
 
   async onExportMeasures(): Promise<void> {

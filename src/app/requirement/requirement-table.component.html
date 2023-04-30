@@ -19,7 +19,7 @@
   <!-- Toolbar -->
   <mvtool-table-toolbar
     (refresh)="this.dataFrame.reload()"
-    (create)="onCreateRequirement()"
+    (create)="requirementInteractions.onCreateRequirement(project)"
     [(search)]="dataFrame.search.pattern"
     searchLabel="Search Requirements"
     createLabel="Create Requirement"
@@ -48,7 +48,7 @@
     [dataFrame]="dataFrame"
     [marked]="marked"
     [expanded]="expanded"
-    (create)="onCreateRequirement()"
+    (create)="requirementInteractions.onCreateRequirement(project)"
     noContentText="No requirements found."
     loadingText="Loading requirements..."
     (clickRow)="clickRequirement.emit($event)"
@@ -67,14 +67,11 @@
           {{ column.label }}
         </mvtool-filter-header>
       </th>
-      <td mat-cell *matCellDef="let data">
-        <button
-          mat-button
-          matTooltip="Click to set compliance status"
-          (click)="onEditCompliance(data); $event.stopImmediatePropagation()"
-        >
-          {{ column.field.toStr(data) }}
-        </button>
+      <td mat-cell *matCellDef="let requirement">
+        <mvtool-compliance-status
+          [item]="requirement"
+          [complianceInteractions]="requirementInteractions"
+        ></mvtool-compliance-status>
       </td>
     </ng-container>
 
@@ -88,15 +85,15 @@
       </th>
       <td
         mat-cell
-        *matCellDef="let data"
-        [matTooltip]="column.field.toStr(data)"
+        *matCellDef="let requirement"
+        [matTooltip]="column.field.toStr(requirement)"
         class="indicator"
       >
         <mat-progress-bar
-          *ngIf="column.field.toBool(data)"
+          *ngIf="column.field.toBool(requirement)"
           mode="determinate"
-          [value]="column.field.toValue(data)"
-          [color]="data.completionProgressColor"
+          [value]="column.field.toValue(requirement)"
+          [color]="requirement.completionProgressColor"
         >
         </mat-progress-bar>
       </td>
@@ -110,13 +107,19 @@
       <th mat-header-cell *matHeaderCellDef></th>
       <td
         mat-cell
-        *matCellDef="let data"
-        [matTooltip]="column.field.toStr(data)"
+        *matCellDef="let requirement"
+        [matTooltip]="column.field.toStr(requirement)"
       >
-        <div *ngIf="column.field.toBool(data)" class="fx-row fx-center-center">
+        <div
+          *ngIf="column.field.toBool(requirement)"
+          class="fx-row fx-center-center"
+        >
           <button
             mat-icon-button
-            (click)="onEditCompliance(data); $event.stopImmediatePropagation()"
+            (click)="
+              requirementInteractions.onEditCompliance(requirement);
+              $event.stopImmediatePropagation()
+            "
             aria-label="Fix compliance status"
           >
             <mat-icon>warning</mat-icon>
@@ -141,9 +144,11 @@
       </th>
       <td mat-cell *matCellDef="let requirement">
         <mvtool-table-row-options
-          (edit)="onEditRequirement(requirement)"
-          (editCompliance)="onEditCompliance(requirement)"
-          (delete)="onDeleteRequirement(requirement)"
+          (edit)="requirementInteractions.onEditRequirement(requirement)"
+          (editCompliance)="
+            requirementInteractions.onEditCompliance(requirement)
+          "
+          (delete)="requirementInteractions.onDeleteRequirement(requirement)"
           (toggleMarker)="marked.toggle(requirement)"
           [isMarked]="marked.isSelected(requirement)"
           (toggleExpansion)="expanded.toggle(requirement)"

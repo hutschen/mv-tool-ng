@@ -13,8 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { PropertyRead } from '@angular/compiler';
-import { combineLatest, of, skip, Subject } from 'rxjs';
+import { of, skip, Subject } from 'rxjs';
 import { IQueryParams } from '../services/query-params.service';
 import {
   DataColumn,

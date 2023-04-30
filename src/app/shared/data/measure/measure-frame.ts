@@ -60,7 +60,11 @@ import {
   RequirementsFilter,
   TargetObjectsFilter,
 } from '../requirement/requirement-filters';
-import { StaticOptions, StringOptions } from '../options';
+import {
+  CompletionStatusOptions,
+  VerificationMethodOptions,
+  VerificationStatusOptions,
+} from '../custom/custom-options';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   protected _requirement?: Requirement;
@@ -221,7 +225,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         undefined,
         new FilterByValues(
           'completion_statuses',
-          new StringOptions(['open', 'in progress', 'completed'], true),
+          new CompletionStatusOptions(true),
           initQueryParams,
           'string'
         ),
@@ -238,14 +242,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         undefined,
         new FilterByValues(
           'verification_methods',
-          new StaticOptions(
-            [
-              { value: 'I', label: 'Inspection (I)' },
-              { value: 'T', label: 'Test (T)' },
-              { value: 'R', label: 'Review (R)' },
-            ],
-            true
-          ),
+          new VerificationMethodOptions(true),
           initQueryParams,
           'string'
         ),
@@ -262,10 +259,7 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         undefined,
         new FilterByValues(
           'verification_statuses',
-          new StringOptions(
-            ['verified', 'partially verified', 'not verified'],
-            true
-          ),
+          new VerificationStatusOptions(true),
           initQueryParams,
           'string'
         ),

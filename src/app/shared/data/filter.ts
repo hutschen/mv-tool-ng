@@ -134,7 +134,6 @@ export class FilterByValues {
   }
 
   clear(): void {
-    console.log('clear');
     this.options.clearSelection();
   }
 }
