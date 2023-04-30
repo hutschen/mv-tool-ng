@@ -15,12 +15,10 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
-import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { DocumentService, Document } from '../shared/services/document.service';
 import { Project } from '../shared/services/project.service';
-import { DocumentDialogService } from './document-dialog.component';
 import { DocumentDataFrame } from '../shared/data/document/document-frame';
 import {
   IQueryParams,
@@ -29,6 +27,7 @@ import {
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
+import { DocumentInteractionService } from '../shared/services/document-interaction.service';
 
 @Component({
   selector: 'mvtool-document-table',
@@ -45,16 +44,15 @@ export class DocumentTableComponent implements OnInit {
   marked!: DataSelection<Document>;
   expanded!: DataSelection<Document>;
   exportQueryParams$!: Observable<IQueryParams>;
-  @Input() project?: Project;
+  @Input() project!: Project;
 
   constructor(
     protected _queryParamsService: QueryParamsService,
     protected _documentService: DocumentService,
-    protected _documentDialogService: DocumentDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
-    protected _confirmDialogService: ConfirmDialogService,
-    protected _hideColumnsDialogService: HideColumnsDialogService
+    protected _hideColumnsDialogService: HideColumnsDialogService,
+    protected documentInteractions: DocumentInteractionService
   ) {}
 
   ngOnInit(): void {
@@ -70,6 +68,9 @@ export class DocumentTableComponent implements OnInit {
     this.marked = new DataSelection('_marked', true, initialQueryParams);
     this.expanded = new DataSelection('_expanded', false, initialQueryParams);
 
+    // Sync interactions
+    this.dataFrame.syncInteractions(this.documentInteractions);
+
     // Sync query params with query params service
     const syncQueryParams$ = combineQueryParams([
       this.dataFrame.queryParams$,
@@ -84,41 +85,6 @@ export class DocumentTableComponent implements OnInit {
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
     ]);
-  }
-
-  protected async _createOrEditDocument(document?: Document) {
-    if (this.project) {
-      const dialogRef = this._documentDialogService.openDocumentDialog(
-        this.project,
-        document
-      );
-      const resultingDocument = await firstValueFrom(dialogRef.afterClosed());
-      if (resultingDocument) {
-        this.dataFrame.addOrUpdateItem(resultingDocument);
-      }
-    } else {
-      throw new Error('Project is undefined');
-    }
-  }
-
-  async onCreateDocument(): Promise<void> {
-    await this._createOrEditDocument();
-  }
-
-  async onEditDocument(document: Document): Promise<void> {
-    await this._createOrEditDocument(document);
-  }
-
-  async onDeleteDocument(document: Document): Promise<void> {
-    const confirmDialogRef = this._confirmDialogService.openConfirmDialog(
-      'Delete Document',
-      `Do you really want to delete the document "${document.title}"?`
-    );
-    const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
-    if (confirmed) {
-      await firstValueFrom(this._documentService.deleteDocument(document.id));
-      this.dataFrame.removeItem(document);
-    }
   }
 
   async onExportDocuments(): Promise<void> {
