@@ -29,11 +29,14 @@ import { ConfirmDialogService } from '../components/confirm-dialog.component';
 import { ComplianceStatus, Requirement } from './requirement.service';
 import { Subject, firstValueFrom } from 'rxjs';
 import { Interaction, InteractionService } from '../data/interaction';
+import { ComplianceInteractionService } from '../compliance-interaction';
 
 @Injectable({
   providedIn: 'root',
 })
-export class MeasureInteractionService implements InteractionService<Measure> {
+export class MeasureInteractionService
+  implements InteractionService<Measure>, ComplianceInteractionService
+{
   protected _interactionsSubject = new Subject<Interaction<Measure>>();
   interactions$ = this._interactionsSubject.asObservable();
 
