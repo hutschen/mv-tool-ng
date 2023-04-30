@@ -19,6 +19,7 @@ import {
   Measure,
   MeasureService,
   VerificationMethod,
+  VerificationStatus,
 } from './measure.service';
 import { MeasureDialogService } from 'src/app/measure/measure-dialog.component';
 import { ComplianceDialogService } from '../components/compliance-dialog.component';
@@ -153,6 +154,20 @@ export class MeasureInteractionService implements InteractionService<Measure> {
   ) {
     const measureInput = measure.toMeasureInput();
     measureInput.verification_method = verificationMethod;
+    this._interactionsSubject.next({
+      item: await firstValueFrom(
+        this._measureService.updateMeasure(measure.id, measureInput)
+      ),
+      action: 'update',
+    });
+  }
+
+  async onSetVerificationStatus(
+    measure: Measure,
+    verificationStatus: VerificationStatus | null
+  ) {
+    const measureInput = measure.toMeasureInput();
+    measureInput.verification_status = verificationStatus;
     this._interactionsSubject.next({
       item: await firstValueFrom(
         this._measureService.updateMeasure(measure.id, measureInput)
