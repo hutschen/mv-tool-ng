@@ -56,10 +56,9 @@ export class MeasureInteractionService implements InteractionService<Measure> {
     );
     const resultingMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (resultingMeasure) {
-      const action = measure ? 'update' : 'create';
       this._interactionsSubject.next({
         item: resultingMeasure,
-        action: action,
+        action: measure ? 'update' : 'create',
       });
     }
   }
