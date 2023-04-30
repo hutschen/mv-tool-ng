@@ -143,11 +143,11 @@
       </th>
       <td mat-cell *matCellDef="let measure">
         <mvtool-table-row-options
-          (edit)="onEditMeasure(measure)"
-          (delete)="onDeleteMeasure(measure)"
-          (editCompliance)="onEditCompliance(measure)"
-          (editCompletion)="onEditCompletion(measure)"
-          (editVerification)="onEditVerification(measure)"
+          (edit)="measureInteractions.onEditMeasure(measure)"
+          (delete)="measureInteractions.onDeleteMeasure(measure)"
+          (editCompliance)="measureInteractions.onEditCompliance(measure)"
+          (editCompletion)="measureInteractions.onEditCompletion(measure)"
+          (editVerification)="measureInteractions.onEditVerification(measure)"
           (toggleMarker)="marked.toggle(measure)"
           [isMarked]="marked.isSelected(measure)"
           (toggleExpansion)="expanded.toggle(measure)"
