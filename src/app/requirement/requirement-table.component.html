@@ -67,17 +67,11 @@
           {{ column.label }}
         </mvtool-filter-header>
       </th>
-      <td mat-cell *matCellDef="let data">
-        <button
-          mat-button
-          matTooltip="Click to set compliance status"
-          (click)="
-            requirementInteractions.onEditCompliance(data);
-            $event.stopImmediatePropagation()
-          "
-        >
-          {{ column.field.toStr(data) }}
-        </button>
+      <td mat-cell *matCellDef="let requirement">
+        <mvtool-compliance-status
+          [item]="requirement"
+          [complianceInteractions]="requirementInteractions"
+        ></mvtool-compliance-status>
       </td>
     </ng-container>
 
