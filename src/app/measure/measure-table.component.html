@@ -123,20 +123,10 @@
           {{ column.label }}
         </mvtool-filter-header>
       </th>
-      <td mat-cell *matCellDef="let measure" class="indicator">
-        <button
-          mat-button
-          [color]="measure.verificationStatusColor"
-          (click)="
-            measureInteractions.onEditVerification(measure);
-            $event.stopImmediatePropagation()
-          "
-          matTooltip="Click to edit verification status"
-        >
-          <mat-icon *ngIf="measure.verified">check</mat-icon>
-          <mat-icon *ngIf="!measure.verified">close</mat-icon>
-          {{ column.field.toStr(measure) | titlecase }}
-        </button>
+      <td mat-cell *matCellDef="let measure">
+        <mvtool-verification-status
+          [measure]="measure"
+        ></mvtool-verification-status>
       </td>
     </ng-container>
 
