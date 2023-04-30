@@ -85,15 +85,15 @@
       </th>
       <td
         mat-cell
-        *matCellDef="let data"
-        [matTooltip]="column.field.toStr(data)"
+        *matCellDef="let requirement"
+        [matTooltip]="column.field.toStr(requirement)"
         class="indicator"
       >
         <mat-progress-bar
-          *ngIf="column.field.toBool(data)"
+          *ngIf="column.field.toBool(requirement)"
           mode="determinate"
-          [value]="column.field.toValue(data)"
-          [color]="data.completionProgressColor"
+          [value]="column.field.toValue(requirement)"
+          [color]="requirement.completionProgressColor"
         >
         </mat-progress-bar>
       </td>
@@ -107,14 +107,17 @@
       <th mat-header-cell *matHeaderCellDef></th>
       <td
         mat-cell
-        *matCellDef="let data"
-        [matTooltip]="column.field.toStr(data)"
+        *matCellDef="let requirement"
+        [matTooltip]="column.field.toStr(requirement)"
       >
-        <div *ngIf="column.field.toBool(data)" class="fx-row fx-center-center">
+        <div
+          *ngIf="column.field.toBool(requirement)"
+          class="fx-row fx-center-center"
+        >
           <button
             mat-icon-button
             (click)="
-              requirementInteractions.onEditCompliance(data);
+              requirementInteractions.onEditCompliance(requirement);
               $event.stopImmediatePropagation()
             "
             aria-label="Fix compliance status"
