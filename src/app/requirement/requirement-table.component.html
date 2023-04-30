@@ -19,7 +19,7 @@
   <!-- Toolbar -->
   <mvtool-table-toolbar
     (refresh)="this.dataFrame.reload()"
-    (create)="onCreateRequirement()"
+    (create)="requirementInteractions.onCreateRequirement(project)"
     [(search)]="dataFrame.search.pattern"
     searchLabel="Search Requirements"
     createLabel="Create Requirement"
@@ -48,7 +48,7 @@
     [dataFrame]="dataFrame"
     [marked]="marked"
     [expanded]="expanded"
-    (create)="onCreateRequirement()"
+    (create)="requirementInteractions.onCreateRequirement(project)"
     noContentText="No requirements found."
     loadingText="Loading requirements..."
     (clickRow)="clickRequirement.emit($event)"
@@ -71,7 +71,10 @@
         <button
           mat-button
           matTooltip="Click to set compliance status"
-          (click)="onEditCompliance(data); $event.stopImmediatePropagation()"
+          (click)="
+            requirementInteractions.onEditCompliance(data);
+            $event.stopImmediatePropagation()
+          "
         >
           {{ column.field.toStr(data) }}
         </button>
@@ -116,7 +119,10 @@
         <div *ngIf="column.field.toBool(data)" class="fx-row fx-center-center">
           <button
             mat-icon-button
-            (click)="onEditCompliance(data); $event.stopImmediatePropagation()"
+            (click)="
+              requirementInteractions.onEditCompliance(data);
+              $event.stopImmediatePropagation()
+            "
             aria-label="Fix compliance status"
           >
             <mat-icon>warning</mat-icon>
@@ -141,9 +147,11 @@
       </th>
       <td mat-cell *matCellDef="let requirement">
         <mvtool-table-row-options
-          (edit)="onEditRequirement(requirement)"
-          (editCompliance)="onEditCompliance(requirement)"
-          (delete)="onDeleteRequirement(requirement)"
+          (edit)="requirementInteractions.onEditRequirement(requirement)"
+          (editCompliance)="
+            requirementInteractions.onEditCompliance(requirement)
+          "
+          (delete)="requirementInteractions.onDeleteRequirement(requirement)"
           (toggleMarker)="marked.toggle(requirement)"
           [isMarked]="marked.isSelected(requirement)"
           (toggleExpansion)="expanded.toggle(requirement)"
