@@ -14,10 +14,59 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
+import { Interaction, InteractionService } from '../data/interaction';
+import { Document, DocumentService } from './document.service';
+import { Subject, firstValueFrom } from 'rxjs';
+import { DocumentDialogService } from 'src/app/document/document-dialog.component';
+import { ConfirmDialogService } from '../components/confirm-dialog.component';
+import { Project } from './project.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class DocumentInteractionService {
-  constructor() {}
+export class DocumentInteractionService
+  implements InteractionService<Document>
+{
+  protected _interactionSubject = new Subject<Interaction<Document>>();
+  interactions$ = this._interactionSubject.asObservable();
+
+  constructor(
+    protected _documentService: DocumentService,
+    protected _documentDialogService: DocumentDialogService,
+    protected _confirmDialogService: ConfirmDialogService
+  ) {}
+
+  protected async _createOrEditDocument(project: Project, document?: Document) {
+    const dialogRef = this._documentDialogService.openDocumentDialog(
+      project,
+      document
+    );
+    const resultingDocument = await firstValueFrom(dialogRef.afterClosed());
+    if (resultingDocument) {
+      this._interactionSubject.next({
+        item: resultingDocument,
+        action: document ? 'update' : 'create',
+      });
+    }
+  }
+
+  async onCreateDocument(project: Project): Promise<void> {
+    await this._createOrEditDocument(project);
+  }
+
+  async onEditDocument(document: Document): Promise<void> {
+    await this._createOrEditDocument(document.project, document);
+  }
+
+  async onDeleteDocument(document: Document): Promise<void> {
+    const confirmDialogRef = this._confirmDialogService.openConfirmDialog(
+      'Delete Document',
+      `Do you really want to delete the document "${document.title}"?`
+    );
+    const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
+    if (confirmed) {
+      await firstValueFrom(this._documentService.deleteDocument(document.id));
+      this._interactionSubject.next({ item: document, action: 'delete' });
+    }
+  }
 }
