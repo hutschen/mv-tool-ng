@@ -15,18 +15,26 @@
 
 import { Injectable } from '@angular/core';
 import { Interaction, InteractionService } from '../data/interaction';
-import { Requirement, RequirementService } from './requirement.service';
+import {
+  ComplianceStatus,
+  Requirement,
+  RequirementService,
+} from './requirement.service';
 import { Subject, firstValueFrom } from 'rxjs';
 import { RequirementDialogService } from 'src/app/requirement/requirement-dialog.component';
 import { ComplianceDialogService } from '../components/compliance-dialog.component';
 import { ConfirmDialogService } from '../components/confirm-dialog.component';
 import { Project } from './project.service';
+import {
+  ComplianceInteractionService,
+  CompliantItem,
+} from '../compliance-interaction';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RequirementInteractionService
-  implements InteractionService<Requirement>
+  implements InteractionService<Requirement>, ComplianceInteractionService
 {
   protected _interactionsSubject = new Subject<Interaction<Requirement>>();
   interactions$ = this._interactionsSubject.asObservable();
@@ -87,5 +95,22 @@ export class RequirementInteractionService
       );
       this._interactionsSubject.next({ item: requirement, action: 'delete' });
     }
+  }
+
+  async onSetComplianceStatus(
+    requirement: Requirement,
+    complianceStatus: ComplianceStatus | null
+  ) {
+    const requirementInput = requirement.toRequirementInput();
+    requirementInput.compliance_status = complianceStatus;
+    this._interactionsSubject.next({
+      item: await firstValueFrom(
+        this._requirementService.updateRequirement(
+          requirement.id,
+          requirementInput
+        )
+      ),
+      action: 'update',
+    });
   }
 }
