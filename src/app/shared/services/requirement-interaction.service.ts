@@ -20,7 +20,14 @@ import {
   Requirement,
   RequirementService,
 } from './requirement.service';
-import { Subject, firstValueFrom } from 'rxjs';
+import {
+  Observable,
+  Subject,
+  filter,
+  firstValueFrom,
+  map,
+  startWith,
+} from 'rxjs';
 import { RequirementDialogService } from 'src/app/requirement/requirement-dialog.component';
 import { ComplianceDialogService } from '../components/compliance-dialog.component';
 import { ConfirmDialogService } from '../components/confirm-dialog.component';
@@ -42,6 +49,14 @@ export class RequirementInteractionService
     protected _complianceDialogService: ComplianceDialogService,
     protected _confirmDialogService: ConfirmDialogService
   ) {}
+
+  syncRequirement(requirement: Requirement): Observable<Requirement> {
+    return this.interactions$.pipe(
+      filter((interaction) => interaction.item.id === requirement.id),
+      map((interaction) => interaction.item),
+      startWith(requirement)
+    );
+  }
 
   protected async _createOrEditRequirement(
     project: Project,
