@@ -14,19 +14,25 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { Catalog } from '../shared/services/catalog.service';
-import { CatalogDialogComponent } from './catalog-dialog.component';
+import { CatalogInteractionService } from '../shared/services/catalog-interaction.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'mvtool-catalog-details',
   template: `
-    <div class="fx-column fx-gap-15 margin-x margin-y" *ngIf="catalog">
+    <div
+      *ngIf="catalog$ | async as catalog"
+      class="fx-column fx-gap-15 margin-x margin-y"
+    >
       <!-- Title -->
       <div class="fx-row fx-space-between-center fx-gap-5">
         <h1 class="truncate no-margin">{{ catalog.title }}</h1>
         <div class="fx-row fx-gap-5">
-          <button mat-stroked-button (click)="onEditCatalog()">
+          <button
+            mat-stroked-button
+            (click)="catalogInteractions.onEditCatalog(catalog)"
+          >
             <mat-icon>edit_note</mat-icon>
             Edit Catalog
           </button>
@@ -42,19 +48,12 @@ import { CatalogDialogComponent } from './catalog-dialog.component';
   styles: [],
 })
 export class CatalogDetailsComponent {
-  @Input() catalog: Catalog | null = null;
+  catalog$?: Observable<Catalog>;
 
-  constructor(protected _dialog: MatDialog) {}
+  constructor(readonly catalogInteractions: CatalogInteractionService) {}
 
-  onEditCatalog() {
-    const dialogRef = this._dialog.open(CatalogDialogComponent, {
-      width: '500px',
-      data: this.catalog,
-    });
-    dialogRef.afterClosed().subscribe((catalog: Catalog | null) => {
-      if (catalog) {
-        this.catalog = catalog;
-      }
-    });
+  @Input()
+  set catalog(catalog: Catalog) {
+    this.catalog$ = this.catalogInteractions.syncCatalog(catalog);
   }
 }
