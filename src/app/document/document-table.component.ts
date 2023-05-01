@@ -52,7 +52,7 @@ export class DocumentTableComponent implements OnInit {
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
-    protected documentInteractions: DocumentInteractionService
+    readonly documentInteractions: DocumentInteractionService
   ) {}
 
   ngOnInit(): void {
