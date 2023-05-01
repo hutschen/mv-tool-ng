@@ -14,10 +14,53 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
+import { Interaction, InteractionService } from '../data/interaction';
+import { Project, ProjectService } from './project.service';
+import { Subject, firstValueFrom } from 'rxjs';
+import { ProjectDialogService } from 'src/app/project/project-dialog.component';
+import { ConfirmDialogService } from '../components/confirm-dialog.component';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ProjectInteractionService {
-  constructor() {}
+export class ProjectInteractionService implements InteractionService<Project> {
+  protected _interactionSubject = new Subject<Interaction<Project>>();
+  interactions$ = this._interactionSubject.asObservable();
+
+  constructor(
+    protected _projectService: ProjectService,
+    protected _projectDialogService: ProjectDialogService,
+    protected _confirmDialogService: ConfirmDialogService
+  ) {}
+
+  protected async _createOrEditProject(project?: Project): Promise<void> {
+    const dialogRef = this._projectDialogService.openProjectDialog(project);
+    const resultingProject = await firstValueFrom(dialogRef.afterClosed());
+    if (resultingProject) {
+      this._interactionSubject.next({
+        item: resultingProject,
+        action: project ? 'update' : 'create',
+      });
+    }
+  }
+
+  async onCreateProject(): Promise<void> {
+    await this._createOrEditProject();
+  }
+
+  async onEditProject(project: Project): Promise<void> {
+    await this._createOrEditProject(project);
+  }
+
+  async onDeleteProject(project: Project): Promise<void> {
+    const confirmDialogRef = this._confirmDialogService.openConfirmDialog(
+      'Delete Project',
+      `Do you really want to delete project "${project.name}"?`
+    );
+    const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
+    if (confirmed) {
+      await firstValueFrom(this._projectService.deleteProject(project.id));
+      this._interactionSubject.next({ item: project, action: 'delete' });
+    }
+  }
 }
