@@ -17,6 +17,7 @@ import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { isEqual } from 'radash';
 import {
+  combineLatest,
   distinctUntilChanged,
   filter,
   map,
@@ -28,6 +29,8 @@ import { CatalogModuleService } from './shared/services/catalog-module.service';
 import { CatalogService } from './shared/services/catalog.service';
 import { ProjectService } from './shared/services/project.service';
 import { RequirementService } from './shared/services/requirement.service';
+import { RequirementInteractionService } from './shared/services/requirement-interaction.service';
+import { ProjectInteractionService } from './shared/services/project-interaction.service';
 
 interface IBreadcrumb {
   displayText: string;
@@ -90,7 +93,9 @@ export class BreadcrumbTrailComponent {
     protected _catalogService: CatalogService,
     protected _catalogModuleService: CatalogModuleService,
     protected _projectService: ProjectService,
-    protected _requirementService: RequirementService
+    protected _projectInteractions: ProjectInteractionService,
+    protected _requirementService: RequirementService,
+    protected _requirementInteractions: RequirementInteractionService
   ) {
     this.breadcrumbs$ = this._router.events.pipe(
       filter((event) => event instanceof NavigationEnd),
@@ -172,6 +177,7 @@ export class BreadcrumbTrailComponent {
 
     const projectId = Number(first);
     return this._projectService.getProject(projectId).pipe(
+      switchMap((project) => this._projectInteractions.syncProject(project)),
       map((project) => {
         const projectBreadcrumb = {
           displayText: project.name,
@@ -241,14 +247,17 @@ export class BreadcrumbTrailComponent {
 
     const requirementId = Number(first);
     return this._requirementService.getRequirement(requirementId).pipe(
-      map((requirement) => [
+      switchMap((requirement) =>
+        combineLatest([
+          // FIXME: Does not work when relation between project and requirement changes
+          this._projectInteractions.syncProject(requirement.project),
+          this._requirementInteractions.syncRequirement(requirement),
+        ])
+      ),
+      map(([project, requirement]) => [
         {
-          displayText: requirement.project.name,
-          navigationCommands: [
-            'projects',
-            requirement.project.id,
-            'requirements',
-          ],
+          displayText: project.name,
+          navigationCommands: ['projects', project.id, 'requirements'],
         },
         {
           displayText: requirement.summary,
