@@ -16,7 +16,14 @@
 import { Injectable } from '@angular/core';
 import { Interaction, InteractionService } from '../data/interaction';
 import { Project, ProjectService } from './project.service';
-import { Subject, firstValueFrom } from 'rxjs';
+import {
+  Observable,
+  Subject,
+  filter,
+  firstValueFrom,
+  map,
+  startWith,
+} from 'rxjs';
 import { ProjectDialogService } from 'src/app/project/project-dialog.component';
 import { ConfirmDialogService } from '../components/confirm-dialog.component';
 
@@ -32,6 +39,14 @@ export class ProjectInteractionService implements InteractionService<Project> {
     protected _projectDialogService: ProjectDialogService,
     protected _confirmDialogService: ConfirmDialogService
   ) {}
+
+  syncProject(project: Project): Observable<Project> {
+    return this.interactions$.pipe(
+      filter((interaction) => interaction.item.id === project.id),
+      map((interaction) => interaction.item),
+      startWith(project)
+    );
+  }
 
   protected async _createOrEditProject(project?: Project): Promise<void> {
     const dialogRef = this._projectDialogService.openProjectDialog(project);
