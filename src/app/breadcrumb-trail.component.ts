@@ -31,6 +31,7 @@ import { ProjectService } from './shared/services/project.service';
 import { RequirementService } from './shared/services/requirement.service';
 import { RequirementInteractionService } from './shared/services/requirement-interaction.service';
 import { ProjectInteractionService } from './shared/services/project-interaction.service';
+import { CatalogInteractionService } from './shared/services/catalog-interaction.service';
 
 interface IBreadcrumb {
   displayText: string;
@@ -91,6 +92,7 @@ export class BreadcrumbTrailComponent {
   constructor(
     protected _router: Router,
     protected _catalogService: CatalogService,
+    protected _catalogInteractions: CatalogInteractionService,
     protected _catalogModuleService: CatalogModuleService,
     protected _projectService: ProjectService,
     protected _projectInteractions: ProjectInteractionService,
@@ -116,6 +118,7 @@ export class BreadcrumbTrailComponent {
 
     const catalogId = Number(first);
     return this._catalogService.getCatalog(catalogId).pipe(
+      switchMap((catalog) => this._catalogInteractions.syncCatalog(catalog)),
       map((catalog) => [
         {
           displayText: catalog.title,
