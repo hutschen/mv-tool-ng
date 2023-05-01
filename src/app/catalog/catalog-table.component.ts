@@ -15,9 +15,7 @@
 
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
-import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { Catalog, CatalogService } from '../shared/services/catalog.service';
-import { CatalogDialogService } from './catalog-dialog.component';
 import { CatalogDataFrame } from '../shared/data/catalog/catalog-frame';
 import {
   IQueryParams,
@@ -28,6 +26,7 @@ import { DownloadDialogService } from '../shared/components/download-dialog.comp
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
+import { CatalogInteractionService } from '../shared/services/catalog-interaction.service';
 
 @Component({
   selector: 'mvtool-catalog-table',
@@ -49,11 +48,10 @@ export class CatalogTableComponent implements OnInit {
   constructor(
     protected _queryParamsService: QueryParamsService,
     protected _catalogService: CatalogService,
-    protected _catalogDialogService: CatalogDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
-    protected _confirmDialogService: ConfirmDialogService,
-    protected _hideColumnsDialogService: HideColumnsDialogService
+    protected _hideColumnsDialogService: HideColumnsDialogService,
+    readonly catalogInteractions: CatalogInteractionService
   ) {}
 
   ngOnInit() {
@@ -66,6 +64,9 @@ export class CatalogTableComponent implements OnInit {
     );
     this.marked = new DataSelection('_marked', true, initialQueryParams);
     this.expanded = new DataSelection('_expanded', false, initialQueryParams);
+
+    // Sync interactions
+    this.dataFrame.syncInteractions(this.catalogInteractions);
 
     // Sync query params
     const syncQueryParams$ = combineQueryParams([
@@ -81,34 +82,6 @@ export class CatalogTableComponent implements OnInit {
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
     ]);
-  }
-
-  protected async _createOrEditCatalog(catalog?: Catalog): Promise<void> {
-    const dialogRef = this._catalogDialogService.openCatalogDialog(catalog);
-    const resultingCatalog = await firstValueFrom(dialogRef.afterClosed());
-    if (resultingCatalog) {
-      this.dataFrame.addOrUpdateItem(resultingCatalog);
-    }
-  }
-
-  async onCreateCatalog(): Promise<void> {
-    await this._createOrEditCatalog();
-  }
-
-  async onEditCatalog(catalog: Catalog): Promise<void> {
-    await this._createOrEditCatalog(catalog);
-  }
-
-  async onDeleteCatalog(catalog: Catalog): Promise<void> {
-    const confirmDialogRef = this._confirmDialogService.openConfirmDialog(
-      'Delete Catalog',
-      `Do you really want to delete the catalog "${catalog.title}"?`
-    );
-    const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
-    if (confirmed) {
-      await firstValueFrom(this._catalogService.deleteCatalog(catalog.id));
-      this.dataFrame.removeItem(catalog);
-    }
   }
 
   async onExportCatalogs(): Promise<void> {
