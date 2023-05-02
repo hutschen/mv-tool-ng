@@ -32,6 +32,7 @@ import { RequirementService } from './shared/services/requirement.service';
 import { RequirementInteractionService } from './shared/services/requirement-interaction.service';
 import { ProjectInteractionService } from './shared/services/project-interaction.service';
 import { CatalogInteractionService } from './shared/services/catalog-interaction.service';
+import { CatalogModuleInteractionService } from './shared/services/catalog-module-interaction.service';
 
 interface IBreadcrumb {
   displayText: string;
@@ -94,6 +95,7 @@ export class BreadcrumbTrailComponent {
     protected _catalogService: CatalogService,
     protected _catalogInteractions: CatalogInteractionService,
     protected _catalogModuleService: CatalogModuleService,
+    protected _catalogModuleInteractions: CatalogModuleInteractionService,
     protected _projectService: ProjectService,
     protected _projectInteractions: ProjectInteractionService,
     protected _requirementService: RequirementService,
@@ -142,14 +144,17 @@ export class BreadcrumbTrailComponent {
 
     const catalogModuleId = Number(first);
     return this._catalogModuleService.getCatalogModule(catalogModuleId).pipe(
-      map((catalogModule) => [
+      switchMap((catalogModule) =>
+        combineLatest([
+          // FIXME: Does not work when relation between catalog and catalog module changes
+          this._catalogInteractions.syncCatalog(catalogModule.catalog),
+          this._catalogModuleInteractions.syncCatalogModule(catalogModule),
+        ])
+      ),
+      map(([catalog, catalogModule]) => [
         {
-          displayText: catalogModule.catalog.title,
-          navigationCommands: [
-            'catalogs',
-            catalogModule.catalog.id,
-            'catalog-modules',
-          ],
+          displayText: catalog.title,
+          navigationCommands: ['catalogs', catalog.id, 'catalog-modules'],
         },
         {
           displayText: catalogModule.title,
