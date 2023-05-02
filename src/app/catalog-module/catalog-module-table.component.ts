@@ -15,14 +15,12 @@
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
-import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import {
   CatalogModule,
   CatalogModuleService,
 } from '../shared/services/catalog-module.service';
 import { Catalog } from '../shared/services/catalog.service';
-import { CatalogModuleDialogService } from './catalog-module-dialog.component';
 import {
   IQueryParams,
   QueryParamsService,
@@ -32,6 +30,7 @@ import { CatalogModuleDataFrame } from '../shared/data/catalog-module/catalog-mo
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
+import { CatalogModuleInteractionService } from '../shared/services/catalog-module-interaction.service';
 
 @Component({
   selector: 'mvtool-catalog-module-table',
@@ -48,17 +47,16 @@ export class CatalogModuleTableComponent implements OnInit {
   marked!: DataSelection<CatalogModule>;
   expanded!: DataSelection<CatalogModule>;
   exportQueryParams$!: Observable<IQueryParams>;
-  @Input() catalog?: Catalog;
+  @Input() catalog!: Catalog;
   @Output() clickCatalogModule = new EventEmitter<CatalogModule>();
 
   constructor(
     protected _queryParamsService: QueryParamsService,
     protected _catalogModuleService: CatalogModuleService,
-    protected _catalogModuleDialogService: CatalogModuleDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _downloadDialogService: DownloadDialogService,
-    protected _confirmDialogService: ConfirmDialogService,
-    protected _hideColumnsDialogService: HideColumnsDialogService
+    protected _hideColumnsDialogService: HideColumnsDialogService,
+    readonly catalogModuleInteractions: CatalogModuleInteractionService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -74,6 +72,9 @@ export class CatalogModuleTableComponent implements OnInit {
     this.marked = new DataSelection('_marked', true, initialQueryParams);
     this.expanded = new DataSelection('_expanded', false, initialQueryParams);
 
+    // Sync interactions
+    this.dataFrame.syncInteractions(this.catalogModuleInteractions);
+
     // Sync query params with query params service
     const syncQueryParams$ = combineQueryParams([
       this.dataFrame.queryParams$,
@@ -88,48 +89,6 @@ export class CatalogModuleTableComponent implements OnInit {
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
     ]);
-  }
-
-  protected async _createOrEditCatalogModule(
-    catalogModule?: CatalogModule
-  ): Promise<void> {
-    if (this.catalog) {
-      const dialogRef =
-        this._catalogModuleDialogService.openCatalogModuleDialog(
-          this.catalog,
-          catalogModule
-        );
-      const resultingCatalogModule = await firstValueFrom(
-        dialogRef.afterClosed()
-      );
-      if (resultingCatalogModule) {
-        this.dataFrame.addOrUpdateItem(resultingCatalogModule);
-      }
-    } else {
-      throw new Error('catalog is undefined');
-    }
-  }
-
-  async onCreateCatalogModule(): Promise<void> {
-    await this._createOrEditCatalogModule();
-  }
-
-  async onEditCatalogModule(catalogModule: CatalogModule): Promise<void> {
-    await this._createOrEditCatalogModule(catalogModule);
-  }
-
-  async onDeleteCatalogModule(catalogModule: CatalogModule): Promise<void> {
-    const confirmDialogRef = this._confirmDialogService.openConfirmDialog(
-      'Delete Catalog Module',
-      `Do you really want to delete the catalog module "${catalogModule.title}"?`
-    );
-    const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
-    if (confirmed) {
-      await firstValueFrom(
-        this._catalogModuleService.deleteCatalogModule(catalogModule.id)
-      );
-      this.dataFrame.removeItem(catalogModule);
-    }
   }
 
   async onExportCatalogModulesExcel(): Promise<void> {
