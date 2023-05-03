@@ -19,7 +19,9 @@
   <!-- Toolbar -->
   <mvtool-table-toolbar
     (refresh)="this.dataFrame.reload()"
-    (create)="onCreateCatalogRequirement()"
+    (create)="
+      catalogRequirementInteractions.onCreateCatalogRequirement(catalogModule)
+    "
     (upload)="onImportCatalogRequirementsExcel()"
     (download)="onExportCatalogRequirementsExcel()"
     [(search)]="dataFrame.search.pattern"
@@ -34,7 +36,9 @@
     [dataFrame]="dataFrame"
     [marked]="marked"
     [expanded]="expanded"
-    (create)="onCreateCatalogRequirement()"
+    (create)="
+      catalogRequirementInteractions.onCreateCatalogRequirement(catalogModule)
+    "
     noContentText="No catalog requirements found."
     loadingText="Loading catalog requirements..."
     matSort
@@ -58,8 +62,16 @@
       </th>
       <td mat-cell *matCellDef="let catalogRequirement">
         <mvtool-table-row-options
-          (edit)="onEditCatalogRequirement(catalogRequirement)"
-          (delete)="onDeleteCatalogRequirement(catalogRequirement)"
+          (edit)="
+            catalogRequirementInteractions.onEditCatalogRequirement(
+              catalogRequirement
+            )
+          "
+          (delete)="
+            catalogRequirementInteractions.onDeleteCatalogRequirement(
+              catalogRequirement
+            )
+          "
           (toggleMarker)="marked.toggle(catalogRequirement)"
           [isMarked]="marked.isSelected(catalogRequirement)"
           (toggleExpansion)="expanded.toggle(catalogRequirement)"

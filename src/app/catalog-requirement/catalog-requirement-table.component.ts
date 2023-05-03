@@ -15,13 +15,11 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
-import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { CatalogModule } from '../shared/services/catalog-module.service';
 import {
   CatalogRequirement,
   CatalogRequirementService,
 } from '../shared/services/catalog-requirement.service';
-import { CatalogRequirementDialogService } from './catalog-requirement-dialog.component';
 import {
   IQueryParams,
   QueryParamsService,
@@ -32,6 +30,7 @@ import { DownloadDialogService } from '../shared/components/download-dialog.comp
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
+import { CatalogRequirementInteractionService } from '../shared/services/catalog-requirement-interaction.service';
 
 @Component({
   selector: 'mvtool-catalog-requirement-table',
@@ -48,16 +47,15 @@ export class CatalogRequirementTableComponent implements OnInit {
   marked!: DataSelection<CatalogRequirement>;
   expanded!: DataSelection<CatalogRequirement>;
   exportQueryParams$!: Observable<IQueryParams>;
-  @Input() catalogModule?: CatalogModule;
+  @Input() catalogModule!: CatalogModule;
 
   constructor(
     protected _queryParamsService: QueryParamsService,
     protected _catalogRequirementService: CatalogRequirementService,
-    protected _catalogRequirementDialogService: CatalogRequirementDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
-    protected _confirmDialogService: ConfirmDialogService,
-    protected _hideColumnsDialogService: HideColumnsDialogService
+    protected _hideColumnsDialogService: HideColumnsDialogService,
+    readonly catalogRequirementInteractions: CatalogRequirementInteractionService
   ) {}
 
   ngOnInit() {
@@ -73,6 +71,9 @@ export class CatalogRequirementTableComponent implements OnInit {
     this.marked = new DataSelection('_marked', true, initialQueryParams);
     this.expanded = new DataSelection('_expanded', false, initialQueryParams);
 
+    // Sync interactions with data frame
+    this.dataFrame.syncInteractions(this.catalogRequirementInteractions);
+
     // Sync query params with query params service
     const syncQueryParams$ = combineQueryParams([
       this.dataFrame.queryParams$,
@@ -87,54 +88,6 @@ export class CatalogRequirementTableComponent implements OnInit {
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
     ]);
-  }
-
-  protected async _createOrEditCatalogRequirement(
-    catalogRequirement?: CatalogRequirement
-  ): Promise<void> {
-    if (this.catalogModule) {
-      const dialogRef =
-        this._catalogRequirementDialogService.openCatalogRequirementDialog(
-          this.catalogModule,
-          catalogRequirement
-        );
-      const resultingCatalogRequirement = await firstValueFrom(
-        dialogRef.afterClosed()
-      );
-      if (resultingCatalogRequirement) {
-        this.dataFrame.addOrUpdateItem(resultingCatalogRequirement);
-      }
-    } else {
-      throw new Error('catalog module is undefined');
-    }
-  }
-
-  async onCreateCatalogRequirement(): Promise<void> {
-    this._createOrEditCatalogRequirement();
-  }
-
-  async onEditCatalogRequirement(
-    catalogRequirement: CatalogRequirement
-  ): Promise<void> {
-    this._createOrEditCatalogRequirement(catalogRequirement);
-  }
-
-  async onDeleteCatalogRequirement(
-    catalogRequirement: CatalogRequirement
-  ): Promise<void> {
-    const confirmDialogRef = this._confirmDialogService.openConfirmDialog(
-      'Delete Catalog Requirement',
-      `Do you really want to delete the catalog requirement "${catalogRequirement.summary}"?`
-    );
-    const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
-    if (confirmed) {
-      await firstValueFrom(
-        this._catalogRequirementService.deleteCatalogRequirement(
-          catalogRequirement.id
-        )
-      );
-      this.dataFrame.removeItem(catalogRequirement);
-    }
   }
 
   async onExportCatalogRequirementsExcel(): Promise<void> {
