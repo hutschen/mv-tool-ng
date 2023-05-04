@@ -41,7 +41,7 @@ export class RequirementInteractionService
   implements InteractionService<Requirement>, ComplianceInteractionService
 {
   protected _interactionsSubject = new Subject<Interaction<Requirement>>();
-  interactions$ = this._interactionsSubject.asObservable();
+  readonly interactions$ = this._interactionsSubject.asObservable();
 
   constructor(
     protected _requirementService: RequirementService,

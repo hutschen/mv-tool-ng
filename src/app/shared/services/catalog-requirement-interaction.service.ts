@@ -40,7 +40,7 @@ export class CatalogRequirementInteractionService
   protected _interactionsSubject = new Subject<
     Interaction<CatalogRequirement>
   >();
-  interactions$ = this._interactionsSubject.asObservable();
+  readonly interactions$ = this._interactionsSubject.asObservable();
 
   constructor(
     protected _catalogRequirementService: CatalogRequirementService,

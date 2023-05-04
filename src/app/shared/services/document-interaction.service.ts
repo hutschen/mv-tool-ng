@@ -28,7 +28,7 @@ export class DocumentInteractionService
   implements InteractionService<Document>
 {
   protected _interactionSubject = new Subject<Interaction<Document>>();
-  interactions$ = this._interactionSubject.asObservable();
+  readonly interactions$ = this._interactionSubject.asObservable();
 
   constructor(
     protected _documentService: DocumentService,

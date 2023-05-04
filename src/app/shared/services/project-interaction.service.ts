@@ -32,7 +32,7 @@ import { ConfirmDialogService } from '../components/confirm-dialog.component';
 })
 export class ProjectInteractionService implements InteractionService<Project> {
   protected _interactionSubject = new Subject<Interaction<Project>>();
-  interactions$ = this._interactionSubject.asObservable();
+  readonly interactions$ = this._interactionSubject.asObservable();
 
   constructor(
     protected _projectService: ProjectService,

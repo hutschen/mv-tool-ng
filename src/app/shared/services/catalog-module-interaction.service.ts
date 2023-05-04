@@ -35,7 +35,7 @@ export class CatalogModuleInteractionService
   implements InteractionService<CatalogModule>
 {
   protected _interactionsSubject = new Subject<Interaction<CatalogModule>>();
-  interactions$ = this._interactionsSubject.asObservable();
+  readonly interactions$ = this._interactionsSubject.asObservable();
 
   constructor(
     protected _catalogModuleService: CatalogModuleService,

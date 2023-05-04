@@ -32,7 +32,7 @@ import { ConfirmDialogService } from '../components/confirm-dialog.component';
 })
 export class CatalogInteractionService implements InteractionService<Catalog> {
   protected _interactionSubject = new Subject<Interaction<Catalog>>();
-  interactions$ = this._interactionSubject.asObservable();
+  readonly interactions$ = this._interactionSubject.asObservable();
 
   constructor(
     protected _catalogService: CatalogService,

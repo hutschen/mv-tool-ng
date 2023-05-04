@@ -22,5 +22,5 @@ export interface Interaction<D extends IDataItem> {
 }
 
 export interface InteractionService<D extends IDataItem> {
-  interactions$: Observable<Interaction<D>>;
+  readonly interactions$: Observable<Interaction<D>>;
 }

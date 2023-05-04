@@ -38,7 +38,7 @@ export class MeasureInteractionService
   implements InteractionService<Measure>, ComplianceInteractionService
 {
   protected _interactionsSubject = new Subject<Interaction<Measure>>();
-  interactions$ = this._interactionsSubject.asObservable();
+  readonly interactions$ = this._interactionsSubject.asObservable();
 
   constructor(
     protected _measureService: MeasureService,
