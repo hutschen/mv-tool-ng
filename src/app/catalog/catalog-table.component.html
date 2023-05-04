@@ -19,7 +19,7 @@
   <!-- Toolbar -->
   <mvtool-table-toolbar
     (refresh)="this.dataFrame.reload()"
-    (create)="onCreateCatalog()"
+    (create)="catalogInteractions.onCreateCatalog()"
     (upload)="onImportCatalogs()"
     (download)="onExportCatalogs()"
     [(search)]="dataFrame.search.pattern"
@@ -34,7 +34,7 @@
     [dataFrame]="dataFrame"
     [marked]="marked"
     [expanded]="expanded"
-    (create)="onCreateCatalog()"
+    (create)="catalogInteractions.onCreateCatalog()"
     noContentText="No catalogs found."
     loadingText="Loading catalogs..."
     (clickRow)="clickCatalog.emit($event)"
@@ -59,8 +59,8 @@
       </th>
       <td mat-cell *matCellDef="let catalog">
         <mvtool-table-row-options
-          (edit)="onEditCatalog(catalog)"
-          (delete)="onDeleteCatalog(catalog)"
+          (edit)="catalogInteractions.onEditCatalog(catalog)"
+          (delete)="catalogInteractions.onDeleteCatalog(catalog)"
           (toggleMarker)="marked.toggle(catalog)"
           [isMarked]="marked.isSelected(catalog)"
           (toggleExpansion)="expanded.toggle(catalog)"

@@ -14,29 +14,34 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { Requirement } from '../shared/services/requirement.service';
-import { ComplianceDialogComponent } from '../shared/components/compliance-dialog.component';
-import {
-  IRequirementDialogData,
-  RequirementDialogComponent,
-} from './requirement-dialog.component';
+import { RequirementInteractionService } from '../shared/services/requirement-interaction.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'mvtool-requirement-details',
   template: `
-    <div class="fx-column fx-gap-15 margin-x margin-y" *ngIf="requirement">
+    <div
+      class="fx-column fx-gap-15 margin-x margin-y"
+      *ngIf="requirement$ | async as requirement"
+    >
       <!-- Title -->
       <div class="fx-row fx-space-between-center fx-gap-5">
         <h1 class="truncate no-margin">{{ requirement.summary }}</h1>
         <button mat-stroked-button [matMenuTriggerFor]="menu">
           <mat-icon class="no-margin">more_vert</mat-icon>
           <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="onEditRequirement()">
+            <button
+              mat-menu-item
+              (click)="requirementInteractions.onEditRequirement(requirement)"
+            >
               <mat-icon>edit_note</mat-icon>
               Edit requirement
             </button>
-            <button mat-menu-item (click)="onEditCompliance()">
+            <button
+              mat-menu-item
+              (click)="requirementInteractions.onEditCompliance(requirement)"
+            >
               <mat-icon>assured_workload</mat-icon>
               Set compliance status
             </button>
@@ -115,36 +120,15 @@ import {
   styles: [],
 })
 export class RequirementDetailsComponent {
-  @Input() requirement: Requirement | null = null;
+  requirement$?: Observable<Requirement>;
 
-  constructor(protected _dialog: MatDialog) {}
+  constructor(
+    readonly requirementInteractions: RequirementInteractionService
+  ) {}
 
-  onEditRequirement(): void {
-    const dialogRef = this._dialog.open(RequirementDialogComponent, {
-      width: '500px',
-      data: {
-        project: this.requirement?.project,
-        requirement: this.requirement,
-      } as IRequirementDialogData,
-    });
-    dialogRef.afterClosed().subscribe((requirement: Requirement | null) => {
-      if (requirement) {
-        this.requirement = requirement;
-      }
-    });
-  }
-
-  onEditCompliance(): void {
-    const dialogRef = this._dialog.open(ComplianceDialogComponent, {
-      width: '500px',
-      data: this.requirement as Requirement,
-    });
-    dialogRef
-      .afterClosed()
-      .subscribe(async (requirement: Requirement | null) => {
-        if (requirement) {
-          this.requirement = requirement;
-        }
-      });
+  @Input()
+  set requirement(requirement: Requirement) {
+    this.requirement$ =
+      this.requirementInteractions.syncRequirement(requirement);
   }
 }

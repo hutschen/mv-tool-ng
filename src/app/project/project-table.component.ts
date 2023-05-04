@@ -28,6 +28,7 @@ import { DownloadDialogService } from '../shared/components/download-dialog.comp
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
+import { ProjectInteractionService } from '../shared/services/project-interaction.service';
 
 @Component({
   selector: 'mvtool-project-table',
@@ -45,11 +46,10 @@ export class ProjectTableComponent implements OnInit {
   constructor(
     protected _queryParamsService: QueryParamsService,
     protected _projectService: ProjectService,
-    protected _projectDialogService: ProjectDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
-    protected _confirmDialogService: ConfirmDialogService,
-    protected _hideColumnsDialogService: HideColumnsDialogService
+    protected _hideColumnsDialogService: HideColumnsDialogService,
+    readonly projectInteractions: ProjectInteractionService
   ) {}
 
   async ngOnInit() {
@@ -62,6 +62,9 @@ export class ProjectTableComponent implements OnInit {
     );
     this.marked = new DataSelection('_marked', true, initialQueryParams);
     this.expanded = new DataSelection('_expanded', false, initialQueryParams);
+
+    // Sync interactions
+    this.dataFrame.syncInteractions(this.projectInteractions);
 
     // Sync query params with query params service
     const syncQueryParams$ = combineQueryParams([
@@ -77,34 +80,6 @@ export class ProjectTableComponent implements OnInit {
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
     ]);
-  }
-
-  protected async _createOrEditProject(project?: Project): Promise<void> {
-    const dialogRef = this._projectDialogService.openProjectDialog(project);
-    const resultingProject = await firstValueFrom(dialogRef.afterClosed());
-    if (resultingProject) {
-      this.dataFrame.addOrUpdateItem(resultingProject);
-    }
-  }
-
-  async onCreateProject(): Promise<void> {
-    await this._createOrEditProject();
-  }
-
-  async onEditProject(project: Project): Promise<void> {
-    await this._createOrEditProject(project);
-  }
-
-  async onDeleteProject(project: Project): Promise<void> {
-    const confirmDialogRef = this._confirmDialogService.openConfirmDialog(
-      'Delete Project',
-      `Do you really want to delete project "${project.name}"?`
-    );
-    const confirmed = await firstValueFrom(confirmDialogRef.afterClosed());
-    if (confirmed) {
-      await firstValueFrom(this._projectService.deleteProject(project.id));
-      this.dataFrame.removeItem(project);
-    }
   }
 
   async onExportProjectsExcel(): Promise<void> {
