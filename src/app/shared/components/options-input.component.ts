@@ -176,7 +176,7 @@ export class OptionsInputComponent implements OnInit {
   }
 
   @Input()
-  set value(value: unknown | unknown[]) {
+  set value(value: unknown) {
     this._valueSubject.next(toOptionValues(value));
   }
 
