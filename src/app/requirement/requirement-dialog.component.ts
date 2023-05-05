@@ -13,14 +13,14 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject, Injectable, OnInit } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import {
   MatDialog,
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { firstValueFrom, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { MilestoneService } from '../shared/services/milestone.service';
 import { Project } from '../shared/services/project.service';
 import {
@@ -29,6 +29,10 @@ import {
   RequirementService,
 } from '../shared/services/requirement.service';
 import { TargetObjectService } from '../shared/services/target-object.service';
+import {
+  MilestoneOptions,
+  TargetObjectOptions,
+} from '../shared/data/requirement/requirement-options';
 
 export interface IRequirementDialogData {
   project: Project;
@@ -58,10 +62,10 @@ export class RequirementDialogService {
   styleUrls: ['../shared/styles/flex.scss'],
   styles: ['textarea { min-height: 100px; }'],
 })
-export class RequirementDialogComponent implements OnInit {
+export class RequirementDialogComponent {
   project: Project;
-  targetObjects!: string[];
-  milestones!: string[];
+  targetObjectOptions: TargetObjectOptions;
+  milestoneOptions: MilestoneOptions;
   requirementInput: IRequirementInput = {
     summary: '',
   };
@@ -77,22 +81,18 @@ export class RequirementDialogComponent implements OnInit {
     if (this._dialogData.requirement) {
       this.requirementInput = this._dialogData.requirement.toRequirementInput();
     }
-  }
 
-  async ngOnInit(): Promise<void> {
-    // TODO: load target objects paginated when user starts typing
-    this.targetObjects = (await firstValueFrom(
-      this._targetObjectService.getTargetObjects({
-        project_ids: [this.project.id],
-      })
-    )) as string[];
+    this.targetObjectOptions = new TargetObjectOptions(
+      this._targetObjectService,
+      this.project,
+      false
+    );
 
-    // TODO: load milestones paginated when user starts typing
-    this.milestones = (await firstValueFrom(
-      this._milestoneService.getMilestones({
-        project_ids: [this.project.id],
-      })
-    )) as string[];
+    this.milestoneOptions = new MilestoneOptions(
+      this._milestoneService,
+      this.project,
+      false
+    );
   }
 
   get createMode(): boolean {
