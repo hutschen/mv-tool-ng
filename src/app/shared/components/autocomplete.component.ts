@@ -14,6 +14,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { IOption, Options } from '../data/options';
+import { Observable, debounceTime, startWith, switchMap, tap } from 'rxjs';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'mvtool-autocomplete',
@@ -24,38 +27,60 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
         <input
           type="text"
           matInput
-          [(ngModel)]="filterStr"
-          [matAutocomplete]="autocomplete"
+          [placeholder]="placeholder"
+          [formControl]="filterCtrl"
+          [matAutocomplete]="auto"
         />
-        <mat-autocomplete #autocomplete="matAutocomplete">
-          <mat-option *ngFor="let option of filteredOptions" [value]="option">
-            {{ option }}
+        <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption>
+          <mat-option
+            *ngFor="let option of loadedOptions$ | async"
+            [value]="option.value"
+          >
+            {{ option.label }}
           </mat-option>
         </mat-autocomplete>
+        <mat-spinner
+          class="spinner"
+          *ngIf="isLoadingOptions"
+          matSuffix
+          diameter="20"
+        ></mat-spinner>
       </mat-form-field>
     </div>
   `,
   styleUrls: ['../styles/flex.scss'],
-  styles: [],
+  styles: ['.spinner { margin-right: 10px; }'],
 })
-export class AutocompleteComponent {
-  filteredOptions: string[] = [];
+export class AutocompleteComponent implements OnInit {
   @Input() label: string = '';
-  @Input() options: string[] = [];
-  @Input() value?: string | null;
+  @Input() placeholder: string = '';
+  @Input() options!: Options;
   @Output() valueChange = new EventEmitter<string | null>();
+
+  filterCtrl = new FormControl('');
+  loadedOptions$!: Observable<IOption[]>;
+  isLoadingOptions = false;
 
   constructor() {}
 
-  get filterStr(): string {
-    return this.value ?? '';
+  ngOnInit(): void {
+    // Load options when the filter changes
+    this.loadedOptions$ = this.filterCtrl.valueChanges.pipe(
+      startWith(this.filterCtrl.value),
+      debounceTime(this.options.hasToLoad ? 250 : 0),
+      tap(() => (this.isLoadingOptions = true && this.options.hasToLoad)),
+      switchMap((filter) => this.options.filterOptions(filter, 10)),
+      tap(() => (this.isLoadingOptions = false))
+    );
+
+    // Emit value when the filter changes
+    this.filterCtrl.valueChanges.subscribe((value) =>
+      this.valueChange.emit(value)
+    );
   }
 
-  set filterStr(value: string) {
-    this.value = value;
-    this.valueChange.emit(value);
-    this.filteredOptions = this.options.filter((option) =>
-      option.toLowerCase().includes(value.toLowerCase())
-    );
+  @Input()
+  set value(value: string | null | undefined) {
+    this.filterCtrl.setValue(value ?? null);
   }
 }
