@@ -13,8 +13,20 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Injectable } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject, Injectable } from '@angular/core';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import { IQueryParams } from '../services/query-params.service';
+import { IDownloadState } from '../services/download.service';
+import { Observable } from 'rxjs';
+
+export interface IExportDatasetService {
+  downloadDataset(params: IQueryParams): Observable<IDownloadState>;
+  getColumnNames(): Observable<string[]>;
+}
 
 @Injectable({
   providedIn: 'root',
