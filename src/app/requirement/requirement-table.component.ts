@@ -36,6 +36,7 @@ import { MilestoneService } from '../shared/services/milestone.service';
 import { DataSelection } from '../shared/data/selection';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { RequirementInteractionService } from '../shared/services/requirement-interaction.service';
+import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -61,6 +62,7 @@ export class RequirementTableComponent implements OnInit {
     protected _catalogModuleService: CatalogModuleService,
     protected _milestoneService: MilestoneService,
     protected _targetObjectService: TargetObjectService,
+    protected _exportDatasetDialogService: ExportDatasetDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _requirementImportDialogService: RequirementImportDialogService,
@@ -102,6 +104,16 @@ export class RequirementTableComponent implements OnInit {
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
     ]);
+  }
+
+  async onExportRequirementsDataset() {
+    if (this.project) {
+      const dialogRef =
+        this._exportDatasetDialogService.openExportDatasetDialog();
+      await firstValueFrom(dialogRef.afterClosed());
+    } else {
+      throw new Error('Project is undefined');
+    }
   }
 
   async onExportRequirementsExcel(): Promise<void> {
