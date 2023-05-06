@@ -239,6 +239,12 @@ export class RequirementService {
     return this._download.download('excel/requirements', params);
   }
 
+  getRequirementsExcelColumnNames(): Observable<string[]> {
+    return this._crud_str.query(
+      'excel/requirements/column-names'
+    ) as Observable<string[]>;
+  }
+
   uploadRequirementsExcel(
     file: File,
     params: IQueryParams = {}
