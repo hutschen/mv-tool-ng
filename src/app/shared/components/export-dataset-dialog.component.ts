@@ -28,15 +28,24 @@ export interface IExportDatasetService {
   getColumnNames(): Observable<string[]>;
 }
 
+interface IExportDatasetDialogData {
+  exportDatasetService: IExportDatasetService;
+  filename: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class ExportDatasetDialogService {
   constructor(protected _dialog: MatDialog) {}
 
-  openExportDatasetDialog(): MatDialogRef<ExportDatasetDialogComponent> {
+  openExportDatasetDialog(
+    exportDatasetService: IExportDatasetService,
+    filename: string = 'export'
+  ): MatDialogRef<ExportDatasetDialogComponent> {
     return this._dialog.open(ExportDatasetDialogComponent, {
       width: '500px',
+      data: { exportDatasetService, filename } as IExportDatasetDialogData,
     });
   }
 }
@@ -46,4 +55,15 @@ export class ExportDatasetDialogService {
   templateUrl: './export-dataset-dialog.component.html',
   styles: [],
 })
-export class ExportDatasetDialogComponent {}
+export class ExportDatasetDialogComponent {
+  readonly exportDatasetService: IExportDatasetService;
+  filename: string;
+
+  constructor(
+    protected _dialogRef: MatDialogRef<ExportDatasetDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) dialogData: IExportDatasetDialogData
+  ) {
+    this.exportDatasetService = dialogData.exportDatasetService;
+    this.filename = dialogData.filename;
+  }
+}
