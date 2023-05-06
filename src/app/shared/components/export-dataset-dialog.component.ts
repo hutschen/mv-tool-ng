@@ -13,7 +13,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ExportDatasetDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openExportDatasetDialog(): MatDialogRef<ExportDatasetDialogComponent> {
+    return this._dialog.open(ExportDatasetDialogComponent, {
+      width: '500px',
+    });
+  }
+}
 
 @Component({
   selector: 'mvtool-export-dataset-dialog',
