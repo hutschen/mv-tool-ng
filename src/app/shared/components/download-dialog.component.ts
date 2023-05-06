@@ -62,12 +62,7 @@ export class DownloadDialogService {
       >
       </mat-progress-bar>
     </div>
-    <div
-      mat-dialog-actions
-      *ngIf="downloadState"
-      mat-dialog-actions
-      align="end"
-    >
+    <div mat-dialog-actions *ngIf="downloadState" align="end">
       <button mat-button (click)="onClose()">Cancel</button>
       <a
         mat-raised-button
