@@ -17,7 +17,8 @@ import { map, Observable } from 'rxjs';
 import { DocumentService } from '../../services/document.service';
 import { Project } from '../../services/project.service';
 import { IQueryParams } from '../../services/query-params.service';
-import { FilterByValues, IFilterOption } from '../filter';
+import { FilterByValues } from '../filter';
+import { DocumentOptions, DocumentReferenceOptions } from './document-options';
 
 export class DocumentReferencesFilter extends FilterByValues {
   constructor(
@@ -25,50 +26,12 @@ export class DocumentReferencesFilter extends FilterByValues {
     protected _project: Project,
     initQueryParams: IQueryParams = {}
   ) {
-    super('references', undefined, initQueryParams);
-    this.loadOptions();
-  }
-
-  private __loadOptions(
-    queryParams: IQueryParams
-  ): Observable<IFilterOption[]> {
-    // Request document references and convert them to filter options
-    return this._documentService.getDocumentReferences(queryParams).pipe(
-      map((references) => {
-        if (!Array.isArray(references)) references = references.items;
-        return references.map((reference) => ({
-          value: reference,
-          label: reference,
-        }));
-      })
+    super(
+      'references',
+      new DocumentReferenceOptions(_documentService, _project, true),
+      initQueryParams,
+      'string'
     );
-  }
-
-  override getOptions(
-    searchStr: string | null = null,
-    limit: number = -1
-  ): Observable<IFilterOption[]> {
-    // Build query params to request document references
-    const queryParams: IQueryParams = {
-      project_ids: this._project.id,
-    };
-    if (searchStr) queryParams['local_search'] = searchStr;
-    if (limit) {
-      queryParams['page'] = 1;
-      queryParams['page_size'] = limit;
-    }
-
-    return this.__loadOptions(queryParams);
-  }
-
-  override getOptionsByValues(
-    values: (string | number)[]
-  ): Observable<IFilterOption[]> {
-    const queryParams: IQueryParams = {
-      project_ids: this._project.id,
-      references: values,
-    };
-    return this.__loadOptions(queryParams);
   }
 }
 
@@ -78,49 +41,11 @@ export class DocumentsFilter extends FilterByValues {
     protected _project: Project,
     initQueryParams: IQueryParams = {}
   ) {
-    super('document_ids', undefined, initQueryParams);
-    this.loadOptions();
-  }
-
-  private __loadOptions(
-    queryParams: IQueryParams
-  ): Observable<IFilterOption[]> {
-    // Request documents and convert them to filter options
-    return this._documentService.getDocumentRepresentations(queryParams).pipe(
-      map((documentReprs) => {
-        if (!Array.isArray(documentReprs)) documentReprs = documentReprs.items;
-        return documentReprs.map((dr) => ({
-          value: dr.id,
-          label: (dr.reference ? dr.reference + ' ' : '') + dr.title,
-        }));
-      })
+    super(
+      'document_ids',
+      new DocumentOptions(_documentService, _project, true),
+      initQueryParams,
+      'number'
     );
-  }
-
-  override getOptions(
-    searchStr: string | null = null,
-    limit: number = -1
-  ): Observable<IFilterOption[]> {
-    // Build query params to request document representations
-    const queryParams: IQueryParams = {
-      project_ids: this._project.id,
-    };
-    if (searchStr) queryParams['local_search'] = searchStr;
-    if (limit) {
-      queryParams['page'] = 1;
-      queryParams['page_size'] = limit;
-    }
-
-    return this.__loadOptions(queryParams);
-  }
-
-  override getOptionsByValues(
-    values: (string | number)[]
-  ): Observable<IFilterOption[]> {
-    const queryParams: IQueryParams = {
-      project_ids: this._project.id,
-      ids: values,
-    };
-    return this.__loadOptions(queryParams);
   }
 }

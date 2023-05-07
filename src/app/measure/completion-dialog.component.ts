@@ -26,6 +26,7 @@ import {
   Measure,
   MeasureService,
 } from '../shared/services/measure.service';
+import { CompletionStatusOptions } from '../shared/data/custom/custom-options';
 
 @Injectable({
   providedIn: 'root',
@@ -60,10 +61,12 @@ export class CompletionDialogService {
           <mat-select name="completionStatus" [(ngModel)]="completionStatus">
             <mat-option [value]="null">None</mat-option>
             <mat-option
-              *ngFor="let status of completionStatuses"
-              [value]="status"
+              *ngFor="
+                let option of completionStatusOptions.filterOptions() | async
+              "
+              [value]="option.value"
             >
-              {{ status | titlecase }}
+              {{ option.label }}
             </mat-option>
           </mat-select>
         </mat-form-field>
@@ -85,7 +88,8 @@ export class CompletionDialogService {
   styles: ['textarea { min-height: 100px; }'],
 })
 export class CompletionDialogComponent {
-  completionStatuses = ['open', 'in progress', 'completed'];
+  // completionStatuses = ['open', 'in progress', 'completed'];
+  completionStatusOptions = new CompletionStatusOptions(false);
   measureInput: IMeasureInput;
   protected _preservedCompletionComment: string | null = null;
 

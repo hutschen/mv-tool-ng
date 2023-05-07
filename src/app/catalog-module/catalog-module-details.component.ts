@@ -14,22 +14,27 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { CatalogModule } from '../shared/services/catalog-module.service';
-import {
-  CatalogModuleDialogComponent,
-  ICatalogModuleDialogData,
-} from './catalog-module-dialog.component';
+import { CatalogModuleInteractionService } from '../shared/services/catalog-module-interaction.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'mvtool-catalog-module-details',
   template: `
-    <div class="fx-column fx-gap-15 margin-x margin-y" *ngIf="catalogModule">
+    <div
+      class="fx-column fx-gap-15 margin-x margin-y"
+      *ngIf="catalogModule$ | async as catalogModule"
+    >
       <!-- Title -->
       <div class="fx-row fx-space-between-center fx-gap-5">
         <h1 class="truncate no-margin">{{ catalogModule.title }}</h1>
         <div class="fx-row fx-gap-5">
-          <button mat-stroked-button (click)="onEditCatalogModule()">
+          <button
+            mat-stroked-button
+            (click)="
+              catalogModuleInteractions.onEditCatalogModule(catalogModule)
+            "
+          >
             <mat-icon>edit_note</mat-icon>
             Edit Catalog Module
           </button>
@@ -45,22 +50,15 @@ import {
   styles: [],
 })
 export class CatalogModuleDetailsComponent {
-  @Input() catalogModule?: CatalogModule;
+  catalogModule$?: Observable<CatalogModule>;
 
-  constructor(protected _dialog: MatDialog) {}
+  constructor(
+    readonly catalogModuleInteractions: CatalogModuleInteractionService
+  ) {}
 
-  onEditCatalogModule(): void {
-    const dialogRef = this._dialog.open(CatalogModuleDialogComponent, {
-      width: '500px',
-      data: {
-        catalog: this.catalogModule?.catalog,
-        catalogModule: this.catalogModule,
-      } as ICatalogModuleDialogData,
-    });
-    dialogRef.afterClosed().subscribe((catalogModule: CatalogModule | null) => {
-      if (catalogModule) {
-        this.catalogModule = catalogModule;
-      }
-    });
+  @Input()
+  set catalogModule(catalogModule: CatalogModule) {
+    this.catalogModule$ =
+      this.catalogModuleInteractions.syncCatalogModule(catalogModule);
   }
 }

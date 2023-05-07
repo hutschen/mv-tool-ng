@@ -31,6 +31,7 @@ import {
   Requirement,
   RequirementService,
 } from '../services/requirement.service';
+import { ComplianceStatusOptions } from '../data/custom/custom-options';
 
 @Injectable({
   providedIn: 'root',
@@ -56,7 +57,7 @@ export class ComplianceDialogService {
   styles: ['textarea { min-height: 100px; }'],
 })
 export class ComplianceDialogComponent {
-  complianceStates = ['C', 'PC', 'NC', 'N/A'];
+  readonly complianceStatusOptions = new ComplianceStatusOptions(false);
   itemInput: IRequirementInput | IMeasureInput;
   protected _preservedComplianceComment: string | null = null;
 

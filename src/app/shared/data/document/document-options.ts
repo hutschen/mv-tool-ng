@@ -19,8 +19,58 @@ import { DocumentService } from '../../services/document.service';
 import { Project } from '../../services/project.service';
 import { IQueryParams } from '../../services/query-params.service';
 
+export class DocumentReferenceOptions extends Options {
+  override readonly hasToLoad = true;
+
+  constructor(
+    protected _documentService: DocumentService,
+    protected _project: Project,
+    multiple: boolean = true
+  ) {
+    super(multiple);
+  }
+
+  private __loadOptions(queryParams: IQueryParams): Observable<IOption[]> {
+    // Request document references and convert them to options
+    return this._documentService.getDocumentReferences(queryParams).pipe(
+      map((references) => {
+        if (!Array.isArray(references)) references = references.items;
+        return references.map((reference) => ({
+          value: reference,
+          label: reference,
+        }));
+      })
+    );
+  }
+
+  override getOptions(...references: string[]): Observable<IOption[]> {
+    if (!references.length) return of([]);
+    return this.__loadOptions({
+      project_ids: this._project.id,
+      references: references,
+    });
+  }
+
+  override filterOptions(
+    filter?: string | null,
+    limit?: number
+  ): Observable<IOption[]> {
+    // Build query params to request document references
+    const queryParams: IQueryParams = {
+      project_ids: this._project.id,
+    };
+    if (filter) queryParams['local_search'] = filter;
+    if (limit) {
+      queryParams['page'] = 1;
+      queryParams['page_size'] = limit;
+    }
+
+    return this.__loadOptions(queryParams);
+  }
+}
+
 export class DocumentOptions extends Options {
-  readonly hasToLoad = true;
+  override readonly hasToLoad = true;
 
   constructor(
     protected _documentService: DocumentService,
@@ -43,18 +93,18 @@ export class DocumentOptions extends Options {
     );
   }
 
-  getOptions(...documentIds: number[]): Observable<IOption[]> {
-    if (documentIds.length === 0) {
-      return of([]);
-    }
-
+  override getOptions(...ids: number[]): Observable<IOption[]> {
+    if (!ids.length) return of([]);
     return this.__loadOptions({
       project_ids: this._project.id,
-      ids: documentIds,
+      ids: ids,
     });
   }
 
-  filterOptions(filter?: string | null, limit?: number): Observable<IOption[]> {
+  override filterOptions(
+    filter?: string | null,
+    limit?: number
+  ): Observable<IOption[]> {
     // Build query params to request document representations
     const queryParams: IQueryParams = {
       project_ids: this._project.id,

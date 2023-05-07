@@ -14,14 +14,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { Project } from '../shared/services/project.service';
-import { ProjectDialogComponent } from './project-dialog.component';
+import { ProjectInteractionService } from '../shared/services/project-interaction.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'mvtool-project-details',
   template: `
-    <ng-container *ngIf="project">
+    <ng-container *ngIf="project$ | async as project">
       <div class="fx-row fx-space-between-center fx-gap-5 margin-x margin-y">
         <!-- Title -->
         <h1 class="truncate no-margin">{{ project.name }}</h1>
@@ -30,7 +30,10 @@ import { ProjectDialogComponent } from './project-dialog.component';
             *ngIf="project.jira_project"
             [project]="project"
           ></mvtool-jira-project-label>
-          <button mat-stroked-button (click)="onEditProject()">
+          <button
+            mat-stroked-button
+            (click)="projectInteractions.onEditProject(project)"
+          >
             <mat-icon>edit_note</mat-icon>
             Edit Project
           </button>
@@ -46,19 +49,12 @@ import { ProjectDialogComponent } from './project-dialog.component';
   styles: [],
 })
 export class ProjectDetailsComponent {
-  @Input() project: Project | null = null;
+  project$?: Observable<Project>;
 
-  constructor(protected _dialog: MatDialog) {}
+  constructor(readonly projectInteractions: ProjectInteractionService) {}
 
-  onEditProject() {
-    const dialogRef = this._dialog.open(ProjectDialogComponent, {
-      width: '500px',
-      data: this.project,
-    });
-    dialogRef.afterClosed().subscribe((project: Project | null) => {
-      if (project) {
-        this.project = project;
-      }
-    });
+  @Input()
+  set project(project: Project) {
+    this.project$ = this.projectInteractions.syncProject(project);
   }
 }

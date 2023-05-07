@@ -13,11 +13,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { map, Observable } from 'rxjs';
-import { FilterByValues, IFilterOption } from '../filter';
+import { FilterByValues } from '../filter';
 import { IQueryParams } from '../../services/query-params.service';
 import { MeasureService } from '../../services/measure.service';
 import { Project } from '../../services/project.service';
+import { MeasureReferenceOptions } from './measure-options';
 
 export class MeasureReferencesFilter extends FilterByValues {
   constructor(
@@ -25,54 +25,11 @@ export class MeasureReferencesFilter extends FilterByValues {
     protected _project: Project,
     initQueryParams: IQueryParams = {}
   ) {
-    super('references', undefined, initQueryParams);
-    this.loadOptions();
-  }
-
-  override getOptions(
-    searchStr: string | null = null,
-    limit: number = -1
-  ): Observable<IFilterOption[]> {
-    // Build query params to request measure references
-    const queryParams: IQueryParams = {
-      project_ids: this._project.id,
-    };
-    if (searchStr) queryParams['local_search'] = searchStr;
-    if (limit) {
-      queryParams['page'] = 1;
-      queryParams['page_size'] = limit;
-    }
-
-    // Request measure references and convert them to filter options
-    return this._measureService.getMeasureReferences(queryParams).pipe(
-      map((references) => {
-        if (!Array.isArray(references)) references = references.items;
-        return references.map((reference) => ({
-          value: reference,
-          label: reference,
-        }));
-      })
-    );
-  }
-
-  override getOptionsByValues(
-    values: (string | number)[]
-  ): Observable<IFilterOption[]> {
-    // Build query params to request measure references
-    const queryParams: IQueryParams = {
-      project_ids: this._project.id,
-      references: values,
-    };
-
-    // Request measure references and convert them to filter options
-    return this._measureService.getMeasureReferences(queryParams).pipe(
-      map((references) => {
-        if (!Array.isArray(references)) references = references.items;
-        return references.map((reference) => ({
-          value: reference,
-          label: reference,
-        }));
-      })
+    super(
+      'references',
+      new MeasureReferenceOptions(_measureService, _project, true),
+      initQueryParams,
+      'string'
     );
   }
 }

@@ -38,6 +38,10 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { TableOptionsComponent } from './components/table-options.component';
 import { HideColumnsDialogComponent } from './components/hide-columns-dialog.component';
 import { OptionsInputComponent } from './components/options-input.component';
+import { CompletionStatusComponent } from './components/completion-status.component';
+import { ComplianceStatusComponent } from './components/compliance-status.component';
+import { VerificationMethodComponent } from './components/verification-method.component';
+import { VerificationStatusComponent } from './components/verification-status.component';
 
 @NgModule({
   declarations: [
@@ -61,6 +65,10 @@ import { OptionsInputComponent } from './components/options-input.component';
     TableOptionsComponent,
     HideColumnsDialogComponent,
     OptionsInputComponent,
+    CompletionStatusComponent,
+    ComplianceStatusComponent,
+    VerificationMethodComponent,
+    VerificationStatusComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
@@ -77,6 +85,10 @@ import { OptionsInputComponent } from './components/options-input.component';
     FilterHeaderComponent,
     HideColumnsDialogComponent,
     OptionsInputComponent,
+    CompletionStatusComponent,
+    ComplianceStatusComponent,
+    VerificationMethodComponent,
+    VerificationStatusComponent,
   ],
 })
 export class SharedModule {}

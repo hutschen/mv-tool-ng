@@ -17,6 +17,7 @@ import { Component } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { isEqual } from 'radash';
 import {
+  combineLatest,
   distinctUntilChanged,
   filter,
   map,
@@ -28,6 +29,10 @@ import { CatalogModuleService } from './shared/services/catalog-module.service';
 import { CatalogService } from './shared/services/catalog.service';
 import { ProjectService } from './shared/services/project.service';
 import { RequirementService } from './shared/services/requirement.service';
+import { RequirementInteractionService } from './shared/services/requirement-interaction.service';
+import { ProjectInteractionService } from './shared/services/project-interaction.service';
+import { CatalogInteractionService } from './shared/services/catalog-interaction.service';
+import { CatalogModuleInteractionService } from './shared/services/catalog-module-interaction.service';
 
 interface IBreadcrumb {
   displayText: string;
@@ -88,9 +93,13 @@ export class BreadcrumbTrailComponent {
   constructor(
     protected _router: Router,
     protected _catalogService: CatalogService,
+    protected _catalogInteractions: CatalogInteractionService,
     protected _catalogModuleService: CatalogModuleService,
+    protected _catalogModuleInteractions: CatalogModuleInteractionService,
     protected _projectService: ProjectService,
-    protected _requirementService: RequirementService
+    protected _projectInteractions: ProjectInteractionService,
+    protected _requirementService: RequirementService,
+    protected _requirementInteractions: RequirementInteractionService
   ) {
     this.breadcrumbs$ = this._router.events.pipe(
       filter((event) => event instanceof NavigationEnd),
@@ -111,6 +120,7 @@ export class BreadcrumbTrailComponent {
 
     const catalogId = Number(first);
     return this._catalogService.getCatalog(catalogId).pipe(
+      switchMap((catalog) => this._catalogInteractions.syncCatalog(catalog)),
       map((catalog) => [
         {
           displayText: catalog.title,
@@ -134,14 +144,17 @@ export class BreadcrumbTrailComponent {
 
     const catalogModuleId = Number(first);
     return this._catalogModuleService.getCatalogModule(catalogModuleId).pipe(
-      map((catalogModule) => [
+      switchMap((catalogModule) =>
+        combineLatest([
+          // FIXME: Does not work when relation between catalog and catalog module changes
+          this._catalogInteractions.syncCatalog(catalogModule.catalog),
+          this._catalogModuleInteractions.syncCatalogModule(catalogModule),
+        ])
+      ),
+      map(([catalog, catalogModule]) => [
         {
-          displayText: catalogModule.catalog.title,
-          navigationCommands: [
-            'catalogs',
-            catalogModule.catalog.id,
-            'catalog-modules',
-          ],
+          displayText: catalog.title,
+          navigationCommands: ['catalogs', catalog.id, 'catalog-modules'],
         },
         {
           displayText: catalogModule.title,
@@ -172,6 +185,7 @@ export class BreadcrumbTrailComponent {
 
     const projectId = Number(first);
     return this._projectService.getProject(projectId).pipe(
+      switchMap((project) => this._projectInteractions.syncProject(project)),
       map((project) => {
         const projectBreadcrumb = {
           displayText: project.name,
@@ -241,14 +255,17 @@ export class BreadcrumbTrailComponent {
 
     const requirementId = Number(first);
     return this._requirementService.getRequirement(requirementId).pipe(
-      map((requirement) => [
+      switchMap((requirement) =>
+        combineLatest([
+          // FIXME: Does not work when relation between project and requirement changes
+          this._projectInteractions.syncProject(requirement.project),
+          this._requirementInteractions.syncRequirement(requirement),
+        ])
+      ),
+      map(([project, requirement]) => [
         {
-          displayText: requirement.project.name,
-          navigationCommands: [
-            'projects',
-            requirement.project.id,
-            'requirements',
-          ],
+          displayText: project.name,
+          navigationCommands: ['projects', project.id, 'requirements'],
         },
         {
           displayText: requirement.summary,

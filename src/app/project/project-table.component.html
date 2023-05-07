@@ -19,7 +19,7 @@
   <!-- Toolbar -->
   <mvtool-table-toolbar
     (refresh)="this.dataFrame.reload()"
-    (create)="onCreateProject()"
+    (create)="projectInteractions.onCreateProject()"
     (upload)="onImportProjectsExcel()"
     (download)="onExportProjectsExcel()"
     [(search)]="dataFrame.search.pattern"
@@ -35,7 +35,7 @@
     [dataFrame]="dataFrame"
     [marked]="marked"
     [expanded]="expanded"
-    (create)="onCreateProject()"
+    (create)="projectInteractions.onCreateProject()"
     noContentText="No projects found."
     loadingText="Loading projects..."
     (clickRow)="clickProject.emit($event)"
@@ -102,8 +102,8 @@
       </th>
       <td mat-cell *matCellDef="let project">
         <mvtool-table-row-options
-          (edit)="onEditProject(project)"
-          (delete)="onDeleteProject(project)"
+          (edit)="projectInteractions.onEditProject(project)"
+          (delete)="projectInteractions.onDeleteProject(project)"
           (toggleMarker)="marked.toggle(project)"
           [isMarked]="marked.isSelected(project)"
           (toggleExpansion)="expanded.toggle(project)"

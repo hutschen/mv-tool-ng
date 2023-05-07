@@ -18,7 +18,7 @@
 <div class="fx-column">
   <mvtool-table-toolbar
     (refresh)="this.dataFrame.reload()"
-    (create)="onCreateDocument()"
+    (create)="documentInteractions.onCreateDocument(project)"
     (upload)="onImportDocuments()"
     (download)="onExportDocuments()"
     [(search)]="dataFrame.search.pattern"
@@ -34,7 +34,7 @@
     [dataFrame]="dataFrame"
     [marked]="marked"
     [expanded]="expanded"
-    (create)="onCreateDocument()"
+    (create)="documentInteractions.onCreateDocument(project)"
     noContentText="No documents found."
     loadingText="Loading documents..."
     matSort
@@ -58,8 +58,8 @@
       </th>
       <td mat-cell *matCellDef="let document">
         <mvtool-table-row-options
-          (edit)="onEditDocument(document)"
-          (delete)="onDeleteDocument(document)"
+          (edit)="documentInteractions.onEditDocument(document)"
+          (delete)="documentInteractions.onDeleteDocument(document)"
           (toggleMarker)="marked.toggle(document)"
           [isMarked]="marked.isSelected(document)"
           (toggleExpansion)="expanded.toggle(document)"

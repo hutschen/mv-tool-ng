@@ -41,10 +41,10 @@
       <mat-select name="complianceStatus" [(ngModel)]="complianceStatus">
         <mat-option [value]="null">None</mat-option>
         <mat-option
-          *ngFor="let complianceStatus of complianceStates"
-          [value]="complianceStatus"
+          *ngFor="let option of complianceStatusOptions.filterOptions() | async"
+          [value]="option.value"
         >
-          {{ complianceStatus }}
+          {{ option.label }}
         </mat-option>
       </mat-select>
     </mat-form-field>

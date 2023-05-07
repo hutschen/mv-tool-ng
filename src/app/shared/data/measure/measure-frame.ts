@@ -60,6 +60,11 @@ import {
   RequirementsFilter,
   TargetObjectsFilter,
 } from '../requirement/requirement-filters';
+import {
+  CompletionStatusOptions,
+  VerificationMethodOptions,
+  VerificationStatusOptions,
+} from '../custom/custom-options';
 
 export class MeasureDataFrame extends DataFrame<Measure> {
   protected _requirement?: Requirement;
@@ -220,12 +225,9 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         undefined,
         new FilterByValues(
           'completion_statuses',
-          [
-            { value: 'open', label: 'Open' },
-            { value: 'in progress', label: 'In Progress' },
-            { value: 'completed', label: 'Completed' },
-          ],
-          initQueryParams
+          new CompletionStatusOptions(true),
+          initQueryParams,
+          'string'
         ),
         new FilterForExistence('has_completion_status', initQueryParams)
       ),
@@ -240,12 +242,9 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         undefined,
         new FilterByValues(
           'verification_methods',
-          [
-            { value: 'I', label: 'Inspection (I)' },
-            { value: 'T', label: 'Test (T)' },
-            { value: 'R', label: 'Review (R)' },
-          ],
-          initQueryParams
+          new VerificationMethodOptions(true),
+          initQueryParams,
+          'string'
         ),
         new FilterForExistence('has_verification_method', initQueryParams)
       ),
@@ -260,12 +259,9 @@ export class MeasureDataFrame extends DataFrame<Measure> {
         undefined,
         new FilterByValues(
           'verification_statuses',
-          [
-            { value: 'verified', label: 'Verified' },
-            { value: 'partially verified', label: 'Partially Verified' },
-            { value: 'not verified', label: 'Not Verified' },
-          ],
-          initQueryParams
+          new VerificationStatusOptions(true),
+          initQueryParams,
+          'string'
         ),
         new FilterForExistence('has_verification_status', initQueryParams)
       ),
