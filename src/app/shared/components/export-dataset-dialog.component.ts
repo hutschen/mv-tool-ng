@@ -29,6 +29,7 @@ export interface IExportDatasetService {
 }
 
 interface IExportDatasetDialogData {
+  datasetName: string;
   exportDatasetService: IExportDatasetService;
   filename: string;
 }
@@ -40,12 +41,17 @@ export class ExportDatasetDialogService {
   constructor(protected _dialog: MatDialog) {}
 
   openExportDatasetDialog(
+    datasetName: string,
     exportDatasetService: IExportDatasetService,
     filename: string = 'export'
   ): MatDialogRef<ExportDatasetDialogComponent> {
     return this._dialog.open(ExportDatasetDialogComponent, {
-      width: '500px',
-      data: { exportDatasetService, filename } as IExportDatasetDialogData,
+      width: '550px',
+      data: {
+        datasetName,
+        exportDatasetService,
+        filename,
+      } as IExportDatasetDialogData,
     });
   }
 }
@@ -56,6 +62,7 @@ export class ExportDatasetDialogService {
   styles: [],
 })
 export class ExportDatasetDialogComponent {
+  readonly datasetName: string;
   readonly exportDatasetService: IExportDatasetService;
   filename: string;
 
@@ -63,6 +70,7 @@ export class ExportDatasetDialogComponent {
     protected _dialogRef: MatDialogRef<ExportDatasetDialogComponent>,
     @Inject(MAT_DIALOG_DATA) dialogData: IExportDatasetDialogData
   ) {
+    this.datasetName = dialogData.datasetName;
     this.exportDatasetService = dialogData.exportDatasetService;
     this.filename = dialogData.filename;
   }
