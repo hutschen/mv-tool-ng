@@ -14,5 +14,21 @@
  You should have received a copy of the GNU Affero General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
-
-<p>export-dataset-dialog works!</p>
+<div mat-dialog-title>Export {{ datasetName }}</div>
+<div mat-dialog-content>
+  <p>export-dataset-dialog works!</p>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onClose()">Cancel</button>
+  <a
+    mat-raised-button
+    [disabled]="!downloadUrl"
+    color="accent"
+    [href]="downloadUrl"
+    [download]="filename"
+    (click)="onClose()"
+  >
+    <mat-icon>save</mat-icon>
+    Save file
+  </a>
+</div>

@@ -22,6 +22,7 @@ import {
 import { IQueryParams } from '../services/query-params.service';
 import { IDownloadState } from '../services/download.service';
 import { Observable } from 'rxjs';
+import { SafeResourceUrl } from '@angular/platform-browser';
 
 export interface IExportDatasetService {
   downloadDataset(params: IQueryParams): Observable<IDownloadState>;
@@ -65,6 +66,7 @@ export class ExportDatasetDialogComponent {
   readonly datasetName: string;
   readonly exportDatasetService: IExportDatasetService;
   filename: string;
+  downloadUrl?: SafeResourceUrl;
 
   constructor(
     protected _dialogRef: MatDialogRef<ExportDatasetDialogComponent>,
@@ -73,5 +75,9 @@ export class ExportDatasetDialogComponent {
     this.datasetName = dialogData.datasetName;
     this.exportDatasetService = dialogData.exportDatasetService;
     this.filename = dialogData.filename;
+  }
+
+  onClose(): void {
+    this._dialogRef.close();
   }
 }
