@@ -43,6 +43,7 @@ import { ComplianceStatusComponent } from './components/compliance-status.compon
 import { VerificationMethodComponent } from './components/verification-method.component';
 import { VerificationStatusComponent } from './components/verification-status.component';
 import { ExportDatasetDialogComponent } from './components/export-dataset-dialog.component';
+import { SelectionListComponent } from './components/selection-list.component';
 
 @NgModule({
   declarations: [
@@ -71,6 +72,7 @@ import { ExportDatasetDialogComponent } from './components/export-dataset-dialog
     VerificationMethodComponent,
     VerificationStatusComponent,
     ExportDatasetDialogComponent,
+    SelectionListComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
@@ -92,6 +94,7 @@ import { ExportDatasetDialogComponent } from './components/export-dataset-dialog
     VerificationMethodComponent,
     VerificationStatusComponent,
     ExportDatasetDialogComponent,
+    SelectionListComponent,
   ],
 })
 export class SharedModule {}
