@@ -13,11 +13,36 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { IOption, Options } from '../data/options';
+import { Observable, defer, finalize } from 'rxjs';
 
 @Component({
   selector: 'mvtool-selection-list',
-  template: ` <p>selection-list works!</p> `,
+  template: `
+    <mat-selection-list [multiple]="options.isMultipleSelection">
+      <mat-list-option
+        *ngFor="let option of loadedOptions$ | async"
+        [value]="option.value"
+      >
+        {{ option.label }}
+      </mat-list-option>
+    </mat-selection-list>
+  `,
   styles: [],
 })
-export class SelectionListComponent {}
+export class SelectionListComponent implements OnInit {
+  @Input() options!: Options;
+  loadedOptions$!: Observable<IOption[]>;
+  isLoadingOptions = false;
+
+  constructor() {}
+
+  ngOnInit(): void {
+    // Initially load all options
+    this.loadedOptions$ = defer(() => {
+      this.isLoadingOptions = true && this.options.hasToLoad;
+      return this.options.filterOptions();
+    }).pipe(finalize(() => (this.isLoadingOptions = false)));
+  }
+}
