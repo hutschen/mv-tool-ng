@@ -109,16 +109,19 @@ export class RequirementTableComponent implements OnInit {
   async onExportRequirementsDataset() {
     if (this.project) {
       const dialogRef =
-        this._exportDatasetDialogService.openExportDatasetDialog({
-          downloadDataset:
-            this._requirementService.downloadRequirementsExcel.bind(
-              this._requirementService
-            ),
-          getColumnNames:
-            this._requirementService.getRequirementsExcelColumnNames.bind(
-              this._requirementService
-            ),
-        });
+        this._exportDatasetDialogService.openExportDatasetDialog(
+          'Requirements',
+          {
+            downloadDataset:
+              this._requirementService.downloadRequirementsExcel.bind(
+                this._requirementService
+              ),
+            getColumnNames:
+              this._requirementService.getRequirementsExcelColumnNames.bind(
+                this._requirementService
+              ),
+          }
+        );
       await firstValueFrom(dialogRef.afterClosed());
     } else {
       throw new Error('Project is undefined');
