@@ -13,9 +13,26 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Input, OnInit } from '@angular/core';
-import { IOption, Options } from '../data/options';
-import { Observable, defer, finalize } from 'rxjs';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  IOption,
+  OptionValue,
+  Options,
+  areSelectedValuesChanged,
+  fromOptionValues,
+  toOptionValues,
+} from '../data/options';
+import {
+  Observable,
+  ReplaySubject,
+  defer,
+  filter,
+  finalize,
+  map,
+  switchMap,
+  takeUntil,
+  withLatestFrom,
+} from 'rxjs';
 
 @Component({
   selector: 'mvtool-selection-list',
@@ -43,6 +60,9 @@ import { Observable, defer, finalize } from 'rxjs';
 })
 export class SelectionListComponent implements OnInit {
   @Input() options!: Options;
+  @Output() valueChange = new EventEmitter<any>();
+  protected _valueSubject = new ReplaySubject<OptionValue[]>(1);
+
   loadedOptions$!: Observable<IOption[]>;
   isLoadingOptions = false;
 
@@ -54,5 +74,42 @@ export class SelectionListComponent implements OnInit {
       this.isLoadingOptions = true && this.options.hasToLoad;
       return this.options.filterOptions();
     }).pipe(finalize(() => (this.isLoadingOptions = false)));
+
+    // Set the incoming value
+    this._valueSubject
+      .pipe(
+        withLatestFrom(this.options.selection$),
+        // Check if selection will be changed by the new value
+        filter(([values, options]) =>
+          areSelectedValuesChanged(
+            values,
+            options.map((o) => o.value)
+          )
+        ),
+        // Load the options corresponding to the new value,
+        // but stop if the selection changes in the meantime
+        switchMap(([values]) =>
+          this.options
+            .getOptions(...values)
+            .pipe(takeUntil(this.options.selectionChanged$))
+        )
+      )
+      .subscribe((options) => {
+        this.options.setSelection(...options);
+      });
+
+    // Emit the valueChange event when the selection changes
+    this.options.selectionChanged$
+      .pipe(map((options) => options.map((o) => o.value)))
+      .subscribe((values) => {
+        this.valueChange.emit(
+          fromOptionValues(values, this.options.isMultipleSelection)
+        );
+      });
+  }
+
+  @Input()
+  set value(value: unknown) {
+    this._valueSubject.next(toOptionValues(value));
   }
 }
