@@ -20,6 +20,13 @@ import { Observable, defer, finalize } from 'rxjs';
 @Component({
   selector: 'mvtool-selection-list',
   template: `
+    <!-- Loading indicator -->
+    <div class="loading fx-row" *ngIf="isLoadingOptions">
+      <div class="fx-grow">Loading ...</div>
+      <div><mat-spinner [diameter]="20"></mat-spinner></div>
+    </div>
+
+    <!-- Selection list -->
     <mat-selection-list [multiple]="options.isMultipleSelection">
       <mat-list-option
         *ngFor="let option of loadedOptions$ | async"
@@ -29,7 +36,10 @@ import { Observable, defer, finalize } from 'rxjs';
       </mat-list-option>
     </mat-selection-list>
   `,
-  styles: [],
+  styleUrls: ['../styles/flex.scss'],
+  styles: [
+    '.loading { line-height: 24px; padding-left: 16px; padding-right: 16px;}',
+  ],
 })
 export class SelectionListComponent implements OnInit {
   @Input() options!: Options;
