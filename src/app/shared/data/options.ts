@@ -125,6 +125,10 @@ export abstract class Options {
     return this.__selection.setSelection(...options);
   }
 
+  isSelected(option: IOption) {
+    return this.__selection.isSelected(option);
+  }
+
   clearSelection() {
     return this.__selection.clear();
   }

@@ -242,6 +242,14 @@ describe('StaticOptions', () => {
     instance.setSelection(sampleOptions[1]);
   });
 
+  it('should indicate if an option is selected', () => {
+    const instance = new StaticOptions(sampleOptions, true);
+    expect(instance.isSelected(sampleOptions[0])).toBeFalse();
+
+    instance.selectOptions(sampleOptions[0]);
+    expect(instance.isSelected(sampleOptions[0])).toBeTrue();
+  });
+
   it('should clear the selection', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
 

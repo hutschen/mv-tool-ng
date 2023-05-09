@@ -48,6 +48,7 @@ import {
       <mat-list-option
         *ngFor="let option of loadedOptions$ | async"
         [value]="option.value"
+        [selected]="options.isSelected(option)"
       >
         {{ option.label }}
       </mat-list-option>
