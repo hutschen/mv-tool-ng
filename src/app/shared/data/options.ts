@@ -114,6 +114,10 @@ export abstract class Options {
     return this.__selection.isMultipleSelection();
   }
 
+  get selection(): IOption[] {
+    return this.__selection.selected;
+  }
+
   abstract getOptions(...values: OptionValue[]): Observable<IOption[]>;
 
   abstract filterOptions(

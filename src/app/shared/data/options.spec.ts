@@ -164,6 +164,14 @@ describe('StaticOptions', () => {
     expect(instance2.isMultipleSelection).toBe(true);
   });
 
+  it('should provide the current selection', () => {
+    const instance = new StaticOptions(sampleOptions);
+    expect(instance.selection).toEqual([]);
+
+    instance.selectOptions(sampleOptions[0]);
+    expect(instance.selection).toEqual([sampleOptions[0]]);
+  });
+
   it('should get options by values', (done) => {
     const instance = new StaticOptions(sampleOptions);
     instance.getOptions(1, 3).subscribe((options) => {
