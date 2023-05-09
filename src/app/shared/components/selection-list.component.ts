@@ -23,9 +23,7 @@ import {
   toOptionValues,
 } from '../data/options';
 import {
-  Observable,
   ReplaySubject,
-  defer,
   filter,
   finalize,
   map,
@@ -44,9 +42,19 @@ import {
     </div>
 
     <!-- Selection list -->
-    <mat-selection-list [multiple]="options.isMultipleSelection">
+    <mat-selection-list
+      *ngIf="!isLoadingOptions"
+      [multiple]="options.isMultipleSelection"
+    >
       <mat-list-option
-        *ngFor="let option of loadedOptions$ | async"
+        *ngIf="options.isMultipleSelection"
+        (click)="toggleSelectAll()"
+        [selected]="isAllSelected"
+      >
+        Select all
+      </mat-list-option>
+      <mat-list-option
+        *ngFor="let option of loadedOptions"
         [value]="option.value"
         [selected]="options.isSelected(option)"
         (click)="options.toggleOption(option)"
@@ -65,17 +73,20 @@ export class SelectionListComponent implements OnInit {
   @Output() valueChange = new EventEmitter<any>();
   protected _valueSubject = new ReplaySubject<OptionValue[]>(1);
 
-  loadedOptions$!: Observable<IOption[]>;
+  loadedOptions!: IOption[];
   isLoadingOptions = false;
 
   constructor() {}
 
   ngOnInit(): void {
     // Initially load all options
-    this.loadedOptions$ = defer(() => {
-      this.isLoadingOptions = true && this.options.hasToLoad;
-      return this.options.getAllOptions();
-    }).pipe(finalize(() => (this.isLoadingOptions = false)));
+    this.isLoadingOptions = true && this.options.hasToLoad;
+    this.options
+      .getAllOptions()
+      .pipe(finalize(() => (this.isLoadingOptions = false)))
+      .subscribe((options) => {
+        this.loadedOptions = options;
+      });
 
     // Set the incoming value
     this._valueSubject
@@ -113,5 +124,20 @@ export class SelectionListComponent implements OnInit {
   @Input()
   set value(value: unknown) {
     this._valueSubject.next(toOptionValues(value));
+  }
+
+  get isAllSelected(): boolean {
+    return this.loadedOptions.length === this.options.selection.length;
+  }
+
+  toggleSelectAll(): void | boolean {
+    if (!this.options.isMultipleSelection) {
+      return false;
+    }
+    if (this.isAllSelected) {
+      this.options.clearSelection();
+    } else {
+      this.options.setSelection(...this.loadedOptions);
+    }
   }
 }
