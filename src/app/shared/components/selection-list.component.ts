@@ -74,7 +74,7 @@ export class SelectionListComponent implements OnInit {
     // Initially load all options
     this.loadedOptions$ = defer(() => {
       this.isLoadingOptions = true && this.options.hasToLoad;
-      return this.options.filterOptions();
+      return this.options.getAllOptions();
     }).pipe(finalize(() => (this.isLoadingOptions = false)));
 
     // Set the incoming value

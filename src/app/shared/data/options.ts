@@ -113,6 +113,10 @@ export abstract class Options {
     limit?: number
   ): Observable<IOption[]>;
 
+  getAllOptions(): Observable<IOption[]> {
+    return this.filterOptions();
+  }
+
   selectOptions(...options: IOption[]) {
     return this.__selection.select(...options);
   }

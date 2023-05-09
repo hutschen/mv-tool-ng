@@ -196,6 +196,14 @@ describe('StaticOptions', () => {
     });
   });
 
+  it('should get all options', (done) => {
+    const instance = new StaticOptions(sampleOptions);
+    instance.getAllOptions().subscribe((options) => {
+      expect(options).toEqual(sampleOptions);
+      done();
+    });
+  });
+
   it('should select options', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
 
