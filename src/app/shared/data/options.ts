@@ -15,7 +15,15 @@
 
 import { SelectionModel } from '@angular/cdk/collections';
 import { title } from 'radash';
-import { Observable, map, of, startWith } from 'rxjs';
+import {
+  Observable,
+  defaultIfEmpty,
+  firstValueFrom,
+  map,
+  of,
+  startWith,
+  takeUntil,
+} from 'rxjs';
 
 export type OptionValue = string | number;
 
@@ -135,6 +143,16 @@ export abstract class Options {
 
   isSelected(option: IOption) {
     return this.__selection.isSelected(option);
+  }
+
+  async selectAllOptions(): Promise<void | boolean> {
+    return firstValueFrom(
+      this.getAllOptions().pipe(
+        takeUntil(this.__selection.changed),
+        map((options) => this.__selection.select(...options)),
+        defaultIfEmpty(void 0)
+      )
+    );
   }
 
   clearSelection() {

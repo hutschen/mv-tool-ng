@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { forkJoin, take } from 'rxjs';
+import { Observable, Subject, firstValueFrom, forkJoin, take } from 'rxjs';
 import {
   StaticOptions,
   StringOptions,
@@ -269,6 +269,41 @@ describe('StaticOptions', () => {
 
     instance.selectOptions(sampleOptions[0]);
     expect(instance.isSelected(sampleOptions[0])).toBeTrue();
+  });
+
+  it('should select all options', (done) => {
+    const instance = new StaticOptions(sampleOptions, true);
+
+    forkJoin([
+      instance.selectionChanged$.pipe(take(1)), // select all
+      instance.selection$.pipe(take(2)), // initial selection, select all
+    ]).subscribe(([selectionChanged, selection]) => {
+      expect(selectionChanged).toEqual(sampleOptions);
+      expect(selection).toEqual(sampleOptions);
+      done();
+    });
+
+    instance.selectAllOptions();
+  });
+
+  it('should return void when selectAllOptions is cancelled', async () => {
+    const instance = new StaticOptions(sampleOptions, true);
+    const getAllOptionsSubject = new Subject<IOption[]>();
+
+    // Mock getAllOptions to control the emissions
+    spyOn(instance, 'getAllOptions').and.returnValue(getAllOptionsSubject);
+
+    // Call selectAllOptions and ensure that getAllOptions is called
+    const selectAllOptionsPromise = instance.selectAllOptions();
+    expect(getAllOptionsSubject.observed).toBeTrue();
+
+    // Trigger the selection changed event to cancel selectAllOptions
+    instance.selectOptions(sampleOptions[0]);
+
+    const result = await selectAllOptionsPromise;
+    const selection = await firstValueFrom(instance.selection$);
+    expect(result).toBe(void 0);
+    expect(selection).toEqual([sampleOptions[0]]);
   });
 
   it('should clear the selection', (done) => {
