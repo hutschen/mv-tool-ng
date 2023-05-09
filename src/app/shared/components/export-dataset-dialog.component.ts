@@ -21,8 +21,9 @@ import {
 } from '@angular/material/dialog';
 import { IQueryParams } from '../services/query-params.service';
 import { IDownloadState } from '../services/download.service';
-import { Observable } from 'rxjs';
+import { Observable, of, switchMap } from 'rxjs';
 import { SafeResourceUrl } from '@angular/platform-browser';
+import { IOption, Options } from '../data/options';
 
 export interface IExportDatasetService {
   downloadDataset(params: IQueryParams): Observable<IDownloadState>;
@@ -33,6 +34,24 @@ interface IExportDatasetDialogData {
   datasetName: string;
   exportDatasetService: IExportDatasetService;
   filename: string;
+}
+
+class ColumnNameOptions extends Options {
+  override readonly hasToLoad = true;
+
+  constructor(protected _exportDatasetService: IExportDatasetService) {
+    super(true);
+  }
+
+  override getOptions(...values: string[]): Observable<IOption[]> {
+    return of(values.map((v) => ({ label: v, value: v })));
+  }
+
+  override filterOptions(..._: any[]): Observable<IOption[]> {
+    return this._exportDatasetService
+      .getColumnNames()
+      .pipe(switchMap((columnNames) => this.getOptions(...columnNames)));
+  }
 }
 
 @Injectable({
@@ -65,6 +84,7 @@ export class ExportDatasetDialogService {
 export class ExportDatasetDialogComponent {
   readonly datasetName: string;
   readonly exportDatasetService: IExportDatasetService;
+  columnNameOptions!: Options;
   filename: string;
   downloadUrl?: SafeResourceUrl;
 
@@ -74,6 +94,7 @@ export class ExportDatasetDialogComponent {
   ) {
     this.datasetName = dialogData.datasetName;
     this.exportDatasetService = dialogData.exportDatasetService;
+    this.columnNameOptions = new ColumnNameOptions(this.exportDatasetService);
     this.filename = dialogData.filename;
   }
 

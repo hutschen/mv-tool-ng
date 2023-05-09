@@ -16,7 +16,8 @@
 -->
 <div mat-dialog-title>Export {{ datasetName }}</div>
 <div mat-dialog-content>
-  <p>export-dataset-dialog works!</p>
+  <p>Please select the columns to be included in the export.</p>
+  <mvtool-selection-list [options]="columnNameOptions"></mvtool-selection-list>
 </div>
 <div mat-dialog-actions align="end">
   <button mat-button (click)="onClose()">Cancel</button>
