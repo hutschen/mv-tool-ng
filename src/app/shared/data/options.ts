@@ -121,6 +121,10 @@ export abstract class Options {
     return this.__selection.deselect(...options);
   }
 
+  toggleOption(option: IOption) {
+    return this.__selection.toggle(option);
+  }
+
   setSelection(...options: IOption[]) {
     return this.__selection.setSelection(...options);
   }

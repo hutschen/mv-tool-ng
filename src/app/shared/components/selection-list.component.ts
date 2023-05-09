@@ -49,6 +49,7 @@ import {
         *ngFor="let option of loadedOptions$ | async"
         [value]="option.value"
         [selected]="options.isSelected(option)"
+        (click)="options.toggleOption(option)"
       >
         {{ option.label }}
       </mat-list-option>

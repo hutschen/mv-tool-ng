@@ -227,6 +227,19 @@ describe('StaticOptions', () => {
     instance.deselectOptions(sampleOptions[2]);
   });
 
+  it('should toggle an option', () => {
+    const instance = new StaticOptions(sampleOptions, true);
+    expect(instance.isSelected(sampleOptions[0])).toBeFalse();
+
+    // Select the first option using toggle
+    instance.toggleOption(sampleOptions[0]);
+    expect(instance.isSelected(sampleOptions[0])).toBeTrue();
+
+    // Deselect the first option using toggle
+    instance.toggleOption(sampleOptions[0]);
+    expect(instance.isSelected(sampleOptions[0])).toBeFalse();
+  });
+
   it('should set the selection', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
 
