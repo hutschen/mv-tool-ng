@@ -18,7 +18,7 @@
 <div mat-dialog-content>
   <mat-vertical-stepper linear>
     <!-- Select columns to export -->
-    <mat-step [stepControl]="selectColumnsForm" [editable]="true">
+    <mat-step [stepControl]="selectColumnsForm">
       <ng-template matStepLabel>Select columns</ng-template>
       <form [formGroup]="selectColumnsForm" class="step-form">
         <p>Please select the columns to be included in the export.</p>

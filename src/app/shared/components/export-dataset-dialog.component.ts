@@ -24,7 +24,12 @@ import { IDownloadState } from '../services/download.service';
 import { Observable, of, switchMap } from 'rxjs';
 import { SafeResourceUrl } from '@angular/platform-browser';
 import { IOption, Options } from '../data/options';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 
 export interface IExportDatasetService {
   downloadDataset(params: IQueryParams): Observable<IDownloadState>;
@@ -108,10 +113,23 @@ export class ExportDatasetDialogComponent {
     this.filename = dialogData.filename;
 
     // Create form groups for the different steps in the dialog
-    this.selectColumnsForm = formBuilder.group({});
+    this.selectColumnsForm = formBuilder.group(
+      {},
+      {
+        validators: (): ValidationErrors | null =>
+          this.columnNameOptions.selection.length >= 1
+            ? null
+            : { selection: false },
+      }
+    );
     this.chooseFilenameForm = formBuilder.group({
       filenameInput: ['', Validators.required],
     });
+
+    // Validate selectColumnsForm when columnNameOptions changes
+    this.columnNameOptions.selectionChanged$.subscribe(() =>
+      this.selectColumnsForm.updateValueAndValidity()
+    );
   }
 
   onClose(): void {
