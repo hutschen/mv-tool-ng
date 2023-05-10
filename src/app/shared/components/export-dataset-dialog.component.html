@@ -16,8 +16,19 @@
 -->
 <div mat-dialog-title>Export {{ datasetName }}</div>
 <div mat-dialog-content>
-  <p>Please select the columns to be included in the export.</p>
-  <mvtool-selection-list [options]="columnNameOptions"></mvtool-selection-list>
+  <mat-vertical-stepper linear>
+    <!-- Select columns to export -->
+    <mat-step [stepControl]="selectColumnsForm" [editable]="true">
+      <ng-template matStepLabel>
+        Select columns to be included in the export
+      </ng-template>
+      <form [formGroup]="selectColumnsForm" class="select-columns-form">
+        <mvtool-selection-list
+          [options]="columnNameOptions"
+        ></mvtool-selection-list>
+      </form>
+    </mat-step>
+  </mat-vertical-stepper>
 </div>
 <div mat-dialog-actions align="end">
   <button mat-button (click)="onClose()">Cancel</button>

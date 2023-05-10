@@ -24,6 +24,7 @@ import { IDownloadState } from '../services/download.service';
 import { Observable, of, switchMap } from 'rxjs';
 import { SafeResourceUrl } from '@angular/platform-browser';
 import { IOption, Options } from '../data/options';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 export interface IExportDatasetService {
   downloadDataset(params: IQueryParams): Observable<IDownloadState>;
@@ -79,7 +80,7 @@ export class ExportDatasetDialogService {
 @Component({
   selector: 'mvtool-export-dataset-dialog',
   templateUrl: './export-dataset-dialog.component.html',
-  styles: [],
+  styles: ['.select-columns-form { padding-top: 8px; }'],
 })
 export class ExportDatasetDialogComponent {
   readonly datasetName: string;
@@ -88,14 +89,21 @@ export class ExportDatasetDialogComponent {
   filename: string;
   downloadUrl?: SafeResourceUrl;
 
+  // Form groups for the different steps in the dialog
+  selectColumnsForm: FormGroup;
+
   constructor(
     protected _dialogRef: MatDialogRef<ExportDatasetDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) dialogData: IExportDatasetDialogData
+    @Inject(MAT_DIALOG_DATA) dialogData: IExportDatasetDialogData,
+    formBuilder: FormBuilder
   ) {
     this.datasetName = dialogData.datasetName;
     this.exportDatasetService = dialogData.exportDatasetService;
     this.columnNameOptions = new ColumnNameOptions(this.exportDatasetService);
     this.filename = dialogData.filename;
+
+    // Create form groups for the different steps in the dialog
+    this.selectColumnsForm = formBuilder.group({});
   }
 
   onClose(): void {
