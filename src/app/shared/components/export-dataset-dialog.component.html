@@ -19,13 +19,25 @@
   <mat-vertical-stepper linear>
     <!-- Select columns to export -->
     <mat-step [stepControl]="selectColumnsForm" [editable]="true">
-      <ng-template matStepLabel>
-        Select columns to be included in the export
-      </ng-template>
-      <form [formGroup]="selectColumnsForm" class="select-columns-form">
+      <ng-template matStepLabel>Select columns</ng-template>
+      <form [formGroup]="selectColumnsForm" class="step-form">
+        <p>Please select the columns to be included in the export.</p>
         <mvtool-selection-list
           [options]="columnNameOptions"
         ></mvtool-selection-list>
+      </form>
+    </mat-step>
+
+    <!-- Choose filename for export -->
+    <mat-step [stepControl]="chooseFilenameForm">
+      <ng-template matStepLabel>Choose filename</ng-template>
+      <form [formGroup]="chooseFilenameForm" class="step-form fx-column">
+        <p>Please choose a filename for the export file.</p>
+        <mat-form-field appearance="fill">
+          <mat-label>Filename</mat-label>
+          <input matInput formControlName="filenameInput" required />
+          <div matSuffix class="suffix">.xlsx</div>
+        </mat-form-field>
       </form>
     </mat-step>
   </mat-vertical-stepper>
