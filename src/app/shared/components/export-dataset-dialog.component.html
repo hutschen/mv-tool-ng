@@ -25,6 +25,16 @@
         <mvtool-selection-list
           [options]="columnNameOptions"
         ></mvtool-selection-list>
+        <div class="fx-row fx-end-center">
+          <button
+            mat-button
+            matStepperNext
+            [disabled]="!selectColumnsForm.valid"
+          >
+            <mat-icon>arrow_forward</mat-icon>
+            Next
+          </button>
+        </div>
       </form>
     </mat-step>
 
@@ -38,6 +48,20 @@
           <input matInput formControlName="filenameInput" required />
           <div matSuffix class="suffix">.xlsx</div>
         </mat-form-field>
+        <div class="fx-row fx-end-center">
+          <button mat-button matStepperPrevious>
+            <mat-icon>arrow_back</mat-icon>
+            Back
+          </button>
+          <button
+            mat-button
+            matStepperNext
+            [disabled]="!chooseFilenameForm.valid"
+          >
+            <mat-icon>file_download</mat-icon>
+            Download
+          </button>
+        </div>
       </form>
     </mat-step>
 
