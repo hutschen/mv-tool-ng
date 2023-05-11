@@ -13,11 +13,51 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { IDownloadState } from '../services/download.service';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'mvtool-download',
-  template: ` <p>download works!</p> `,
+  template: `
+    <ng-container *ngIf="downloadState">
+      <strong>
+        <p *ngIf="downloadState.state == 'pending'">Preparing download</p>
+        <p *ngIf="downloadState.state != 'pending'">
+          {{ downloadState.progress }}% complete
+        </p>
+      </strong>
+      <mat-progress-bar
+        [mode]="downloadState.state == 'pending' ? 'buffer' : 'determinate'"
+        [value]="downloadState.progress"
+      >
+      </mat-progress-bar>
+    </ng-container>
+  `,
   styles: [],
 })
-export class DownloadComponent {}
+export class DownloadComponent implements OnInit, OnDestroy {
+  @Input() download$!: Observable<IDownloadState>;
+  protected _downloadSubscription?: Subscription;
+  downloadState?: IDownloadState;
+  fileUrl?: SafeResourceUrl;
+  protected _fileUrl?: string;
+
+  constructor(protected _domSanitizer: DomSanitizer) {}
+
+  ngOnInit(): void {
+    this._downloadSubscription = this.download$.subscribe((downloadState) => {
+      this.downloadState = downloadState;
+      if (this.downloadState.content) {
+        this._fileUrl = URL.createObjectURL(this.downloadState.content);
+        this.fileUrl = this._domSanitizer.bypassSecurityTrustUrl(this._fileUrl);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this._fileUrl) URL.revokeObjectURL(this._fileUrl);
+    this._downloadSubscription?.unsubscribe();
+  }
+}
