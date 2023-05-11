@@ -112,6 +112,10 @@ export class RequirementTableComponent implements OnInit {
         this._exportDatasetDialogService.openExportDatasetDialog(
           'Requirements',
           {
+            project_ids: this.project.id,
+            ...(await firstValueFrom(this.exportQueryParams$)),
+          },
+          {
             downloadDataset:
               this._requirementService.downloadRequirementsExcel.bind(
                 this._requirementService
@@ -120,7 +124,8 @@ export class RequirementTableComponent implements OnInit {
               this._requirementService.getRequirementsExcelColumnNames.bind(
                 this._requirementService
               ),
-          }
+          },
+          'requirements'
         );
       await firstValueFrom(dialogRef.afterClosed());
     } else {

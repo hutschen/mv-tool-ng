@@ -38,6 +38,7 @@ export interface IExportDatasetService {
 
 interface IExportDatasetDialogData {
   datasetName: string;
+  datasetQueryParams: IQueryParams;
   exportDatasetService: IExportDatasetService;
   filename: string;
 }
@@ -68,6 +69,7 @@ export class ExportDatasetDialogService {
 
   openExportDatasetDialog(
     datasetName: string,
+    datasetQueryParams: IQueryParams,
     exportDatasetService: IExportDatasetService,
     filename: string = 'export'
   ): MatDialogRef<ExportDatasetDialogComponent> {
@@ -75,6 +77,7 @@ export class ExportDatasetDialogService {
       width: '550px',
       data: {
         datasetName,
+        datasetQueryParams,
         exportDatasetService,
         filename,
       } as IExportDatasetDialogData,
@@ -93,6 +96,7 @@ export class ExportDatasetDialogService {
 })
 export class ExportDatasetDialogComponent {
   readonly datasetName: string;
+  readonly datasetQueryParams: IQueryParams;
   readonly exportDatasetService: IExportDatasetService;
   columnNameOptions!: Options;
   filename: string;
@@ -108,6 +112,7 @@ export class ExportDatasetDialogComponent {
     formBuilder: FormBuilder
   ) {
     this.datasetName = dialogData.datasetName;
+    this.datasetQueryParams = dialogData.datasetQueryParams;
     this.exportDatasetService = dialogData.exportDatasetService;
     this.columnNameOptions = new ColumnNameOptions(this.exportDatasetService);
     this.filename = dialogData.filename;
