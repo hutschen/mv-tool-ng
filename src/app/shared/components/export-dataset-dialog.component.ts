@@ -25,6 +25,7 @@ import { Observable, Subject, Subscription, of, switchMap } from 'rxjs';
 import { IOption, Options } from '../data/options';
 import {
   FormBuilder,
+  FormControl,
   FormGroup,
   ValidationErrors,
   Validators,
@@ -58,6 +59,14 @@ class ColumnNameOptions extends Options {
       .getColumnNames()
       .pipe(switchMap((columnNames) => this.getOptions(...columnNames)));
   }
+}
+
+function filenameValidator(control: FormControl): ValidationErrors | null {
+  const validFilenameRegex = /^[^\\/:*?"<>|]+$/; // Regex to validate filename
+  const isValid = validFilenameRegex.test(control.value);
+
+  // If the test is valid, return null, otherwise return an error object
+  return isValid ? null : { invalidFilename: { value: control.value } };
 }
 
 @Injectable({
@@ -98,7 +107,6 @@ export class ExportDatasetDialogComponent {
   readonly datasetQueryParams: IQueryParams;
   readonly exportDatasetService: IExportDatasetService;
   columnNameOptions!: Options;
-  filename: string;
 
   protected _downloadSubject = new Subject<IDownloadState>();
   protected _downloadSubscription?: Subscription;
@@ -117,7 +125,6 @@ export class ExportDatasetDialogComponent {
     this.datasetQueryParams = dialogData.datasetQueryParams;
     this.exportDatasetService = dialogData.exportDatasetService;
     this.columnNameOptions = new ColumnNameOptions(this.exportDatasetService);
-    this.filename = dialogData.filename;
 
     // Create form groups for the different steps in the dialog
     this.selectColumnsForm = formBuilder.group(
@@ -130,13 +137,20 @@ export class ExportDatasetDialogComponent {
       }
     );
     this.chooseFilenameForm = formBuilder.group({
-      filenameInput: ['', Validators.required],
+      filenameInput: [
+        dialogData.filename,
+        [Validators.required, filenameValidator],
+      ],
     });
 
     // Validate selectColumnsForm when columnNameOptions changes
     this.columnNameOptions.selectionChanged$.subscribe(() =>
       this.selectColumnsForm.updateValueAndValidity()
     );
+  }
+
+  get filename(): string {
+    return this.chooseFilenameForm.get('filenameInput')?.value + '.xlsx';
   }
 
   get downloadStarted(): boolean {
