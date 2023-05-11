@@ -21,8 +21,7 @@ import {
 } from '@angular/material/dialog';
 import { IQueryParams } from '../services/query-params.service';
 import { IDownloadState } from '../services/download.service';
-import { Observable, of, switchMap } from 'rxjs';
-import { SafeResourceUrl } from '@angular/platform-browser';
+import { Observable, Subject, Subscription, of, switchMap } from 'rxjs';
 import { IOption, Options } from '../data/options';
 import {
   FormBuilder,
@@ -100,7 +99,10 @@ export class ExportDatasetDialogComponent {
   readonly exportDatasetService: IExportDatasetService;
   columnNameOptions!: Options;
   filename: string;
-  downloadUrl?: SafeResourceUrl;
+
+  protected _downloadSubject = new Subject<IDownloadState>();
+  protected _downloadSubscription?: Subscription;
+  download$ = this._downloadSubject.asObservable();
 
   // Form groups for the different steps in the dialog
   selectColumnsForm: FormGroup;
@@ -137,7 +139,24 @@ export class ExportDatasetDialogComponent {
     );
   }
 
+  get downloadStarted(): boolean {
+    return this._downloadSubscription !== undefined;
+  }
+
+  onDownload(): void {
+    if (this.downloadStarted) return;
+
+    this._downloadSubscription = this.exportDatasetService
+      .downloadDataset(this.datasetQueryParams)
+      .subscribe({
+        next: (downloadState) => this._downloadSubject.next(downloadState),
+        error: (error) => this._downloadSubject.error(error),
+        complete: () => this._downloadSubject.complete(),
+      });
+  }
+
   onClose(): void {
     this._dialogRef.close();
+    this._downloadSubscription?.unsubscribe();
   }
 }

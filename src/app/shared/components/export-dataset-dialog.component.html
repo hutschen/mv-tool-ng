@@ -18,7 +18,7 @@
 <div mat-dialog-content>
   <mat-vertical-stepper linear>
     <!-- Select columns to export -->
-    <mat-step [stepControl]="selectColumnsForm">
+    <mat-step [stepControl]="selectColumnsForm" [editable]="!downloadStarted">
       <ng-template matStepLabel>Select columns</ng-template>
       <form [formGroup]="selectColumnsForm" class="step-form">
         <p>Please select the columns to be included in the export.</p>
@@ -39,7 +39,7 @@
     </mat-step>
 
     <!-- Choose filename for export -->
-    <mat-step [stepControl]="chooseFilenameForm">
+    <mat-step [stepControl]="chooseFilenameForm" [editable]="!downloadStarted">
       <ng-template matStepLabel>Choose filename</ng-template>
       <form [formGroup]="chooseFilenameForm" class="step-form fx-column">
         <p>Please choose a filename for the export file.</p>
@@ -57,6 +57,7 @@
             mat-button
             matStepperNext
             [disabled]="!chooseFilenameForm.valid"
+            (click)="onDownload()"
           >
             <mat-icon>file_download</mat-icon>
             Download
@@ -68,6 +69,9 @@
     <!-- Download file -->
     <mat-step>
       <ng-template matStepLabel>Download file</ng-template>
+      <div class="step-form">
+        <mvtool-download [download$]="download$" #download></mvtool-download>
+      </div>
     </mat-step>
   </mat-vertical-stepper>
 </div>
@@ -75,10 +79,10 @@
   <button mat-button (click)="onClose()">Cancel</button>
   <a
     mat-raised-button
-    [disabled]="!downloadUrl"
+    [disabled]="!download.fileUrl"
     color="accent"
-    [href]="downloadUrl"
-    [download]="filename"
+    [href]="download.fileUrl"
+    [download]="filename + '.xlsx'"
     (click)="onClose()"
   >
     <mat-icon>save</mat-icon>
