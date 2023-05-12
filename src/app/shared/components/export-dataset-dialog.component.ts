@@ -162,8 +162,19 @@ export class ExportDatasetDialogComponent {
   onDownload(): void {
     if (this.downloadStarted) return;
 
+    // Extract selected column names
+    const selectedColumns = this.columnNameOptions.selection.map(
+      (option) => option.value as string
+    );
+
+    // Compose query params for download
+    const queryParams: IQueryParams =
+      selectedColumns.length > 0
+        ? { ...this.datasetQueryParams, hidden_columns: selectedColumns }
+        : this.datasetQueryParams;
+
     this._downloadSubscription = this.exportDatasetService
-      .downloadDataset(this.datasetQueryParams)
+      .downloadDataset(queryParams)
       .subscribe({
         next: (downloadState) => this._downloadSubject.next(downloadState),
         error: (error) => this._downloadSubject.error(error),
