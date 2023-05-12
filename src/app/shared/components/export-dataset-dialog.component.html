@@ -23,7 +23,9 @@
       <form [formGroup]="selectColumnsForm" class="step-form">
         <p>Please select the columns to be included in the export.</p>
         <mvtool-selection-list
+          #columnSelectionList
           [options]="columnNameOptions"
+          [invertSelection]="true"
         ></mvtool-selection-list>
         <div class="fx-row fx-end-center">
           <button

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject, Injectable } from '@angular/core';
+import { Component, Inject, Injectable, ViewChild } from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialog,
@@ -30,6 +30,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
+import { SelectionListComponent } from './selection-list.component';
 
 export interface IExportDatasetService {
   downloadDataset(params: IQueryParams): Observable<IDownloadState>;
@@ -116,6 +117,9 @@ export class ExportDatasetDialogComponent {
   selectColumnsForm: FormGroup;
   chooseFilenameForm: FormGroup;
 
+  @ViewChild('columnSelectionList')
+  columnSelectionList?: SelectionListComponent;
+
   constructor(
     protected _dialogRef: MatDialogRef<ExportDatasetDialogComponent>,
     @Inject(MAT_DIALOG_DATA) dialogData: IExportDatasetDialogData,
@@ -131,9 +135,7 @@ export class ExportDatasetDialogComponent {
       {},
       {
         validators: (): ValidationErrors | null =>
-          this.columnNameOptions.selection.length >= 1
-            ? null
-            : { selection: false },
+          this.columnSelectionList?.isAllSelected ? { selection: false } : null,
       }
     );
     this.chooseFilenameForm = formBuilder.group({
