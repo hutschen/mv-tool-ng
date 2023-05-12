@@ -48,15 +48,15 @@ import {
     >
       <mat-list-option
         *ngIf="options.isMultipleSelection"
-        (click)="toggleSelectAll()"
-        [selected]="isAllSelected"
+        (click)="invertSelection ? toggleSelectNothing() : toggleSelectAll()"
+        [selected]="invertSelection ? isNothingSelected : isAllSelected"
       >
         Select all
       </mat-list-option>
       <mat-list-option
-        *ngFor="let option of loadedOptions"
+        *ngFor="let option of allOptions"
         [value]="option.value"
-        [selected]="options.isSelected(option)"
+        [selected]="options.isSelected(option) !== invertSelection"
         (click)="options.toggleOption(option)"
       >
         {{ option.label }}
@@ -70,22 +70,28 @@ import {
 })
 export class SelectionListComponent implements OnInit {
   @Input() options!: Options;
+  @Input() invertSelection = false;
   @Output() valueChange = new EventEmitter<any>();
   protected _valueSubject = new ReplaySubject<OptionValue[]>(1);
 
-  loadedOptions!: IOption[];
+  allOptions!: IOption[];
   isLoadingOptions = false;
 
   constructor() {}
 
   ngOnInit(): void {
+    // invertSelection flag can only be set on multiple selections
+    if (this.invertSelection && !this.options.isMultipleSelection) {
+      throw new Error('invertSelection can only be set on multiple selections');
+    }
+
     // Initially load all options
     this.isLoadingOptions = true && this.options.hasToLoad;
     this.options
       .getAllOptions()
       .pipe(finalize(() => (this.isLoadingOptions = false)))
       .subscribe((options) => {
-        this.loadedOptions = options;
+        this.allOptions = options;
       });
 
     // Set the incoming value
@@ -126,8 +132,23 @@ export class SelectionListComponent implements OnInit {
     this._valueSubject.next(toOptionValues(value));
   }
 
+  get isNothingSelected(): boolean {
+    return 0 === this.options.selection.length;
+  }
+
   get isAllSelected(): boolean {
-    return this.loadedOptions.length === this.options.selection.length;
+    return this.allOptions.length === this.options.selection.length;
+  }
+
+  toggleSelectNothing(): void | boolean {
+    if (!this.options.isMultipleSelection) {
+      return false;
+    }
+    if (this.isNothingSelected) {
+      this.options.setSelection(...this.allOptions);
+    } else {
+      this.options.clearSelection();
+    }
   }
 
   toggleSelectAll(): void | boolean {
@@ -137,7 +158,7 @@ export class SelectionListComponent implements OnInit {
     if (this.isAllSelected) {
       this.options.clearSelection();
     } else {
-      this.options.setSelection(...this.loadedOptions);
+      this.options.setSelection(...this.allOptions);
     }
   }
 }
