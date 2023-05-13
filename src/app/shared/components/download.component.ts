@@ -22,12 +22,10 @@ import { Observable, Subscription } from 'rxjs';
   selector: 'mvtool-download',
   template: `
     <ng-container *ngIf="downloadState">
-      <strong>
-        <p *ngIf="downloadState.state == 'pending'">Preparing download</p>
-        <p *ngIf="downloadState.state != 'pending'">
-          {{ downloadState.progress }}% complete
-        </p>
-      </strong>
+      <p *ngIf="downloadState.state === 'pending'">Preparing download</p>
+      <p *ngIf="downloadState.state !== 'pending'">
+        {{ downloadState.progress }}% complete
+      </p>
       <mat-progress-bar
         [mode]="downloadState.state == 'pending' ? 'buffer' : 'determinate'"
         [value]="downloadState.progress"
