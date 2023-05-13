@@ -133,21 +133,6 @@ export class RequirementTableComponent implements OnInit {
     }
   }
 
-  async onExportRequirementsExcel(): Promise<void> {
-    if (this.project) {
-      const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._requirementService.downloadRequirementsExcel({
-          project_ids: this.project.id,
-          ...(await firstValueFrom(this.exportQueryParams$)),
-        }),
-        'requirements.xlsx'
-      );
-      await firstValueFrom(dialogRef.afterClosed());
-    } else {
-      throw new Error('Project is undefined');
-    }
-  }
-
   async onImportRequirementsExcel(): Promise<void> {
     const dialogRef = this._uploadDialogService.openUploadDialog(
       (file: File) => {
