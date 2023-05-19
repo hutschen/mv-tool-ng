@@ -70,6 +70,24 @@ describe('CRUDService', () => {
     expect(sut.toAbsoluteUrl(relativeUrl)).toEqual(`${baseUrl}/${relativeUrl}`);
   });
 
+  it('should query items', (done: DoneFn) => {
+    sut.query('items').subscribe({
+      next: (value) => {
+        if (!Array.isArray(value)) {
+          value = value.items;
+        }
+        expect(value.length).toEqual(1);
+        expect(value[0]).toEqual(outputMock);
+      },
+      complete: () => done(),
+    });
+    const mockResponse = httpMock.expectOne({
+      method: 'get',
+      url: baseUrl + '/items',
+    });
+    mockResponse.flush([outputMock]);
+  });
+
   it('should list items', (done: DoneFn) => {
     sut.list_legacy('items').subscribe({
       next: (value) => {
