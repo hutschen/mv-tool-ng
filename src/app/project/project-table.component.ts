@@ -15,9 +15,7 @@
 
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Observable, firstValueFrom } from 'rxjs';
-import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { Project, ProjectService } from '../shared/services/project.service';
-import { ProjectDialogService } from './project-dialog.component';
 import { ProjectDataFrame } from '../shared/data/project/project-frame';
 import {
   IQueryParams,
