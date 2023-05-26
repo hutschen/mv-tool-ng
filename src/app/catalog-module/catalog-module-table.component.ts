@@ -31,6 +31,7 @@ import { DownloadDialogService } from '../shared/components/download-dialog.comp
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { CatalogModuleInteractionService } from '../shared/services/catalog-module-interaction.service';
+import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-module-table',
@@ -56,6 +57,7 @@ export class CatalogModuleTableComponent implements OnInit {
     protected _uploadDialogService: UploadDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
+    protected _exportDatasetDialogService: ExportDatasetDialogService,
     readonly catalogModuleInteractions: CatalogModuleInteractionService
   ) {}
 
@@ -89,6 +91,33 @@ export class CatalogModuleTableComponent implements OnInit {
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
     ]);
+  }
+
+  async onExportCatalogModulesDataset() {
+    if (this.catalog) {
+      const dialogRef =
+        this._exportDatasetDialogService.openExportDatasetDialog(
+          'Catalog Modules',
+          {
+            catalog_ids: this.catalog.id,
+            ...(await firstValueFrom(this.exportQueryParams$)),
+          },
+          {
+            downloadDataset:
+              this._catalogModuleService.downloadCatalogModuleExcel.bind(
+                this._catalogModuleService
+              ),
+            getColumnNames:
+              this._catalogModuleService.getCatalogModuleExcelColumnNames.bind(
+                this._catalogModuleService
+              ),
+          },
+          'catalog_modules'
+        );
+      await firstValueFrom(dialogRef.afterClosed());
+    } else {
+      throw new Error('Catalog is undefined');
+    }
   }
 
   async onExportCatalogModulesExcel(): Promise<void> {
