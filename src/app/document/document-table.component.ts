@@ -115,21 +115,6 @@ export class DocumentTableComponent implements OnInit {
     }
   }
 
-  async onExportDocuments(): Promise<void> {
-    if (this.project) {
-      const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._documentService.downloadDocumentExcel({
-          project_ids: this.project.id,
-          ...(await firstValueFrom(this.exportQueryParams$)),
-        }),
-        'documents.xlsx'
-      );
-      await firstValueFrom(dialogRef.afterClosed());
-    } else {
-      throw new Error('Project is undefined');
-    }
-  }
-
   async onImportDocuments(): Promise<void> {
     const dialogRef = this._uploadDialogService.openUploadDialog(
       (file: File) => {
