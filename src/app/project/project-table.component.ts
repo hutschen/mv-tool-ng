@@ -99,16 +99,6 @@ export class ProjectTableComponent implements OnInit {
     await firstValueFrom(dialogRef.afterClosed());
   }
 
-  async onExportProjectsExcel(): Promise<void> {
-    const dialogRef = this._downloadDialogService.openDownloadDialog(
-      this._projectService.downloadProjectsExcel({
-        ...(await firstValueFrom(this.exportQueryParams$)),
-      }),
-      'projects.xlsx'
-    );
-    await firstValueFrom(dialogRef.afterClosed());
-  }
-
   async onImportProjectsExcel(): Promise<void> {
     const dialogRef = this._uploadDialogService.openUploadDialog(
       (file: File) => {
