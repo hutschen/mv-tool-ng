@@ -27,6 +27,7 @@ import { UploadDialogService } from '../shared/components/upload-dialog.componen
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { ProjectInteractionService } from '../shared/services/project-interaction.service';
+import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
 
 @Component({
   selector: 'mvtool-project-table',
@@ -47,6 +48,7 @@ export class ProjectTableComponent implements OnInit {
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
+    protected _exportDatasetDialogService: ExportDatasetDialogService,
     readonly projectInteractions: ProjectInteractionService
   ) {}
 
@@ -78,6 +80,23 @@ export class ProjectTableComponent implements OnInit {
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
     ]);
+  }
+
+  async onExportProjectsDataset() {
+    const dialogRef = this._exportDatasetDialogService.openExportDatasetDialog(
+      'Projects',
+      await firstValueFrom(this.exportQueryParams$),
+      {
+        downloadDataset: this._projectService.downloadProjectsExcel.bind(
+          this._projectService
+        ),
+        getColumnNames: this._projectService.getProjectsExcelColumnNames.bind(
+          this._projectService
+        ),
+      },
+      'projects'
+    );
+    await firstValueFrom(dialogRef.afterClosed());
   }
 
   async onExportProjectsExcel(): Promise<void> {
