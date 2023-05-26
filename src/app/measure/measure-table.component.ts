@@ -118,21 +118,6 @@ export class MeasureTableComponent implements OnInit {
     }
   }
 
-  async onExportMeasures(): Promise<void> {
-    if (this.requirement) {
-      const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._measureService.downloadMeasureExcel({
-          requirement_ids: this.requirement.id,
-          ...(await firstValueFrom(this.exportQueryParams$)),
-        }),
-        'measure.xlsx'
-      );
-      await firstValueFrom(dialogRef.afterClosed());
-    } else {
-      throw new Error('Requirement is undefined');
-    }
-  }
-
   async onImportMeasures(): Promise<void> {
     const dialogRef = this._uploadDialogService.openUploadDialog(
       (file: File) => {
