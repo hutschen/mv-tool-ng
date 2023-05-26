@@ -103,16 +103,6 @@ export class CatalogTableComponent implements OnInit {
     await firstValueFrom(dialogRef.afterClosed());
   }
 
-  async onExportCatalogs(): Promise<void> {
-    const dialogRef = this._downloadDialogService.openDownloadDialog(
-      this._catalogService.downloadCatalogExcel({
-        ...(await firstValueFrom(this.exportQueryParams$)),
-      }),
-      'catalogs.xlsx'
-    );
-    await firstValueFrom(dialogRef.afterClosed());
-  }
-
   async onImportCatalogs(): Promise<void> {
     const dialogRef = this._uploadDialogService.openUploadDialog(
       (file: File) => {
