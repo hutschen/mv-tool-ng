@@ -27,6 +27,7 @@ import { UploadDialogService } from '../shared/components/upload-dialog.componen
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { CatalogInteractionService } from '../shared/services/catalog-interaction.service';
+import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-table',
@@ -51,6 +52,7 @@ export class CatalogTableComponent implements OnInit {
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
+    protected _exportDatasetDialogService: ExportDatasetDialogService,
     readonly catalogInteractions: CatalogInteractionService
   ) {}
 
@@ -82,6 +84,23 @@ export class CatalogTableComponent implements OnInit {
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
     ]);
+  }
+
+  async onExportCatalogsDataset(): Promise<void> {
+    const dialogRef = this._exportDatasetDialogService.openExportDatasetDialog(
+      'Catalogs',
+      await firstValueFrom(this.exportQueryParams$),
+      {
+        downloadDataset: this._catalogService.downloadCatalogExcel.bind(
+          this._catalogService
+        ),
+        getColumnNames: this._catalogService.getCatalogExcelColumnNames.bind(
+          this._catalogService
+        ),
+      },
+      'catalogs'
+    );
+    await firstValueFrom(dialogRef.afterClosed());
   }
 
   async onExportCatalogs(): Promise<void> {
