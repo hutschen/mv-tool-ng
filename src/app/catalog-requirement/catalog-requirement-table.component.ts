@@ -119,21 +119,6 @@ export class CatalogRequirementTableComponent implements OnInit {
     }
   }
 
-  async onExportCatalogRequirementsExcel(): Promise<void> {
-    if (this.catalogModule) {
-      const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._catalogRequirementService.downloadCatalogRequirementExcel({
-          catalog_module_ids: this.catalogModule.id,
-          ...(await firstValueFrom(this.exportQueryParams$)),
-        }),
-        'catalog-requirements.xlsx'
-      );
-      await firstValueFrom(dialogRef.afterClosed());
-    } else {
-      throw new Error('Catalog module is undefined');
-    }
-  }
-
   async onImportCatalogRequirementsExcel(): Promise<void> {
     const dialogRef = this._uploadDialogService.openUploadDialog(
       (file: File) => {
