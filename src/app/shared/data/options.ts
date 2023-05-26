@@ -106,12 +106,20 @@ export abstract class Options {
     return this.__selection.isMultipleSelection();
   }
 
+  get selection(): IOption[] {
+    return this.__selection.selected;
+  }
+
   abstract getOptions(...values: OptionValue[]): Observable<IOption[]>;
 
   abstract filterOptions(
     filter?: string | null,
     limit?: number
   ): Observable<IOption[]>;
+
+  getAllOptions(): Observable<IOption[]> {
+    return this.filterOptions();
+  }
 
   selectOptions(...options: IOption[]) {
     return this.__selection.select(...options);
@@ -121,8 +129,16 @@ export abstract class Options {
     return this.__selection.deselect(...options);
   }
 
+  toggleOption(option: IOption) {
+    return this.__selection.toggle(option);
+  }
+
   setSelection(...options: IOption[]) {
     return this.__selection.setSelection(...options);
+  }
+
+  isSelected(option: IOption) {
+    return this.__selection.isSelected(option);
   }
 
   clearSelection() {

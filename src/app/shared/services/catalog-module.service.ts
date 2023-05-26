@@ -150,6 +150,12 @@ export class CatalogModuleService {
     return this._download.download('excel/catalog-modules', params);
   }
 
+  getCatalogModuleExcelColumnNames(): Observable<string[]> {
+    return this._crud_str.query(
+      'excel/catalog-modules/column-names' //
+    ) as Observable<string[]>;
+  }
+
   uploadCatalogModuleExcel(file: File, params: IQueryParams) {
     return this._upload.upload('excel/catalog-modules', file, params);
   }

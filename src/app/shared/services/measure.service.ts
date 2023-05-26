@@ -244,6 +244,12 @@ export class MeasureService {
     return this._download.download('excel/measures', params);
   }
 
+  getMeasureExcelColumnNames(): Observable<string[]> {
+    return this._crud_str.query(
+      'excel/measures/column-names' //
+    ) as Observable<string[]>;
+  }
+
   uploadMeasureExcel(file: File, params: IQueryParams = {}) {
     return this._upload.upload('excel/measures', file, params);
   }

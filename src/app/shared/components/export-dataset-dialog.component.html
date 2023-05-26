@@ -1,0 +1,93 @@
+<!--
+ Copyright (C) 2023 Helmar Hutschenreuter
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+ 
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<div mat-dialog-title>Export {{ datasetName }}</div>
+<div mat-dialog-content>
+  <mat-vertical-stepper linear>
+    <!-- Select columns to export -->
+    <mat-step [stepControl]="selectColumnsForm" [editable]="!downloadStarted">
+      <ng-template matStepLabel>Select columns</ng-template>
+      <form [formGroup]="selectColumnsForm" class="step-form">
+        <p>Please select the columns to be included in the export.</p>
+        <mvtool-selection-list
+          #columnSelectionList
+          [options]="columnNameOptions"
+          [invertSelection]="true"
+        ></mvtool-selection-list>
+        <div class="fx-row fx-end-center">
+          <button
+            mat-button
+            matStepperNext
+            [disabled]="!selectColumnsForm.valid"
+          >
+            <mat-icon>arrow_forward</mat-icon>
+            Next
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <!-- Choose filename for export -->
+    <mat-step [stepControl]="chooseFilenameForm" [editable]="!downloadStarted">
+      <ng-template matStepLabel>Choose filename</ng-template>
+      <form [formGroup]="chooseFilenameForm" class="step-form fx-column">
+        <p>Please choose a filename for the export file.</p>
+        <mat-form-field appearance="fill">
+          <mat-label>Filename</mat-label>
+          <input matInput formControlName="filenameInput" required />
+          <div matSuffix class="suffix">.xlsx</div>
+        </mat-form-field>
+        <div class="fx-row fx-end-center">
+          <button mat-button matStepperPrevious>
+            <mat-icon>arrow_back</mat-icon>
+            Back
+          </button>
+          <button
+            mat-button
+            matStepperNext
+            [disabled]="!chooseFilenameForm.valid"
+            (click)="onDownload()"
+          >
+            <mat-icon>file_download</mat-icon>
+            Download
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <!-- Download file -->
+    <mat-step>
+      <ng-template matStepLabel>Download file</ng-template>
+      <div class="step-form">
+        <mvtool-download [download$]="download$" #download></mvtool-download>
+      </div>
+    </mat-step>
+  </mat-vertical-stepper>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onClose()">Cancel</button>
+  <a
+    mat-raised-button
+    [disabled]="!download.fileUrl"
+    color="accent"
+    [href]="download.fileUrl"
+    [download]="filename"
+    (click)="onClose()"
+  >
+    <mat-icon>save</mat-icon>
+    Save file
+  </a>
+</div>

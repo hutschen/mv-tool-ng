@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { forkJoin, take } from 'rxjs';
+import { Observable, Subject, firstValueFrom, forkJoin, take } from 'rxjs';
 import {
   StaticOptions,
   StringOptions,
@@ -164,6 +164,14 @@ describe('StaticOptions', () => {
     expect(instance2.isMultipleSelection).toBe(true);
   });
 
+  it('should provide the current selection', () => {
+    const instance = new StaticOptions(sampleOptions);
+    expect(instance.selection).toEqual([]);
+
+    instance.selectOptions(sampleOptions[0]);
+    expect(instance.selection).toEqual([sampleOptions[0]]);
+  });
+
   it('should get options by values', (done) => {
     const instance = new StaticOptions(sampleOptions);
     instance.getOptions(1, 3).subscribe((options) => {
@@ -192,6 +200,14 @@ describe('StaticOptions', () => {
     const instance = new StaticOptions(sampleOptions);
     instance.filterOptions().subscribe((filteredOptions) => {
       expect(filteredOptions).toEqual(sampleOptions);
+      done();
+    });
+  });
+
+  it('should get all options', (done) => {
+    const instance = new StaticOptions(sampleOptions);
+    instance.getAllOptions().subscribe((options) => {
+      expect(options).toEqual(sampleOptions);
       done();
     });
   });
@@ -227,6 +243,19 @@ describe('StaticOptions', () => {
     instance.deselectOptions(sampleOptions[2]);
   });
 
+  it('should toggle an option', () => {
+    const instance = new StaticOptions(sampleOptions, true);
+    expect(instance.isSelected(sampleOptions[0])).toBeFalse();
+
+    // Select the first option using toggle
+    instance.toggleOption(sampleOptions[0]);
+    expect(instance.isSelected(sampleOptions[0])).toBeTrue();
+
+    // Deselect the first option using toggle
+    instance.toggleOption(sampleOptions[0]);
+    expect(instance.isSelected(sampleOptions[0])).toBeFalse();
+  });
+
   it('should set the selection', (done) => {
     const instance = new StaticOptions(sampleOptions, true);
 
@@ -240,6 +269,14 @@ describe('StaticOptions', () => {
     });
 
     instance.setSelection(sampleOptions[1]);
+  });
+
+  it('should indicate if an option is selected', () => {
+    const instance = new StaticOptions(sampleOptions, true);
+    expect(instance.isSelected(sampleOptions[0])).toBeFalse();
+
+    instance.selectOptions(sampleOptions[0]);
+    expect(instance.isSelected(sampleOptions[0])).toBeTrue();
   });
 
   it('should clear the selection', (done) => {

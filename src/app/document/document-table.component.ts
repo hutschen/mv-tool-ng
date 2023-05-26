@@ -28,6 +28,7 @@ import { HideColumnsDialogService } from '../shared/components/hide-columns-dial
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { DocumentInteractionService } from '../shared/services/document-interaction.service';
+import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
 
 @Component({
   selector: 'mvtool-document-table',
@@ -52,6 +53,7 @@ export class DocumentTableComponent implements OnInit {
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
+    protected _exportDatasetDialogService: ExportDatasetDialogService,
     readonly documentInteractions: DocumentInteractionService
   ) {}
 
@@ -87,15 +89,26 @@ export class DocumentTableComponent implements OnInit {
     ]);
   }
 
-  async onExportDocuments(): Promise<void> {
+  async onExportDocumentsDataset() {
     if (this.project) {
-      const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._documentService.downloadDocumentExcel({
-          project_ids: this.project.id,
-          ...(await firstValueFrom(this.exportQueryParams$)),
-        }),
-        'documents.xlsx'
-      );
+      const dialogRef =
+        this._exportDatasetDialogService.openExportDatasetDialog(
+          'Documents',
+          {
+            project_ids: this.project.id,
+            ...(await firstValueFrom(this.exportQueryParams$)),
+          },
+          {
+            downloadDataset: this._documentService.downloadDocumentExcel.bind(
+              this._documentService
+            ),
+            getColumnNames:
+              this._documentService.getDocumentExcelColumnNames.bind(
+                this._documentService
+              ),
+          },
+          'documents'
+        );
       await firstValueFrom(dialogRef.afterClosed());
     } else {
       throw new Error('Project is undefined');

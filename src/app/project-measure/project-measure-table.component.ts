@@ -33,6 +33,7 @@ import { TargetObjectService } from '../shared/services/target-object.service';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { MeasureInteractionService } from '../shared/services/measure-interaction.service';
+import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
 
 @Component({
   selector: 'mvtool-project-measure-table',
@@ -62,6 +63,7 @@ export class ProjectMeasureTableComponent implements OnInit {
     protected _documentService: DocumentService,
     protected _downloadDialogService: DownloadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
+    protected _exportDatasetDialogService: ExportDatasetDialogService,
     readonly measureInteractions: MeasureInteractionService
   ) {}
 
@@ -103,19 +105,21 @@ export class ProjectMeasureTableComponent implements OnInit {
     ]);
   }
 
-  async onExportMeasures(): Promise<void> {
-    if (this.project) {
-      const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._measureService.downloadMeasureExcel({
-          project_ids: this.project.id,
-          ...(await firstValueFrom(this.exportQueryParams$)),
-        }),
-        'measure.xlsx'
-      );
-      await firstValueFrom(dialogRef.afterClosed());
-    } else {
-      throw new Error('Requirement is undefined');
-    }
+  async onExportMeasuresDataset() {
+    const dialogRef = this._exportDatasetDialogService.openExportDatasetDialog(
+      'Measures',
+      await firstValueFrom(this.exportQueryParams$),
+      {
+        downloadDataset: this._measureService.downloadMeasureExcel.bind(
+          this._measureService
+        ),
+        getColumnNames: this._measureService.getMeasureExcelColumnNames.bind(
+          this._measureService
+        ),
+      },
+      'measures'
+    );
+    await firstValueFrom(dialogRef.afterClosed());
   }
 
   onHideColumns(): void {
