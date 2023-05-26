@@ -122,21 +122,6 @@ export class ProjectMeasureTableComponent implements OnInit {
     await firstValueFrom(dialogRef.afterClosed());
   }
 
-  async onExportMeasures(): Promise<void> {
-    if (this.project) {
-      const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._measureService.downloadMeasureExcel({
-          project_ids: this.project.id,
-          ...(await firstValueFrom(this.exportQueryParams$)),
-        }),
-        'measure.xlsx'
-      );
-      await firstValueFrom(dialogRef.afterClosed());
-    } else {
-      throw new Error('Requirement is undefined');
-    }
-  }
-
   onHideColumns(): void {
     this._hideColumnsDialogService.openHideColumnsDialog(
       this.dataFrame.columns
