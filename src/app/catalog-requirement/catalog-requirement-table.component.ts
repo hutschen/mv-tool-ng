@@ -31,6 +31,7 @@ import { UploadDialogService } from '../shared/components/upload-dialog.componen
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { CatalogRequirementInteractionService } from '../shared/services/catalog-requirement-interaction.service';
+import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-requirement-table',
@@ -55,6 +56,7 @@ export class CatalogRequirementTableComponent implements OnInit {
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
+    protected _exportDatasetDialogService: ExportDatasetDialogService,
     readonly catalogRequirementInteractions: CatalogRequirementInteractionService
   ) {}
 
@@ -88,6 +90,33 @@ export class CatalogRequirementTableComponent implements OnInit {
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
     ]);
+  }
+
+  async onExportCatalogRequirementsDataset() {
+    if (this.catalogModule) {
+      const dialogRef =
+        this._exportDatasetDialogService.openExportDatasetDialog(
+          'Catalog Requirements',
+          {
+            catalog_module_ids: this.catalogModule.id,
+            ...(await firstValueFrom(this.exportQueryParams$)),
+          },
+          {
+            downloadDataset:
+              this._catalogRequirementService.downloadCatalogRequirementExcel.bind(
+                this._catalogRequirementService
+              ),
+            getColumnNames:
+              this._catalogRequirementService.getCatalogRequirementExcelColumnNames.bind(
+                this._catalogRequirementService
+              ),
+          },
+          'catalog-requirements'
+        );
+      await firstValueFrom(dialogRef.afterClosed());
+    } else {
+      throw new Error('Catalog module is undefined');
+    }
   }
 
   async onExportCatalogRequirementsExcel(): Promise<void> {
