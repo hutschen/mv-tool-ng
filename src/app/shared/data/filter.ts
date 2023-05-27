@@ -72,11 +72,6 @@ export class FilterByPattern {
   }
 }
 
-export interface IFilterOption {
-  label: string;
-  value: string | number;
-}
-
 export class FilterByValues {
   protected _selectionSubject = new ReplaySubject<OptionValue[]>(1);
   readonly queryParams$: Observable<IQueryParams>;
