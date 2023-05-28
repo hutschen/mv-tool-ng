@@ -55,6 +55,23 @@ describe('FilterByPattern', () => {
     expect(sut.pattern).toEqual(initQueryParams[name]);
   });
 
+  it('should set negated', (done: DoneFn) => {
+    sut.negated = true;
+    sut.queryParams$.pipe(take(1)).subscribe((queryParams) => {
+      expect(queryParams).toEqual({
+        [name]: sut.pattern,
+        [`neg_${name}`]: true,
+      });
+      done();
+    });
+  });
+
+  it('should get negated', () => {
+    expect(sut.negated).toBeFalse();
+    sut.negated = true;
+    expect(sut.negated).toBeTrue();
+  });
+
   it('should clear pattern', (done: DoneFn) => {
     sut.clear();
     sut.queryParams$.pipe(take(1)).subscribe((queryParams) => {
