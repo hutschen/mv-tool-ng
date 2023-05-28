@@ -36,7 +36,7 @@ describe('FilterByPattern', () => {
 
   it('should be created', (done: DoneFn) => {
     // Test if initial query params are loaded
-    sut.queryParams$.subscribe((queryParams) => {
+    sut.queryParams$.pipe(take(1)).subscribe((queryParams) => {
       expect(queryParams).toEqual(initQueryParams);
       done();
     });
@@ -45,7 +45,7 @@ describe('FilterByPattern', () => {
   it('should set pattern', (done: DoneFn) => {
     const pattern = 'a new pattern';
     sut.pattern = pattern;
-    sut.queryParams$.subscribe((queryParams) => {
+    sut.queryParams$.pipe(take(1)).subscribe((queryParams) => {
       expect(queryParams).toEqual({ [name]: pattern });
       done();
     });
@@ -57,7 +57,7 @@ describe('FilterByPattern', () => {
 
   it('should clear pattern', (done: DoneFn) => {
     sut.clear();
-    sut.queryParams$.subscribe((queryParams) => {
+    sut.queryParams$.pipe(take(1)).subscribe((queryParams) => {
       expect(queryParams).toEqual({});
       done();
     });
@@ -120,7 +120,7 @@ describe('FilterForExistence', () => {
 
   it('should be created', (done: DoneFn) => {
     // Test if initial query params are loaded
-    sut.queryParams$.subscribe((queryParams) => {
+    sut.queryParams$.pipe(take(1)).subscribe((queryParams) => {
       expect(queryParams).toEqual(initQueryParams);
       done();
     });
@@ -128,13 +128,13 @@ describe('FilterForExistence', () => {
 
   it('should set exists', (done: DoneFn) => {
     sut.exists = false;
-    combineLatest([sut.exists$, sut.queryParams$]).subscribe(
-      ([exists, queryParams]) => {
+    combineLatest([sut.exists$, sut.queryParams$])
+      .pipe(take(1))
+      .subscribe(([exists, queryParams]) => {
         expect(exists).toBe(false);
         expect(queryParams).toEqual({ [name]: false });
         done();
-      }
-    );
+      });
   });
 
   it('should get exists', () => {
@@ -143,13 +143,13 @@ describe('FilterForExistence', () => {
 
   it('should clear exists', (done: DoneFn) => {
     sut.clear();
-    combineLatest([sut.exists$, sut.queryParams$]).subscribe(
-      ([exits, queryParams]) => {
+    combineLatest([sut.exists$, sut.queryParams$])
+      .pipe(take(1))
+      .subscribe(([exits, queryParams]) => {
         expect(exits).toBeNull();
         expect(queryParams).toEqual({});
         done();
-      }
-    );
+      });
   });
 });
 
@@ -198,7 +198,7 @@ describe('Filters', () => {
       by_values: ['a', 'b'],
       for_existence: true,
     };
-    sut.queryParams$.subscribe((params) => {
+    sut.queryParams$.pipe(take(1)).subscribe((params) => {
       expect(params).toEqual(queryParams);
       done();
     });
@@ -208,7 +208,7 @@ describe('Filters', () => {
   });
 
   it('should indicate if at least one filter is set', (done: DoneFn) => {
-    sut.isSet$.subscribe((isSet) => {
+    sut.isSet$.pipe(take(1)).subscribe((isSet) => {
       expect(isSet).toBeTrue();
       done();
     });
@@ -218,7 +218,7 @@ describe('Filters', () => {
   });
 
   it('should indicate if no filters are set', (done: DoneFn) => {
-    sut.isSet$.subscribe((isSet) => {
+    sut.isSet$.pipe(take(1)).subscribe((isSet) => {
       expect(isSet).toBeFalse();
       done();
     });
