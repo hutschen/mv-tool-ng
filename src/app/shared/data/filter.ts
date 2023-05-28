@@ -74,6 +74,7 @@ export class FilterByPattern {
 
 export class FilterByValues {
   protected _selectionSubject = new ReplaySubject<OptionValue[]>(1);
+  protected _negatedSubject: BehaviorSubject<boolean>;
   readonly queryParams$: Observable<IQueryParams>;
   readonly isSet$: Observable<boolean>;
 
@@ -88,9 +89,12 @@ export class FilterByValues {
       .pipe(map((options) => options.map((o) => o.value)))
       .subscribe((values) => this._selectionSubject.next(values));
 
+    const initialState = this.__evalQueryParams(initQueryParams);
+    this._negatedSubject = new BehaviorSubject<boolean>(initialState.negated);
+
     // Set initial selection
     this.options
-      .getOptions(...this.__evalQueryParams(initQueryParams))
+      .getOptions(...initialState.values)
       .pipe(
         takeUntil(this.options.selectionChanged$),
         withLatestFrom(this.options.selection$)
@@ -106,26 +110,54 @@ export class FilterByValues {
       });
 
     // Define queryParams$ and isSet$ observables
-    this.queryParams$ = this._selectionSubject.pipe(
-      map((values) => (values.length > 0 ? { [this.name]: values } : {}))
+    this.queryParams$ = combineLatest([
+      this._selectionSubject,
+      this._negatedSubject,
+    ]).pipe(
+      map(([values, negated]) => {
+        if (values.length) {
+          const queryParams: IQueryParams = { [this.name]: values };
+          if (negated) {
+            queryParams[`neg_${this.name}`] = true;
+          }
+          return queryParams;
+        }
+        return {};
+      })
     );
     this.isSet$ = this._selectionSubject.pipe(
-      map((values) => values.length > 0),
+      map((values) => 0 < values.length),
       distinctUntilChanged()
     );
   }
 
-  private __evalQueryParams(queryParams: IQueryParams): OptionValue[] {
+  private __evalQueryParams(queryParams: IQueryParams): {
+    values: OptionValue[];
+    negated: boolean;
+  } {
+    // Get initial negation state from query params
+    const negated = queryParams[`neg_${this.name}`] === true;
+
+    // Get initial selection from query params
     const rawValue = queryParams[this.name];
     if (rawValue !== undefined) {
       const values = Array.isArray(rawValue) ? rawValue : [rawValue];
       if (values.every((v) => typeof v === this.__queryParamType)) {
-        return values;
+        return { values, negated };
       } else if ('string' === this.__queryParamType) {
-        return values.map((v) => String(v));
+        return { values: values.map((v) => String(v)), negated };
       }
     }
-    return [];
+
+    return { values: [], negated };
+  }
+
+  set negated(negated: boolean) {
+    this._negatedSubject.next(negated);
+  }
+
+  get negated(): boolean {
+    return this._negatedSubject.value;
   }
 
   clear(): void {
