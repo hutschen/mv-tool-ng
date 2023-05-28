@@ -13,22 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import {
-  BehaviorSubject,
-  combineLatest,
-  Observable,
-  skip,
-  Subject,
-  take,
-  withLatestFrom,
-} from 'rxjs';
+import { combineLatest, Subject, take } from 'rxjs';
 import { IQueryParams } from '../services/query-params.service';
 import {
   FilterByPattern,
   FilterByValues,
   FilterForExistence,
   Filters,
-  IFilterOption,
 } from './filter';
 import { StaticOptions } from './options';
 
