@@ -35,10 +35,13 @@ import { FilterByValues } from '../data/filter';
         label="Selected values"
         placeholder="Search value ..."
       ></mvtool-options-input>
+      <mat-slide-toggle [(ngModel)]="filter.negated" class="negate-toggle">
+        Invert filter
+      </mat-slide-toggle>
     </div>
   `,
   styleUrls: ['../styles/flex.scss'],
-  styles: [],
+  styles: ['.negate-toggle { text-align: right; margin: -8px 0 16px 0;}'],
 })
 export class FilterByValuesComponent {
   @Input() filter!: FilterByValues;
