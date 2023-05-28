@@ -112,6 +112,23 @@ describe('FilterByValues', () => {
       });
   });
 
+  it('should set negated', (done: DoneFn) => {
+    sut.negated = true;
+    sut.queryParams$.pipe(take(1)).subscribe((queryParams) => {
+      expect(queryParams).toEqual({
+        [name]: initValues,
+        [`neg_${name}`]: true,
+      });
+      done();
+    });
+  });
+
+  it('should get negated', () => {
+    expect(sut.negated).toBeFalse();
+    sut.negated = true;
+    expect(sut.negated).toBeTrue();
+  });
+
   it('should clear selection', (done: DoneFn) => {
     sut.clear();
     combineLatest([sut.isSet$, sut.queryParams$])
