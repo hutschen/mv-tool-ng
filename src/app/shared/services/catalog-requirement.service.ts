@@ -184,6 +184,12 @@ export class CatalogRequirementService {
     return this._download.download('excel/catalog-requirements', params);
   }
 
+  getCatalogRequirementExcelColumnNames(): Observable<string[]> {
+    return this._crud_str.query(
+      'excel/catalog-requirements/column-names'
+    ) as Observable<string[]>;
+  }
+
   uploadCatalogRequirementExcel(file: File, params: IQueryParams = {}) {
     return this._upload.upload('excel/catalog-requirements', file, params);
   }

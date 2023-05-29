@@ -30,12 +30,10 @@ import { NgForm, NgModel } from '@angular/forms';
   template: `
     <!-- Title -->
     <div mat-dialog-title>
-      <h1>
-        <span *ngIf="createMode">Create</span>
-        <span *ngIf="!createMode">Edit</span>
-        <span>&nbsp;</span>
-        <span>{{ objectName }}</span>
-      </h1>
+      <span *ngIf="createMode">Create</span>
+      <span *ngIf="!createMode">Edit</span>
+      <span>&nbsp;</span>
+      <span>{{ objectName }}</span>
     </div>
 
     <!-- Content -->
@@ -77,6 +75,7 @@ export class CreateEditDialogComponent implements AfterViewInit {
   @ContentChildren(NgModel, { descendants: true }) models?: QueryList<NgModel>;
 
   constructor() {}
+
   ngAfterViewInit(): void {
     // add models to form, see https://stackoverflow.com/a/42145570
     this.models?.forEach((model) => {

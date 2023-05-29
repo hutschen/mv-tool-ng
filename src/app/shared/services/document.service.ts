@@ -144,6 +144,12 @@ export class DocumentService {
     return this._download.download('excel/documents', params);
   }
 
+  getDocumentExcelColumnNames(): Observable<string[]> {
+    return this._crud_str.query(
+      'excel/documents/column-names' //
+    ) as Observable<string[]>;
+  }
+
   uploadDocumentExcel(file: File, params: IQueryParams = {}) {
     return this._upload.upload('excel/documents', file, params);
   }

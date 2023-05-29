@@ -30,7 +30,7 @@ import { OptionValue, Options, isSelectionChanged } from './options';
 
 export class FilterByPattern {
   protected _patternSubject: BehaviorSubject<string>;
-  readonly pattern$: Observable<string>;
+  protected _negatedSubject: BehaviorSubject<boolean>;
   readonly queryParams$: Observable<IQueryParams>;
   readonly isSet$: Observable<boolean>;
 
@@ -38,25 +38,41 @@ export class FilterByPattern {
     public readonly name: string,
     initQueryParams: IQueryParams = {}
   ) {
-    // Get initial pattern
-    this._patternSubject = new BehaviorSubject<string>(
-      this.__evalQueryParams(initQueryParams)
-    );
+    const initialState = this.__evalQueryParams(initQueryParams);
+    this._patternSubject = new BehaviorSubject<string>(initialState.pattern);
+    this._negatedSubject = new BehaviorSubject<boolean>(initialState.negated);
 
     // Set observables
-    this.pattern$ = this._patternSubject.asObservable();
-    this.queryParams$ = this.pattern$.pipe(
-      map((pattern) => (pattern.length > 0 ? { [this.name]: pattern } : {}))
+    this.queryParams$ = combineLatest([
+      this._patternSubject,
+      this._negatedSubject,
+    ]).pipe(
+      map(([pattern, negated]) => {
+        if (pattern.length) {
+          const queryParams: IQueryParams = { [this.name]: pattern };
+          if (negated) {
+            queryParams[`neg_${this.name}`] = true;
+          }
+          return queryParams;
+        }
+        return {};
+      })
     );
-    this.isSet$ = this.pattern$.pipe(map((pattern) => pattern.length > 0));
+    this.isSet$ = this._patternSubject.pipe(
+      map((pattern) => pattern.length > 0)
+    );
   }
 
-  private __evalQueryParams(queryParams: IQueryParams): string {
+  private __evalQueryParams(queryParams: IQueryParams): {
+    pattern: string;
+    negated: boolean;
+  } {
+    const negated = queryParams[`neg_${this.name}`] === true;
     const pattern = queryParams[this.name];
     if (isString(pattern)) {
-      return pattern;
+      return { pattern, negated };
     }
-    return '';
+    return { pattern: '', negated };
   }
 
   set pattern(pattern: string) {
@@ -67,18 +83,22 @@ export class FilterByPattern {
     return this._patternSubject.value;
   }
 
+  set negated(negated: boolean) {
+    this._negatedSubject.next(negated);
+  }
+
+  get negated(): boolean {
+    return this._negatedSubject.value;
+  }
+
   clear(): void {
     this._patternSubject.next('');
   }
 }
 
-export interface IFilterOption {
-  label: string;
-  value: string | number;
-}
-
 export class FilterByValues {
   protected _selectionSubject = new ReplaySubject<OptionValue[]>(1);
+  protected _negatedSubject: BehaviorSubject<boolean>;
   readonly queryParams$: Observable<IQueryParams>;
   readonly isSet$: Observable<boolean>;
 
@@ -93,9 +113,12 @@ export class FilterByValues {
       .pipe(map((options) => options.map((o) => o.value)))
       .subscribe((values) => this._selectionSubject.next(values));
 
+    const initialState = this.__evalQueryParams(initQueryParams);
+    this._negatedSubject = new BehaviorSubject<boolean>(initialState.negated);
+
     // Set initial selection
     this.options
-      .getOptions(...this.__evalQueryParams(initQueryParams))
+      .getOptions(...initialState.values)
       .pipe(
         takeUntil(this.options.selectionChanged$),
         withLatestFrom(this.options.selection$)
@@ -111,26 +134,54 @@ export class FilterByValues {
       });
 
     // Define queryParams$ and isSet$ observables
-    this.queryParams$ = this._selectionSubject.pipe(
-      map((values) => (values.length > 0 ? { [this.name]: values } : {}))
+    this.queryParams$ = combineLatest([
+      this._selectionSubject,
+      this._negatedSubject,
+    ]).pipe(
+      map(([values, negated]) => {
+        if (values.length) {
+          const queryParams: IQueryParams = { [this.name]: values };
+          if (negated) {
+            queryParams[`neg_${this.name}`] = true;
+          }
+          return queryParams;
+        }
+        return {};
+      })
     );
     this.isSet$ = this._selectionSubject.pipe(
-      map((values) => values.length > 0),
+      map((values) => 0 < values.length),
       distinctUntilChanged()
     );
   }
 
-  private __evalQueryParams(queryParams: IQueryParams): OptionValue[] {
+  private __evalQueryParams(queryParams: IQueryParams): {
+    values: OptionValue[];
+    negated: boolean;
+  } {
+    // Get initial negation state from query params
+    const negated = queryParams[`neg_${this.name}`] === true;
+
+    // Get initial selection from query params
     const rawValue = queryParams[this.name];
     if (rawValue !== undefined) {
       const values = Array.isArray(rawValue) ? rawValue : [rawValue];
       if (values.every((v) => typeof v === this.__queryParamType)) {
-        return values;
+        return { values, negated };
       } else if ('string' === this.__queryParamType) {
-        return values.map((v) => String(v));
+        return { values: values.map((v) => String(v)), negated };
       }
     }
-    return [];
+
+    return { values: [], negated };
+  }
+
+  set negated(negated: boolean) {
+    this._negatedSubject.next(negated);
+  }
+
+  get negated(): boolean {
+    return this._negatedSubject.value;
   }
 
   clear(): void {

@@ -57,6 +57,7 @@ export class CRUDService<InputType, OutputType> {
     });
   }
 
+  // TODO: Remove this method when it is not used anymore
   list_legacy(
     relativeUrl: string,
     params: IQueryParams = {}

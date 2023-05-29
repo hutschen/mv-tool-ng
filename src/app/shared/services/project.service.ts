@@ -182,6 +182,12 @@ export class ProjectService {
     return this._download.download('excel/projects', params);
   }
 
+  getProjectsExcelColumnNames(): Observable<string[]> {
+    return this._crud_str.query(
+      'excel/projects/column-names' //
+    ) as Observable<string[]>;
+  }
+
   uploadProjectsExcel(file: File, params: IQueryParams = {}) {
     return this._upload.upload('excel/projects', file, params);
   }

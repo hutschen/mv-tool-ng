@@ -29,6 +29,7 @@ import { Requirement } from '../shared/services/requirement.service';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { MeasureInteractionService } from '../shared/services/measure-interaction.service';
+import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
 
 @Component({
   selector: 'mvtool-http-measure-table',
@@ -54,6 +55,7 @@ export class MeasureTableComponent implements OnInit {
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
+    protected _exportDatasetDialogService: ExportDatasetDialogService,
     readonly measureInteractions: MeasureInteractionService
   ) {}
 
@@ -90,15 +92,26 @@ export class MeasureTableComponent implements OnInit {
     ]);
   }
 
-  async onExportMeasures(): Promise<void> {
+  async onExportMeasuresDataset() {
     if (this.requirement) {
-      const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._measureService.downloadMeasureExcel({
-          requirement_ids: this.requirement.id,
-          ...(await firstValueFrom(this.exportQueryParams$)),
-        }),
-        'measure.xlsx'
-      );
+      const dialogRef =
+        this._exportDatasetDialogService.openExportDatasetDialog(
+          'Measures',
+          {
+            requirement_ids: this.requirement.id,
+            ...(await firstValueFrom(this.exportQueryParams$)),
+          },
+          {
+            downloadDataset: this._measureService.downloadMeasureExcel.bind(
+              this._measureService
+            ),
+            getColumnNames:
+              this._measureService.getMeasureExcelColumnNames.bind(
+                this._measureService
+              ),
+          },
+          'measures'
+        );
       await firstValueFrom(dialogRef.afterClosed());
     } else {
       throw new Error('Requirement is undefined');

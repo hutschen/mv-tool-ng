@@ -136,6 +136,12 @@ export class CatalogService {
     return this._download.download('excel/catalogs', params);
   }
 
+  getCatalogExcelColumnNames(): Observable<string[]> {
+    return this._crud_str.query(
+      'excel/catalogs/column-names' //
+    ) as Observable<string[]>;
+  }
+
   uploadCatalogExcel(file: File, params: IQueryParams = {}) {
     return this._upload.upload('excel/catalogs', file, params);
   }

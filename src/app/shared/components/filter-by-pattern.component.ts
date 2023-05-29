@@ -39,10 +39,13 @@ import { FilterByPattern } from '../data/filter';
           <mat-icon>close</mat-icon>
         </button>
       </mat-form-field>
+      <mat-slide-toggle [(ngModel)]="filter.negated" class="negate-toggle">
+        Invert filter
+      </mat-slide-toggle>
     </div>
   `,
   styleUrls: ['../styles/flex.scss'],
-  styles: [],
+  styles: ['.negate-toggle { text-align: right; margin: -8px 0 16px 0;}'],
 })
 export class FilterByPatternComponent {
   @Input() filter!: FilterByPattern;

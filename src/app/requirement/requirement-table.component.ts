@@ -36,6 +36,7 @@ import { MilestoneService } from '../shared/services/milestone.service';
 import { DataSelection } from '../shared/data/selection';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { RequirementInteractionService } from '../shared/services/requirement-interaction.service';
+import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -61,6 +62,7 @@ export class RequirementTableComponent implements OnInit {
     protected _catalogModuleService: CatalogModuleService,
     protected _milestoneService: MilestoneService,
     protected _targetObjectService: TargetObjectService,
+    protected _exportDatasetDialogService: ExportDatasetDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _requirementImportDialogService: RequirementImportDialogService,
@@ -104,15 +106,27 @@ export class RequirementTableComponent implements OnInit {
     ]);
   }
 
-  async onExportRequirementsExcel(): Promise<void> {
+  async onExportRequirementsDataset() {
     if (this.project) {
-      const dialogRef = this._downloadDialogService.openDownloadDialog(
-        this._requirementService.downloadRequirementsExcel({
-          project_ids: this.project.id,
-          ...(await firstValueFrom(this.exportQueryParams$)),
-        }),
-        'requirements.xlsx'
-      );
+      const dialogRef =
+        this._exportDatasetDialogService.openExportDatasetDialog(
+          'Requirements',
+          {
+            project_ids: this.project.id,
+            ...(await firstValueFrom(this.exportQueryParams$)),
+          },
+          {
+            downloadDataset:
+              this._requirementService.downloadRequirementsExcel.bind(
+                this._requirementService
+              ),
+            getColumnNames:
+              this._requirementService.getRequirementsExcelColumnNames.bind(
+                this._requirementService
+              ),
+          },
+          'requirements'
+        );
       await firstValueFrom(dialogRef.afterClosed());
     } else {
       throw new Error('Project is undefined');
