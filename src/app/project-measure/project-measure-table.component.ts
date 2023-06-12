@@ -108,7 +108,10 @@ export class ProjectMeasureTableComponent implements OnInit {
   async onExportMeasuresDataset() {
     const dialogRef = this._exportDatasetDialogService.openExportDatasetDialog(
       'Measures',
-      await firstValueFrom(this.exportQueryParams$),
+      {
+        project_ids: this.project.id,
+        ...(await firstValueFrom(this.exportQueryParams$)),
+      },
       {
         downloadDataset: this._measureService.downloadMeasureExcel.bind(
           this._measureService
