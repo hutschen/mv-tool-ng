@@ -21,7 +21,7 @@ import { Router } from '@angular/router';
   template: `
     <div class="content fx-column fx-center-center">
       <mat-card class="user-login-card margin-y padding-x-half padding-y-half">
-        <mvtool-user-login (loggedIn)="onLoggedIn()"></mvtool-user-login>
+        <mvtool-user-login></mvtool-user-login>
       </mat-card>
     </div>
   `,
@@ -30,10 +30,6 @@ import { Router } from '@angular/router';
 })
 export class UserLoginViewComponent implements OnInit {
   constructor(protected _router: Router) {}
-
-  onLoggedIn(): void {
-    this._router.navigate(['/']);
-  }
 
   ngOnInit(): void {}
 }
