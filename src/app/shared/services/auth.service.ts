@@ -97,6 +97,7 @@ export class AuthService {
   logOut() {
     if (this._storage.getItem(AuthService.STORAGE_KEY)) {
       this._storage.removeItem(AuthService.STORAGE_KEY);
+      this.redirectUrl = this._router.url;
     }
     this.loggedOut.emit();
   }
