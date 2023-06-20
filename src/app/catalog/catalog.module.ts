@@ -20,14 +20,16 @@ import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material/material.module';
 import { CatalogDialogComponent } from './catalog-dialog.component';
 import { CatalogDetailsComponent } from './catalog-details.component';
-import { RouterModule } from '@angular/router';
+import { CanActivateFn, RouterModule } from '@angular/router';
 import { AuthGuard } from '../shared/guards/auth.guard';
 import { CatalogViewComponent } from './catalog-view.component';
 
 const routes = [
   {
     path: 'catalogs',
-    canActivate: [() => inject(AuthGuard).canActivate()],
+    canActivate: [
+      (_, state) => inject(AuthGuard).canActivate(state),
+    ] as CanActivateFn[],
     component: CatalogViewComponent,
   },
 ];

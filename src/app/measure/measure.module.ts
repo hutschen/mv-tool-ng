@@ -33,7 +33,7 @@ const routes = [
   {
     path: 'requirements/:requirementId/measures',
     canActivate: [
-      () => inject(AuthGuard).canActivate(),
+      (_, state) => inject(AuthGuard).canActivate(state),
       (route) => inject(RequirementIdGuard).canActivate(route),
     ] as CanActivateFn[],
     component: MeasureViewComponent,

@@ -14,8 +14,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import {
+  ActivatedRouteSnapshot,
+  Router,
+  RouterStateSnapshot,
+} from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -23,10 +27,11 @@ import { AuthService } from '../services/auth.service';
 export class AuthGuard {
   constructor(protected _auth: AuthService, protected _router: Router) {}
 
-  canActivate(): boolean {
+  canActivate(state: RouterStateSnapshot): boolean {
     if (this._auth.isLoggedIn) {
       return true;
     } else {
+      this._auth.redirectUrl = state.url;
       this._router.navigate(['/login']);
       return false;
     }

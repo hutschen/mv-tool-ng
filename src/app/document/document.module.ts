@@ -29,7 +29,7 @@ const routes = [
   {
     path: 'projects/:projectId/documents',
     canActivate: [
-      () => inject(AuthGuard).canActivate(),
+      (_, state) => inject(AuthGuard).canActivate(state),
       (route) => inject(ProjectIdGuard).canActivate(route),
     ] as CanActivateFn[],
     component: DocumentViewComponent,
