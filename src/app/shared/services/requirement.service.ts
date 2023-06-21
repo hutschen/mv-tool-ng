@@ -208,6 +208,10 @@ export class RequirementService {
     return this._crud_requirement.delete(this.getRequirementUrl(requirementId));
   }
 
+  deleteRequirements(params: IQueryParams = {}): Observable<null> {
+    return this._crud_requirement.delete('requirements', params);
+  }
+
   getRequirementFieldNames(params: IQueryParams = {}) {
     return this._crud_str.query(
       'requirement/field-names',

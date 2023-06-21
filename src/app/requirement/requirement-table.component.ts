@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom, map } from 'rxjs';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { Project } from '../shared/services/project.service';
@@ -37,6 +37,12 @@ import { DataSelection } from '../shared/data/selection';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { RequirementInteractionService } from '../shared/services/requirement-interaction.service';
 import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogService,
+} from '../shared/components/confirm-dialog.component';
+import { MatDialogRef } from '@angular/material/dialog';
+import { isEmpty } from 'radash';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -52,6 +58,8 @@ export class RequirementTableComponent implements OnInit {
   marked!: DataSelection<Requirement>;
   expanded!: DataSelection<Requirement>;
   exportQueryParams$!: Observable<IQueryParams>;
+  bulkEditQueryParams$!: Observable<IQueryParams>;
+  bulkEditAll$!: Observable<boolean>;
   @Input() project!: Project;
   @Output() clickRequirement = new EventEmitter<Requirement>();
 
@@ -67,6 +75,7 @@ export class RequirementTableComponent implements OnInit {
     protected _uploadDialogService: UploadDialogService,
     protected _requirementImportDialogService: RequirementImportDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
+    protected _confirmDialogService: ConfirmDialogService,
     readonly requirementInteractions: RequirementInteractionService
   ) {}
 
@@ -104,6 +113,47 @@ export class RequirementTableComponent implements OnInit {
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
     ]);
+
+    // Define bulk edit query params
+    this.bulkEditQueryParams$ = combineQueryParams([
+      this.dataFrame.search.queryParams$,
+      this.dataFrame.columns.filterQueryParams$,
+    ]);
+
+    // Define bulk edit all flag
+    this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
+      map((queryParams) => isEmpty(queryParams))
+    );
+  }
+
+  async onDeleteRequirements() {
+    if (this.project) {
+      let dialogRef: MatDialogRef<ConfirmDialogComponent, boolean>;
+      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
+      if (isEmpty(queryParams)) {
+        dialogRef = this._confirmDialogService.openConfirmDialog(
+          'Delete all requirements?',
+          'Are you sure you want to delete all requirements in this project?'
+        );
+      } else {
+        dialogRef = this._confirmDialogService.openConfirmDialog(
+          'Delete filtered requirements?',
+          'Are you sure you want to delete all requirements that match the current filter?'
+        );
+      }
+      const confirm = await firstValueFrom(dialogRef.afterClosed());
+      if (confirm) {
+        await firstValueFrom(
+          this._requirementService.deleteRequirements({
+            project_ids: this.project.id,
+            ...queryParams,
+          })
+        );
+        this.dataFrame.reload();
+      }
+    } else {
+      throw new Error('Project is undefined');
+    }
   }
 
   async onExportRequirementsDataset() {
