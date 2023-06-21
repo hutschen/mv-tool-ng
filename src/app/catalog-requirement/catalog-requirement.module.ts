@@ -29,7 +29,7 @@ const routes = [
   {
     path: 'catalog-modules/:catalogModuleId/catalog-requirements',
     canActivate: [
-      () => inject(AuthGuard).canActivate(),
+      (_, state) => inject(AuthGuard).canActivate(state),
       (route) => inject(CatalogModuleIdGuard).canActivate(route),
     ] as CanActivateFn[],
     component: CatalogRequirementViewComponent,

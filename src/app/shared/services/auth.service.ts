@@ -18,6 +18,7 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UnauthorizedError } from '../errors';
+import { Router } from '@angular/router';
 
 export interface ICredentials {
   username: string;
@@ -34,10 +35,11 @@ export interface IAccessToken {
 })
 export class AuthService {
   static STORAGE_KEY = 'auth';
+  public redirectUrl: string = '/';
   loggedIn = new EventEmitter<void>();
   loggedOut = new EventEmitter<void>();
 
-  constructor(protected _httpClient: HttpClient) {}
+  constructor(protected _httpClient: HttpClient, protected _router: Router) {}
 
   logIn(credentials: ICredentials, keepLoggedIn = false): Observable<boolean> {
     // Prepare request form
@@ -50,7 +52,10 @@ export class AuthService {
     return this._httpClient
       .post<IAccessToken>(environment.authUrl, formData)
       .pipe(
-        tap((accessToken) => this.setAccessToken(accessToken, keepLoggedIn)),
+        tap((accessToken) => {
+          this.setAccessToken(accessToken, keepLoggedIn);
+          this._router.navigateByUrl(this.redirectUrl);
+        }),
         map(() => true),
         catchError((error) => {
           if (error instanceof HttpErrorResponse && error.status === 401) {
@@ -92,6 +97,7 @@ export class AuthService {
   logOut() {
     if (this._storage.getItem(AuthService.STORAGE_KEY)) {
       this._storage.removeItem(AuthService.STORAGE_KEY);
+      this.redirectUrl = this._router.url;
     }
     this.loggedOut.emit();
   }

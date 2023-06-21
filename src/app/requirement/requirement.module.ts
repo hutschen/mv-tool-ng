@@ -31,7 +31,7 @@ const routes = [
   {
     path: 'projects/:projectId/requirements',
     canActivate: [
-      () => inject(AuthGuard).canActivate(),
+      (_, state) => inject(AuthGuard).canActivate(state),
       (route) => inject(ProjectIdGuard).canActivate(route),
     ] as CanActivateFn[],
     component: RequirementViewComponent,

@@ -22,13 +22,15 @@ import { ProjectDialogComponent } from './project-dialog.component';
 import { JiraProjectModule } from '../jira-project/jira-project.module';
 import { ProjectDetailsComponent } from './project-details.component';
 import { ProjectViewComponent } from './project-view.component';
-import { RouterModule } from '@angular/router';
+import { CanActivateFn, RouterModule } from '@angular/router';
 import { AuthGuard } from '../shared/guards/auth.guard';
 
 const routes = [
   {
     path: 'projects',
-    canActivate: [() => inject(AuthGuard).canActivate()],
+    canActivate: [
+      (_, state) => inject(AuthGuard).canActivate(state),
+    ] as CanActivateFn[],
     component: ProjectViewComponent,
   },
 ];
