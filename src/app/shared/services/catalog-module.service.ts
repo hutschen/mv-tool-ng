@@ -131,6 +131,10 @@ export class CatalogModuleService {
     );
   }
 
+  deleteCatalogModules(params: IQueryParams): Observable<null> {
+    return this._crud_catalog_module.delete('catalog-modules', params);
+  }
+
   getCatalogModuleFieldNames(params: IQueryParams) {
     return this._crud_str.query(
       'catalog-module/field-names',

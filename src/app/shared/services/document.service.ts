@@ -126,6 +126,10 @@ export class DocumentService {
     return this._crud_document.delete(this.getDocumentUrl(documentId));
   }
 
+  deleteDocuments(params: IQueryParams = {}): Observable<null> {
+    return this._crud_document.delete('documents', params);
+  }
+
   getDocumentFieldNames(params: IQueryParams = {}) {
     return this._crud_str.query('document/field-names', params) as Observable<
       string[]

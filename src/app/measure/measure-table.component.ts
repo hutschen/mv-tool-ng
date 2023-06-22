@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom, map } from 'rxjs';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
@@ -30,6 +30,12 @@ import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { MeasureInteractionService } from '../shared/services/measure-interaction.service';
 import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
+import { MatDialogRef } from '@angular/material/dialog';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogService,
+} from '../shared/components/confirm-dialog.component';
+import { isEmpty } from 'radash';
 
 @Component({
   selector: 'mvtool-http-measure-table',
@@ -46,6 +52,8 @@ export class MeasureTableComponent implements OnInit {
   marked!: DataSelection<Measure>;
   expanded!: DataSelection<Measure>;
   exportQueryParams$!: Observable<IQueryParams>;
+  bulkEditQueryParams$!: Observable<IQueryParams>;
+  bulkEditAll$!: Observable<boolean>;
   @Input() requirement!: Requirement;
 
   constructor(
@@ -56,6 +64,7 @@ export class MeasureTableComponent implements OnInit {
     protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
     protected _exportDatasetDialogService: ExportDatasetDialogService,
+    protected _confirmDialogService: ConfirmDialogService,
     readonly measureInteractions: MeasureInteractionService
   ) {}
 
@@ -90,6 +99,47 @@ export class MeasureTableComponent implements OnInit {
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
     ]);
+
+    // Define bulk edit query params
+    this.bulkEditQueryParams$ = combineQueryParams([
+      this.dataFrame.search.queryParams$,
+      this.dataFrame.columns.filterQueryParams$,
+    ]);
+
+    // Define bulk edit all flag
+    this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
+      map((queryParams) => isEmpty(queryParams))
+    );
+  }
+
+  async onDeleteMeasures() {
+    if (this.requirement) {
+      let dialogRef: MatDialogRef<ConfirmDialogComponent, boolean>;
+      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
+      if (isEmpty(queryParams)) {
+        dialogRef = this._confirmDialogService.openConfirmDialog(
+          'Delete all measures?',
+          'Are you sure you want to delete all measures related to this requirement?'
+        );
+      } else {
+        dialogRef = this._confirmDialogService.openConfirmDialog(
+          'Delete filtered measures?',
+          'Are you sure you want to delete all measures that match the current filter?'
+        );
+      }
+      const confirmed = await firstValueFrom(dialogRef.afterClosed());
+      if (confirmed) {
+        await firstValueFrom(
+          this._measureService.deleteMeasures({
+            requirement_ids: this.requirement.id,
+            ...queryParams,
+          })
+        );
+        this.dataFrame.reload();
+      }
+    } else {
+      throw new Error('Requirement is undefined');
+    }
   }
 
   async onExportMeasuresDataset() {
