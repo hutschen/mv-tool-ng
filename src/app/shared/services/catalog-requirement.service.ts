@@ -165,6 +165,13 @@ export class CatalogRequirementService {
     );
   }
 
+  deleteCatalogRequirements(params: IQueryParams = {}): Observable<null> {
+    return this._crud_catalog_requirement.delete(
+      'catalog-requirements',
+      params
+    );
+  }
+
   getCatalogRequirementFieldNames(params: IQueryParams = {}) {
     return this._crud_str.query(
       'catalog-requirement/field-names',

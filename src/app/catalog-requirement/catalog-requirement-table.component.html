@@ -58,7 +58,13 @@
           [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
           (clearMarkers)="marked.clear()"
           [clearMarkersDisabled]="!marked.selected.length"
-        ></mvtool-table-options>
+        >
+          <button mat-menu-item (click)="onDeleteCatalogRequirements()">
+            <mat-icon>delete</mat-icon>
+            <span *ngIf="bulkEditAll$ | async">Delete all</span>
+            <span *ngIf="!(bulkEditAll$ | async)">Delete filtered</span>
+          </button>
+        </mvtool-table-options>
       </th>
       <td mat-cell *matCellDef="let catalogRequirement">
         <mvtool-table-row-options
