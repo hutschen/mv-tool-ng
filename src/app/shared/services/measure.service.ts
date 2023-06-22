@@ -229,6 +229,10 @@ export class MeasureService {
     return this._crud_measure.delete(this.getMeasureUrl(measureId));
   }
 
+  deleteMeasures(params: IQueryParams = {}): Observable<null> {
+    return this._crud_measure.delete('measures', params);
+  }
+
   getMeasureFieldNames(params: IQueryParams = {}) {
     return this._crud_str.query(
       'measure/field-names',
