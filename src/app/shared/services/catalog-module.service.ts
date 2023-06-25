@@ -27,6 +27,8 @@ export interface ICatalogModuleInput {
   description: string | null;
 }
 
+export type ICatalogModulePatch = Partial<ICatalogModuleInput>;
+
 export interface ICatalogModule extends ICatalogModuleInput {
   id: number;
   catalog: ICatalog;
@@ -123,6 +125,21 @@ export class CatalogModuleService {
     return this._crud_catalog_module
       .update(this.getCatalogModuleUrl(catalogModuleId), catalogModuleInput)
       .pipe(map((catalogModule) => new CatalogModule(catalogModule)));
+  }
+
+  patchCatalogModules(
+    catalogModulePatch: ICatalogModulePatch,
+    params: IQueryParams = {}
+  ): Observable<CatalogModule[]> {
+    return this._crud_catalog_module
+      .patch('catalog-modules', catalogModulePatch, params)
+      .pipe(
+        map((catalogModules) =>
+          catalogModules.map(
+            (catalogModule) => new CatalogModule(catalogModule)
+          )
+        )
+      );
   }
 
   deleteCatalogModule(catalogModuleId: number): Observable<null> {
