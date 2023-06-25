@@ -91,6 +91,21 @@ export class CRUDService<InputType, OutputType> {
     );
   }
 
+  patch(
+    relativeUrl: string,
+    itemPatch: Partial<InputType>,
+    params: IQueryParams = {}
+  ): Observable<OutputType[]> {
+    return this._httpClient.patch<OutputType[]>(
+      this.toAbsoluteUrl(relativeUrl),
+      itemPatch,
+      {
+        params,
+        ...this._httpOptions,
+      }
+    );
+  }
+
   delete(relativeUrl: string, params: IQueryParams = {}): Observable<null> {
     return this._httpClient.delete<null>(this.toAbsoluteUrl(relativeUrl), {
       params,
