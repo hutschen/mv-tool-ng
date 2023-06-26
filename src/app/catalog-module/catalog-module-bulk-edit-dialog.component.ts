@@ -21,10 +21,13 @@ import {
 } from '@angular/material/dialog';
 import {
   CatalogModule,
+  CatalogModuleService,
   ICatalogModulePatch,
 } from '../shared/services/catalog-module.service';
 import { IQueryParams } from '../shared/services/query-params.service';
 import { isEmpty } from 'radash';
+import { NgForm } from '@angular/forms';
+import { firstValueFrom } from 'rxjs';
 
 export interface ICatalogModuleBulkEditDialogData {
   queryParams: IQueryParams;
@@ -69,6 +72,7 @@ export class CatalogModuleBulkEditDialogComponent {
 
   constructor(
     protected _dialogRef: MatDialogRef<CatalogModuleBulkEditDialogComponent>,
+    protected _catalogModuleService: CatalogModuleService,
     @Inject(MAT_DIALOG_DATA)
     data: ICatalogModuleBulkEditDialogData
   ) {
@@ -88,6 +92,19 @@ export class CatalogModuleBulkEditDialogComponent {
 
   get isPatchEmpty(): boolean {
     return isEmpty(this.patch);
+  }
+
+  async onSave(form: NgForm) {
+    if (form.valid) {
+      this._dialogRef.close(
+        await firstValueFrom(
+          this._catalogModuleService.patchCatalogModules(
+            this.patch,
+            this.queryParams
+          )
+        )
+      );
+    }
   }
 
   onCancel(): void {
