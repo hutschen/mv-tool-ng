@@ -24,6 +24,7 @@ import {
   ICatalogModulePatch,
 } from '../shared/services/catalog-module.service';
 import { IQueryParams } from '../shared/services/query-params.service';
+import { isEmpty } from 'radash';
 
 export interface ICatalogModuleBulkEditDialogData {
   queryParams: IQueryParams;
@@ -50,10 +51,19 @@ export class CatalogModuleBulkEditDialogService {
 @Component({
   selector: 'mvtool-catalog-module-bulk-edit-dialog',
   templateUrl: './catalog-module-bulk-edit-dialog.component.html',
-  styles: [],
+  styleUrls: ['../shared/styles/flex.scss'],
+  styles: [
+    '.checkbox { margin-bottom: 21.5px; }',
+    '.fx-center { align-items: center; }',
+  ],
 })
 export class CatalogModuleBulkEditDialogComponent {
   patch: ICatalogModulePatch = {};
+  readonly flags = {
+    reference: false,
+    title: false,
+    description: false,
+  };
   readonly queryParams: IQueryParams;
   readonly filtered: boolean;
 
@@ -64,5 +74,23 @@ export class CatalogModuleBulkEditDialogComponent {
   ) {
     this.queryParams = data.queryParams;
     this.filtered = data.filtered;
+  }
+
+  onFlagChange(key: 'reference' | 'title' | 'description'): void {
+    if (this.flags[key]) {
+      if (key !== 'title') {
+        this.patch[key] = null;
+      }
+    } else {
+      delete this.patch[key];
+    }
+  }
+
+  get isPatchEmpty(): boolean {
+    return isEmpty(this.patch);
+  }
+
+  onCancel(): void {
+    this._dialogRef.close();
   }
 }

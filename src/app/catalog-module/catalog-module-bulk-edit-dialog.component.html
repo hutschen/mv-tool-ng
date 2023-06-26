@@ -15,4 +15,90 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<p>catalog-module-bulk-edit-dialog works!</p>
+<div mat-dialog-title>
+  <span>Edit {{ filtered ? "Filtered" : "All" }} Catalog Modules</span>
+</div>
+<div mat-dialog-content>
+  <p>
+    By ticking a checkbox, the respective input element is activated. If a value
+    is required for the input element, this is indicated by a
+    <code>*</code> symbol. Otherwise, the input element can be left empty in
+    order to clear existing values.
+  </p>
+  <form id="bulkEditForm" #form="ngForm" (submit)="onSave(form)">
+    <!-- Reference -->
+    <div class="fx-row fx-gap-5 fx-center">
+      <mat-checkbox
+        name="referenceFlag"
+        [(ngModel)]="flags.reference"
+        (change)="onFlagChange('reference')"
+        class="checkbox"
+      ></mat-checkbox>
+      <mat-form-field appearance="fill" class="fx-grow">
+        <mat-label>Catalog module reference</mat-label>
+        <input
+          name="reference"
+          matInput
+          [(ngModel)]="patch.reference"
+          [disabled]="!flags.reference"
+        />
+      </mat-form-field>
+    </div>
+
+    <!-- Title -->
+    <div class="fx-row fx-gap-5 fx-center">
+      <mat-checkbox
+        name="titleFlag"
+        [(ngModel)]="flags.title"
+        (change)="onFlagChange('title')"
+        class="checkbox"
+      ></mat-checkbox>
+      <mat-form-field appearance="fill" class="fx-grow">
+        <mat-label>Catalog module title</mat-label>
+        <input
+          name="title"
+          matInput
+          [(ngModel)]="patch.title"
+          [required]="flags.title"
+          [disabled]="!flags.title"
+        />
+      </mat-form-field>
+    </div>
+
+    <!-- Description -->
+    <div class="fx-row fx-gap-5 fx-center">
+      <mat-checkbox
+        name="descriptionFlag"
+        [(ngModel)]="flags.description"
+        (change)="onFlagChange('description')"
+        class="checkbox"
+      ></mat-checkbox>
+      <mat-form-field appearance="fill" class="fx-grow">
+        <mat-label>Catalog module description</mat-label>
+        <textarea
+          name="description"
+          matInput
+          [(ngModel)]="patch.description"
+          [disabled]="!flags.description"
+        ></textarea>
+      </mat-form-field>
+    </div>
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">
+    <mat-icon>cancel</mat-icon>
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    color="accent"
+    [disabled]="form.invalid || isPatchEmpty"
+    type="submit"
+    form="bulkEditForm"
+  >
+    <mat-icon>save</mat-icon>
+    <span>&nbsp;</span>
+    Save
+  </button>
+</div>
