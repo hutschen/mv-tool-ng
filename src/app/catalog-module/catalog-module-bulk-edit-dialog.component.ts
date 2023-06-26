@@ -13,11 +13,56 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogRef,
+} from '@angular/material/dialog';
+import {
+  CatalogModule,
+  ICatalogModulePatch,
+} from '../shared/services/catalog-module.service';
+import { IQueryParams } from '../shared/services/query-params.service';
+
+export interface ICatalogModuleBulkEditDialogData {
+  queryParams: IQueryParams;
+  filtered: boolean;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class CatalogModuleBulkEditDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openCatalogModuleBulkEditDialog(
+    queryParams: IQueryParams = {},
+    filtered: boolean = false
+  ): MatDialogRef<CatalogModuleBulkEditDialogComponent, CatalogModule[]> {
+    return this._dialog.open(CatalogModuleBulkEditDialogComponent, {
+      width: '550px',
+      data: { queryParams, filtered },
+    });
+  }
+}
 
 @Component({
   selector: 'mvtool-catalog-module-bulk-edit-dialog',
   templateUrl: './catalog-module-bulk-edit-dialog.component.html',
   styles: [],
 })
-export class CatalogModuleBulkEditDialogComponent {}
+export class CatalogModuleBulkEditDialogComponent {
+  patch: ICatalogModulePatch = {};
+  readonly queryParams: IQueryParams;
+  readonly filtered: boolean;
+
+  constructor(
+    protected _dialogRef: MatDialogRef<CatalogModuleBulkEditDialogComponent>,
+    @Inject(MAT_DIALOG_DATA)
+    data: ICatalogModuleBulkEditDialogData
+  ) {
+    this.queryParams = data.queryParams;
+    this.filtered = data.filtered;
+  }
+}
