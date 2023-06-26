@@ -38,6 +38,7 @@ import {
 } from '../shared/components/confirm-dialog.component';
 import { isEmpty } from 'radash';
 import { MatDialogRef } from '@angular/material/dialog';
+import { CatalogModuleBulkEditDialogService } from './catalog-module-bulk-edit-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-module-table',
@@ -62,6 +63,7 @@ export class CatalogModuleTableComponent implements OnInit {
   constructor(
     protected _queryParamsService: QueryParamsService,
     protected _catalogModuleService: CatalogModuleService,
+    protected _catalogModuleBulkEditDialogService: CatalogModuleBulkEditDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
@@ -111,6 +113,21 @@ export class CatalogModuleTableComponent implements OnInit {
     this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
       map((queryParams) => isEmpty(queryParams))
     );
+  }
+
+  async onEditCatalogModules() {
+    if (this.catalog) {
+      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
+      const dialogRef =
+        this._catalogModuleBulkEditDialogService.openCatalogModuleBulkEditDialog(
+          queryParams,
+          !isEmpty(queryParams)
+        );
+      const catalogModules = await firstValueFrom(dialogRef.afterClosed());
+      if (catalogModules) this.dataFrame.reload();
+    } else {
+      throw new Error('Catalog is undefined');
+    }
   }
 
   async onDeleteCatalogModules() {
