@@ -32,6 +32,7 @@ import { firstValueFrom } from 'rxjs';
 export interface IRequirementBulkEditDialogData {
   queryParams: IQueryParams;
   filtered: boolean;
+  fieldNames: string[];
 }
 
 @Injectable({
@@ -42,14 +43,15 @@ export class RequirementBulkEditDialogService {
 
   openRequirementBulkEditDialog(
     queryParams: IQueryParams = {},
-    filtered: boolean = false
+    filtered: boolean = false,
+    fieldNames: string[] = []
   ): MatDialogRef<
     RequirementBulkEditDialogComponent,
     Requirement[] | undefined
   > {
     return this._dialog.open(RequirementBulkEditDialogComponent, {
       width: '550px',
-      data: { queryParams, filtered },
+      data: { queryParams, filtered, fieldNames },
     });
   }
 }
@@ -75,6 +77,7 @@ export class RequirementBulkEditDialogComponent {
   };
   readonly queryParams: IQueryParams;
   readonly filtered: boolean;
+  protected _fieldNames: string[];
 
   constructor(
     protected _dialogRef: MatDialogRef<RequirementBulkEditDialogComponent>,
@@ -83,6 +86,7 @@ export class RequirementBulkEditDialogComponent {
   ) {
     this.queryParams = data.queryParams;
     this.filtered = data.filtered;
+    this._fieldNames = data.fieldNames;
   }
 
   onEditFlagChange(
@@ -109,6 +113,10 @@ export class RequirementBulkEditDialogComponent {
         delete this.patch[key];
       }
     }
+  }
+
+  get hasCompliance(): boolean {
+    return this._fieldNames.includes('compliance_status');
   }
 
   get isPatchEmpty(): boolean {
