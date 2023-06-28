@@ -138,6 +138,18 @@ describe('RequirementService', () => {
     mockResponse.flush(outputMock);
   });
 
+  it('should patch a requirement', (done: DoneFn) => {
+    sut.patchRequirements(inputMock).subscribe({
+      next: (value) => expect(value).toEqual([new Requirement(outputMock)]),
+      complete: done,
+    });
+    const mockResponse = httpMock.expectOne({
+      method: 'patch',
+      url: crud.toAbsoluteUrl('requirements'),
+    });
+    mockResponse.flush([outputMock]);
+  });
+
   it('should delete a requirement', (done: DoneFn) => {
     sut.deleteRequirement(outputMock.id).subscribe({
       next: (value) => expect(value).toBeNull(),
