@@ -43,6 +43,7 @@ import {
 } from '../shared/components/confirm-dialog.component';
 import { MatDialogRef } from '@angular/material/dialog';
 import { isEmpty } from 'radash';
+import { RequirementBulkEditDialogService } from './requirement-bulk-edit-dialog.component';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -66,6 +67,7 @@ export class RequirementTableComponent implements OnInit {
   constructor(
     protected _queryParamsService: QueryParamsService,
     protected _requirementService: RequirementService,
+    protected _requirementBulkEditDialogService: RequirementBulkEditDialogService,
     protected _catalogService: CatalogService,
     protected _catalogModuleService: CatalogModuleService,
     protected _milestoneService: MilestoneService,
@@ -124,6 +126,21 @@ export class RequirementTableComponent implements OnInit {
     this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
       map((queryParams) => isEmpty(queryParams))
     );
+  }
+
+  async onEditRequirements() {
+    if (this.project) {
+      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
+      const dialogRef =
+        this._requirementBulkEditDialogService.openRequirementBulkEditDialog(
+          { project_ids: this.project.id, ...queryParams },
+          !isEmpty(queryParams)
+        );
+      const requirements = await firstValueFrom(dialogRef.afterClosed());
+      if (requirements) this.dataFrame.reload();
+    } else {
+      throw new Error('Project is undefined');
+    }
   }
 
   async onDeleteRequirements() {
