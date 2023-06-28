@@ -158,6 +158,20 @@ describe('CatalogRequirementService', () => {
     mockResponse.flush(outputMock);
   });
 
+  it('should patch catalog requirement', (done: DoneFn) => {
+    sut.patchCatalogRequirements(inputMock).subscribe({
+      next: (value) =>
+        expect(value).toEqual([new CatalogRequirement(outputMock)]),
+      complete: done,
+    });
+
+    const mockResponse = httpMock.expectOne({
+      method: 'patch',
+      url: crud.toAbsoluteUrl('catalog-requirements'),
+    });
+    mockResponse.flush([outputMock]);
+  });
+
   it('should delete catalog requirement', (done: DoneFn) => {
     sut.deleteCatalogRequirement(outputMock.id).subscribe({
       next: (value) => expect(value).toBeNull(),
