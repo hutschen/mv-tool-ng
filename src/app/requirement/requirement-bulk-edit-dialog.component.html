@@ -122,43 +122,20 @@
       </mat-form-field>
     </div>
 
-    <!-- Compliance Status -->
+    <!-- Compliance -->
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
-        name="complianceStatusFlag"
-        [(ngModel)]="editFlags.compliance_status"
-        (change)="onEditFlagChange('compliance_status')"
+        name="complianceFlag"
+        [(ngModel)]="editFlags.compliance"
+        (change)="onEditFlagChange('compliance')"
         class="checkbox"
       ></mat-checkbox>
-      <mat-form-field appearance="fill" class="fx-grow">
-        <mat-label>Requirement compliance status</mat-label>
-        <mat-select
-          name="compliance_status"
-          [(ngModel)]="patch.compliance_status"
-          [disabled]="!editFlags.compliance_status"
-        >
-          <!-- Add mat-option elements here as per your requirements -->
-        </mat-select>
-      </mat-form-field>
-    </div>
-
-    <!-- Compliance Comment -->
-    <div class="fx-row fx-gap-5 fx-center">
-      <mat-checkbox
-        name="complianceCommentFlag"
-        [(ngModel)]="editFlags.compliance_comment"
-        (change)="onEditFlagChange('compliance_comment')"
-        class="checkbox"
-      ></mat-checkbox>
-      <mat-form-field appearance="fill" class="fx-grow">
-        <mat-label>Requirement compliance comment</mat-label>
-        <textarea
-          name="compliance_comment"
-          matInput
-          [(ngModel)]="patch.compliance_comment"
-          [disabled]="!editFlags.compliance_comment"
-        ></textarea>
-      </mat-form-field>
+      <mvtool-compliance-input
+        class="fx-grow"
+        name="compliance"
+        [(ngModel)]="patch"
+        [disabled]="!editFlags.compliance"
+      ></mvtool-compliance-input>
     </div>
   </form>
 </div>

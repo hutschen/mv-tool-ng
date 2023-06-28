@@ -71,8 +71,7 @@ export class RequirementBulkEditDialogComponent {
     description: false,
     target_object: false,
     milestone: false,
-    compliance_status: false,
-    compliance_comment: false,
+    compliance: false,
   };
   readonly queryParams: IQueryParams;
   readonly filtered: boolean;
@@ -93,13 +92,22 @@ export class RequirementBulkEditDialogComponent {
       | 'description'
       | 'target_object'
       | 'milestone'
-      | 'compliance_status'
-      | 'compliance_comment'
+      | 'compliance'
   ) {
-    if (this.editFlags[key]) {
-      if (key !== 'summary') this.patch[key] = null;
+    if (key == 'compliance') {
+      if (this.editFlags[key]) {
+        this.patch['compliance_status'] = null;
+        this.patch['compliance_comment'] = null;
+      } else {
+        delete this.patch['compliance_status'];
+        delete this.patch['compliance_comment'];
+      }
     } else {
-      delete this.patch[key];
+      if (this.editFlags[key]) {
+        if (key !== 'summary') this.patch[key] = null;
+      } else {
+        delete this.patch[key];
+      }
     }
   }
 
