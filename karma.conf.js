@@ -37,7 +37,9 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome', 'ChromeHeadlessCI'],
+    // Use ChromeHeadlessCI browser for continuous integration environment (when process.env.CI is true),
+    // and use Chrome browser for local testing environment (when process.env.CI is not set or false).
+    browsers: process.env.CI ? ['ChromeHeadlessCI'] : ['Chrome'],
     customLaunchers: {
       ChromeHeadlessCI: {
         base: 'ChromeHeadless',
