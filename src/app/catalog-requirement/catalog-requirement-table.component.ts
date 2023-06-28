@@ -38,6 +38,7 @@ import {
 } from '../shared/components/confirm-dialog.component';
 import { isEmpty } from 'radash';
 import { MatDialogRef } from '@angular/material/dialog';
+import { CatalogRequirementBulkEditDialogService } from './catalog-requirement-bulk-edit-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-requirement-table',
@@ -61,6 +62,7 @@ export class CatalogRequirementTableComponent implements OnInit {
   constructor(
     protected _queryParamsService: QueryParamsService,
     protected _catalogRequirementService: CatalogRequirementService,
+    protected _catalogRequirementBulkEditDialogService: CatalogRequirementBulkEditDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
@@ -110,6 +112,21 @@ export class CatalogRequirementTableComponent implements OnInit {
     this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
       map((queryParams) => isEmpty(queryParams))
     );
+  }
+
+  async onEditCatalogRequirements() {
+    if (this.catalogModule) {
+      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
+      const dialogRef =
+        this._catalogRequirementBulkEditDialogService.openCatalogRequirementBulkEditDialog(
+          { catalog_module_ids: this.catalogModule.id, ...queryParams },
+          !isEmpty(queryParams)
+        );
+      const catalogRequirements = await firstValueFrom(dialogRef.afterClosed());
+      if (catalogRequirements) this.dataFrame.reload();
+    } else {
+      throw new Error('Catalog module is undefined');
+    }
   }
 
   async onDeleteCatalogRequirements() {

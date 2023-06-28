@@ -1,0 +1,103 @@
+<!--
+ Copyright (C) 2023 Helmar Hutschenreuter
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+ 
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<div mat-dialog-title>
+  <span>Edit {{ filtered ? "Filtered" : "All" }} Catalog Requirements</span>
+</div>
+<div mat-dialog-content>
+  <p>
+    By ticking a checkbox, the respective input element is activated. If a value
+    is required for the input element, this is indicated by a
+    <code>*</code> symbol. Otherwise, the input element can be left empty in
+    order to clear existing values.
+  </p>
+  <form id="bulkEditForm" #form="ngForm" (submit)="onSave(form)">
+    <!-- Reference -->
+    <div class="fx-row fx-gap-5 fx-center">
+      <mat-checkbox
+        name="referenceFlag"
+        [(ngModel)]="editFlags.reference"
+        (change)="onEditFlagChange('reference')"
+        class="checkbox"
+      ></mat-checkbox>
+      <mat-form-field appearance="fill" class="fx-grow">
+        <mat-label>Catalog requirement reference</mat-label>
+        <input
+          name="reference"
+          matInput
+          [(ngModel)]="patch.reference"
+          [disabled]="!editFlags.reference"
+        />
+      </mat-form-field>
+    </div>
+
+    <!-- Summary -->
+    <div class="fx-row fx-gap-5 fx-center">
+      <mat-checkbox
+        name="titleFlag"
+        [(ngModel)]="editFlags.summary"
+        (change)="onEditFlagChange('summary')"
+        class="checkbox"
+      ></mat-checkbox>
+      <mat-form-field appearance="fill" class="fx-grow">
+        <mat-label>Catalog requirement summary</mat-label>
+        <input
+          name="summary"
+          matInput
+          [(ngModel)]="patch.summary"
+          [required]="editFlags.summary"
+          [disabled]="!editFlags.summary"
+        />
+      </mat-form-field>
+    </div>
+
+    <!-- Description -->
+    <div class="fx-row fx-gap-5 fx-center">
+      <mat-checkbox
+        name="descriptionFlag"
+        [(ngModel)]="editFlags.description"
+        (change)="onEditFlagChange('description')"
+        class="checkbox"
+      ></mat-checkbox>
+      <mat-form-field appearance="fill" class="fx-grow">
+        <mat-label>Catalog requirement description</mat-label>
+        <textarea
+          name="description"
+          matInput
+          [(ngModel)]="patch.description"
+          [disabled]="!editFlags.description"
+        ></textarea>
+      </mat-form-field>
+    </div>
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">
+    <mat-icon>cancel</mat-icon>
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    color="accent"
+    [disabled]="form.invalid || isPatchEmpty"
+    type="submit"
+    form="bulkEditForm"
+  >
+    <mat-icon>save</mat-icon>
+    <span>&nbsp;</span>
+    Save
+  </button>
+</div>
