@@ -30,8 +30,8 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="referenceFlag"
-        [(ngModel)]="flags.reference"
-        (change)="onFlagChange('reference')"
+        [(ngModel)]="editFlags.reference"
+        (change)="onEditFlagChange('reference')"
         class="checkbox"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
@@ -40,7 +40,7 @@
           name="reference"
           matInput
           [(ngModel)]="patch.reference"
-          [disabled]="!flags.reference"
+          [disabled]="!editFlags.reference"
         />
       </mat-form-field>
     </div>
@@ -49,8 +49,8 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="titleFlag"
-        [(ngModel)]="flags.title"
-        (change)="onFlagChange('title')"
+        [(ngModel)]="editFlags.title"
+        (change)="onEditFlagChange('title')"
         class="checkbox"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
@@ -59,8 +59,8 @@
           name="title"
           matInput
           [(ngModel)]="patch.title"
-          [required]="flags.title"
-          [disabled]="!flags.title"
+          [required]="editFlags.title"
+          [disabled]="!editFlags.title"
         />
       </mat-form-field>
     </div>
@@ -69,8 +69,8 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="descriptionFlag"
-        [(ngModel)]="flags.description"
-        (change)="onFlagChange('description')"
+        [(ngModel)]="editFlags.description"
+        (change)="onEditFlagChange('description')"
         class="checkbox"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
@@ -79,7 +79,7 @@
           name="description"
           matInput
           [(ngModel)]="patch.description"
-          [disabled]="!flags.description"
+          [disabled]="!editFlags.description"
         ></textarea>
       </mat-form-field>
     </div>

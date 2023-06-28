@@ -43,7 +43,10 @@ export class CatalogModuleBulkEditDialogService {
   openCatalogModuleBulkEditDialog(
     queryParams: IQueryParams = {},
     filtered: boolean = false
-  ): MatDialogRef<CatalogModuleBulkEditDialogComponent, CatalogModule[]> {
+  ): MatDialogRef<
+    CatalogModuleBulkEditDialogComponent,
+    CatalogModule[] | undefined
+  > {
     return this._dialog.open(CatalogModuleBulkEditDialogComponent, {
       width: '550px',
       data: { queryParams, filtered },
@@ -62,7 +65,7 @@ export class CatalogModuleBulkEditDialogService {
 })
 export class CatalogModuleBulkEditDialogComponent {
   patch: ICatalogModulePatch = {};
-  readonly flags = {
+  readonly editFlags = {
     reference: false,
     title: false,
     description: false,
@@ -80,11 +83,9 @@ export class CatalogModuleBulkEditDialogComponent {
     this.filtered = data.filtered;
   }
 
-  onFlagChange(key: 'reference' | 'title' | 'description'): void {
-    if (this.flags[key]) {
-      if (key !== 'title') {
-        this.patch[key] = null;
-      }
+  onEditFlagChange(key: 'reference' | 'title' | 'description'): void {
+    if (this.editFlags[key]) {
+      if (key !== 'title') this.patch[key] = null;
     } else {
       delete this.patch[key];
     }
