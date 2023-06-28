@@ -133,13 +133,7 @@ export class CatalogModuleService {
   ): Observable<CatalogModule[]> {
     return this._crud_catalog_module
       .patch('catalog-modules', catalogModulePatch, params)
-      .pipe(
-        map((catalogModules) =>
-          catalogModules.map(
-            (catalogModule) => new CatalogModule(catalogModule)
-          )
-        )
-      );
+      .pipe(map((cms) => cms.map((cm) => new CatalogModule(cm))));
   }
 
   deleteCatalogModule(catalogModuleId: number): Observable<null> {
