@@ -83,6 +83,22 @@
         ></textarea>
       </mat-form-field>
     </div>
+
+    <!-- Compliance -->
+    <div class="fx-row fx-gap-5 fx-center">
+      <mat-checkbox
+        name="complianceFlag"
+        [(ngModel)]="editFlags.compliance"
+        (change)="onEditFlagChange('compliance')"
+        class="checkbox"
+      ></mat-checkbox>
+      <mvtool-compliance-input
+        class="fx-grow"
+        name="compliance"
+        [(ngModel)]="patch"
+        [disabled]="!editFlags.compliance"
+      ></mvtool-compliance-input>
+    </div>
   </form>
 </div>
 <div mat-dialog-actions align="end">
