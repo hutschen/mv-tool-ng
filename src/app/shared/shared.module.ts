@@ -46,6 +46,7 @@ import { ExportDatasetDialogComponent } from './components/export-dataset-dialog
 import { SelectionListComponent } from './components/selection-list.component';
 import { DownloadComponent } from './components/download.component';
 import { ComplianceInputComponent } from './components/compliance-input.component';
+import { CompletionInputComponent } from './components/completion-input.component';
 
 @NgModule({
   declarations: [
@@ -77,6 +78,7 @@ import { ComplianceInputComponent } from './components/compliance-input.componen
     SelectionListComponent,
     DownloadComponent,
     ComplianceInputComponent,
+    CompletionInputComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
@@ -101,6 +103,7 @@ import { ComplianceInputComponent } from './components/compliance-input.componen
     SelectionListComponent,
     DownloadComponent,
     ComplianceInputComponent,
+    CompletionInputComponent,
   ],
 })
 export class SharedModule {}
