@@ -13,13 +13,25 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit, forwardRef } from '@angular/core';
 import { IOption, Options } from '../data/options';
 import { Observable, debounceTime, startWith, switchMap, tap } from 'rxjs';
-import { FormControl } from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormControl,
+  NG_VALUE_ACCESSOR,
+} from '@angular/forms';
+import { isString } from 'radash';
 
 @Component({
   selector: 'mvtool-autocomplete',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => AutocompleteComponent),
+      multi: true,
+    },
+  ],
   template: `
     <div class="fx-column">
       <mat-form-field appearance="fill">
@@ -51,15 +63,17 @@ import { FormControl } from '@angular/forms';
   styleUrls: ['../styles/flex.scss'],
   styles: ['.spinner { margin-right: 10px; }'],
 })
-export class AutocompleteComponent implements OnInit {
+export class AutocompleteComponent implements OnInit, ControlValueAccessor {
   @Input() label: string = '';
   @Input() placeholder: string = '';
   @Input() options!: Options;
-  @Output() valueChange = new EventEmitter<string | null>();
 
   filterCtrl = new FormControl('');
   loadedOptions$!: Observable<IOption[]>;
   isLoadingOptions = false;
+
+  onChange: (_: any) => void = () => {};
+  onTouched: () => void = () => {};
 
   constructor() {}
 
@@ -74,13 +88,26 @@ export class AutocompleteComponent implements OnInit {
     );
 
     // Emit value when the filter changes
-    this.filterCtrl.valueChanges.subscribe((value) =>
-      this.valueChange.emit(value)
-    );
+    this.filterCtrl.valueChanges.subscribe((value) => {
+      this.onChange(value);
+      this.onTouched();
+    });
   }
 
-  @Input()
-  set value(value: string | null | undefined) {
-    this.filterCtrl.setValue(value ?? null);
+  writeValue(value: any): void {
+    this.filterCtrl.setValue(value);
+  }
+
+  registerOnChange(fn: (_: any) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    if (isDisabled) this.filterCtrl.disable();
+    else this.filterCtrl.enable();
   }
 }
