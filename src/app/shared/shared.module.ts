@@ -47,6 +47,7 @@ import { SelectionListComponent } from './components/selection-list.component';
 import { DownloadComponent } from './components/download.component';
 import { ComplianceInputComponent } from './components/compliance-input.component';
 import { CompletionInputComponent } from './components/completion-input.component';
+import { VerificationInputComponent } from './components/verification-input.component';
 
 @NgModule({
   declarations: [
@@ -79,6 +80,7 @@ import { CompletionInputComponent } from './components/completion-input.componen
     DownloadComponent,
     ComplianceInputComponent,
     CompletionInputComponent,
+    VerificationInputComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
@@ -104,6 +106,7 @@ import { CompletionInputComponent } from './components/completion-input.componen
     DownloadComponent,
     ComplianceInputComponent,
     CompletionInputComponent,
+    VerificationInputComponent,
   ],
 })
 export class SharedModule {}
