@@ -92,15 +92,15 @@
         (change)="onEditFlagChange('milestone')"
         class="checkbox"
       ></mat-checkbox>
-      <mat-form-field appearance="fill" class="fx-grow">
-        <mat-label>Requirement milestone</mat-label>
-        <input
-          name="milestone"
-          matInput
-          [(ngModel)]="patch.milestone"
-          [disabled]="!editFlags.milestone"
-        />
-      </mat-form-field>
+      <mvtool-autocomplete
+        class="fx-grow"
+        name="milestone"
+        label="Milestone"
+        [options]="milestoneOptions"
+        [(ngModel)]="patch.milestone"
+        [disabled]="!editFlags.milestone"
+      >
+      </mvtool-autocomplete>
     </div>
 
     <!-- Target Object -->
@@ -111,15 +111,15 @@
         (change)="onEditFlagChange('target_object')"
         class="checkbox"
       ></mat-checkbox>
-      <mat-form-field appearance="fill" class="fx-grow">
-        <mat-label>Requirement target object</mat-label>
-        <input
-          name="target_object"
-          matInput
-          [(ngModel)]="patch.target_object"
-          [disabled]="!editFlags.target_object"
-        />
-      </mat-form-field>
+      <mvtool-autocomplete
+        class="fx-grow"
+        name="target_object"
+        label="Target object"
+        [options]="targetObjectOptions"
+        [(ngModel)]="patch.target_object"
+        [disabled]="!editFlags.target_object"
+      >
+      </mvtool-autocomplete>
     </div>
 
     <!-- Compliance -->

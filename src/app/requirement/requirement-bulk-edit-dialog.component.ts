@@ -28,8 +28,16 @@ import {
 import { isEmpty } from 'radash';
 import { NgForm } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { Project } from '../shared/services/project.service';
+import {
+  MilestoneOptions,
+  TargetObjectOptions,
+} from '../shared/data/requirement/requirement-options';
+import { TargetObjectService } from '../shared/services/target-object.service';
+import { MilestoneService } from '../shared/services/milestone.service';
 
 export interface IRequirementBulkEditDialogData {
+  project: Project;
   queryParams: IQueryParams;
   filtered: boolean;
   fieldNames: string[];
@@ -42,6 +50,7 @@ export class RequirementBulkEditDialogService {
   constructor(protected _dialog: MatDialog) {}
 
   openRequirementBulkEditDialog(
+    project: Project,
     queryParams: IQueryParams = {},
     filtered: boolean = false,
     fieldNames: string[] = []
@@ -51,7 +60,7 @@ export class RequirementBulkEditDialogService {
   > {
     return this._dialog.open(RequirementBulkEditDialogComponent, {
       width: '550px',
-      data: { queryParams, filtered, fieldNames },
+      data: { project, queryParams, filtered, fieldNames },
     });
   }
 }
@@ -79,14 +88,32 @@ export class RequirementBulkEditDialogComponent {
   readonly filtered: boolean;
   protected _fieldNames: string[];
 
+  // To select project related target objects and milestones
+  readonly targetObjectOptions: TargetObjectOptions;
+  readonly milestoneOptions: MilestoneOptions;
+
   constructor(
     protected _dialogRef: MatDialogRef<RequirementBulkEditDialogComponent>,
     protected _requirementService: RequirementService,
+    targetObjectService: TargetObjectService,
+    milestoneService: MilestoneService,
     @Inject(MAT_DIALOG_DATA) data: IRequirementBulkEditDialogData
   ) {
     this.queryParams = data.queryParams;
     this.filtered = data.filtered;
     this._fieldNames = data.fieldNames;
+
+    this.targetObjectOptions = new TargetObjectOptions(
+      targetObjectService,
+      data.project,
+      false
+    );
+
+    this.milestoneOptions = new MilestoneOptions(
+      milestoneService,
+      data.project,
+      false
+    );
   }
 
   onEditFlagChange(
