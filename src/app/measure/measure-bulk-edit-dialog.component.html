@@ -99,6 +99,22 @@
         [disabled]="!editFlags.compliance"
       ></mvtool-compliance-input>
     </div>
+
+    <!-- Completion -->
+    <div class="fx-row fx-gap-5 fx-center">
+      <mat-checkbox
+        name="completionFlag"
+        [(ngModel)]="editFlags.completion"
+        (change)="onEditFlagChange('completion')"
+        class="checkbox"
+      ></mat-checkbox>
+      <mvtool-completion-input
+        class="fx-grow"
+        name="completion"
+        [(ngModel)]="patch"
+        [disabled]="!editFlags.completion"
+      ></mvtool-completion-input>
+    </div>
   </form>
 </div>
 <div mat-dialog-actions align="end">
