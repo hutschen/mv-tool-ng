@@ -115,6 +115,22 @@
         [disabled]="!editFlags.completion"
       ></mvtool-completion-input>
     </div>
+
+    <!-- Verification -->
+    <div class="fx-row fx-gap-5 fx-center">
+      <mat-checkbox
+        name="verificationFlag"
+        [(ngModel)]="editFlags.verification"
+        (change)="onEditFlagChange('verification')"
+        class="checkbox"
+      ></mat-checkbox>
+      <mvtool-verification-input
+        class="fx-grow"
+        name="verification"
+        [(ngModel)]="patch"
+        [disabled]="!editFlags.verification"
+      ></mvtool-verification-input>
+    </div>
   </form>
 </div>
 <div mat-dialog-actions align="end">
