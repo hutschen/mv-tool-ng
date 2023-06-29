@@ -66,6 +66,11 @@ export class MeasureBulkEditDialogComponent {
     reference: false,
     summary: false,
     description: false,
+    compliance: false,
+    completion: false,
+    verification: false,
+    jira_issue_id: false,
+    document_id: false,
   };
   readonly queryParams: IQueryParams;
   readonly filtered: boolean;
@@ -79,11 +84,57 @@ export class MeasureBulkEditDialogComponent {
     this.filtered = data.filtered;
   }
 
-  onEditFlagChange(key: 'reference' | 'summary' | 'description') {
-    if (this.editFlags[key]) {
-      if (key !== 'summary') this.patch[key] = null;
-    } else {
-      delete this.patch[key];
+  onEditFlagChange(
+    key:
+      | 'reference'
+      | 'summary'
+      | 'description'
+      | 'compliance'
+      | 'completion'
+      | 'verification'
+      | 'jira_issue_id'
+      | 'document_id'
+  ) {
+    switch (key) {
+      case 'summary':
+        if (!this.editFlags.summary) delete this.patch.summary;
+        break;
+
+      case 'compliance':
+        if (this.editFlags.compliance) {
+          this.patch.compliance_status = null;
+          this.patch.compliance_comment = null;
+        } else {
+          delete this.patch.compliance_status;
+          delete this.patch.compliance_comment;
+        }
+        break;
+
+      case 'completion':
+        if (this.editFlags.completion) {
+          this.patch.completion_status = null;
+          this.patch.completion_comment = null;
+        } else {
+          delete this.patch.completion_status;
+          delete this.patch.completion_comment;
+        }
+        break;
+
+      case 'verification':
+        if (this.editFlags.verification) {
+          this.patch.verification_method = null;
+          this.patch.verification_status = null;
+          this.patch.verification_comment = null;
+        } else {
+          delete this.patch.verification_method;
+          delete this.patch.verification_status;
+          delete this.patch.verification_comment;
+        }
+        break;
+
+      default:
+        if (this.editFlags[key]) this.patch[key] = null;
+        else delete this.patch[key];
     }
   }
 
