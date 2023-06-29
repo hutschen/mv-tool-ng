@@ -55,17 +55,19 @@
 
     <!-- Milestone input -->
     <mvtool-autocomplete
+      name="milestone"
       label="Milestone"
       [options]="milestoneOptions"
-      [(value)]="requirementInput.milestone"
+      [(ngModel)]="requirementInput.milestone"
     >
     </mvtool-autocomplete>
 
     <!-- Target object input -->
     <mvtool-autocomplete
+      name="target_object"
       label="Target object"
       [options]="targetObjectOptions"
-      [(value)]="requirementInput.target_object"
+      [(ngModel)]="requirementInput.target_object"
     >
     </mvtool-autocomplete>
   </div>
