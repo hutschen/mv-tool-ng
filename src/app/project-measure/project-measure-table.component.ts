@@ -40,6 +40,7 @@ import {
 } from '../shared/components/confirm-dialog.component';
 import { isEmpty } from 'radash';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MeasureBulkEditDialogService } from '../measure/measure-bulk-edit-dialog.component';
 
 @Component({
   selector: 'mvtool-project-measure-table',
@@ -69,6 +70,7 @@ export class ProjectMeasureTableComponent implements OnInit {
     protected _milestoneService: MilestoneService,
     protected _targetObjectService: TargetObjectService,
     protected _documentService: DocumentService,
+    protected _measureBulkEditDialogService: MeasureBulkEditDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
     protected _exportDatasetDialogService: ExportDatasetDialogService,
@@ -123,6 +125,17 @@ export class ProjectMeasureTableComponent implements OnInit {
     this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
       map((queryParams) => isEmpty(queryParams))
     );
+  }
+
+  async onEditMeasures() {
+    const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
+    const dialogRef =
+      this._measureBulkEditDialogService.openMeasureBulkEditDialog(
+        { project_ids: this.project.id, ...queryParams },
+        !isEmpty(queryParams)
+      );
+    const measures = await firstValueFrom(dialogRef.afterClosed());
+    if (measures) this.dataFrame.reload();
   }
 
   async onDeleteMeasures() {

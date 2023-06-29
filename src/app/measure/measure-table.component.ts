@@ -36,6 +36,7 @@ import {
   ConfirmDialogService,
 } from '../shared/components/confirm-dialog.component';
 import { isEmpty } from 'radash';
+import { MeasureBulkEditDialogService } from './measure-bulk-edit-dialog.component';
 
 @Component({
   selector: 'mvtool-http-measure-table',
@@ -60,6 +61,7 @@ export class MeasureTableComponent implements OnInit {
     protected _queryParamsService: QueryParamsService,
     protected _measureService: MeasureService,
     protected _documentService: DocumentService,
+    protected _measureBulkEditDialogService: MeasureBulkEditDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
@@ -110,6 +112,21 @@ export class MeasureTableComponent implements OnInit {
     this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
       map((queryParams) => isEmpty(queryParams))
     );
+  }
+
+  async onEditMeasures() {
+    if (this.requirement) {
+      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
+      const dialogRef =
+        this._measureBulkEditDialogService.openMeasureBulkEditDialog(
+          { requirement_ids: this.requirement.id, ...queryParams },
+          !isEmpty(queryParams)
+        );
+      const measures = await firstValueFrom(dialogRef.afterClosed());
+      if (measures) this.dataFrame.reload();
+    } else {
+      throw new Error('Requirement is undefined');
+    }
   }
 
   async onDeleteMeasures() {

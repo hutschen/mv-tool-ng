@@ -28,6 +28,7 @@ import { RequirementIdGuard } from '../shared/guards/id.guard';
 import { RequirementModule } from '../requirement/requirement.module';
 import { CompletionDialogComponent } from './completion-dialog.component';
 import { MeasureTableComponent } from './measure-table.component';
+import { MeasureBulkEditDialogComponent } from './measure-bulk-edit-dialog.component';
 
 const routes = [
   {
@@ -47,6 +48,7 @@ const routes = [
     MeasureViewComponent,
     CompletionDialogComponent,
     MeasureTableComponent,
+    MeasureBulkEditDialogComponent,
   ],
   imports: [
     CommonModule,
