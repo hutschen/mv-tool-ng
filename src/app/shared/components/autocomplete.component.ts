@@ -21,7 +21,6 @@ import {
   FormControl,
   NG_VALUE_ACCESSOR,
 } from '@angular/forms';
-import { isString } from 'radash';
 
 @Component({
   selector: 'mvtool-autocomplete',
