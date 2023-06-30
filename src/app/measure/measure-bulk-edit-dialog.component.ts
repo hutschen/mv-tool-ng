@@ -32,6 +32,7 @@ import { firstValueFrom } from 'rxjs';
 export interface IMeasureBulkEditDialogData {
   queryParams: IQueryParams;
   filtered: boolean;
+  fieldNames: string[];
 }
 
 @Injectable({
@@ -42,11 +43,12 @@ export class MeasureBulkEditDialogService {
 
   openMeasureBulkEditDialog(
     queryParams: IQueryParams = {},
-    filtered: boolean = false
+    filtered: boolean = false,
+    fieldNames: string[] = []
   ): MatDialogRef<MeasureBulkEditDialogComponent, Measure[] | undefined> {
     return this._dialog.open(MeasureBulkEditDialogComponent, {
       width: '550px',
-      data: { queryParams, filtered },
+      data: { queryParams, filtered, fieldNames },
     });
   }
 }
@@ -74,6 +76,7 @@ export class MeasureBulkEditDialogComponent {
   };
   readonly queryParams: IQueryParams;
   readonly filtered: boolean;
+  protected _fieldNames: string[];
 
   constructor(
     protected _dialogRef: MatDialogRef<MeasureBulkEditDialogComponent>,
@@ -82,6 +85,7 @@ export class MeasureBulkEditDialogComponent {
   ) {
     this.queryParams = data.queryParams;
     this.filtered = data.filtered;
+    this._fieldNames = data.fieldNames;
   }
 
   onEditFlagChange(
@@ -136,6 +140,10 @@ export class MeasureBulkEditDialogComponent {
         if (this.editFlags[key]) this.patch[key] = null;
         else delete this.patch[key];
     }
+  }
+
+  hasField(fieldName: string): boolean {
+    return this._fieldNames.includes(fieldName);
   }
 
   get isPatchEmpty(): boolean {

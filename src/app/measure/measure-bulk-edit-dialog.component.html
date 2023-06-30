@@ -85,7 +85,10 @@
     </div>
 
     <!-- Compliance -->
-    <div class="fx-row fx-gap-5 fx-center">
+    <div
+      *ngIf="hasField('compliance_status')"
+      class="fx-row fx-gap-5 fx-center"
+    >
       <mat-checkbox
         name="complianceFlag"
         [(ngModel)]="editFlags.compliance"
@@ -101,7 +104,10 @@
     </div>
 
     <!-- Completion -->
-    <div class="fx-row fx-gap-5 fx-center">
+    <div
+      *ngIf="hasField('completion_status')"
+      class="fx-row fx-gap-5 fx-center"
+    >
       <mat-checkbox
         name="completionFlag"
         [(ngModel)]="editFlags.completion"
@@ -117,7 +123,10 @@
     </div>
 
     <!-- Verification -->
-    <div class="fx-row fx-gap-5 fx-center">
+    <div
+      *ngIf="hasField('verification_method')"
+      class="fx-row fx-gap-5 fx-center"
+    >
       <mat-checkbox
         name="verificationFlag"
         [(ngModel)]="editFlags.verification"

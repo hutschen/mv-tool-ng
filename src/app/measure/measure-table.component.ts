@@ -120,7 +120,8 @@ export class MeasureTableComponent implements OnInit {
       const dialogRef =
         this._measureBulkEditDialogService.openMeasureBulkEditDialog(
           { requirement_ids: this.requirement.id, ...queryParams },
-          !isEmpty(queryParams)
+          !isEmpty(queryParams),
+          await firstValueFrom(this.dataFrame.columnNames$)
         );
       const measures = await firstValueFrom(dialogRef.afterClosed());
       if (measures) this.dataFrame.reload();
