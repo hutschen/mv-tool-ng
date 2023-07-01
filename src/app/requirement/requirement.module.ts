@@ -26,12 +26,13 @@ import { CanActivateFn, RouterModule } from '@angular/router';
 import { AuthGuard } from '../shared/guards/auth.guard';
 import { ProjectIdGuard } from '../shared/guards/id.guard';
 import { ProjectModule } from '../project/project.module';
+import { RequirementBulkEditDialogComponent } from './requirement-bulk-edit-dialog.component';
 
 const routes = [
   {
     path: 'projects/:projectId/requirements',
     canActivate: [
-      () => inject(AuthGuard).canActivate(),
+      (_, state) => inject(AuthGuard).canActivate(state),
       (route) => inject(ProjectIdGuard).canActivate(route),
     ] as CanActivateFn[],
     component: RequirementViewComponent,
@@ -45,6 +46,7 @@ const routes = [
     RequirementDetailsComponent,
     RequirementImportDialogComponent,
     RequirementViewComponent,
+    RequirementBulkEditDialogComponent,
   ],
   imports: [
     CommonModule,

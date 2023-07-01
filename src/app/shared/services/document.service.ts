@@ -27,6 +27,8 @@ export interface IDocumentInput {
   description: string | null;
 }
 
+export type IDocumentPatch = Partial<IDocumentInput>;
+
 export interface IDocument extends IDocumentInput {
   id: number;
   project: IProject;
@@ -122,8 +124,21 @@ export class DocumentService {
       .pipe(map((document) => new Document(document)));
   }
 
+  patchDocuments(
+    documentPatch: IDocumentPatch,
+    params: IQueryParams = {}
+  ): Observable<Document[]> {
+    return this._crud_document
+      .patch('documents', documentPatch, params)
+      .pipe(map((documents) => documents.map((d) => new Document(d))));
+  }
+
   deleteDocument(documentId: number): Observable<null> {
     return this._crud_document.delete(this.getDocumentUrl(documentId));
+  }
+
+  deleteDocuments(params: IQueryParams = {}): Observable<null> {
+    return this._crud_document.delete('documents', params);
   }
 
   getDocumentFieldNames(params: IQueryParams = {}) {

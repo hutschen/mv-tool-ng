@@ -151,6 +151,19 @@ describe('CatalogModuleService', () => {
     mockResponse.flush(outputMock);
   });
 
+  it('should patch catalog modules', (done: DoneFn) => {
+    sut.patchCatalogModules(inputMock).subscribe({
+      next: (value) => expect(value).toEqual([new CatalogModule(outputMock)]),
+      complete: done,
+    });
+
+    const mockResponse = httpMock.expectOne({
+      method: 'patch',
+      url: crud.toAbsoluteUrl('catalog-modules'),
+    });
+    mockResponse.flush([outputMock]);
+  });
+
   it('should delete catalog module', (done: DoneFn) => {
     const catalogModuleId = outputMock.id;
 

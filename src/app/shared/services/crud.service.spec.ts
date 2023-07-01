@@ -139,6 +139,18 @@ describe('CRUDService', () => {
     mockResponse.flush(outputMock);
   });
 
+  it('should patch items', (done: DoneFn) => {
+    sut.patch('items', inputMock).subscribe({
+      next: (value) => expect(value).toEqual([outputMock]),
+      complete: () => done(),
+    });
+    const mockResponse = httpMock.expectOne({
+      method: 'patch',
+      url: baseUrl + '/items',
+    });
+    mockResponse.flush([outputMock]);
+  });
+
   it('should delete an item', (done: DoneFn) => {
     sut.delete('items/1').subscribe({
       next: (value) => expect(value).toBeNull(),

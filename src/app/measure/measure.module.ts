@@ -28,12 +28,13 @@ import { RequirementIdGuard } from '../shared/guards/id.guard';
 import { RequirementModule } from '../requirement/requirement.module';
 import { CompletionDialogComponent } from './completion-dialog.component';
 import { MeasureTableComponent } from './measure-table.component';
+import { MeasureBulkEditDialogComponent } from './measure-bulk-edit-dialog.component';
 
 const routes = [
   {
     path: 'requirements/:requirementId/measures',
     canActivate: [
-      () => inject(AuthGuard).canActivate(),
+      (_, state) => inject(AuthGuard).canActivate(state),
       (route) => inject(RequirementIdGuard).canActivate(route),
     ] as CanActivateFn[],
     component: MeasureViewComponent,
@@ -47,6 +48,7 @@ const routes = [
     MeasureViewComponent,
     CompletionDialogComponent,
     MeasureTableComponent,
+    MeasureBulkEditDialogComponent,
   ],
   imports: [
     CommonModule,

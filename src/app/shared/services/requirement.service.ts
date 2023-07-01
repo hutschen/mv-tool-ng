@@ -38,6 +38,8 @@ export interface IRequirementInput {
   catalog_requirement_id?: number | null;
 }
 
+export type IRequirementPatch = Partial<IRequirementInput>;
+
 export interface IRequirement {
   id: number;
   reference?: string | null;
@@ -204,8 +206,21 @@ export class RequirementService {
       .pipe(map((requirement) => new Requirement(requirement)));
   }
 
+  patchRequirements(
+    requirementPatch: IRequirementPatch,
+    params: IQueryParams = {}
+  ): Observable<Requirement[]> {
+    return this._crud_requirement
+      .patch('requirements', requirementPatch, params)
+      .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
+  }
+
   deleteRequirement(requirementId: number): Observable<null> {
     return this._crud_requirement.delete(this.getRequirementUrl(requirementId));
+  }
+
+  deleteRequirements(params: IQueryParams = {}): Observable<null> {
+    return this._crud_requirement.delete('requirements', params);
   }
 
   getRequirementFieldNames(params: IQueryParams = {}) {

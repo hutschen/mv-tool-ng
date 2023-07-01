@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom, map } from 'rxjs';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { DocumentService, Document } from '../shared/services/document.service';
@@ -29,6 +29,13 @@ import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { DocumentInteractionService } from '../shared/services/document-interaction.service';
 import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogService,
+} from '../shared/components/confirm-dialog.component';
+import { isEmpty } from 'radash';
+import { MatDialogRef } from '@angular/material/dialog';
+import { DocumentBulkEditDialogService } from './document-bulk-edit-dialog.component';
 
 @Component({
   selector: 'mvtool-document-table',
@@ -45,15 +52,19 @@ export class DocumentTableComponent implements OnInit {
   marked!: DataSelection<Document>;
   expanded!: DataSelection<Document>;
   exportQueryParams$!: Observable<IQueryParams>;
+  bulkEditQueryParams$!: Observable<IQueryParams>;
+  bulkEditAll$!: Observable<boolean>;
   @Input() project!: Project;
 
   constructor(
     protected _queryParamsService: QueryParamsService,
     protected _documentService: DocumentService,
+    protected _documentBulkEditDialogService: DocumentBulkEditDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
     protected _exportDatasetDialogService: ExportDatasetDialogService,
+    protected _confirmDialogService: ConfirmDialogService,
     readonly documentInteractions: DocumentInteractionService
   ) {}
 
@@ -87,6 +98,62 @@ export class DocumentTableComponent implements OnInit {
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
     ]);
+
+    // Define bulk edit query params
+    this.bulkEditQueryParams$ = combineQueryParams([
+      this.dataFrame.search.queryParams$,
+      this.dataFrame.columns.filterQueryParams$,
+    ]);
+
+    // Define bulk edit all flag
+    this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
+      map((queryParams) => isEmpty(queryParams))
+    );
+  }
+
+  async onEditDocuments() {
+    if (this.project) {
+      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
+      const dialogRef =
+        this._documentBulkEditDialogService.openDocumentBulkEditDialog(
+          { project_ids: this.project.id, ...queryParams },
+          !isEmpty(queryParams)
+        );
+      const documents = await firstValueFrom(dialogRef.afterClosed());
+      if (documents) this.dataFrame.reload();
+    } else {
+      throw new Error('Project is undefined');
+    }
+  }
+
+  async onDeleteDocuments() {
+    if (this.project) {
+      let dialogRef: MatDialogRef<ConfirmDialogComponent, boolean>;
+      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
+      if (isEmpty(queryParams)) {
+        dialogRef = this._confirmDialogService.openConfirmDialog(
+          'Delete all documents?',
+          'Are you sure you want to delete all documents in this project?'
+        );
+      } else {
+        dialogRef = this._confirmDialogService.openConfirmDialog(
+          'Delete filtered documents?',
+          'Are you sure you want to delete all documents that match the current filter?'
+        );
+      }
+      const confirm = await firstValueFrom(dialogRef.afterClosed());
+      if (confirm) {
+        await firstValueFrom(
+          this._documentService.deleteDocuments({
+            project_ids: this.project.id,
+            ...queryParams,
+          })
+        );
+        this.dataFrame.reload();
+      }
+    } else {
+      throw new Error('Project is undefined');
+    }
   }
 
   async onExportDocumentsDataset() {

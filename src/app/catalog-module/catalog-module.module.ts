@@ -25,12 +25,13 @@ import { CanActivateFn, RouterModule } from '@angular/router';
 import { AuthGuard } from '../shared/guards/auth.guard';
 import { CatalogIdGuard } from '../shared/guards/id.guard';
 import { CatalogModuleViewComponent } from './catalog-module-view.component';
+import { CatalogModuleBulkEditDialogComponent } from './catalog-module-bulk-edit-dialog.component';
 
 const routes = [
   {
     path: 'catalogs/:catalogId/catalog-modules',
     canActivate: [
-      () => inject(AuthGuard).canActivate(),
+      (_, state) => inject(AuthGuard).canActivate(state),
       (route) => inject(CatalogIdGuard).canActivate(route),
     ] as CanActivateFn[],
     component: CatalogModuleViewComponent,
@@ -43,6 +44,7 @@ const routes = [
     CatalogModuleDialogComponent,
     CatalogModuleDetailsComponent,
     CatalogModuleViewComponent,
+    CatalogModuleBulkEditDialogComponent,
   ],
   imports: [
     CommonModule,

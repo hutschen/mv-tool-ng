@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, RouterStateSnapshot } from '@angular/router';
 
 import { AuthGuard } from './auth.guard';
 import { AuthService, IAccessToken } from '../services/auth.service';
@@ -26,8 +26,8 @@ describe('AuthGuard', () => {
   let accessToken: IAccessToken;
 
   beforeEach(() => {
-    auth = new AuthService({} as HttpClient);
     routerMock = jasmine.createSpyObj('Router', ['navigate']);
+    auth = new AuthService({} as HttpClient, routerMock);
     sut = new AuthGuard(auth, routerMock);
 
     accessToken = { access_token: 'token', token_type: 'bearer' };
@@ -44,17 +44,22 @@ describe('AuthGuard', () => {
 
   it('should recognize logged in user', () => {
     auth.setAccessToken(accessToken);
-    const result = sut.canActivate();
+    const redirectUrl = auth.redirectUrl;
+
+    const result = sut.canActivate({} as RouterStateSnapshot);
     expect(result).toEqual(auth.isLoggedIn);
     expect(result).toBeTrue();
+    expect(auth.redirectUrl).toEqual(redirectUrl);
     expect(routerMock.navigate).not.toHaveBeenCalled();
   });
 
   it('should recognize logged out user', () => {
     auth.logOut();
-    const result = sut.canActivate();
+
+    const result = sut.canActivate({ url: '/redirect' } as RouterStateSnapshot);
     expect(result).toEqual(auth.isLoggedIn);
     expect(result).toBeFalse();
+    expect(auth.redirectUrl).toEqual('/redirect');
     expect(routerMock.navigate).toHaveBeenCalledWith(['/login']);
   });
 });

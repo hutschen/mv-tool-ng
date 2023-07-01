@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable, firstValueFrom, map } from 'rxjs';
 import { CatalogModule } from '../shared/services/catalog-module.service';
 import {
   CatalogRequirement,
@@ -32,6 +32,13 @@ import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { CatalogRequirementInteractionService } from '../shared/services/catalog-requirement-interaction.service';
 import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogService,
+} from '../shared/components/confirm-dialog.component';
+import { isEmpty } from 'radash';
+import { MatDialogRef } from '@angular/material/dialog';
+import { CatalogRequirementBulkEditDialogService } from './catalog-requirement-bulk-edit-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-requirement-table',
@@ -48,15 +55,19 @@ export class CatalogRequirementTableComponent implements OnInit {
   marked!: DataSelection<CatalogRequirement>;
   expanded!: DataSelection<CatalogRequirement>;
   exportQueryParams$!: Observable<IQueryParams>;
+  bulkEditQueryParams$!: Observable<IQueryParams>;
+  bulkEditAll$!: Observable<boolean>;
   @Input() catalogModule!: CatalogModule;
 
   constructor(
     protected _queryParamsService: QueryParamsService,
     protected _catalogRequirementService: CatalogRequirementService,
+    protected _catalogRequirementBulkEditDialogService: CatalogRequirementBulkEditDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
     protected _exportDatasetDialogService: ExportDatasetDialogService,
+    protected _confirmDialogService: ConfirmDialogService,
     readonly catalogRequirementInteractions: CatalogRequirementInteractionService
   ) {}
 
@@ -90,6 +101,62 @@ export class CatalogRequirementTableComponent implements OnInit {
       this.dataFrame.columns.filterQueryParams$,
       this.dataFrame.sort.queryParams$,
     ]);
+
+    // Define bulk edit query params
+    this.bulkEditQueryParams$ = combineQueryParams([
+      this.dataFrame.search.queryParams$,
+      this.dataFrame.columns.filterQueryParams$,
+    ]);
+
+    // Define bulk edit all flag
+    this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
+      map((queryParams) => isEmpty(queryParams))
+    );
+  }
+
+  async onEditCatalogRequirements() {
+    if (this.catalogModule) {
+      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
+      const dialogRef =
+        this._catalogRequirementBulkEditDialogService.openCatalogRequirementBulkEditDialog(
+          { catalog_module_ids: this.catalogModule.id, ...queryParams },
+          !isEmpty(queryParams)
+        );
+      const catalogRequirements = await firstValueFrom(dialogRef.afterClosed());
+      if (catalogRequirements) this.dataFrame.reload();
+    } else {
+      throw new Error('Catalog module is undefined');
+    }
+  }
+
+  async onDeleteCatalogRequirements() {
+    if (this.catalogModule) {
+      let dialogRef: MatDialogRef<ConfirmDialogComponent, boolean>;
+      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
+      if (isEmpty(queryParams)) {
+        dialogRef = this._confirmDialogService.openConfirmDialog(
+          'Delete all catalog requirements?',
+          'Are you sure you want to delete all requirements related to this catalog module?'
+        );
+      } else {
+        dialogRef = this._confirmDialogService.openConfirmDialog(
+          'Delete filtered catalog requirements?',
+          'Are you sure you want to delete all catalog requirement that match the current filter?'
+        );
+      }
+      const confirmed = await firstValueFrom(dialogRef.afterClosed());
+      if (confirmed) {
+        await firstValueFrom(
+          this._catalogRequirementService.deleteCatalogRequirements({
+            catalog_module_ids: this.catalogModule.id,
+            ...queryParams,
+          })
+        );
+        this.dataFrame.reload();
+      }
+    } else {
+      throw new Error('Catalog module is undefined');
+    }
   }
 
   async onExportCatalogRequirementsDataset() {
