@@ -28,6 +28,19 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
         <mat-icon>more_vert</mat-icon>
       </button>
       <mat-menu #menu="matMenu">
+        <ng-container *ngIf="bulkEdit.observed">
+          <button
+            mat-menu-item
+            (click)="bulkEdit.emit($event)"
+            [disabled]="bulkEditDisabled"
+          >
+            <mat-icon>edit_note</mat-icon>
+            <span *ngIf="!isTableFiltered">Edit all</span>
+            <span *ngIf="isTableFiltered">Edit filtered</span>
+          </button>
+          <mat-divider></mat-divider>
+        </ng-container>
+
         <button
           mat-menu-item
           *ngIf="hideColumns.observed"
@@ -65,6 +78,19 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
           Clear markers
         </button>
         <ng-content></ng-content>
+
+        <ng-container *ngIf="bulkDelete.observed">
+          <mat-divider></mat-divider>
+          <button
+            mat-menu-item
+            (click)="bulkDelete.emit($event)"
+            [disabled]="bulkDeleteDisabled"
+          >
+            <mat-icon>delete</mat-icon>
+            <span *ngIf="!isTableFiltered">Delete all</span>
+            <span *ngIf="isTableFiltered">Delete filtered</span>
+          </button>
+        </ng-container>
       </mat-menu>
     </div>
   `,
@@ -72,14 +98,19 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
   styles: [],
 })
 export class TableOptionsComponent implements OnInit {
+  @Output() bulkEdit = new EventEmitter<Event>();
   @Output() hideColumns = new EventEmitter<Event>();
   @Output() clearFilters = new EventEmitter<Event>();
   @Output() clearSort = new EventEmitter<Event>();
   @Output() clearMarkers = new EventEmitter<Event>();
+  @Output() bulkDelete = new EventEmitter<Event>();
+  @Input() bulkEditDisabled: boolean = false;
   @Input() clearFiltersDisabled: boolean = false;
   @Input() clearSortDisabled: boolean = false;
   @Input() hideColumnsDisabled: boolean = false;
   @Input() clearMarkersDisabled: boolean = false;
+  @Input() bulkDeleteDisabled: boolean = false;
+  @Input() isTableFiltered: boolean = false;
 
   constructor() {}
 
@@ -87,10 +118,12 @@ export class TableOptionsComponent implements OnInit {
 
   get enabled(): boolean {
     return Boolean(
-      this.hideColumns.observed ||
+      this.bulkEdit.observed ||
+        this.hideColumns.observed ||
         this.clearFilters.observed ||
         this.clearSort.observed ||
-        this.clearMarkers.observed
+        this.clearMarkers.observed ||
+        this.bulkDelete.observed
     );
   }
 }
