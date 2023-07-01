@@ -131,6 +131,7 @@ export class ProjectMeasureTableComponent implements OnInit {
     const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
     const dialogRef =
       this._measureBulkEditDialogService.openMeasureBulkEditDialog(
+        this.project,
         { project_ids: this.project.id, ...queryParams },
         !isEmpty(queryParams),
         await firstValueFrom(this.dataFrame.columnNames$)

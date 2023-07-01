@@ -28,8 +28,14 @@ import {
 import { isEmpty } from 'radash';
 import { NgForm } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { Project } from '../shared/services/project.service';
+import { DocumentService } from '../shared/services/document.service';
+import { DocumentOptions } from '../shared/data/document/document-options';
+import { CompletionStatusOptions } from '../shared/data/custom/custom-options';
+import { IOption } from '../shared/data/options';
 
 export interface IMeasureBulkEditDialogData {
+  project: Project;
   queryParams: IQueryParams;
   filtered: boolean;
   fieldNames: string[];
@@ -42,13 +48,14 @@ export class MeasureBulkEditDialogService {
   constructor(protected _dialog: MatDialog) {}
 
   openMeasureBulkEditDialog(
+    project: Project,
     queryParams: IQueryParams = {},
     filtered: boolean = false,
     fieldNames: string[] = []
   ): MatDialogRef<MeasureBulkEditDialogComponent, Measure[] | undefined> {
     return this._dialog.open(MeasureBulkEditDialogComponent, {
       width: '550px',
-      data: { queryParams, filtered, fieldNames },
+      data: { project, queryParams, filtered, fieldNames },
     });
   }
 }
@@ -78,14 +85,24 @@ export class MeasureBulkEditDialogComponent {
   readonly filtered: boolean;
   protected _fieldNames: string[];
 
+  // To select project related documents
+  documentOptions: IOption[] = [];
+
   constructor(
     protected _dialogRef: MatDialogRef<MeasureBulkEditDialogComponent>,
     protected _measureService: MeasureService,
+    documentService: DocumentService,
     @Inject(MAT_DIALOG_DATA) data: IMeasureBulkEditDialogData
   ) {
     this.queryParams = data.queryParams;
     this.filtered = data.filtered;
     this._fieldNames = data.fieldNames;
+
+    new DocumentOptions(documentService, data.project, false)
+      .getAllOptions()
+      .subscribe((documentOptions) => {
+        this.documentOptions = documentOptions;
+      });
   }
 
   onEditFlagChange(

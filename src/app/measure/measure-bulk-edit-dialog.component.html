@@ -25,6 +25,7 @@
     <code>*</code> symbol. Otherwise, the input element can be left empty in
     order to clear existing values.
   </p>
+
   <form id="bulkEditForm" #form="ngForm" (submit)="onSave(form)">
     <!-- Reference -->
     <div class="fx-row fx-gap-5 fx-center">
@@ -81,6 +82,32 @@
           [(ngModel)]="patch.description"
           [disabled]="!editFlags.description"
         ></textarea>
+      </mat-form-field>
+    </div>
+
+    <!-- Document -->
+    <div class="fx-row fx-gap-5 fx-center">
+      <mat-checkbox
+        name="documentIdFlag"
+        [(ngModel)]="editFlags.document_id"
+        (change)="onEditFlagChange('document_id')"
+        class="checkbox"
+      ></mat-checkbox>
+      <mat-form-field appearance="fill" class="fx-grow">
+        <mat-label>Select document</mat-label>
+        <mat-select
+          name="documentId"
+          [(ngModel)]="patch.document_id"
+          [disabled]="!editFlags.document_id"
+        >
+          <mat-option [value]="null">None</mat-option>
+          <mat-option
+            *ngFor="let option of documentOptions"
+            [value]="option.value"
+          >
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
       </mat-form-field>
     </div>
 
