@@ -135,6 +135,7 @@
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef>
         <mvtool-table-options
+          [isTableFiltered]="!(bulkEditAll$ | async)"
           (hideColumns)="onHideColumns()"
           [hideColumnsDisabled]="!dataFrame.columns.hideableColumns.length"
           (clearFilters)="dataFrame.columns.clearFilters()"
@@ -143,17 +144,11 @@
           [clearSortDisabled]="!(dataFrame.sort.isSorted$ | async)"
           (clearMarkers)="marked.clear()"
           [clearMarkersDisabled]="!marked.selected.length"
+          (bulkEdit)="onEditMeasures()"
+          [bulkDeleteDisabled]="!(dataFrame.length$ | async)"
+          (bulkDelete)="onDeleteMeasures()"
+          [bulkEditDisabled]="!(dataFrame.length$ | async)"
         >
-          <button mat-menu-item (click)="onEditMeasures()">
-            <mat-icon>edit_note</mat-icon>
-            <span *ngIf="bulkEditAll$ | async">Edit all</span>
-            <span *ngIf="!(bulkEditAll$ | async)">Edit filtered</span>
-          </button>
-          <button mat-menu-item (click)="onDeleteMeasures()">
-            <mat-icon>delete</mat-icon>
-            <span *ngIf="bulkEditAll$ | async">Delete all</span>
-            <span *ngIf="!(bulkEditAll$ | async)">Delete filtered</span>
-          </button>
         </mvtool-table-options>
       </th>
       <td mat-cell *matCellDef="let measure">
