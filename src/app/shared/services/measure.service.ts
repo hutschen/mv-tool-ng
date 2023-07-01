@@ -50,6 +50,8 @@ export interface IMeasureInput {
   document_id?: number | null;
 }
 
+export type IMeasurePatch = Partial<IMeasureInput>;
+
 export interface IMeasure {
   id: number;
   reference?: string | null;
@@ -223,6 +225,15 @@ export class MeasureService {
     return this._crud_measure
       .update(this.getMeasureUrl(measureId), measureInput)
       .pipe(map((measure) => new Measure(measure)));
+  }
+
+  patchMeasures(
+    measurePatch: IMeasurePatch,
+    params: IQueryParams = {}
+  ): Observable<Measure[]> {
+    return this._crud_measure
+      .patch('measures', measurePatch, params)
+      .pipe(map((measures) => measures.map((m) => new Measure(m))));
   }
 
   deleteMeasure(measureId: number): Observable<null> {

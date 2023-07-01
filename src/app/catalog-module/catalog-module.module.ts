@@ -25,6 +25,7 @@ import { CanActivateFn, RouterModule } from '@angular/router';
 import { AuthGuard } from '../shared/guards/auth.guard';
 import { CatalogIdGuard } from '../shared/guards/id.guard';
 import { CatalogModuleViewComponent } from './catalog-module-view.component';
+import { CatalogModuleBulkEditDialogComponent } from './catalog-module-bulk-edit-dialog.component';
 
 const routes = [
   {
@@ -43,6 +44,7 @@ const routes = [
     CatalogModuleDialogComponent,
     CatalogModuleDetailsComponent,
     CatalogModuleViewComponent,
+    CatalogModuleBulkEditDialogComponent,
   ],
   imports: [
     CommonModule,

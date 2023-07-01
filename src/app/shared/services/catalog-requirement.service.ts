@@ -35,6 +35,8 @@ export interface ICatalogRequirementInput {
   gs_verantwortliche?: string | null;
 }
 
+export type ICatalogRequirementPatch = Partial<ICatalogRequirementInput>;
+
 export interface ICatalogRequirement extends ICatalogRequirementInput {
   id: number;
   catalog_module: ICatalogModule;
@@ -157,6 +159,15 @@ export class CatalogRequirementService {
         catalogRequirementInput
       )
       .pipe(map((cr) => new CatalogRequirement(cr)));
+  }
+
+  patchCatalogRequirements(
+    catalogRequirementPatch: ICatalogRequirementPatch,
+    params: IQueryParams = {}
+  ): Observable<CatalogRequirement[]> {
+    return this._crud_catalog_requirement
+      .patch('catalog-requirements', catalogRequirementPatch, params)
+      .pipe(map((crs) => crs.map((cr) => new CatalogRequirement(cr))));
   }
 
   deleteCatalogRequirement(catalogRequirementId: number): Observable<null> {

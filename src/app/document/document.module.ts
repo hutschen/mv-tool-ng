@@ -24,6 +24,7 @@ import { CanActivateFn, RouterModule } from '@angular/router';
 import { DocumentViewComponent } from './document-view.component';
 import { AuthGuard } from '../shared/guards/auth.guard';
 import { ProjectIdGuard } from '../shared/guards/id.guard';
+import { DocumentBulkEditDialogComponent } from './document-bulk-edit-dialog.component';
 
 const routes = [
   {
@@ -41,6 +42,7 @@ const routes = [
     DocumentTableComponent,
     DocumentDialogComponent,
     DocumentViewComponent,
+    DocumentBulkEditDialogComponent,
   ],
   imports: [
     CommonModule,

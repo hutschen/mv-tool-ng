@@ -35,6 +35,7 @@ import {
 } from '../shared/components/confirm-dialog.component';
 import { isEmpty } from 'radash';
 import { MatDialogRef } from '@angular/material/dialog';
+import { DocumentBulkEditDialogService } from './document-bulk-edit-dialog.component';
 
 @Component({
   selector: 'mvtool-document-table',
@@ -58,6 +59,7 @@ export class DocumentTableComponent implements OnInit {
   constructor(
     protected _queryParamsService: QueryParamsService,
     protected _documentService: DocumentService,
+    protected _documentBulkEditDialogService: DocumentBulkEditDialogService,
     protected _downloadDialogService: DownloadDialogService,
     protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
@@ -107,6 +109,21 @@ export class DocumentTableComponent implements OnInit {
     this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
       map((queryParams) => isEmpty(queryParams))
     );
+  }
+
+  async onEditDocuments() {
+    if (this.project) {
+      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
+      const dialogRef =
+        this._documentBulkEditDialogService.openDocumentBulkEditDialog(
+          { project_ids: this.project.id, ...queryParams },
+          !isEmpty(queryParams)
+        );
+      const documents = await firstValueFrom(dialogRef.afterClosed());
+      if (documents) this.dataFrame.reload();
+    } else {
+      throw new Error('Project is undefined');
+    }
   }
 
   async onDeleteDocuments() {

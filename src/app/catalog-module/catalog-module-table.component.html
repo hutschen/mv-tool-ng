@@ -74,6 +74,11 @@
           (clearMarkers)="marked.clear()"
           [clearMarkersDisabled]="!marked.selected.length"
         >
+          <button mat-menu-item (click)="onEditCatalogModules()">
+            <mat-icon>edit_note</mat-icon>
+            <span *ngIf="bulkEditAll$ | async">Edit all</span>
+            <span *ngIf="!(bulkEditAll$ | async)">Edit filtered</span>
+          </button>
           <button mat-menu-item (click)="onDeleteCatalogModules()">
             <mat-icon>delete</mat-icon>
             <span *ngIf="bulkEditAll$ | async">Delete all</span>

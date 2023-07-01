@@ -138,6 +138,18 @@ describe('DocumentService', () => {
     mockResponse.flush(outputMock);
   });
 
+  it('should patch document', (done: DoneFn) => {
+    sut.patchDocuments(inputMock).subscribe({
+      next: (value) => expect(value).toEqual([new Document(outputMock)]),
+      complete: done,
+    });
+    const mockResponse = httpMock.expectOne({
+      method: 'patch',
+      url: crud.toAbsoluteUrl('documents'),
+    });
+    mockResponse.flush([outputMock]);
+  });
+
   it('should delete document', (done: DoneFn) => {
     sut.deleteDocument(outputMock.id).subscribe({
       next: (value) => expect(value).toBeNull(),
