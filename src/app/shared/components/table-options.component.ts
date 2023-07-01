@@ -65,6 +65,19 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
           Clear markers
         </button>
         <ng-content></ng-content>
+
+        <ng-container *ngIf="bulkDelete.observed">
+          <mat-divider></mat-divider>
+          <button
+            mat-menu-item
+            (click)="bulkDelete.emit($event)"
+            [disabled]="bulkDeleteDisabled"
+          >
+            <mat-icon>delete</mat-icon>
+            <span *ngIf="!isTableFiltered">Delete all</span>
+            <span *ngIf="isTableFiltered">Delete filtered</span>
+          </button>
+        </ng-container>
       </mat-menu>
     </div>
   `,
@@ -76,10 +89,13 @@ export class TableOptionsComponent implements OnInit {
   @Output() clearFilters = new EventEmitter<Event>();
   @Output() clearSort = new EventEmitter<Event>();
   @Output() clearMarkers = new EventEmitter<Event>();
+  @Output() bulkDelete = new EventEmitter<Event>();
   @Input() clearFiltersDisabled: boolean = false;
   @Input() clearSortDisabled: boolean = false;
   @Input() hideColumnsDisabled: boolean = false;
   @Input() clearMarkersDisabled: boolean = false;
+  @Input() bulkDeleteDisabled: boolean = false;
+  @Input() isTableFiltered: boolean = false;
 
   constructor() {}
 
@@ -90,7 +106,8 @@ export class TableOptionsComponent implements OnInit {
       this.hideColumns.observed ||
         this.clearFilters.observed ||
         this.clearSort.observed ||
-        this.clearMarkers.observed
+        this.clearMarkers.observed ||
+        this.bulkDelete.observed
     );
   }
 }
