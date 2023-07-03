@@ -16,11 +16,10 @@
 import {
   Component,
   ElementRef,
-  EventEmitter,
   Input,
   OnInit,
-  Output,
   ViewChild,
+  forwardRef,
 } from '@angular/core';
 import {
   IOption,
@@ -30,7 +29,11 @@ import {
   fromOptionValues,
   toOptionValues,
 } from '../data/options';
-import { FormControl } from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormControl,
+  NG_VALUE_ACCESSOR,
+} from '@angular/forms';
 import { ENTER } from '@angular/cdk/keycodes';
 import {
   Observable,
@@ -49,11 +52,22 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'mvtool-options-input',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => OptionsInputComponent),
+      multi: true,
+    },
+  ],
   template: `
     <div class="fx-column">
       <mat-form-field appearance="fill">
         <mat-label>{{ label }}</mat-label>
-        <mat-chip-grid #chipGrid aria-label="Value selection">
+        <mat-chip-grid
+          #chipGrid
+          aria-label="Value selection"
+          [disabled]="isDisabled"
+        >
           <mat-chip-row
             *ngFor="let option of options.selection$ | async"
             (removed)="options.deselectOptions(option)"
@@ -105,11 +119,10 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
     '.hidden { width: 0 !important; height: 0 !important; }',
   ],
 })
-export class OptionsInputComponent implements OnInit {
+export class OptionsInputComponent implements OnInit, ControlValueAccessor {
   @Input() label = 'Options';
   @Input() placeholder = 'Select options ...';
   @Input() options!: Options;
-  @Output() valueChange = new EventEmitter<any | any[]>();
   protected _valueSubject = new ReplaySubject<OptionValue[]>(1);
 
   separatorKeysCodes: number[] = [ENTER];
@@ -118,6 +131,11 @@ export class OptionsInputComponent implements OnInit {
   isLoadingOptions = false;
   isfilterInputHidden = false;
   @ViewChild('filterInput') filterInput!: ElementRef<HTMLInputElement>;
+
+  // Need to implement ControlValueAccessor
+  onChange: (_: any) => void = () => {};
+  onTouched: () => void = () => {};
+  isDisabled = false;
 
   constructor() {}
 
@@ -169,15 +187,29 @@ export class OptionsInputComponent implements OnInit {
     this.options.selectionChanged$
       .pipe(map((options) => options.map((o) => o.value)))
       .subscribe((values) => {
-        this.valueChange.emit(
+        this.onChange(
           fromOptionValues(values, this.options.isMultipleSelection)
         );
+        this.onTouched();
       });
   }
 
-  @Input()
-  set value(value: unknown) {
+  writeValue(value: any): void {
     this._valueSubject.next(toOptionValues(value));
+  }
+
+  registerOnChange(fn: (_: any) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.isDisabled = isDisabled;
+    if (isDisabled) this.filterCtrl.disable();
+    else this.filterCtrl.enable();
   }
 
   onTokenEnd(event: MatChipInputEvent): void {
