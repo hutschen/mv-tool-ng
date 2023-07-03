@@ -31,7 +31,6 @@ import { firstValueFrom } from 'rxjs';
 import { Project } from '../shared/services/project.service';
 import { DocumentService } from '../shared/services/document.service';
 import { DocumentOptions } from '../shared/data/document/document-options';
-import { CompletionStatusOptions } from '../shared/data/custom/custom-options';
 import { IOption } from '../shared/data/options';
 
 export interface IMeasureBulkEditDialogData {
