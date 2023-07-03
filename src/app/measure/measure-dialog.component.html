@@ -51,10 +51,11 @@
 
     <!-- Assign document -->
     <mvtool-options-input
+      name="document_id"
       label="Document"
       placeholder="Select document"
       [options]="documentOptions"
-      [(value)]="measureInput.document_id"
+      [(ngModel)]="measureInput.document_id"
     ></mvtool-options-input>
   </div>
 </mvtool-create-edit-dialog>
