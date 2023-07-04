@@ -37,7 +37,7 @@ import {
 import { ENTER } from '@angular/cdk/keycodes';
 import {
   Observable,
-  ReplaySubject,
+  Subject,
   debounceTime,
   filter,
   map,
@@ -123,7 +123,7 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
   @Input() label = 'Options';
   @Input() placeholder = 'Select options ...';
   @Input() options!: Options;
-  protected _valueSubject = new ReplaySubject<OptionValue[]>(1);
+  protected _writtenValueSubject = new Subject<OptionValue[]>();
 
   separatorKeysCodes: number[] = [ENTER];
   filterCtrl = new FormControl('');
@@ -161,7 +161,7 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
     }
 
     // Set the incoming value
-    this._valueSubject
+    this._writtenValueSubject
       .pipe(
         withLatestFrom(this.options.selection$),
         // Check if selection will be changed by the new value
@@ -195,7 +195,7 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
   }
 
   writeValue(value: any): void {
-    this._valueSubject.next(toOptionValues(value));
+    this._writtenValueSubject.next(toOptionValues(value));
   }
 
   registerOnChange(fn: (_: any) => void): void {
