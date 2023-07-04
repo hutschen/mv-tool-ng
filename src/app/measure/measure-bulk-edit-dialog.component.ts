@@ -31,7 +31,6 @@ import { firstValueFrom } from 'rxjs';
 import { Project } from '../shared/services/project.service';
 import { DocumentService } from '../shared/services/document.service';
 import { DocumentOptions } from '../shared/data/document/document-options';
-import { CompletionStatusOptions } from '../shared/data/custom/custom-options';
 import { IOption } from '../shared/data/options';
 
 export interface IMeasureBulkEditDialogData {
@@ -86,7 +85,7 @@ export class MeasureBulkEditDialogComponent {
   protected _fieldNames: string[];
 
   // To select project related documents
-  documentOptions: IOption[] = [];
+  documentOptions: DocumentOptions;
 
   constructor(
     protected _dialogRef: MatDialogRef<MeasureBulkEditDialogComponent>,
@@ -98,11 +97,11 @@ export class MeasureBulkEditDialogComponent {
     this.filtered = data.filtered;
     this._fieldNames = data.fieldNames;
 
-    new DocumentOptions(documentService, data.project, false)
-      .getAllOptions()
-      .subscribe((documentOptions) => {
-        this.documentOptions = documentOptions;
-      });
+    this.documentOptions = new DocumentOptions(
+      documentService,
+      data.project,
+      false
+    );
   }
 
   onEditFlagChange(
