@@ -124,6 +124,7 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
   @Input() placeholder = 'Select options ...';
   @Input() options!: Options;
   protected _writtenValueSubject = new Subject<OptionValue[]>();
+  protected _isWritingValue = false; // TODO: This is used for temporary workaround to prevent emitting values set by writeValue()
 
   separatorKeysCodes: number[] = [ENTER];
   filterCtrl = new FormControl('');
@@ -180,17 +181,24 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
         )
       )
       .subscribe((options) => {
-        this.options.setSelection(...options);
+        this._isWritingValue = true; // writing value flag has to be set before changing the selection
+        if (!this.options.setSelection(...options)) {
+          this._isWritingValue = false; // if selection is not changed, writing value flag has to be reset
+        }
       });
 
-    // Emit the valueChange event when the selection changes
+    // Emit the changed values when the selection changes
     this.options.selectionChanged$
       .pipe(map((options) => options.map((o) => o.value)))
       .subscribe((values) => {
-        this.onChange(
-          fromOptionValues(values, this.options.isMultipleSelection)
-        );
-        this.onTouched();
+        if (!this._isWritingValue) {
+          this.onChange(
+            fromOptionValues(values, this.options.isMultipleSelection)
+          );
+          this.onTouched();
+        } else {
+          this._isWritingValue = false;
+        }
       });
   }
 
