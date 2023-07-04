@@ -15,7 +15,15 @@
 
 import { Component, Input, OnInit, forwardRef } from '@angular/core';
 import { IOption, Options } from '../data/options';
-import { Observable, debounceTime, startWith, switchMap, tap } from 'rxjs';
+import {
+  Observable,
+  Subject,
+  debounceTime,
+  merge,
+  startWith,
+  switchMap,
+  tap,
+} from 'rxjs';
 import {
   ControlValueAccessor,
   FormControl,
@@ -41,6 +49,7 @@ import {
           [placeholder]="placeholder"
           [formControl]="filterCtrl"
           [matAutocomplete]="auto"
+          (blur)="onTouched()"
         />
         <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption>
           <mat-option
@@ -71,6 +80,7 @@ export class AutocompleteComponent implements OnInit, ControlValueAccessor {
   loadedOptions$!: Observable<IOption[]>;
   isLoadingOptions = false;
 
+  protected _writtenValueSubject = new Subject<string | null>();
   onChange: (_: any) => void = () => {};
   onTouched: () => void = () => {};
 
@@ -78,7 +88,10 @@ export class AutocompleteComponent implements OnInit, ControlValueAccessor {
 
   ngOnInit(): void {
     // Load options when the filter changes
-    this.loadedOptions$ = this.filterCtrl.valueChanges.pipe(
+    this.loadedOptions$ = merge(
+      this.filterCtrl.valueChanges,
+      this._writtenValueSubject
+    ).pipe(
       startWith(this.filterCtrl.value),
       debounceTime(this.options.hasToLoad ? 250 : 0),
       tap(() => (this.isLoadingOptions = true && this.options.hasToLoad)),
@@ -94,7 +107,9 @@ export class AutocompleteComponent implements OnInit, ControlValueAccessor {
   }
 
   writeValue(value: any): void {
-    this.filterCtrl.setValue(value);
+    value = typeof value === 'string' ? value : null;
+    this.filterCtrl.setValue(value, { emitEvent: false });
+    this._writtenValueSubject.next(value);
   }
 
   registerOnChange(fn: (_: any) => void): void {
@@ -106,7 +121,7 @@ export class AutocompleteComponent implements OnInit, ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    if (isDisabled) this.filterCtrl.disable();
-    else this.filterCtrl.enable();
+    if (isDisabled) this.filterCtrl.disable({ emitEvent: false });
+    else this.filterCtrl.enable({ emitEvent: false });
   }
 }
