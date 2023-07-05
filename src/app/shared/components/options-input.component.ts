@@ -164,6 +164,7 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
     // Set the incoming value
     this._writtenValueSubject
       .pipe(
+        debounceTime(this.options.hasToLoad ? 250 : 0),
         withLatestFrom(this.options.selection$),
         // Check if selection will be changed by the new value
         filter(([values, options]) =>
