@@ -41,6 +41,8 @@ import {
   debounceTime,
   filter,
   map,
+  merge,
+  shareReplay,
   startWith,
   switchMap,
   takeUntil,
@@ -123,6 +125,7 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
   @Input() label = 'Options';
   @Input() placeholder = 'Select options ...';
   @Input() options!: Options;
+  protected _expectedValueSubject = new Subject<OptionValue[]>();
   protected _writtenValueSubject = new Subject<OptionValue[]>();
   protected _isWritingValue = false; // TODO: This is used for temporary workaround to prevent emitting values set by writeValue()
 
@@ -137,8 +140,6 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
   onChange: (_: any) => void = () => {};
   onTouched: () => void = () => {};
   isDisabled = false;
-
-  constructor() {}
 
   ngOnInit(): void {
     // Load options when the filter changes
@@ -161,18 +162,28 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
       });
     }
 
+    // Manages the expected value. This is useful because a value written via
+    // writeValue will only actually be reflected in `selection$` after some
+    // time, since options corresponding to the value have to be loaded.
+    const expectedValue$ = merge(
+      this.options.selection$.pipe(
+        map((options) => options.map((o) => o.value))
+      ),
+      this._expectedValueSubject
+    ).pipe(shareReplay(1));
+
     // Set the incoming value
     this._writtenValueSubject
       .pipe(
-        debounceTime(this.options.hasToLoad ? 250 : 0),
-        withLatestFrom(this.options.selection$),
-        // Check if selection will be changed by the new value
-        filter(([values, options]) =>
-          areSelectedValuesChanged(
-            values,
-            options.map((o) => o.value)
-          )
+        // Get the expected value
+        withLatestFrom(expectedValue$),
+        // Check if the expected value is changed by the new value, only then
+        // the value is passed on.
+        filter(([values, expectedValues]) =>
+          areSelectedValuesChanged(values, expectedValues)
         ),
+        // Set the new value as the expected value
+        tap(([values]) => this._expectedValueSubject.next(values)),
         // Load the options corresponding to the new value,
         // but stop if the selection changes in the meantime
         switchMap(([values]) =>
