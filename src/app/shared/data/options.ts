@@ -50,15 +50,13 @@ export function fromOptionValues(
 }
 
 export function areSelectedValuesChanged(
-  prevValues: OptionValue[],
-  currValues: OptionValue[]
+  previous: OptionValue[],
+  current: OptionValue[]
 ): boolean {
-  if (prevValues.length !== currValues.length) {
-    return true;
-  }
-
-  const currValuesSet = new Set(currValues);
-  return prevValues.some((v) => !currValuesSet.has(v));
+  return !(
+    previous.length == current.length &&
+    previous.every(Set.prototype.has, new Set(current))
+  );
 }
 
 export function isSelectionChanged(
