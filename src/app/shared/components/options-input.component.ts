@@ -39,6 +39,7 @@ import {
   Observable,
   Subject,
   debounceTime,
+  distinctUntilChanged,
   filter,
   map,
   merge,
@@ -165,6 +166,23 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
     // Manages the expected value. This is useful because a value written via
     // writeValue will only actually be reflected in `selection$` after some
     // time, since options corresponding to the value have to be loaded.
+    const valueChanges$ = merge(
+      this.options.selectionChanged$.pipe(
+        map((options) => options.map((o) => o.value)),
+        map((values) => [values, false] as [OptionValue[], boolean])
+      ),
+      this._writtenValueSubject.pipe(
+        map((values) => [values, true] as [OptionValue[], boolean])
+      )
+    ).pipe(
+      // Only emit if the value is changed
+      distinctUntilChanged(
+        ([prev], [curr]) =>
+          prev.length === curr.length &&
+          prev.every(Set.prototype.has, new Set(curr))
+      )
+    );
+
     const expectedValue$ = merge(
       this.options.selection$.pipe(
         map((options) => options.map((o) => o.value))
