@@ -93,22 +93,15 @@
         (change)="onEditFlagChange('document_id')"
         class="checkbox"
       ></mat-checkbox>
-      <mat-form-field appearance="fill" class="fx-grow">
-        <mat-label>Select document</mat-label>
-        <mat-select
-          name="documentId"
-          [(ngModel)]="patch.document_id"
-          [disabled]="!editFlags.document_id"
-        >
-          <mat-option [value]="null">None</mat-option>
-          <mat-option
-            *ngFor="let option of documentOptions"
-            [value]="option.value"
-          >
-            {{ option.label }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+      <mvtool-options-input
+        class="fx-grow"
+        name="document_id"
+        label="Document"
+        placeholder="Select document"
+        [options]="documentOptions"
+        [(ngModel)]="patch.document_id"
+        [disabled]="!editFlags.document_id"
+      ></mvtool-options-input>
     </div>
 
     <!-- Compliance -->

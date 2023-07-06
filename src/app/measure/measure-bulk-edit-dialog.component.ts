@@ -85,7 +85,7 @@ export class MeasureBulkEditDialogComponent {
   protected _fieldNames: string[];
 
   // To select project related documents
-  documentOptions: IOption[] = [];
+  documentOptions: DocumentOptions;
 
   constructor(
     protected _dialogRef: MatDialogRef<MeasureBulkEditDialogComponent>,
@@ -97,11 +97,11 @@ export class MeasureBulkEditDialogComponent {
     this.filtered = data.filtered;
     this._fieldNames = data.fieldNames;
 
-    new DocumentOptions(documentService, data.project, false)
-      .getAllOptions()
-      .subscribe((documentOptions) => {
-        this.documentOptions = documentOptions;
-      });
+    this.documentOptions = new DocumentOptions(
+      documentService,
+      data.project,
+      false
+    );
   }
 
   onEditFlagChange(

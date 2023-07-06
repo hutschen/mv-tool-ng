@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Observable, Subject, firstValueFrom, forkJoin, take } from 'rxjs';
+import { forkJoin, take } from 'rxjs';
 import {
   StaticOptions,
   StringOptions,
@@ -293,6 +293,40 @@ describe('StaticOptions', () => {
 
     instance.selectOptions(sampleOptions[0], sampleOptions[2]);
     instance.clearSelection();
+  });
+
+  it('should indicate that the selection has changed', (done) => {
+    const instance = new StaticOptions(sampleOptions, true);
+
+    // selectionChanged$ should only emit when the selection actually changes.
+    // changeCount tracks the number of emitted values.
+    let changedCount = 0;
+    const sub = instance.selectionChanged$.subscribe((selection) => {
+      changedCount++;
+      if (selection.length === 0) {
+        expect(changedCount).toBe(6);
+        sub.unsubscribe();
+        done();
+      }
+    });
+
+    // Methods to change the selection should return true only if the selection
+    // has changed as a result of their call.
+    expect(!!instance.selectOptions(sampleOptions[0])).toBeTrue();
+    expect(!!instance.selectOptions(sampleOptions[0])).toBeFalse();
+
+    expect(!!instance.setSelection(...sampleOptions)).toBeTrue();
+    expect(!!instance.setSelection(...sampleOptions)).toBeFalse();
+
+    expect(!!instance.deselectOptions(sampleOptions[1])).toBeTrue();
+    expect(!!instance.deselectOptions(sampleOptions[1])).toBeFalse();
+
+    expect(!!instance.toggleOption(sampleOptions[2])).toBeTrue();
+    expect(!!instance.toggleOption(sampleOptions[2])).toBeTrue();
+
+    expect(!!instance.clearSelection()).toBeTrue();
+    expect(!!instance.clearSelection()).toBeFalse();
+    expect(instance.selection).toEqual([]);
   });
 });
 

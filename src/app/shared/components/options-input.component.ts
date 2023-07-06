@@ -16,44 +16,61 @@
 import {
   Component,
   ElementRef,
-  EventEmitter,
   Input,
   OnInit,
-  Output,
   ViewChild,
+  forwardRef,
 } from '@angular/core';
 import {
   IOption,
   OptionValue,
   Options,
-  areSelectedValuesChanged,
   fromOptionValues,
   toOptionValues,
 } from '../data/options';
-import { FormControl } from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormControl,
+  NG_VALUE_ACCESSOR,
+} from '@angular/forms';
 import { ENTER } from '@angular/cdk/keycodes';
 import {
   Observable,
-  ReplaySubject,
+  Subject,
   debounceTime,
+  distinctUntilChanged,
   filter,
+  finalize,
   map,
+  merge,
+  share,
+  skip,
   startWith,
   switchMap,
   takeUntil,
   tap,
-  withLatestFrom,
 } from 'rxjs';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'mvtool-options-input',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => OptionsInputComponent),
+      multi: true,
+    },
+  ],
   template: `
     <div class="fx-column">
       <mat-form-field appearance="fill">
         <mat-label>{{ label }}</mat-label>
-        <mat-chip-grid #chipGrid aria-label="Value selection">
+        <mat-chip-grid
+          #chipGrid
+          aria-label="Value selection"
+          [disabled]="isDisabled"
+        >
           <mat-chip-row
             *ngFor="let option of options.selection$ | async"
             (removed)="options.deselectOptions(option)"
@@ -91,7 +108,7 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
         </mat-autocomplete>
         <mat-spinner
           class="spinner"
-          *ngIf="isLoadingOptions"
+          *ngIf="isLoading"
           matSuffix
           diameter="20"
         ></mat-spinner>
@@ -105,30 +122,36 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
     '.hidden { width: 0 !important; height: 0 !important; }',
   ],
 })
-export class OptionsInputComponent implements OnInit {
+export class OptionsInputComponent implements OnInit, ControlValueAccessor {
   @Input() label = 'Options';
   @Input() placeholder = 'Select options ...';
   @Input() options!: Options;
-  @Output() valueChange = new EventEmitter<any | any[]>();
-  protected _valueSubject = new ReplaySubject<OptionValue[]>(1);
 
   separatorKeysCodes: number[] = [ENTER];
   filterCtrl = new FormControl('');
   loadedOptions$!: Observable<IOption[]>;
-  isLoadingOptions = false;
+  protected _isLoadingOptions = false;
+  protected _isLoadingSelection = false;
   isfilterInputHidden = false;
   @ViewChild('filterInput') filterInput!: ElementRef<HTMLInputElement>;
 
-  constructor() {}
+  // Need to implement ControlValueAccessor
+  protected _writtenValueSubject = new Subject<OptionValue[]>();
+  onChange: (_: any) => void = () => {};
+  onTouched: () => void = () => {};
+  isDisabled = false;
 
   ngOnInit(): void {
     // Load options when the filter changes
     this.loadedOptions$ = this.filterCtrl.valueChanges.pipe(
       startWith(null),
       debounceTime(this.options.hasToLoad ? 250 : 0),
-      tap(() => (this.isLoadingOptions = true && this.options.hasToLoad)),
-      switchMap((filter) => this.options.filterOptions(filter, 10)),
-      tap(() => (this.isLoadingOptions = false))
+      switchMap((filter) => {
+        this._isLoadingOptions = true && this.options.hasToLoad;
+        return this.options
+          .filterOptions(filter, 10)
+          .pipe(finalize(() => (this._isLoadingOptions = false)));
+      })
     );
 
     // Dynamically show/hide the filter input if only one option can be selected
@@ -142,42 +165,83 @@ export class OptionsInputComponent implements OnInit {
       });
     }
 
-    // Set the incoming value
-    this._valueSubject
+    // Manages the current value. This is necessary because a value written via
+    // writeValue will only actually be reflected in this.options.selection$
+    // after some time, since options corresponding to the value have to be
+    // loaded.
+    const valueChanges$ = merge(
+      this.options.selection$.pipe(
+        map((options) => options.map((o) => o.value)),
+        map((values) => [values, false] as [OptionValue[], boolean])
+      ),
+      this._writtenValueSubject.pipe(
+        map((values) => [values, true] as [OptionValue[], boolean])
+      )
+    ).pipe(
+      // Only emit if the value is changed
+      distinctUntilChanged(
+        ([prev], [curr]) =>
+          prev.length === curr.length &&
+          prev.every(Set.prototype.has, new Set(curr))
+      ),
+      // Skip the first value, since it is the initial value
+      skip(1),
+      share()
+    );
+
+    // Set incoming values which are set using the writeValue method
+    valueChanges$
       .pipe(
-        withLatestFrom(this.options.selection$),
-        // Check if selection will be changed by the new value
-        filter(([values, options]) =>
-          areSelectedValuesChanged(
-            values,
-            options.map((o) => o.value)
-          )
-        ),
+        filter(([, isWritten]) => isWritten),
+        map(([values]) => values),
         // Load the options corresponding to the new value,
         // but stop if the selection changes in the meantime
-        switchMap(([values]) =>
-          this.options
-            .getOptions(...values)
-            .pipe(takeUntil(this.options.selectionChanged$))
-        )
+        switchMap((values) => {
+          this._isLoadingSelection = true && this.options.hasToLoad;
+          return this.options.getOptions(...values).pipe(
+            takeUntil(this.options.selectionChanged$),
+            finalize(() => (this._isLoadingSelection = false))
+          );
+        })
       )
       .subscribe((options) => {
         this.options.setSelection(...options);
       });
 
-    // Emit the valueChange event when the selection changes
-    this.options.selectionChanged$
-      .pipe(map((options) => options.map((o) => o.value)))
+    // Call onChange when the value is changed by the control itself
+    valueChanges$
+      .pipe(
+        filter(([, isWritten]) => !isWritten),
+        map(([values]) => values)
+      )
       .subscribe((values) => {
-        this.valueChange.emit(
+        this.onChange(
           fromOptionValues(values, this.options.isMultipleSelection)
         );
+        this.onTouched();
       });
   }
 
-  @Input()
-  set value(value: unknown) {
-    this._valueSubject.next(toOptionValues(value));
+  get isLoading(): boolean {
+    return this._isLoadingOptions || this._isLoadingSelection;
+  }
+
+  writeValue(value: any): void {
+    this._writtenValueSubject.next(toOptionValues(value));
+  }
+
+  registerOnChange(fn: (_: any) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.isDisabled = isDisabled;
+    if (isDisabled) this.filterCtrl.disable();
+    else this.filterCtrl.enable();
   }
 
   onTokenEnd(event: MatChipInputEvent): void {
