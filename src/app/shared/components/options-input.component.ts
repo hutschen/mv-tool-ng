@@ -43,6 +43,7 @@ import {
   finalize,
   map,
   merge,
+  share,
   skip,
   startWith,
   switchMap,
@@ -184,7 +185,8 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
           prev.every(Set.prototype.has, new Set(curr))
       ),
       // Skip the first value, since it is the initial value
-      skip(1)
+      skip(1),
+      share()
     );
 
     // Set incoming values which are set using the writeValue method
