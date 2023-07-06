@@ -43,6 +43,7 @@ import {
   finalize,
   map,
   merge,
+  skip,
   startWith,
   switchMap,
   takeUntil,
@@ -168,7 +169,7 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
     // after some time, since options corresponding to the value have to be
     // loaded.
     const valueChanges$ = merge(
-      this.options.selectionChanged$.pipe(
+      this.options.selection$.pipe(
         map((options) => options.map((o) => o.value)),
         map((values) => [values, false] as [OptionValue[], boolean])
       ),
@@ -181,7 +182,9 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
         ([prev], [curr]) =>
           prev.length === curr.length &&
           prev.every(Set.prototype.has, new Set(curr))
-      )
+      ),
+      // Skip the first value, since it is the initial value
+      skip(1)
     );
 
     // Set incoming values which are set using the writeValue method
