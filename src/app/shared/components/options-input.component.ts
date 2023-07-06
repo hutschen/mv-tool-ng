@@ -40,6 +40,7 @@ import {
   debounceTime,
   distinctUntilChanged,
   filter,
+  finalize,
   map,
   merge,
   startWith,
@@ -105,7 +106,7 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
         </mat-autocomplete>
         <mat-spinner
           class="spinner"
-          *ngIf="isLoadingOptions"
+          *ngIf="isLoading"
           matSuffix
           diameter="20"
         ></mat-spinner>
@@ -127,7 +128,8 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
   separatorKeysCodes: number[] = [ENTER];
   filterCtrl = new FormControl('');
   loadedOptions$!: Observable<IOption[]>;
-  isLoadingOptions = false;
+  protected _isLoadingOptions = false;
+  protected _isLoadingSelection = false;
   isfilterInputHidden = false;
   @ViewChild('filterInput') filterInput!: ElementRef<HTMLInputElement>;
 
@@ -142,9 +144,12 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
     this.loadedOptions$ = this.filterCtrl.valueChanges.pipe(
       startWith(null),
       debounceTime(this.options.hasToLoad ? 250 : 0),
-      tap(() => (this.isLoadingOptions = true && this.options.hasToLoad)),
-      switchMap((filter) => this.options.filterOptions(filter, 10)),
-      tap(() => (this.isLoadingOptions = false))
+      switchMap((filter) => {
+        this._isLoadingOptions = true && this.options.hasToLoad;
+        return this.options
+          .filterOptions(filter, 10)
+          .pipe(finalize(() => (this._isLoadingOptions = false)));
+      })
     );
 
     // Dynamically show/hide the filter input if only one option can be selected
@@ -186,11 +191,13 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
         map(([values]) => values),
         // Load the options corresponding to the new value,
         // but stop if the selection changes in the meantime
-        switchMap((values) =>
-          this.options
-            .getOptions(...values)
-            .pipe(takeUntil(this.options.selectionChanged$))
-        )
+        switchMap((values) => {
+          this._isLoadingSelection = true && this.options.hasToLoad;
+          return this.options.getOptions(...values).pipe(
+            takeUntil(this.options.selectionChanged$),
+            finalize(() => (this._isLoadingSelection = false))
+          );
+        })
       )
       .subscribe((options) => {
         this.options.setSelection(...options);
@@ -208,6 +215,10 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
         );
         this.onTouched();
       });
+  }
+
+  get isLoading(): boolean {
+    return this._isLoadingOptions || this._isLoadingSelection;
   }
 
   writeValue(value: any): void {
