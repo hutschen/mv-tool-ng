@@ -25,7 +25,6 @@ import {
   IOption,
   OptionValue,
   Options,
-  areSelectedValuesChanged,
   fromOptionValues,
   toOptionValues,
 } from '../data/options';
@@ -43,12 +42,10 @@ import {
   filter,
   map,
   merge,
-  shareReplay,
   startWith,
   switchMap,
   takeUntil,
   tap,
-  withLatestFrom,
 } from 'rxjs';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
@@ -126,9 +123,6 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
   @Input() label = 'Options';
   @Input() placeholder = 'Select options ...';
   @Input() options!: Options;
-  protected _expectedValueSubject = new Subject<OptionValue[]>();
-  protected _writtenValueSubject = new Subject<OptionValue[]>();
-  protected _isWritingValue = false; // TODO: This is used for temporary workaround to prevent emitting values set by writeValue()
 
   separatorKeysCodes: number[] = [ENTER];
   filterCtrl = new FormControl('');
@@ -138,6 +132,7 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
   @ViewChild('filterInput') filterInput!: ElementRef<HTMLInputElement>;
 
   // Need to implement ControlValueAccessor
+  protected _writtenValueSubject = new Subject<OptionValue[]>();
   onChange: (_: any) => void = () => {};
   onTouched: () => void = () => {};
   isDisabled = false;
@@ -163,9 +158,10 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
       });
     }
 
-    // Manages the expected value. This is useful because a value written via
-    // writeValue will only actually be reflected in `selection$` after some
-    // time, since options corresponding to the value have to be loaded.
+    // Manages the current value. This is necessary because a value written via
+    // writeValue will only actually be reflected in this.options.selection$
+    // after some time, since options corresponding to the value have to be
+    // loaded.
     const valueChanges$ = merge(
       this.options.selectionChanged$.pipe(
         map((options) => options.map((o) => o.value)),
@@ -183,52 +179,34 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
       )
     );
 
-    const expectedValue$ = merge(
-      this.options.selection$.pipe(
-        map((options) => options.map((o) => o.value))
-      ),
-      this._expectedValueSubject
-    ).pipe(shareReplay(1));
-
-    // Set the incoming value
-    this._writtenValueSubject
+    // Set incoming values which are set using the writeValue method
+    valueChanges$
       .pipe(
-        // Get the expected value
-        withLatestFrom(expectedValue$),
-        // Check if the expected value is changed by the new value, only then
-        // the value is passed on.
-        filter(([values, expectedValues]) =>
-          areSelectedValuesChanged(values, expectedValues)
-        ),
-        // Set the new value as the expected value
-        tap(([values]) => this._expectedValueSubject.next(values)),
+        filter(([, isWritten]) => isWritten),
+        map(([values]) => values),
         // Load the options corresponding to the new value,
         // but stop if the selection changes in the meantime
-        switchMap(([values]) =>
+        switchMap((values) =>
           this.options
             .getOptions(...values)
             .pipe(takeUntil(this.options.selectionChanged$))
         )
       )
       .subscribe((options) => {
-        this._isWritingValue = true; // writing value flag has to be set before changing the selection
-        if (!this.options.setSelection(...options)) {
-          this._isWritingValue = false; // if selection is not changed, writing value flag has to be reset
-        }
+        this.options.setSelection(...options);
       });
 
-    // Emit the changed values when the selection changes
-    this.options.selectionChanged$
-      .pipe(map((options) => options.map((o) => o.value)))
+    // Call onChange when the value is changed by the control itself
+    valueChanges$
+      .pipe(
+        filter(([, isWritten]) => !isWritten),
+        map(([values]) => values)
+      )
       .subscribe((values) => {
-        if (!this._isWritingValue) {
-          this.onChange(
-            fromOptionValues(values, this.options.isMultipleSelection)
-          );
-          this.onTouched();
-        } else {
-          this._isWritingValue = false;
-        }
+        this.onChange(
+          fromOptionValues(values, this.options.isMultipleSelection)
+        );
+        this.onTouched();
       });
   }
 
