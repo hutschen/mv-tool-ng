@@ -31,7 +31,6 @@ import { firstValueFrom } from 'rxjs';
 import { Project } from '../shared/services/project.service';
 import { DocumentService } from '../shared/services/document.service';
 import { DocumentOptions } from '../shared/data/document/document-options';
-import { IOption } from '../shared/data/options';
 
 export interface IMeasureBulkEditDialogData {
   project: Project;
@@ -39,6 +38,16 @@ export interface IMeasureBulkEditDialogData {
   filtered: boolean;
   fieldNames: string[];
 }
+
+type EditFlag =
+  | 'reference'
+  | 'summary'
+  | 'description'
+  | 'compliance'
+  | 'completion'
+  | 'verification'
+  | 'jira_issue_id'
+  | 'document_id';
 
 @Injectable({
   providedIn: 'root',
@@ -70,16 +79,6 @@ export class MeasureBulkEditDialogService {
 })
 export class MeasureBulkEditDialogComponent {
   patch: IMeasurePatch = {};
-  readonly editFlags = {
-    reference: false,
-    summary: false,
-    description: false,
-    compliance: false,
-    completion: false,
-    verification: false,
-    jira_issue_id: false,
-    document_id: false,
-  };
   readonly queryParams: IQueryParams;
   readonly filtered: boolean;
   protected _fieldNames: string[];
@@ -104,24 +103,16 @@ export class MeasureBulkEditDialogComponent {
     );
   }
 
-  onEditFlagChange(
-    key:
-      | 'reference'
-      | 'summary'
-      | 'description'
-      | 'compliance'
-      | 'completion'
-      | 'verification'
-      | 'jira_issue_id'
-      | 'document_id'
-  ) {
-    switch (key) {
+  toggleEdit(flag: EditFlag) {
+    const notSet = !this.isEdited(flag);
+    switch (flag) {
       case 'summary':
-        if (!this.editFlags.summary) delete this.patch.summary;
+        if (notSet) this.patch.summary = '';
+        else delete this.patch.summary;
         break;
 
       case 'compliance':
-        if (this.editFlags.compliance) {
+        if (notSet) {
           this.patch.compliance_status = null;
           this.patch.compliance_comment = null;
         } else {
@@ -131,7 +122,7 @@ export class MeasureBulkEditDialogComponent {
         break;
 
       case 'completion':
-        if (this.editFlags.completion) {
+        if (notSet) {
           this.patch.completion_status = null;
           this.patch.completion_comment = null;
         } else {
@@ -141,7 +132,7 @@ export class MeasureBulkEditDialogComponent {
         break;
 
       case 'verification':
-        if (this.editFlags.verification) {
+        if (notSet) {
           this.patch.verification_method = null;
           this.patch.verification_status = null;
           this.patch.verification_comment = null;
@@ -153,8 +144,34 @@ export class MeasureBulkEditDialogComponent {
         break;
 
       default:
-        if (this.editFlags[key]) this.patch[key] = null;
-        else delete this.patch[key];
+        if (notSet) this.patch[flag] = null;
+        else delete this.patch[flag];
+    }
+  }
+
+  isEdited(flag: EditFlag): boolean {
+    switch (flag) {
+      case 'compliance':
+        return (
+          this.patch.compliance_status !== undefined ||
+          this.patch.compliance_comment !== undefined
+        );
+
+      case 'completion':
+        return (
+          this.patch.completion_status !== undefined ||
+          this.patch.completion_comment !== undefined
+        );
+
+      case 'verification':
+        return (
+          this.patch.verification_method !== undefined ||
+          this.patch.verification_status !== undefined ||
+          this.patch.verification_comment !== undefined
+        );
+
+      default:
+        return this.patch[flag] !== undefined;
     }
   }
 
