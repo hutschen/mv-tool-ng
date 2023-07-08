@@ -33,6 +33,7 @@
         [checked]="isEdited('reference')"
         (change)="toggleEdit('reference')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
         <mat-label>Document reference</mat-label>
@@ -40,7 +41,7 @@
           name="reference"
           matInput
           [(ngModel)]="patch.reference"
-          [disabled]="!isEdited('reference')"
+          [disabled]="!isEdited('reference') || isSaving"
         />
       </mat-form-field>
     </div>
@@ -52,6 +53,7 @@
         [checked]="isEdited('title')"
         (change)="toggleEdit('title')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
         <mat-label>Document title</mat-label>
@@ -60,7 +62,7 @@
           matInput
           [(ngModel)]="patch.title"
           [required]="isEdited('title')"
-          [disabled]="!isEdited('title')"
+          [disabled]="!isEdited('title') || isSaving"
         />
       </mat-form-field>
     </div>
@@ -72,6 +74,7 @@
         [checked]="isEdited('description')"
         (change)="toggleEdit('description')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
         <mat-label>Document description</mat-label>
@@ -79,26 +82,28 @@
           name="description"
           matInput
           [(ngModel)]="patch.description"
-          [disabled]="!isEdited('description')"
+          [disabled]="!isEdited('description') || isSaving"
         ></textarea>
       </mat-form-field>
     </div>
   </form>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">
+  <button mat-button (click)="onCancel()" [disabled]="isSaving">
     <mat-icon>cancel</mat-icon>
     Cancel
   </button>
-  <button
-    mat-raised-button
-    color="accent"
-    [disabled]="form.invalid || !isPatchEdited"
-    type="submit"
-    form="bulkEditForm"
-  >
-    <mat-icon>save</mat-icon>
-    <span>&nbsp;</span>
-    Save
-  </button>
+  <mvtool-loading-overlay [isLoading]="isSaving">
+    <button
+      mat-raised-button
+      color="accent"
+      [disabled]="form.invalid || !isPatchEdited || isSaving"
+      type="submit"
+      form="bulkEditForm"
+    >
+      <mat-icon>save</mat-icon>
+      <span>&nbsp;</span>
+      Save
+    </button>
+  </mvtool-loading-overlay>
 </div>

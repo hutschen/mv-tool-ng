@@ -33,6 +33,7 @@
         [checked]="isEdited('reference')"
         (change)="toggleEdit('reference')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
         <mat-label>Requirement reference</mat-label>
@@ -40,7 +41,7 @@
           name="reference"
           matInput
           [(ngModel)]="patch.reference"
-          [disabled]="!isEdited('reference')"
+          [disabled]="!isEdited('reference') || isSaving"
         />
       </mat-form-field>
     </div>
@@ -52,6 +53,7 @@
         [checked]="isEdited('summary')"
         (change)="toggleEdit('summary')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
         <mat-label>Requirement summary</mat-label>
@@ -60,7 +62,7 @@
           matInput
           [(ngModel)]="patch.summary"
           [required]="isEdited('summary')"
-          [disabled]="!isEdited('summary')"
+          [disabled]="!isEdited('summary') || isSaving"
         />
       </mat-form-field>
     </div>
@@ -72,6 +74,7 @@
         [checked]="isEdited('description')"
         (change)="toggleEdit('description')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
         <mat-label>Requirement description</mat-label>
@@ -79,7 +82,7 @@
           name="description"
           matInput
           [(ngModel)]="patch.description"
-          [disabled]="!isEdited('description')"
+          [disabled]="!isEdited('description') || isSaving"
         ></textarea>
       </mat-form-field>
     </div>
@@ -91,6 +94,7 @@
         [checked]="isEdited('milestone')"
         (change)="toggleEdit('milestone')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mvtool-autocomplete
         class="fx-grow"
@@ -98,7 +102,7 @@
         label="Milestone"
         [options]="milestoneOptions"
         [(ngModel)]="patch.milestone"
-        [disabled]="!isEdited('milestone')"
+        [disabled]="!isEdited('milestone') || isSaving"
       >
       </mvtool-autocomplete>
     </div>
@@ -110,6 +114,7 @@
         [checked]="isEdited('target_object')"
         (change)="toggleEdit('target_object')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mvtool-autocomplete
         class="fx-grow"
@@ -117,7 +122,7 @@
         label="Target object"
         [options]="targetObjectOptions"
         [(ngModel)]="patch.target_object"
-        [disabled]="!isEdited('target_object')"
+        [disabled]="!isEdited('target_object') || isSaving"
       >
       </mvtool-autocomplete>
     </div>
@@ -129,30 +134,33 @@
         [checked]="isEditedMultiple(complianceFlags)"
         (change)="toogleEditMultiple(complianceFlags)"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mvtool-compliance-input
         class="fx-grow"
         name="compliance"
         [(ngModel)]="patch"
-        [disabled]="!isEditedMultiple(complianceFlags)"
+        [disabled]="!isEditedMultiple(complianceFlags) || isSaving"
       ></mvtool-compliance-input>
     </div>
   </form>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">
+  <button mat-button (click)="onCancel()" [disabled]="isSaving">
     <mat-icon>cancel</mat-icon>
     Cancel
   </button>
-  <button
-    mat-raised-button
-    color="accent"
-    [disabled]="form.invalid || !isPatchEdited"
-    type="submit"
-    form="bulkEditForm"
-  >
-    <mat-icon>save</mat-icon>
-    <span>&nbsp;</span>
-    Save
-  </button>
+  <mvtool-loading-overlay [isLoading]="isSaving">
+    <button
+      mat-raised-button
+      color="accent"
+      [disabled]="form.invalid || !isPatchEdited || isSaving"
+      type="submit"
+      form="bulkEditForm"
+    >
+      <mat-icon>save</mat-icon>
+      <span>&nbsp;</span>
+      Save
+    </button>
+  </mvtool-loading-overlay>
 </div>

@@ -26,7 +26,7 @@ import {
   IDocumentPatch,
 } from '../shared/services/document.service';
 import { NgForm } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
+import { finalize, firstValueFrom } from 'rxjs';
 import { PatchEditFlags } from '../shared/patch-edit-flags';
 
 export interface IDocumentBulkEditDialogData {
@@ -70,6 +70,7 @@ export class DocumentBulkEditDialogComponent extends PatchEditFlags<IDocumentPat
 
   readonly queryParams: IQueryParams;
   readonly filtered: boolean;
+  isSaving: boolean = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<DocumentBulkEditDialogComponent>,
@@ -83,9 +84,19 @@ export class DocumentBulkEditDialogComponent extends PatchEditFlags<IDocumentPat
 
   async onSave(form: NgForm) {
     if (form.valid) {
+      this.isSaving = true;
+      this._dialogRef.disableClose = true;
+
       this._dialogRef.close(
         await firstValueFrom(
-          this._documentService.patchDocuments(this.patch, this.queryParams)
+          this._documentService
+            .patchDocuments(this.patch, this.queryParams)
+            .pipe(
+              finalize(() => {
+                this.isSaving = false;
+                this._dialogRef.disableClose = false;
+              })
+            )
         )
       );
     }
