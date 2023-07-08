@@ -25,9 +25,9 @@ import {
   CatalogRequirementService,
   ICatalogRequirementPatch,
 } from '../shared/services/catalog-requirement.service';
-import { isEmpty } from 'radash';
 import { NgForm } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { PatchEditFlags } from '../shared/patch-edit-flags';
 
 export interface ICatalogRequirementBulkEditDialogData {
   queryParams: IQueryParams;
@@ -63,12 +63,12 @@ export class CatalogRequirementBulkEditDialogService {
     '.fx-center { align-items: center; }',
   ],
 })
-export class CatalogRequirementBulkEditDialogComponent {
+export class CatalogRequirementBulkEditDialogComponent extends PatchEditFlags<ICatalogRequirementPatch> {
   patch: ICatalogRequirementPatch = {};
-  readonly editFlags = {
-    reference: false,
-    summary: false,
-    description: false,
+  readonly defaultValues = {
+    reference: null,
+    summary: '',
+    description: null,
   };
   readonly queryParams: IQueryParams;
   readonly filtered: boolean;
@@ -78,20 +78,9 @@ export class CatalogRequirementBulkEditDialogComponent {
     protected _catalogRequirementService: CatalogRequirementService,
     @Inject(MAT_DIALOG_DATA) data: ICatalogRequirementBulkEditDialogData
   ) {
+    super();
     this.queryParams = data.queryParams;
     this.filtered = data.filtered;
-  }
-
-  onEditFlagChange(key: 'reference' | 'summary' | 'description') {
-    if (this.editFlags[key]) {
-      if (key !== 'summary') this.patch[key] = null;
-    } else {
-      delete this.patch[key];
-    }
-  }
-
-  get isPatchEmpty(): boolean {
-    return isEmpty(this.patch);
   }
 
   async onSave(form: NgForm) {
