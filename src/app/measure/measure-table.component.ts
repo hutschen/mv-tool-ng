@@ -122,7 +122,7 @@ export class MeasureTableComponent implements OnInit {
           this.requirement.project,
           { requirement_ids: this.requirement.id, ...queryParams },
           !isEmpty(queryParams),
-          await firstValueFrom(this.dataFrame.columnNames$)
+          await firstValueFrom(this.dataFrame.getColumnNames())
         );
       const measures = await firstValueFrom(dialogRef.afterClosed());
       if (measures) this.dataFrame.reload();
