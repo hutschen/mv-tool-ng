@@ -31,8 +31,8 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="referenceFlag"
-        [(ngModel)]="editFlags.reference"
-        (change)="onEditFlagChange('reference')"
+        [checked]="isEdited('reference')"
+        (change)="toggleEdit('reference')"
         class="checkbox"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
@@ -41,7 +41,7 @@
           name="reference"
           matInput
           [(ngModel)]="patch.reference"
-          [disabled]="!editFlags.reference"
+          [disabled]="!isEdited('reference')"
         />
       </mat-form-field>
     </div>
@@ -50,8 +50,8 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="summaryFlag"
-        [(ngModel)]="editFlags.summary"
-        (change)="onEditFlagChange('summary')"
+        [checked]="isEdited('summary')"
+        (change)="toggleEdit('summary')"
         class="checkbox"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
@@ -60,8 +60,8 @@
           name="summary"
           matInput
           [(ngModel)]="patch.summary"
-          [required]="editFlags.summary"
-          [disabled]="!editFlags.summary"
+          [required]="isEdited('summary')"
+          [disabled]="!isEdited('summary')"
         />
       </mat-form-field>
     </div>
@@ -70,8 +70,8 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="descriptionFlag"
-        [(ngModel)]="editFlags.description"
-        (change)="onEditFlagChange('description')"
+        [checked]="isEdited('description')"
+        (change)="toggleEdit('description')"
         class="checkbox"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
@@ -80,7 +80,7 @@
           name="description"
           matInput
           [(ngModel)]="patch.description"
-          [disabled]="!editFlags.description"
+          [disabled]="!isEdited('description')"
         ></textarea>
       </mat-form-field>
     </div>
@@ -89,8 +89,8 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="documentIdFlag"
-        [(ngModel)]="editFlags.document_id"
-        (change)="onEditFlagChange('document_id')"
+        [checked]="isEdited('document_id')"
+        (change)="toggleEdit('document_id')"
         class="checkbox"
       ></mat-checkbox>
       <mvtool-options-input
@@ -100,7 +100,7 @@
         placeholder="Select document"
         [options]="documentOptions"
         [(ngModel)]="patch.document_id"
-        [disabled]="!editFlags.document_id"
+        [disabled]="!isEdited('document_id')"
       ></mvtool-options-input>
     </div>
 
@@ -111,15 +111,15 @@
     >
       <mat-checkbox
         name="complianceFlag"
-        [(ngModel)]="editFlags.compliance"
-        (change)="onEditFlagChange('compliance')"
+        [checked]="isEditedMultiple(complianceFlags)"
+        (change)="toogleEditMultiple(complianceFlags)"
         class="checkbox"
       ></mat-checkbox>
       <mvtool-compliance-input
         class="fx-grow"
         name="compliance"
         [(ngModel)]="patch"
-        [disabled]="!editFlags.compliance"
+        [disabled]="!isEditedMultiple(complianceFlags)"
       ></mvtool-compliance-input>
     </div>
 
@@ -130,15 +130,15 @@
     >
       <mat-checkbox
         name="completionFlag"
-        [(ngModel)]="editFlags.completion"
-        (change)="onEditFlagChange('completion')"
+        [checked]="isEditedMultiple(completionFlags)"
+        (change)="toogleEditMultiple(completionFlags)"
         class="checkbox"
       ></mat-checkbox>
       <mvtool-completion-input
         class="fx-grow"
         name="completion"
         [(ngModel)]="patch"
-        [disabled]="!editFlags.completion"
+        [disabled]="!isEditedMultiple(completionFlags)"
       ></mvtool-completion-input>
     </div>
 
@@ -149,15 +149,15 @@
     >
       <mat-checkbox
         name="verificationFlag"
-        [(ngModel)]="editFlags.verification"
-        (change)="onEditFlagChange('verification')"
+        [checked]="isEditedMultiple(verificationFlags)"
+        (change)="toogleEditMultiple(verificationFlags)"
         class="checkbox"
       ></mat-checkbox>
       <mvtool-verification-input
         class="fx-grow"
         name="verification"
         [(ngModel)]="patch"
-        [disabled]="!editFlags.verification"
+        [disabled]="!isEditedMultiple(verificationFlags)"
       ></mvtool-verification-input>
     </div>
   </form>
@@ -170,7 +170,7 @@
   <button
     mat-raised-button
     color="accent"
-    [disabled]="form.invalid || isPatchEmpty"
+    [disabled]="form.invalid || !isPatchEdited"
     type="submit"
     form="bulkEditForm"
   >

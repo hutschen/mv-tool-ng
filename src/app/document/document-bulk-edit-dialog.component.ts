@@ -25,9 +25,9 @@ import {
   DocumentService,
   IDocumentPatch,
 } from '../shared/services/document.service';
-import { isEmpty } from 'radash';
 import { NgForm } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { PatchEditFlags } from '../shared/patch-edit-flags';
 
 export interface IDocumentBulkEditDialogData {
   queryParams: IQueryParams;
@@ -60,13 +60,14 @@ export class DocumentBulkEditDialogService {
     '.fx-center { align-items: center; }',
   ],
 })
-export class DocumentBulkEditDialogComponent {
+export class DocumentBulkEditDialogComponent extends PatchEditFlags<IDocumentPatch> {
   patch: IDocumentPatch = {};
-  readonly editFlags = {
-    reference: false,
-    title: false,
-    description: false,
+  readonly defaultValues = {
+    reference: null,
+    title: '',
+    description: null,
   };
+
   readonly queryParams: IQueryParams;
   readonly filtered: boolean;
 
@@ -75,20 +76,9 @@ export class DocumentBulkEditDialogComponent {
     protected _documentService: DocumentService,
     @Inject(MAT_DIALOG_DATA) data: IDocumentBulkEditDialogData
   ) {
+    super();
     this.queryParams = data.queryParams;
     this.filtered = data.filtered;
-  }
-
-  onEditFlagChange(key: 'reference' | 'title' | 'description') {
-    if (this.editFlags[key]) {
-      if (key !== 'title') this.patch[key] = null;
-    } else {
-      delete this.patch[key];
-    }
-  }
-
-  get isPatchEmpty(): boolean {
-    return isEmpty(this.patch);
   }
 
   async onSave(form: NgForm) {

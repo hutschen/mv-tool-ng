@@ -29,8 +29,8 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="referenceFlag"
-        [(ngModel)]="editFlags.reference"
-        (change)="onEditFlagChange('reference')"
+        [checked]="isEdited('reference')"
+        (change)="toggleEdit('reference')"
         class="checkbox"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
@@ -39,7 +39,7 @@
           name="reference"
           matInput
           [(ngModel)]="patch.reference"
-          [disabled]="!editFlags.reference"
+          [disabled]="!isEdited('reference')"
         />
       </mat-form-field>
     </div>
@@ -48,8 +48,8 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="titleFlag"
-        [(ngModel)]="editFlags.summary"
-        (change)="onEditFlagChange('summary')"
+        [checked]="isEdited('summary')"
+        (change)="toggleEdit('summary')"
         class="checkbox"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
@@ -58,8 +58,8 @@
           name="summary"
           matInput
           [(ngModel)]="patch.summary"
-          [required]="editFlags.summary"
-          [disabled]="!editFlags.summary"
+          [required]="isEdited('summary')"
+          [disabled]="!isEdited('summary')"
         />
       </mat-form-field>
     </div>
@@ -68,8 +68,8 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="descriptionFlag"
-        [(ngModel)]="editFlags.description"
-        (change)="onEditFlagChange('description')"
+        [checked]="isEdited('description')"
+        (change)="toggleEdit('description')"
         class="checkbox"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
@@ -78,7 +78,7 @@
           name="description"
           matInput
           [(ngModel)]="patch.description"
-          [disabled]="!editFlags.description"
+          [disabled]="!isEdited('description')"
         ></textarea>
       </mat-form-field>
     </div>
@@ -92,7 +92,7 @@
   <button
     mat-raised-button
     color="accent"
-    [disabled]="form.invalid || isPatchEmpty"
+    [disabled]="form.invalid || !isPatchEdited"
     type="submit"
     form="bulkEditForm"
   >

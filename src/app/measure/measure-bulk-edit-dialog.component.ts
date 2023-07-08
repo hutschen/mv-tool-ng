@@ -25,13 +25,12 @@ import {
   MeasureService,
   IMeasurePatch,
 } from '../shared/services/measure.service';
-import { isEmpty } from 'radash';
 import { NgForm } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { Project } from '../shared/services/project.service';
 import { DocumentService } from '../shared/services/document.service';
 import { DocumentOptions } from '../shared/data/document/document-options';
-import { IOption } from '../shared/data/options';
+import { PatchEditFlags } from '../shared/patch-edit-flags';
 
 export interface IMeasureBulkEditDialogData {
   project: Project;
@@ -68,17 +67,34 @@ export class MeasureBulkEditDialogService {
     '.fx-center { align-items: center; }',
   ],
 })
-export class MeasureBulkEditDialogComponent {
+export class MeasureBulkEditDialogComponent extends PatchEditFlags<IMeasurePatch> {
+  readonly complianceFlags: (keyof IMeasurePatch)[] = [
+    'compliance_status',
+    'compliance_comment',
+  ];
+  readonly completionFlags: (keyof IMeasurePatch)[] = [
+    'completion_status',
+    'completion_comment',
+  ];
+  readonly verificationFlags: (keyof IMeasurePatch)[] = [
+    'verification_method',
+    'verification_status',
+    'verification_comment',
+  ];
+
   patch: IMeasurePatch = {};
-  readonly editFlags = {
-    reference: false,
-    summary: false,
-    description: false,
-    compliance: false,
-    completion: false,
-    verification: false,
-    jira_issue_id: false,
-    document_id: false,
+  readonly defaultValues = {
+    reference: null,
+    summary: '',
+    description: null,
+    compliance_status: null,
+    compliance_comment: null,
+    completion_status: null,
+    completion_comment: null,
+    verification_method: null,
+    verification_status: null,
+    verification_comment: null,
+    document_id: null,
   };
   readonly queryParams: IQueryParams;
   readonly filtered: boolean;
@@ -93,6 +109,7 @@ export class MeasureBulkEditDialogComponent {
     documentService: DocumentService,
     @Inject(MAT_DIALOG_DATA) data: IMeasureBulkEditDialogData
   ) {
+    super();
     this.queryParams = data.queryParams;
     this.filtered = data.filtered;
     this._fieldNames = data.fieldNames;
@@ -104,66 +121,8 @@ export class MeasureBulkEditDialogComponent {
     );
   }
 
-  onEditFlagChange(
-    key:
-      | 'reference'
-      | 'summary'
-      | 'description'
-      | 'compliance'
-      | 'completion'
-      | 'verification'
-      | 'jira_issue_id'
-      | 'document_id'
-  ) {
-    switch (key) {
-      case 'summary':
-        if (!this.editFlags.summary) delete this.patch.summary;
-        break;
-
-      case 'compliance':
-        if (this.editFlags.compliance) {
-          this.patch.compliance_status = null;
-          this.patch.compliance_comment = null;
-        } else {
-          delete this.patch.compliance_status;
-          delete this.patch.compliance_comment;
-        }
-        break;
-
-      case 'completion':
-        if (this.editFlags.completion) {
-          this.patch.completion_status = null;
-          this.patch.completion_comment = null;
-        } else {
-          delete this.patch.completion_status;
-          delete this.patch.completion_comment;
-        }
-        break;
-
-      case 'verification':
-        if (this.editFlags.verification) {
-          this.patch.verification_method = null;
-          this.patch.verification_status = null;
-          this.patch.verification_comment = null;
-        } else {
-          delete this.patch.verification_method;
-          delete this.patch.verification_status;
-          delete this.patch.verification_comment;
-        }
-        break;
-
-      default:
-        if (this.editFlags[key]) this.patch[key] = null;
-        else delete this.patch[key];
-    }
-  }
-
   hasField(fieldName: string): boolean {
     return this._fieldNames.includes(fieldName);
-  }
-
-  get isPatchEmpty(): boolean {
-    return isEmpty(this.patch);
   }
 
   async onSave(form: NgForm) {
