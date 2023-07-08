@@ -16,8 +16,8 @@
 import { PatchEditFlags } from './patch-edit-flags';
 
 interface Dummy {
-  prop1: string;
-  prop2: string | null;
+  prop1?: string;
+  prop2?: string | null;
 }
 
 /**

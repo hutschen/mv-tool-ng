@@ -24,7 +24,6 @@ import {
   Requirement,
   RequirementService,
   IRequirementPatch,
-  IRequirementInput,
 } from '../shared/services/requirement.service';
 import { NgForm } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
@@ -75,8 +74,8 @@ export class RequirementBulkEditDialogService {
     '.fx-center { align-items: center; }',
   ],
 })
-export class RequirementBulkEditDialogComponent extends PatchEditFlags<IRequirementInput> {
-  readonly complianceFlags: (keyof IRequirementInput)[] = [
+export class RequirementBulkEditDialogComponent extends PatchEditFlags<IRequirementPatch> {
+  readonly complianceFlags: (keyof IRequirementPatch)[] = [
     'compliance_status',
     'compliance_comment',
   ];

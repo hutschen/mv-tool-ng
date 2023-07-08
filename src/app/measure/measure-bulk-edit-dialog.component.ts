@@ -24,7 +24,6 @@ import {
   Measure,
   MeasureService,
   IMeasurePatch,
-  IMeasureInput,
 } from '../shared/services/measure.service';
 import { NgForm } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
@@ -68,16 +67,16 @@ export class MeasureBulkEditDialogService {
     '.fx-center { align-items: center; }',
   ],
 })
-export class MeasureBulkEditDialogComponent extends PatchEditFlags<IMeasureInput> {
-  readonly complianceFlags: (keyof IMeasureInput)[] = [
+export class MeasureBulkEditDialogComponent extends PatchEditFlags<IMeasurePatch> {
+  readonly complianceFlags: (keyof IMeasurePatch)[] = [
     'compliance_status',
     'compliance_comment',
   ];
-  readonly completionFlags: (keyof IMeasureInput)[] = [
+  readonly completionFlags: (keyof IMeasurePatch)[] = [
     'completion_status',
     'completion_comment',
   ];
-  readonly verificationFlags: (keyof IMeasureInput)[] = [
+  readonly verificationFlags: (keyof IMeasurePatch)[] = [
     'verification_method',
     'verification_status',
     'verification_comment',

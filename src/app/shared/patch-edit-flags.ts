@@ -17,8 +17,8 @@ export type DefaultValues<T> = {
   [P in keyof T]: T[P];
 };
 
-export abstract class PatchEditFlags<T> {
-  abstract patch: Partial<T>;
+export abstract class PatchEditFlags<T extends Partial<T>> {
+  abstract patch: T;
   abstract defaultValues: DefaultValues<T>;
 
   toggleEdit(...flags: (keyof T)[]): void {
