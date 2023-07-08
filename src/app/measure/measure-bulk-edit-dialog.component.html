@@ -111,15 +111,15 @@
     >
       <mat-checkbox
         name="complianceFlag"
-        [checked]="isEdited('compliance')"
-        (change)="toggleEdit('compliance')"
+        [checked]="isEditedMultiple(complianceFlags)"
+        (change)="toogleEditMultiple(complianceFlags)"
         class="checkbox"
       ></mat-checkbox>
       <mvtool-compliance-input
         class="fx-grow"
         name="compliance"
         [(ngModel)]="patch"
-        [disabled]="!isEdited('compliance')"
+        [disabled]="!isEditedMultiple(complianceFlags)"
       ></mvtool-compliance-input>
     </div>
 
@@ -130,15 +130,15 @@
     >
       <mat-checkbox
         name="completionFlag"
-        [checked]="isEdited('completion')"
-        (change)="toggleEdit('completion')"
+        [checked]="isEditedMultiple(completionFlags)"
+        (change)="toogleEditMultiple(completionFlags)"
         class="checkbox"
       ></mat-checkbox>
       <mvtool-completion-input
         class="fx-grow"
         name="completion"
         [(ngModel)]="patch"
-        [disabled]="!isEdited('completion')"
+        [disabled]="!isEditedMultiple(completionFlags)"
       ></mvtool-completion-input>
     </div>
 
@@ -149,15 +149,15 @@
     >
       <mat-checkbox
         name="verificationFlag"
-        [checked]="isEdited('verification')"
-        (change)="toggleEdit('verification')"
+        [checked]="isEditedMultiple(verificationFlags)"
+        (change)="toogleEditMultiple(verificationFlags)"
         class="checkbox"
       ></mat-checkbox>
       <mvtool-verification-input
         class="fx-grow"
         name="verification"
         [(ngModel)]="patch"
-        [disabled]="!isEdited('verification')"
+        [disabled]="!isEditedMultiple(verificationFlags)"
       ></mvtool-verification-input>
     </div>
   </form>
@@ -170,7 +170,7 @@
   <button
     mat-raised-button
     color="accent"
-    [disabled]="form.invalid || isPatchEmpty"
+    [disabled]="form.invalid || !isPatchEdited"
     type="submit"
     form="bulkEditForm"
   >

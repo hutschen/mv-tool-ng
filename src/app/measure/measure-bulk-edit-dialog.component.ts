@@ -24,13 +24,14 @@ import {
   Measure,
   MeasureService,
   IMeasurePatch,
+  IMeasureInput,
 } from '../shared/services/measure.service';
-import { isEmpty } from 'radash';
 import { NgForm } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { Project } from '../shared/services/project.service';
 import { DocumentService } from '../shared/services/document.service';
 import { DocumentOptions } from '../shared/data/document/document-options';
+import { PatchEditFlags } from '../shared/patch-edit-flags';
 
 export interface IMeasureBulkEditDialogData {
   project: Project;
@@ -38,16 +39,6 @@ export interface IMeasureBulkEditDialogData {
   filtered: boolean;
   fieldNames: string[];
 }
-
-type EditFlag =
-  | 'reference'
-  | 'summary'
-  | 'description'
-  | 'compliance'
-  | 'completion'
-  | 'verification'
-  | 'jira_issue_id'
-  | 'document_id';
 
 @Injectable({
   providedIn: 'root',
@@ -77,8 +68,35 @@ export class MeasureBulkEditDialogService {
     '.fx-center { align-items: center; }',
   ],
 })
-export class MeasureBulkEditDialogComponent {
+export class MeasureBulkEditDialogComponent extends PatchEditFlags<IMeasureInput> {
+  readonly complianceFlags: (keyof IMeasureInput)[] = [
+    'compliance_status',
+    'compliance_comment',
+  ];
+  readonly completionFlags: (keyof IMeasureInput)[] = [
+    'completion_status',
+    'completion_comment',
+  ];
+  readonly verificationFlags: (keyof IMeasureInput)[] = [
+    'verification_method',
+    'verification_status',
+    'verification_comment',
+  ];
+
   patch: IMeasurePatch = {};
+  readonly defaultValues = {
+    reference: null,
+    summary: '',
+    description: null,
+    compliance_status: null,
+    compliance_comment: null,
+    completion_status: null,
+    completion_comment: null,
+    verification_method: null,
+    verification_status: null,
+    verification_comment: null,
+    document_id: null,
+  };
   readonly queryParams: IQueryParams;
   readonly filtered: boolean;
   protected _fieldNames: string[];
@@ -92,6 +110,7 @@ export class MeasureBulkEditDialogComponent {
     documentService: DocumentService,
     @Inject(MAT_DIALOG_DATA) data: IMeasureBulkEditDialogData
   ) {
+    super();
     this.queryParams = data.queryParams;
     this.filtered = data.filtered;
     this._fieldNames = data.fieldNames;
@@ -103,84 +122,8 @@ export class MeasureBulkEditDialogComponent {
     );
   }
 
-  toggleEdit(flag: EditFlag) {
-    const notSet = !this.isEdited(flag);
-    switch (flag) {
-      case 'summary':
-        if (notSet) this.patch.summary = '';
-        else delete this.patch.summary;
-        break;
-
-      case 'compliance':
-        if (notSet) {
-          this.patch.compliance_status = null;
-          this.patch.compliance_comment = null;
-        } else {
-          delete this.patch.compliance_status;
-          delete this.patch.compliance_comment;
-        }
-        break;
-
-      case 'completion':
-        if (notSet) {
-          this.patch.completion_status = null;
-          this.patch.completion_comment = null;
-        } else {
-          delete this.patch.completion_status;
-          delete this.patch.completion_comment;
-        }
-        break;
-
-      case 'verification':
-        if (notSet) {
-          this.patch.verification_method = null;
-          this.patch.verification_status = null;
-          this.patch.verification_comment = null;
-        } else {
-          delete this.patch.verification_method;
-          delete this.patch.verification_status;
-          delete this.patch.verification_comment;
-        }
-        break;
-
-      default:
-        if (notSet) this.patch[flag] = null;
-        else delete this.patch[flag];
-    }
-  }
-
-  isEdited(flag: EditFlag): boolean {
-    switch (flag) {
-      case 'compliance':
-        return (
-          this.patch.compliance_status !== undefined ||
-          this.patch.compliance_comment !== undefined
-        );
-
-      case 'completion':
-        return (
-          this.patch.completion_status !== undefined ||
-          this.patch.completion_comment !== undefined
-        );
-
-      case 'verification':
-        return (
-          this.patch.verification_method !== undefined ||
-          this.patch.verification_status !== undefined ||
-          this.patch.verification_comment !== undefined
-        );
-
-      default:
-        return this.patch[flag] !== undefined;
-    }
-  }
-
   hasField(fieldName: string): boolean {
     return this._fieldNames.includes(fieldName);
-  }
-
-  get isPatchEmpty(): boolean {
-    return isEmpty(this.patch);
   }
 
   async onSave(form: NgForm) {
