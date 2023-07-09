@@ -14,15 +14,16 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
+import { BehaviorSubject, debounce, shareReplay, startWith, timer } from 'rxjs';
 
 @Component({
   selector: 'mvtool-loading-overlay',
   template: `
-    <div class="overlay-container" [class.overlay-active]="!!isLoading">
+    <div class="overlay-container" [class.overlay-active]="loading$ | async">
       <div class="overlay-content">
         <ng-content></ng-content>
       </div>
-      <div class="overlay-background" *ngIf="!!isLoading">
+      <div class="overlay-background" *ngIf="loading$ | async">
         <mat-spinner [diameter]="diameter" [color]="color"></mat-spinner>
       </div>
     </div>
@@ -54,7 +55,26 @@ import { Component, Input } from '@angular/core';
   ],
 })
 export class LoadingOverlayComponent {
-  @Input() isLoading: any;
   @Input() diameter: number = 20;
   @Input() color: string = 'primary';
+  @Input() delay: number = 500;
+
+  // Use a BehaviorSubject to implement the isLoading getter. Then debounce the
+  // loading state to not show the loading indicator when the loading process is
+  // is fast.
+  protected _loadingSubject = new BehaviorSubject<boolean>(false);
+  readonly loading$ = this._loadingSubject.pipe(
+    debounce(() => timer(this.delay)),
+    startWith(this._loadingSubject.value),
+    shareReplay(1)
+  );
+
+  @Input()
+  set isLoading(loading: boolean) {
+    this._loadingSubject.next(loading);
+  }
+
+  get isLoading(): boolean {
+    return this._loadingSubject.value;
+  }
 }
