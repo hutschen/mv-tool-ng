@@ -49,7 +49,7 @@ import { NgForm, NgModel } from '@angular/forms';
         <mat-icon>cancel</mat-icon>
         Cancel
       </button>
-      <mvtool-loading-overlay [isLoading]="isSaving">
+      <mvtool-loading-overlay [isLoading]="isSaving" color="accent">
         <button
           mat-raised-button
           color="accent"
