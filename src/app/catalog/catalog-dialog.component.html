@@ -20,18 +20,30 @@
   objectName="Catalog"
   (save)="onSave($event)"
   (cancel)="onCancel()"
+  [isSaving]="isSaving"
 >
   <div class="fx-column">
     <!-- Reference input -->
     <mat-form-field appearance="fill">
       <mat-label>Catalog reference</mat-label>
-      <input name="reference" matInput [(ngModel)]="catalogInput.reference" />
+      <input
+        name="reference"
+        matInput
+        [(ngModel)]="catalogInput.reference"
+        [disabled]="isSaving"
+      />
     </mat-form-field>
 
     <!-- Title input -->
     <mat-form-field appearance="fill">
       <mat-label>Catalog title</mat-label>
-      <input name="title" matInput [(ngModel)]="catalogInput.title" required />
+      <input
+        name="title"
+        matInput
+        [(ngModel)]="catalogInput.title"
+        [disabled]="isSaving"
+        required
+      />
     </mat-form-field>
 
     <!-- Description input -->
@@ -41,6 +53,7 @@
         name="description"
         matInput
         [(ngModel)]="catalogInput.description"
+        [disabled]="isSaving"
       ></textarea>
     </mat-form-field>
   </div>

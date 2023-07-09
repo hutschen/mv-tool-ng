@@ -29,6 +29,7 @@ import {
         mat-button
         (click)="unlock()"
         matTooltip="Unlock to select another JIRA project"
+        [disabled]="disabled"
       >
         <mat-icon>lock_open</mat-icon>
         Unlock
@@ -37,7 +38,11 @@ import {
     <div *ngIf="!locked" class="fx-column fx-stretch">
       <mat-form-field appearance="fill">
         <mat-label>Select Jira project</mat-label>
-        <mat-select name="jiraProject" [(ngModel)]="jiraProjectId_">
+        <mat-select
+          name="jiraProject"
+          [(ngModel)]="jiraProjectId_"
+          [disabled]="disabled"
+        >
           <mat-option>None</mat-option>
           <mat-option
             *ngFor="let jiraProject of jiraProjects"
@@ -55,6 +60,7 @@ import {
 export class JiraProjectInputComponent implements OnInit {
   @Input() locked: boolean = true;
   @Input() jiraProjectId?: string | null = null;
+  @Input() disabled: boolean = false;
   @Output() jiraProjectIdChange = new EventEmitter<string | null>();
   jiraProjects: IJiraProject[] = [];
 

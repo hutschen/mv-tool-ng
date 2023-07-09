@@ -20,7 +20,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
+import { Observable, finalize, firstValueFrom } from 'rxjs';
 import {
   IMeasureInput,
   Measure,
@@ -63,6 +63,7 @@ export class MeasureDialogComponent {
   measureInput: IMeasureInput = {
     summary: '',
   };
+  isSaving: boolean = false;
   documentOptions: DocumentOptions;
 
   constructor(
@@ -87,8 +88,9 @@ export class MeasureDialogComponent {
     return !this._dialogData.measure;
   }
 
-  onSave(form: NgForm): void {
+  async onSave(form: NgForm) {
     if (form.valid) {
+      // Define observable to create or update measure
       let measure$: Observable<Measure>;
       if (!this._dialogData.measure) {
         measure$ = this._measureService.createMeasure(
@@ -101,7 +103,21 @@ export class MeasureDialogComponent {
           this.measureInput
         );
       }
-      measure$.subscribe((measure) => this._dialogRef.close(measure));
+
+      // Perform action and close dialog
+      this.isSaving = true;
+      this._dialogRef.disableClose = true;
+
+      this._dialogRef.close(
+        await firstValueFrom(
+          measure$.pipe(
+            finalize(() => {
+              this.isSaving = false;
+              this._dialogRef.disableClose = false;
+            })
+          )
+        )
+      );
     }
   }
 
