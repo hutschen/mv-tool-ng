@@ -23,7 +23,7 @@ import { Component, Input } from '@angular/core';
         <ng-content></ng-content>
       </div>
       <div class="overlay-background" *ngIf="!!isLoading">
-        <mat-spinner [diameter]="diameter"></mat-spinner>
+        <mat-spinner [diameter]="diameter" [color]="color"></mat-spinner>
       </div>
     </div>
   `,
@@ -56,4 +56,5 @@ import { Component, Input } from '@angular/core';
 export class LoadingOverlayComponent {
   @Input() isLoading: any;
   @Input() diameter: number = 20;
+  @Input() color: string = 'primary';
 }
