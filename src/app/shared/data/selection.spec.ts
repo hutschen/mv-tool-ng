@@ -77,11 +77,14 @@ describe('DataSelection', () => {
   it('should emit query params when selection changes', (done) => {
     const dataSelection = new DataSelection<MockDataItem>('test');
 
+    let count = 0;
     dataSelection.queryParams$.pipe(take(2)).subscribe((queryParams) => {
+      count++;
       if (dataSelection.selected.length === 0) {
         expect(queryParams).toEqual({});
       } else {
         expect(queryParams).toEqual({ test: [dataItem1.id] });
+        expect(count).toBe(2);
         done();
       }
     });
