@@ -107,6 +107,11 @@ export class CatalogModuleTableComponent implements OnInit {
     this.bulkEditQueryParams$ = combineQueryParams([
       this.dataFrame.search.queryParams$,
       this.dataFrame.columns.filterQueryParams$,
+      this.marked.selection$.pipe(
+        map((selection) =>
+          selection.length > 0 ? { ids: selection } : ({} as IQueryParams)
+        )
+      ),
     ]);
 
     // Define bulk edit all flag
