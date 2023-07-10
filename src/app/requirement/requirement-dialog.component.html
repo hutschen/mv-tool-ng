@@ -20,6 +20,7 @@
   objectName="Requirement"
   (save)="onSave($event)"
   (cancel)="onCancel()"
+  [isSaving]="isSaving"
 >
   <div class="fx-column">
     <!-- Requirement reference input -->
@@ -29,6 +30,7 @@
         name="reference"
         matInput
         [(ngModel)]="requirementInput.reference"
+        [disabled]="isSaving"
       />
     </mat-form-field>
 
@@ -39,6 +41,7 @@
         name="summary"
         matInput
         [(ngModel)]="requirementInput.summary"
+        [disabled]="isSaving"
         required
       />
     </mat-form-field>
@@ -50,6 +53,7 @@
         name="description"
         matInput
         [(ngModel)]="requirementInput.description"
+        [disabled]="isSaving"
       ></textarea>
     </mat-form-field>
 
@@ -59,6 +63,7 @@
       label="Milestone"
       [options]="milestoneOptions"
       [(ngModel)]="requirementInput.milestone"
+      [disabled]="isSaving"
     >
     </mvtool-autocomplete>
 
@@ -68,6 +73,7 @@
       label="Target object"
       [options]="targetObjectOptions"
       [(ngModel)]="requirementInput.target_object"
+      [disabled]="isSaving"
     >
     </mvtool-autocomplete>
   </div>

@@ -28,6 +28,7 @@
       name="username"
       matInput
       [(ngModel)]="credentials.username"
+      [disabled]="isLoggingIn"
       required
     />
   </mat-form-field>
@@ -40,6 +41,7 @@
       name="password"
       [(ngModel)]="credentials.password"
       [type]="hidePassword ? 'password' : 'text'"
+      [disabled]="isLoggingIn"
       required
     />
     <button
@@ -59,22 +61,30 @@
     name="keepLoggedIn"
     [(ngModel)]="keepLoggedIn"
     matTooltip="If you check this box, your login information will be securely saved in your browser until you log out."
-    ngModel
+    [disabled]="isLoggingIn"
     >Keep me logged in</mat-checkbox
   >
 
   <!-- Buttons -->
   <div class="fx-row fx-end-center fx-gap-10">
-    <button mat-button disabled="{{ form.pristine }}" type="reset">
+    <button
+      mat-button
+      disabled="{{ form.pristine }}"
+      type="reset"
+      [disabled]="isLoggingIn"
+    >
       Reset
     </button>
-    <button
-      mat-raised-button
-      disabled="{{ form.invalid }}"
-      color="accent"
-      type="submit"
-    >
-      Log in
-    </button>
+    <mvtool-loading-overlay [isLoading]="isLoggingIn" color="accent">
+      <button
+        mat-raised-button
+        disabled="{{ form.invalid }}"
+        color="accent"
+        type="submit"
+        [disabled]="isLoggingIn"
+      >
+        Log in
+      </button>
+    </mvtool-loading-overlay>
   </div>
 </form>

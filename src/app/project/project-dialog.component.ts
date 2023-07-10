@@ -20,7 +20,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
+import { Observable, finalize, firstValueFrom } from 'rxjs';
 import {
   Project,
   IProjectInput,
@@ -53,6 +53,7 @@ export class ProjectDialogComponent {
   projectInput: IProjectInput = {
     name: '',
   };
+  isSaving: boolean = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<ProjectDialogComponent>,
@@ -76,8 +77,9 @@ export class ProjectDialogComponent {
     }
   }
 
-  onSave(form: NgForm): void {
+  async onSave(form: NgForm) {
     if (form.valid) {
+      // Define observable to create or update project
       let project$: Observable<Project>;
       if (!this._project) {
         project$ = this._projectService.createProject(this.projectInput);
@@ -87,7 +89,21 @@ export class ProjectDialogComponent {
           this.projectInput
         );
       }
-      project$.subscribe((project) => this._dialogRef.close(project));
+
+      // Perform action and close dialog
+      this.isSaving = true;
+      this._dialogRef.disableClose = true;
+
+      this._dialogRef.close(
+        await firstValueFrom(
+          project$.pipe(
+            finalize(() => {
+              this.isSaving = false;
+              this._dialogRef.disableClose = false;
+            })
+          )
+        )
+      );
     }
   }
 

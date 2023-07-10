@@ -20,7 +20,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
+import { Observable, finalize, firstValueFrom } from 'rxjs';
 import { MilestoneService } from '../shared/services/milestone.service';
 import { Project } from '../shared/services/project.service';
 import {
@@ -69,6 +69,7 @@ export class RequirementDialogComponent {
   requirementInput: IRequirementInput = {
     summary: '',
   };
+  isSaving: boolean = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<RequirementDialogComponent>,
@@ -99,8 +100,9 @@ export class RequirementDialogComponent {
     return !this._dialogData.requirement;
   }
 
-  onSave(form: NgForm): void {
+  async onSave(form: NgForm) {
     if (form.valid) {
+      // Define observable to create or update requirement
       let requirement$: Observable<Requirement>;
       if (!this._dialogData.requirement) {
         requirement$ = this._requirementService.createRequirement(
@@ -113,8 +115,20 @@ export class RequirementDialogComponent {
           this.requirementInput
         );
       }
-      requirement$.subscribe((requirement) =>
-        this._dialogRef.close(requirement)
+
+      // Perform action and close dialog
+      this.isSaving = true;
+      this._dialogRef.disableClose = true;
+
+      this._dialogRef.close(
+        await firstValueFrom(
+          requirement$.pipe(
+            finalize(() => {
+              this.isSaving = false;
+              this._dialogRef.disableClose = false;
+            })
+          )
+        )
       );
     }
   }

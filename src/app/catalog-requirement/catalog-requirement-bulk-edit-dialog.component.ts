@@ -26,7 +26,7 @@ import {
   ICatalogRequirementPatch,
 } from '../shared/services/catalog-requirement.service';
 import { NgForm } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
+import { finalize, firstValueFrom } from 'rxjs';
 import { PatchEditFlags } from '../shared/patch-edit-flags';
 
 export interface ICatalogRequirementBulkEditDialogData {
@@ -72,6 +72,7 @@ export class CatalogRequirementBulkEditDialogComponent extends PatchEditFlags<IC
   };
   readonly queryParams: IQueryParams;
   readonly filtered: boolean;
+  isSaving: boolean = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<CatalogRequirementBulkEditDialogComponent>,
@@ -85,12 +86,19 @@ export class CatalogRequirementBulkEditDialogComponent extends PatchEditFlags<IC
 
   async onSave(form: NgForm) {
     if (form.valid) {
+      this.isSaving = true;
+      this._dialogRef.disableClose = true;
+
       this._dialogRef.close(
         await firstValueFrom(
-          this._catalogRequirementService.patchCatalogRequirements(
-            this.patch,
-            this.queryParams
-          )
+          this._catalogRequirementService
+            .patchCatalogRequirements(this.patch, this.queryParams)
+            .pipe(
+              finalize(() => {
+                this.isSaving = false;
+                this._dialogRef.disableClose = false;
+              })
+            )
         )
       );
     }

@@ -26,7 +26,7 @@ import {
   IMeasurePatch,
 } from '../shared/services/measure.service';
 import { NgForm } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
+import { finalize, firstValueFrom } from 'rxjs';
 import { Project } from '../shared/services/project.service';
 import { DocumentService } from '../shared/services/document.service';
 import { DocumentOptions } from '../shared/data/document/document-options';
@@ -99,6 +99,7 @@ export class MeasureBulkEditDialogComponent extends PatchEditFlags<IMeasurePatch
   readonly queryParams: IQueryParams;
   readonly filtered: boolean;
   protected _fieldNames: string[];
+  isSaving: boolean = false;
 
   // To select project related documents
   documentOptions: DocumentOptions;
@@ -127,9 +128,17 @@ export class MeasureBulkEditDialogComponent extends PatchEditFlags<IMeasurePatch
 
   async onSave(form: NgForm) {
     if (form.valid) {
+      this.isSaving = true;
+      this._dialogRef.disableClose = true;
+
       this._dialogRef.close(
         await firstValueFrom(
-          this._measureService.patchMeasures(this.patch, this.queryParams)
+          this._measureService.patchMeasures(this.patch, this.queryParams).pipe(
+            finalize(() => {
+              this.isSaving = false;
+              this._dialogRef.disableClose = false;
+            })
+          )
         )
       );
     }

@@ -48,6 +48,7 @@ import { DownloadComponent } from './components/download.component';
 import { ComplianceInputComponent } from './components/compliance-input.component';
 import { CompletionInputComponent } from './components/completion-input.component';
 import { VerificationInputComponent } from './components/verification-input.component';
+import { LoadingOverlayComponent } from './components/loading-overlay.component';
 
 @NgModule({
   declarations: [
@@ -81,6 +82,7 @@ import { VerificationInputComponent } from './components/verification-input.comp
     ComplianceInputComponent,
     CompletionInputComponent,
     VerificationInputComponent,
+    LoadingOverlayComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
@@ -107,6 +109,7 @@ import { VerificationInputComponent } from './components/verification-input.comp
     ComplianceInputComponent,
     CompletionInputComponent,
     VerificationInputComponent,
+    LoadingOverlayComponent,
   ],
 })
 export class SharedModule {}

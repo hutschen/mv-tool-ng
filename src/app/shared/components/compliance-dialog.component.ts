@@ -32,6 +32,7 @@ import {
   RequirementService,
 } from '../services/requirement.service';
 import { ComplianceStatusOptions } from '../data/custom/custom-options';
+import { Observable, finalize, firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -60,6 +61,7 @@ export class ComplianceDialogComponent {
   readonly complianceStatusOptions = new ComplianceStatusOptions(false);
   itemInput: IRequirementInput | IMeasureInput;
   protected _preservedComplianceComment: string | null = null;
+  isSaving: boolean = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<ComplianceDialogComponent>,
@@ -106,17 +108,36 @@ export class ComplianceDialogComponent {
     }
   }
 
-  onSave(form: NgForm): void {
+  async onSave(form: NgForm) {
     if (form.valid) {
+      // Define observable to update requirement or measure
+      let item$: Observable<Requirement | Measure>;
       if (this._item instanceof Requirement) {
-        this._requirementService
-          .updateRequirement(this._item.id, this.itemInput as IRequirementInput)
-          .subscribe((requirement) => this._dialogRef.close(requirement));
+        item$ = this._requirementService.updateRequirement(
+          this._item.id,
+          this.itemInput as IRequirementInput
+        );
       } else {
-        this._measureService
-          .updateMeasure(this._item.id, this.itemInput as IMeasureInput)
-          .subscribe((measure) => this._dialogRef.close(measure));
+        item$ = this._measureService.updateMeasure(
+          this._item.id,
+          this.itemInput as IMeasureInput
+        );
       }
+
+      // Perform update and close dialog
+      this.isSaving = true;
+      this._dialogRef.disableClose = true;
+
+      this._dialogRef.close(
+        await firstValueFrom(
+          item$.pipe(
+            finalize(() => {
+              this.isSaving = false;
+              this._dialogRef.disableClose = false;
+            })
+          )
+        )
+      );
     }
   }
 

@@ -20,18 +20,30 @@
   objectName="Document"
   (save)="onSave($event)"
   (cancel)="onCancel()"
+  [isSaving]="isSaving"
 >
   <div class="fx-column">
     <!-- Document reference input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Document reference</mat-label>
-      <input name="reference" matInput [(ngModel)]="documentInput.reference" />
+      <input
+        name="reference"
+        matInput
+        [(ngModel)]="documentInput.reference"
+        [disabled]="isSaving"
+      />
     </mat-form-field>
 
     <!-- Document title input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Document title</mat-label>
-      <input name="title" matInput [(ngModel)]="documentInput.title" required />
+      <input
+        name="title"
+        matInput
+        [(ngModel)]="documentInput.title"
+        [disabled]="isSaving"
+        required
+      />
     </mat-form-field>
 
     <!-- Document description input -->
@@ -41,6 +53,7 @@
         name="description"
         matInput
         [(ngModel)]="documentInput.description"
+        [disabled]="isSaving"
       >
       </textarea>
     </mat-form-field>

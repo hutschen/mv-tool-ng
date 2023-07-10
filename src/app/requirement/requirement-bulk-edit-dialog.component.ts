@@ -26,7 +26,7 @@ import {
   IRequirementPatch,
 } from '../shared/services/requirement.service';
 import { NgForm } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
+import { finalize, firstValueFrom } from 'rxjs';
 import { Project } from '../shared/services/project.service';
 import {
   MilestoneOptions,
@@ -93,6 +93,7 @@ export class RequirementBulkEditDialogComponent extends PatchEditFlags<IRequirem
   readonly queryParams: IQueryParams;
   readonly filtered: boolean;
   protected _fieldNames: string[];
+  isSaving: boolean = false;
 
   // To select project related target objects and milestones
   readonly targetObjectOptions: TargetObjectOptions;
@@ -129,12 +130,19 @@ export class RequirementBulkEditDialogComponent extends PatchEditFlags<IRequirem
 
   async onSave(form: NgForm) {
     if (form.valid) {
+      this.isSaving = true;
+      this._dialogRef.disableClose = true;
+
       this._dialogRef.close(
         await firstValueFrom(
-          this._requirementService.patchRequirements(
-            this.patch,
-            this.queryParams
-          )
+          this._requirementService
+            .patchRequirements(this.patch, this.queryParams)
+            .pipe(
+              finalize(() => {
+                this.isSaving = false;
+                this._dialogRef.disableClose = false;
+              })
+            )
         )
       );
     }

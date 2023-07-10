@@ -20,6 +20,7 @@
   objectName="Compliance"
   (save)="onSave($event)"
   (cancel)="onCancel()"
+  [isSaving]="isSaving"
 >
   <div class="fx-column">
     <!-- Display compliance status hint -->
@@ -38,7 +39,11 @@
     <!-- Compliance Status Input -->
     <mat-form-field appearance="fill">
       <mat-label>Select compliance status</mat-label>
-      <mat-select name="complianceStatus" [(ngModel)]="complianceStatus">
+      <mat-select
+        name="complianceStatus"
+        [(ngModel)]="complianceStatus"
+        [disabled]="isSaving"
+      >
         <mat-option [value]="null">None</mat-option>
         <mat-option
           *ngFor="let option of complianceStatusOptions.filterOptions() | async"
@@ -56,7 +61,7 @@
         name="complianceComment"
         matInput
         [(ngModel)]="itemInput.compliance_comment"
-        [disabled]="!complianceStatus"
+        [disabled]="!complianceStatus || isSaving"
       ></textarea>
     </mat-form-field>
   </div>

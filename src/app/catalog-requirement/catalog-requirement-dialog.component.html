@@ -20,6 +20,7 @@
   objectName="Catalog Requirement"
   (save)="onSave($event)"
   (cancel)="onCancel()"
+  [isSaving]="isSaving"
 >
   <div class="fx-column">
     <!-- Requirement reference input -->
@@ -29,6 +30,7 @@
         name="reference"
         matInput
         [(ngModel)]="catalogRequirementInput.reference"
+        [disabled]="isSaving"
       />
     </mat-form-field>
 
@@ -39,6 +41,7 @@
         name="summary"
         matInput
         [(ngModel)]="catalogRequirementInput.summary"
+        [disabled]="isSaving"
         required
       />
     </mat-form-field>
@@ -50,6 +53,7 @@
         name="description"
         matInput
         [(ngModel)]="catalogRequirementInput.description"
+        [disabled]="isSaving"
       ></textarea>
     </mat-form-field>
   </div>

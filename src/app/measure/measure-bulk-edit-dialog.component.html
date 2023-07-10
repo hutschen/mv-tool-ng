@@ -34,6 +34,7 @@
         [checked]="isEdited('reference')"
         (change)="toggleEdit('reference')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
         <mat-label>Measure reference</mat-label>
@@ -41,7 +42,7 @@
           name="reference"
           matInput
           [(ngModel)]="patch.reference"
-          [disabled]="!isEdited('reference')"
+          [disabled]="!isEdited('reference') || isSaving"
         />
       </mat-form-field>
     </div>
@@ -53,6 +54,7 @@
         [checked]="isEdited('summary')"
         (change)="toggleEdit('summary')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
         <mat-label>Measure summary</mat-label>
@@ -61,7 +63,7 @@
           matInput
           [(ngModel)]="patch.summary"
           [required]="isEdited('summary')"
-          [disabled]="!isEdited('summary')"
+          [disabled]="!isEdited('summary') || isSaving"
         />
       </mat-form-field>
     </div>
@@ -73,6 +75,7 @@
         [checked]="isEdited('description')"
         (change)="toggleEdit('description')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
         <mat-label>Measure description</mat-label>
@@ -80,7 +83,7 @@
           name="description"
           matInput
           [(ngModel)]="patch.description"
-          [disabled]="!isEdited('description')"
+          [disabled]="!isEdited('description') || isSaving"
         ></textarea>
       </mat-form-field>
     </div>
@@ -92,6 +95,7 @@
         [checked]="isEdited('document_id')"
         (change)="toggleEdit('document_id')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mvtool-options-input
         class="fx-grow"
@@ -100,7 +104,7 @@
         placeholder="Select document"
         [options]="documentOptions"
         [(ngModel)]="patch.document_id"
-        [disabled]="!isEdited('document_id')"
+        [disabled]="!isEdited('document_id') || isSaving"
       ></mvtool-options-input>
     </div>
 
@@ -114,12 +118,13 @@
         [checked]="isEditedMultiple(complianceFlags)"
         (change)="toogleEditMultiple(complianceFlags)"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mvtool-compliance-input
         class="fx-grow"
         name="compliance"
         [(ngModel)]="patch"
-        [disabled]="!isEditedMultiple(complianceFlags)"
+        [disabled]="!isEditedMultiple(complianceFlags) || isSaving"
       ></mvtool-compliance-input>
     </div>
 
@@ -133,12 +138,13 @@
         [checked]="isEditedMultiple(completionFlags)"
         (change)="toogleEditMultiple(completionFlags)"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mvtool-completion-input
         class="fx-grow"
         name="completion"
         [(ngModel)]="patch"
-        [disabled]="!isEditedMultiple(completionFlags)"
+        [disabled]="!isEditedMultiple(completionFlags) || isSaving"
       ></mvtool-completion-input>
     </div>
 
@@ -152,12 +158,13 @@
         [checked]="isEditedMultiple(verificationFlags)"
         (change)="toogleEditMultiple(verificationFlags)"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mvtool-verification-input
         class="fx-grow"
         name="verification"
         [(ngModel)]="patch"
-        [disabled]="!isEditedMultiple(verificationFlags)"
+        [disabled]="!isEditedMultiple(verificationFlags) || isSaving"
       ></mvtool-verification-input>
     </div>
   </form>
@@ -167,15 +174,17 @@
     <mat-icon>cancel</mat-icon>
     Cancel
   </button>
-  <button
-    mat-raised-button
-    color="accent"
-    [disabled]="form.invalid || !isPatchEdited"
-    type="submit"
-    form="bulkEditForm"
-  >
-    <mat-icon>save</mat-icon>
-    <span>&nbsp;</span>
-    Save
-  </button>
+  <mvtool-loading-overlay [isLoading]="isSaving" color="accent">
+    <button
+      mat-raised-button
+      color="accent"
+      [disabled]="form.invalid || !isPatchEdited || isSaving"
+      type="submit"
+      form="bulkEditForm"
+    >
+      <mat-icon>save</mat-icon>
+      <span>&nbsp;</span>
+      Save
+    </button>
+  </mvtool-loading-overlay>
 </div>

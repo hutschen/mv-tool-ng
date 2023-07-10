@@ -20,12 +20,18 @@
   objectName="Measure"
   (save)="onSave($event)"
   (cancel)="onCancel()"
+  [isSaving]="isSaving"
 >
   <div class="fx-column">
     <!-- Reference input -->
     <mat-form-field appearance="fill">
       <mat-label>Measure reference</mat-label>
-      <input name="reference" matInput [(ngModel)]="measureInput.reference" />
+      <input
+        name="reference"
+        matInput
+        [(ngModel)]="measureInput.reference"
+        [disabled]="isSaving"
+      />
     </mat-form-field>
 
     <!-- Summary input -->
@@ -35,6 +41,7 @@
         name="summary"
         matInput
         [(ngModel)]="measureInput.summary"
+        [disabled]="isSaving"
         required
       />
     </mat-form-field>
@@ -46,6 +53,7 @@
         name="description"
         matInput
         [(ngModel)]="measureInput.description"
+        [disabled]="isSaving"
       ></textarea>
     </mat-form-field>
 
@@ -56,6 +64,7 @@
       placeholder="Select document"
       [options]="documentOptions"
       [(ngModel)]="measureInput.document_id"
+      [disabled]="isSaving"
     ></mvtool-options-input>
   </div>
 </mvtool-create-edit-dialog>

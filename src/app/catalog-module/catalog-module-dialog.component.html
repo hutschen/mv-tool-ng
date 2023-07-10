@@ -20,6 +20,7 @@
   objectName="Catalog Module"
   (save)="onSave($event)"
   (cancel)="onCancel()"
+  [isSaving]="isSaving"
 >
   <div class="fx-column">
     <!-- Reference -->
@@ -29,6 +30,7 @@
         name="reference"
         matInput
         [(ngModel)]="catalogModuleInput.reference"
+        [disabled]="isSaving"
       />
     </mat-form-field>
 
@@ -39,6 +41,7 @@
         name="title"
         matInput
         [(ngModel)]="catalogModuleInput.title"
+        [disabled]="isSaving"
         required
       />
     </mat-form-field>
@@ -50,6 +53,7 @@
         name="description"
         matInput
         [(ngModel)]="catalogModuleInput.description"
+        [disabled]="isSaving"
       ></textarea>
     </mat-form-field>
   </div>
