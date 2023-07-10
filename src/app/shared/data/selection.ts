@@ -19,7 +19,7 @@ import { Observable, concat, map, of, shareReplay } from 'rxjs';
 import { IQueryParams } from '../services/query-params.service';
 
 export class DataSelection<T extends IDataItem> {
-  protected _selection: SelectionModel<T['id']>;
+  private __selection: SelectionModel<T['id']>;
   readonly queryParams$: Observable<IQueryParams>;
 
   constructor(
@@ -28,13 +28,13 @@ export class DataSelection<T extends IDataItem> {
     initQueryParams: IQueryParams = {},
     public readonly idType: 'number' | 'string' = 'number'
   ) {
-    this._selection = new SelectionModel(
+    this.__selection = new SelectionModel(
       multiple,
       this.__evalQueryParams(initQueryParams)
     );
     this.queryParams$ = concat(
-      of(this._selection.selected), // emit initial value
-      this._selection.changed.pipe(map((e) => e.source.selected))
+      of(this.__selection.selected), // emit initial value
+      this.__selection.changed.pipe(map((e) => e.source.selected))
     ).pipe(
       map((selected) => (selected.length > 0 ? { [this.name]: selected } : {})),
       shareReplay(1)
@@ -56,27 +56,27 @@ export class DataSelection<T extends IDataItem> {
 
   select(...values: T[]): boolean | void {
     const ids = values.map((v) => v.id);
-    return this._selection.select(...ids);
+    return this.__selection.select(...ids);
   }
 
   deselect(...values: T[]): boolean | void {
     const ids = values.map((v) => v.id);
-    return this._selection.deselect(...ids);
+    return this.__selection.deselect(...ids);
   }
 
   toggle(value: T): boolean | void {
-    return this._selection.toggle(value.id);
+    return this.__selection.toggle(value.id);
   }
 
   isSelected(value: T): boolean {
-    return this._selection.isSelected(value.id);
+    return this.__selection.isSelected(value.id);
   }
 
   get selected(): T['id'][] {
-    return this._selection.selected;
+    return this.__selection.selected;
   }
 
   clear(): void {
-    this._selection.clear();
+    this.__selection.clear();
   }
 }
