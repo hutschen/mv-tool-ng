@@ -27,6 +27,7 @@ import {
 } from '@angular/material/dialog';
 import {
   BehaviorSubject,
+  finalize,
   firstValueFrom,
   map,
   merge,
@@ -245,6 +246,7 @@ export class RequirementImportDialogService {
           <mat-checkbox
             [checked]="node.checked"
             (change)="toggleChecked(node)"
+            [disabled]="isSaving"
             >{{ node.name }}</mat-checkbox
           >
         </mat-tree-node>
@@ -257,6 +259,7 @@ export class RequirementImportDialogService {
             mat-icon-button
             matTreeNodeToggle
             [attr.aria-label]="'toggle ' + node.name"
+            [disabled]="isSaving"
           >
             <mat-icon class="mat-icon-rtl-mirror">
               {{
@@ -268,21 +271,26 @@ export class RequirementImportDialogService {
             [checked]="node.checked"
             [indeterminate]="node.indeterminate"
             (change)="toggleChecked(node)"
+            [disabled]="isSaving"
             >{{ node.name }}</mat-checkbox
           >
         </mat-tree-node>
       </mat-tree>
     </div>
     <div mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()">Cancel</button>
-      <button
-        mat-raised-button
-        color="accent"
-        (click)="onImport()"
-        [disabled]="importDisabled"
-      >
-        Import
+      <button mat-button (click)="onCancel()" [disabled]="isSaving">
+        Cancel
       </button>
+      <mvtool-loading-overlay [isLoading]="isSaving" color="accent">
+        <button
+          mat-raised-button
+          color="accent"
+          (click)="onImport()"
+          [disabled]="importDisabled || isSaving"
+        >
+          Import
+        </button>
+      </mvtool-loading-overlay>
     </div>
   `,
   styles: ['.progress-bar { margin-left: 30px; }'],
@@ -290,6 +298,7 @@ export class RequirementImportDialogService {
 export class RequirementImportDialogComponent implements OnInit {
   treeControl: FlatTreeControl<INode>;
   dataSource: CatalogDataSource;
+  isSaving: boolean = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<RequirementImportDialogComponent>,
@@ -335,13 +344,26 @@ export class RequirementImportDialogComponent implements OnInit {
       .filter((node) => node.checked)
       .map((node) => (node as CatalogModuleNode).catalogModule.id);
 
-    const requirements = await firstValueFrom(
-      this._requirementService.importRequirements(
-        this._project.id,
-        catalogModuleIds
+    // Define observable to import requirements
+    const requirements$ = this._requirementService.importRequirements(
+      this._project.id,
+      catalogModuleIds
+    );
+
+    // Perform import and close dialog
+    this.isSaving = true;
+    this._dialogRef.disableClose = true;
+
+    this._dialogRef.close(
+      await firstValueFrom(
+        requirements$.pipe(
+          finalize(() => {
+            this.isSaving = false;
+            this._dialogRef.disableClose = false;
+          })
+        )
       )
     );
-    this._dialogRef.close(requirements);
   }
 
   onCancel(): void {
