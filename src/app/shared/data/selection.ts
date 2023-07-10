@@ -15,11 +15,13 @@
 
 import { SelectionModel } from '@angular/cdk/collections';
 import { IDataItem } from './data';
-import { Observable, concat, map, of, shareReplay } from 'rxjs';
+import { Observable, map, startWith } from 'rxjs';
 import { IQueryParams } from '../services/query-params.service';
 
 export class DataSelection<T extends IDataItem> {
   private __selection: SelectionModel<T['id']>;
+  readonly selectionChanged$: Observable<T['id'][]>;
+  readonly selection$: Observable<T['id'][]>;
   readonly queryParams$: Observable<IQueryParams>;
 
   constructor(
@@ -28,16 +30,23 @@ export class DataSelection<T extends IDataItem> {
     initQueryParams: IQueryParams = {},
     public readonly idType: 'number' | 'string' = 'number'
   ) {
+    // Define the selection model
     this.__selection = new SelectionModel(
       multiple,
       this.__evalQueryParams(initQueryParams)
     );
-    this.queryParams$ = concat(
-      of(this.__selection.selected), // emit initial value
-      this.__selection.changed.pipe(map((e) => e.source.selected))
-    ).pipe(
-      map((selected) => (selected.length > 0 ? { [this.name]: selected } : {})),
-      shareReplay(1)
+
+    // Define the selectionChanged$ observable
+    this.selectionChanged$ = this.__selection.changed.pipe(
+      map((e) => e.source.selected)
+    );
+
+    // Define the selection$ observable
+    this.selection$ = this.selectionChanged$.pipe(startWith(this.selected));
+
+    // Define the queryParams$ observable
+    this.queryParams$ = this.selection$.pipe(
+      map((selected) => (selected.length > 0 ? { [this.name]: selected } : {}))
     );
   }
 
