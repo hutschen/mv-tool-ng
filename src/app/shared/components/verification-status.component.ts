@@ -29,6 +29,7 @@ import { OptionValue } from '../data/options';
         [color]="measure.verificationStatusColor"
         (click)="$event.stopImmediatePropagation()"
         matTooltip="Click to edit verification status"
+        [disabled]="!measure.verification_method"
       >
         <mat-icon *ngIf="measure.verified">check</mat-icon>
         <mat-icon *ngIf="!measure.verified">close</mat-icon>
