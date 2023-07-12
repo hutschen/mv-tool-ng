@@ -25,13 +25,14 @@ import {
   CatalogRequirementService,
   ICatalogRequirementPatch,
 } from '../shared/services/catalog-requirement.service';
-import { isEmpty } from 'radash';
 import { NgForm } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
+import { finalize, firstValueFrom } from 'rxjs';
+import { PatchEditFlags } from '../shared/patch-edit-flags';
+import { BulkEditScope } from '../shared/bulk-edit-scope';
 
 export interface ICatalogRequirementBulkEditDialogData {
   queryParams: IQueryParams;
-  filtered: boolean;
+  scope: BulkEditScope;
 }
 
 @Injectable({
@@ -42,14 +43,14 @@ export class CatalogRequirementBulkEditDialogService {
 
   openCatalogRequirementBulkEditDialog(
     queryParams: IQueryParams = {},
-    filtered: boolean = false
+    scope: BulkEditScope = 'all'
   ): MatDialogRef<
     CatalogRequirementBulkEditDialogComponent,
     CatalogRequirement[] | undefined
   > {
     return this._dialog.open(CatalogRequirementBulkEditDialogComponent, {
       width: '550px',
-      data: { queryParams, filtered },
+      data: { queryParams, scope },
     });
   }
 }
@@ -63,45 +64,42 @@ export class CatalogRequirementBulkEditDialogService {
     '.fx-center { align-items: center; }',
   ],
 })
-export class CatalogRequirementBulkEditDialogComponent {
+export class CatalogRequirementBulkEditDialogComponent extends PatchEditFlags<ICatalogRequirementPatch> {
   patch: ICatalogRequirementPatch = {};
-  readonly editFlags = {
-    reference: false,
-    summary: false,
-    description: false,
+  readonly defaultValues = {
+    reference: null,
+    summary: '',
+    description: null,
   };
   readonly queryParams: IQueryParams;
-  readonly filtered: boolean;
+  readonly scope: BulkEditScope;
+  isSaving: boolean = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<CatalogRequirementBulkEditDialogComponent>,
     protected _catalogRequirementService: CatalogRequirementService,
     @Inject(MAT_DIALOG_DATA) data: ICatalogRequirementBulkEditDialogData
   ) {
+    super();
     this.queryParams = data.queryParams;
-    this.filtered = data.filtered;
-  }
-
-  onEditFlagChange(key: 'reference' | 'summary' | 'description') {
-    if (this.editFlags[key]) {
-      if (key !== 'summary') this.patch[key] = null;
-    } else {
-      delete this.patch[key];
-    }
-  }
-
-  get isPatchEmpty(): boolean {
-    return isEmpty(this.patch);
+    this.scope = data.scope;
   }
 
   async onSave(form: NgForm) {
     if (form.valid) {
+      this.isSaving = true;
+      this._dialogRef.disableClose = true;
+
       this._dialogRef.close(
         await firstValueFrom(
-          this._catalogRequirementService.patchCatalogRequirements(
-            this.patch,
-            this.queryParams
-          )
+          this._catalogRequirementService
+            .patchCatalogRequirements(this.patch, this.queryParams)
+            .pipe(
+              finalize(() => {
+                this.isSaving = false;
+                this._dialogRef.disableClose = false;
+              })
+            )
         )
       );
     }

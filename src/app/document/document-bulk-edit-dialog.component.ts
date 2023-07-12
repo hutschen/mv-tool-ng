@@ -25,13 +25,14 @@ import {
   DocumentService,
   IDocumentPatch,
 } from '../shared/services/document.service';
-import { isEmpty } from 'radash';
 import { NgForm } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
+import { finalize, firstValueFrom } from 'rxjs';
+import { PatchEditFlags } from '../shared/patch-edit-flags';
+import { BulkEditScope } from '../shared/bulk-edit-scope';
 
 export interface IDocumentBulkEditDialogData {
   queryParams: IQueryParams;
-  filtered: boolean;
+  scope: BulkEditScope;
 }
 
 @Injectable({
@@ -42,11 +43,11 @@ export class DocumentBulkEditDialogService {
 
   openDocumentBulkEditDialog(
     queryParams: IQueryParams = {},
-    filtered: boolean = false
+    scope: BulkEditScope = 'all'
   ): MatDialogRef<DocumentBulkEditDialogComponent, Document[] | undefined> {
     return this._dialog.open(DocumentBulkEditDialogComponent, {
       width: '550px',
-      data: { queryParams, filtered },
+      data: { queryParams, scope },
     });
   }
 }
@@ -60,42 +61,43 @@ export class DocumentBulkEditDialogService {
     '.fx-center { align-items: center; }',
   ],
 })
-export class DocumentBulkEditDialogComponent {
+export class DocumentBulkEditDialogComponent extends PatchEditFlags<IDocumentPatch> {
   patch: IDocumentPatch = {};
-  readonly editFlags = {
-    reference: false,
-    title: false,
-    description: false,
+  readonly defaultValues = {
+    reference: null,
+    title: '',
+    description: null,
   };
+
   readonly queryParams: IQueryParams;
-  readonly filtered: boolean;
+  readonly scope: BulkEditScope;
+  isSaving: boolean = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<DocumentBulkEditDialogComponent>,
     protected _documentService: DocumentService,
     @Inject(MAT_DIALOG_DATA) data: IDocumentBulkEditDialogData
   ) {
+    super();
     this.queryParams = data.queryParams;
-    this.filtered = data.filtered;
-  }
-
-  onEditFlagChange(key: 'reference' | 'title' | 'description') {
-    if (this.editFlags[key]) {
-      if (key !== 'title') this.patch[key] = null;
-    } else {
-      delete this.patch[key];
-    }
-  }
-
-  get isPatchEmpty(): boolean {
-    return isEmpty(this.patch);
+    this.scope = data.scope;
   }
 
   async onSave(form: NgForm) {
     if (form.valid) {
+      this.isSaving = true;
+      this._dialogRef.disableClose = true;
+
       this._dialogRef.close(
         await firstValueFrom(
-          this._documentService.patchDocuments(this.patch, this.queryParams)
+          this._documentService
+            .patchDocuments(this.patch, this.queryParams)
+            .pipe(
+              finalize(() => {
+                this.isSaving = false;
+                this._dialogRef.disableClose = false;
+              })
+            )
         )
       );
     }

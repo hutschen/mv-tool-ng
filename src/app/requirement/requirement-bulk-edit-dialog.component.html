@@ -16,7 +16,7 @@
 -->
 
 <div mat-dialog-title>
-  <span>Edit {{ filtered ? "Filtered" : "All" }} Requirements</span>
+  <span>Edit {{ scope | titlecase }} Requirements</span>
 </div>
 <div mat-dialog-content>
   <p>
@@ -30,9 +30,10 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="referenceFlag"
-        [(ngModel)]="editFlags.reference"
-        (change)="onEditFlagChange('reference')"
+        [checked]="isEdited('reference')"
+        (change)="toggleEdit('reference')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
         <mat-label>Requirement reference</mat-label>
@@ -40,7 +41,7 @@
           name="reference"
           matInput
           [(ngModel)]="patch.reference"
-          [disabled]="!editFlags.reference"
+          [disabled]="!isEdited('reference') || isSaving"
         />
       </mat-form-field>
     </div>
@@ -49,9 +50,10 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="summaryFlag"
-        [(ngModel)]="editFlags.summary"
-        (change)="onEditFlagChange('summary')"
+        [checked]="isEdited('summary')"
+        (change)="toggleEdit('summary')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
         <mat-label>Requirement summary</mat-label>
@@ -59,8 +61,8 @@
           name="summary"
           matInput
           [(ngModel)]="patch.summary"
-          [required]="editFlags.summary"
-          [disabled]="!editFlags.summary"
+          [required]="isEdited('summary')"
+          [disabled]="!isEdited('summary') || isSaving"
         />
       </mat-form-field>
     </div>
@@ -69,9 +71,10 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="descriptionFlag"
-        [(ngModel)]="editFlags.description"
-        (change)="onEditFlagChange('description')"
+        [checked]="isEdited('description')"
+        (change)="toggleEdit('description')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
         <mat-label>Requirement description</mat-label>
@@ -79,7 +82,7 @@
           name="description"
           matInput
           [(ngModel)]="patch.description"
-          [disabled]="!editFlags.description"
+          [disabled]="!isEdited('description') || isSaving"
         ></textarea>
       </mat-form-field>
     </div>
@@ -88,9 +91,10 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="milestoneFlag"
-        [(ngModel)]="editFlags.milestone"
-        (change)="onEditFlagChange('milestone')"
+        [checked]="isEdited('milestone')"
+        (change)="toggleEdit('milestone')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mvtool-autocomplete
         class="fx-grow"
@@ -98,7 +102,7 @@
         label="Milestone"
         [options]="milestoneOptions"
         [(ngModel)]="patch.milestone"
-        [disabled]="!editFlags.milestone"
+        [disabled]="!isEdited('milestone') || isSaving"
       >
       </mvtool-autocomplete>
     </div>
@@ -107,9 +111,10 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="targetObjectFlag"
-        [(ngModel)]="editFlags.target_object"
-        (change)="onEditFlagChange('target_object')"
+        [checked]="isEdited('target_object')"
+        (change)="toggleEdit('target_object')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mvtool-autocomplete
         class="fx-grow"
@@ -117,7 +122,7 @@
         label="Target object"
         [options]="targetObjectOptions"
         [(ngModel)]="patch.target_object"
-        [disabled]="!editFlags.target_object"
+        [disabled]="!isEdited('target_object') || isSaving"
       >
       </mvtool-autocomplete>
     </div>
@@ -126,33 +131,36 @@
     <div *ngIf="hasCompliance" class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="complianceFlag"
-        [(ngModel)]="editFlags.compliance"
-        (change)="onEditFlagChange('compliance')"
+        [checked]="isEditedMultiple(complianceFlags)"
+        (change)="toogleEditMultiple(complianceFlags)"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mvtool-compliance-input
         class="fx-grow"
         name="compliance"
         [(ngModel)]="patch"
-        [disabled]="!editFlags.compliance"
+        [disabled]="!isEditedMultiple(complianceFlags) || isSaving"
       ></mvtool-compliance-input>
     </div>
   </form>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">
+  <button mat-button (click)="onCancel()" [disabled]="isSaving">
     <mat-icon>cancel</mat-icon>
     Cancel
   </button>
-  <button
-    mat-raised-button
-    color="accent"
-    [disabled]="form.invalid || isPatchEmpty"
-    type="submit"
-    form="bulkEditForm"
-  >
-    <mat-icon>save</mat-icon>
-    <span>&nbsp;</span>
-    Save
-  </button>
+  <mvtool-loading-overlay [isLoading]="isSaving" color="accent">
+    <button
+      mat-raised-button
+      color="accent"
+      [disabled]="form.invalid || !isPatchEdited || isSaving"
+      type="submit"
+      form="bulkEditForm"
+    >
+      <mat-icon>save</mat-icon>
+      <span>&nbsp;</span>
+      Save
+    </button>
+  </mvtool-loading-overlay>
 </div>

@@ -41,6 +41,11 @@ import {
 import { isEmpty } from 'radash';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MeasureBulkEditDialogService } from '../measure/measure-bulk-edit-dialog.component';
+import {
+  BulkEditScope,
+  toBulkEditScope,
+  toBulkEditScopeText,
+} from '../shared/bulk-edit-scope';
 
 @Component({
   selector: 'mvtool-project-measure-table',
@@ -58,7 +63,7 @@ export class ProjectMeasureTableComponent implements OnInit {
   expanded!: DataSelection<Measure>;
   exportQueryParams$!: Observable<IQueryParams>;
   bulkEditQueryParams$!: Observable<IQueryParams>;
-  bulkEditAll$!: Observable<boolean>;
+  bulkEditScope$!: Observable<BulkEditScope>;
   @Input() project!: Project;
 
   constructor(
@@ -119,11 +124,16 @@ export class ProjectMeasureTableComponent implements OnInit {
     this.bulkEditQueryParams$ = combineQueryParams([
       this.dataFrame.search.queryParams$,
       this.dataFrame.columns.filterQueryParams$,
+      this.marked.selection$.pipe(
+        map((selection) =>
+          selection.length > 0 ? { ids: selection } : ({} as IQueryParams)
+        )
+      ),
     ]);
 
     // Define bulk edit all flag
-    this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
-      map((queryParams) => isEmpty(queryParams))
+    this.bulkEditScope$ = this.bulkEditQueryParams$.pipe(
+      map((queryParams) => toBulkEditScope(queryParams))
     );
   }
 
@@ -133,33 +143,28 @@ export class ProjectMeasureTableComponent implements OnInit {
       this._measureBulkEditDialogService.openMeasureBulkEditDialog(
         this.project,
         { project_ids: this.project.id, ...queryParams },
-        !isEmpty(queryParams),
-        await firstValueFrom(this.dataFrame.columnNames$)
+        await firstValueFrom(this.bulkEditScope$),
+        await firstValueFrom(this.dataFrame.getColumnNames())
       );
     const measures = await firstValueFrom(dialogRef.afterClosed());
     if (measures) this.dataFrame.reload();
   }
 
   async onDeleteMeasures() {
-    let dialogRef: MatDialogRef<ConfirmDialogComponent, boolean>;
-    const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
-    if (isEmpty(queryParams)) {
-      dialogRef = this._confirmDialogService.openConfirmDialog(
-        'Delete all measures?',
-        'Are you sure you want to delete all measures in this project?'
-      );
-    } else {
-      dialogRef = this._confirmDialogService.openConfirmDialog(
-        'Delete filtered measures?',
-        'Are you sure you want to delete all measures that match the current filter?'
-      );
-    }
+    const scope = await firstValueFrom(this.bulkEditScope$);
+    const dialogRef = this._confirmDialogService.openConfirmDialog(
+      `Delete ${scope} measures?`,
+      `Are you sure you want to delete ${toBulkEditScopeText(
+        scope
+      )} measures of this project?`
+    );
+
     const confirmed = await firstValueFrom(dialogRef.afterClosed());
     if (confirmed) {
       await firstValueFrom(
         this._measureService.deleteMeasures({
           project_ids: this.project.id,
-          ...queryParams,
+          ...(await firstValueFrom(this.bulkEditQueryParams$)),
         })
       );
       this.dataFrame.reload();

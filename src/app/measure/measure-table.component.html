@@ -135,7 +135,7 @@
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef>
         <mvtool-table-options
-          [isTableFiltered]="!(bulkEditAll$ | async)"
+          [bulkEditScope]="(bulkEditScope$ | async) ?? 'all'"
           (hideColumns)="onHideColumns()"
           [hideColumnsDisabled]="!dataFrame.columns.hideableColumns.length"
           (clearFilters)="dataFrame.columns.clearFilters()"

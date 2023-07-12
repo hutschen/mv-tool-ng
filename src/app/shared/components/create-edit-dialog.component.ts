@@ -45,22 +45,25 @@ import { NgForm, NgModel } from '@angular/forms';
 
     <!-- Actions -->
     <div mat-dialog-actions align="end">
-      <button mat-button (click)="cancel.emit()">
+      <button mat-button (click)="cancel.emit()" [disabled]="isSaving">
         <mat-icon>cancel</mat-icon>
         Cancel
       </button>
-      <button
-        mat-raised-button
-        color="accent"
-        [disabled]="form.invalid"
-        type="submit"
-        form="createEditForm"
-      >
-        <mat-icon>save</mat-icon>
-        <span>&nbsp;</span>
-        <span *ngIf="createMode">Create</span>
-        <span *ngIf="!createMode">Save</span>
-      </button>
+      <mvtool-loading-overlay [isLoading]="isSaving" color="accent">
+        <button
+          mat-raised-button
+          color="accent"
+          [disabled]="form.invalid"
+          type="submit"
+          form="createEditForm"
+          [disabled]="isSaving"
+        >
+          <mat-icon>save</mat-icon>
+          <span>&nbsp;</span>
+          <span *ngIf="createMode">Create</span>
+          <span *ngIf="!createMode">Save</span>
+        </button>
+      </mvtool-loading-overlay>
     </div>
   `,
   styles: [],
@@ -68,6 +71,7 @@ import { NgForm, NgModel } from '@angular/forms';
 export class CreateEditDialogComponent implements AfterViewInit {
   @Input() createMode: boolean = true;
   @Input() objectName: string = 'Entity';
+  @Input() isSaving: boolean = false;
   @Output() save = new EventEmitter<NgForm>();
   @Output() cancel = new EventEmitter();
 

@@ -27,6 +27,7 @@ import {
   MeasureService,
 } from '../shared/services/measure.service';
 import { CompletionStatusOptions } from '../shared/data/custom/custom-options';
+import { finalize, firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -53,12 +54,17 @@ export class CompletionDialogService {
       objectName="Completion"
       (save)="onSave($event)"
       (cancel)="onCancel()"
+      [isSaving]="isSaving"
     >
       <div class="fx-column">
         <!-- Completion status -->
         <mat-form-field appearance="fill">
           <mat-label>Select completion status</mat-label>
-          <mat-select name="completionStatus" [(ngModel)]="completionStatus">
+          <mat-select
+            name="completionStatus"
+            [(ngModel)]="completionStatus"
+            [disabled]="isSaving"
+          >
             <mat-option [value]="null">None</mat-option>
             <mat-option
               *ngFor="
@@ -78,7 +84,7 @@ export class CompletionDialogService {
             name="completionComment"
             matInput
             [(ngModel)]="measureInput.completion_comment"
-            [disabled]="!completionStatus"
+            [disabled]="!completionStatus || isSaving"
           ></textarea>
         </mat-form-field>
       </div>
@@ -92,6 +98,7 @@ export class CompletionDialogComponent {
   completionStatusOptions = new CompletionStatusOptions(false);
   measureInput: IMeasureInput;
   protected _preservedCompletionComment: string | null = null;
+  isSaving: boolean = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<CompletionDialogComponent>,
@@ -120,11 +127,28 @@ export class CompletionDialogComponent {
     }
   }
 
-  onSave(form: NgForm) {
+  async onSave(form: NgForm) {
     if (form.valid) {
-      this._measureService
-        .updateMeasure(this._measure.id, this.measureInput)
-        .subscribe((measure) => this._dialogRef.close(measure));
+      // Define observable to update measure
+      const measure$ = this._measureService.updateMeasure(
+        this._measure.id,
+        this.measureInput
+      );
+
+      // Perform update and close dialog
+      this.isSaving = true;
+      this._dialogRef.disableClose = true;
+
+      this._dialogRef.close(
+        await firstValueFrom(
+          measure$.pipe(
+            finalize(() => {
+              this.isSaving = false;
+              this._dialogRef.disableClose = false;
+            })
+          )
+        )
+      );
     }
   }
 

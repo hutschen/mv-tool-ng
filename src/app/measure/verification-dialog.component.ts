@@ -31,6 +31,7 @@ import {
   VerificationMethodOptions,
   VerificationStatusOptions,
 } from '../shared/data/custom/custom-options';
+import { finalize, firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -57,6 +58,7 @@ export class VerificationDialogService {
       objectName="Verification Status"
       (save)="onSave($event)"
       (cancel)="onCancel()"
+      [isSaving]="isSaving"
     >
       <div class="fx-column">
         <!-- Verification method -->
@@ -65,6 +67,7 @@ export class VerificationDialogService {
           <mat-select
             name="verificationMethod"
             [(ngModel)]="verificationMethod"
+            [disabled]="isSaving"
           >
             <mat-option [value]="null">None</mat-option>
             <mat-option
@@ -84,7 +87,7 @@ export class VerificationDialogService {
           <mat-select
             name="verificationStatus"
             [(ngModel)]="measureInput.verification_status"
-            [disabled]="!verificationMethod"
+            [disabled]="!verificationMethod || isSaving"
           >
             <mat-option [value]="null">None</mat-option>
             <mat-option
@@ -105,7 +108,7 @@ export class VerificationDialogService {
             matInput
             name="verificationComment"
             [(ngModel)]="measureInput.verification_comment"
-            [disabled]="!verificationMethod"
+            [disabled]="!verificationMethod || isSaving"
           ></textarea>
         </mat-form-field>
       </div>
@@ -120,6 +123,7 @@ export class VerificationDialogComponent {
   measureInput: IMeasureInput;
   protected _preservedVerificationStatus: VerificationStatus | null = null;
   protected _preservedVerificationComment: string | null = null;
+  isSaving: boolean = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<VerificationDialogComponent>,
@@ -158,13 +162,31 @@ export class VerificationDialogComponent {
     return this.measureInput.verification_method ?? null;
   }
 
-  onSave(form: NgForm): void {
+  async onSave(form: NgForm) {
     if (form.valid) {
-      this._measureService
-        .updateMeasure(this._measure.id, this.measureInput)
-        .subscribe((measure) => this._dialogRef.close(measure));
+      // Define observable to update measure
+      const measure$ = this._measureService.updateMeasure(
+        this._measure.id,
+        this.measureInput
+      );
+
+      // Perform update and close dialog
+      this.isSaving = true;
+      this._dialogRef.disableClose = true;
+
+      this._dialogRef.close(
+        await firstValueFrom(
+          measure$.pipe(
+            finalize(() => {
+              this.isSaving = false;
+              this._dialogRef.disableClose = false;
+            })
+          )
+        )
+      );
     }
   }
+
   onCancel(): void {
     this._dialogRef.close();
   }

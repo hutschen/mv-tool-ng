@@ -74,14 +74,46 @@ describe('DataSelection', () => {
     });
   });
 
+  it('should emit selection change when selection changes', (done) => {
+    const dataSelection = new DataSelection<MockDataItem>('test');
+
+    dataSelection.selectionChanged$.pipe(take(1)).subscribe((selection) => {
+      expect(selection).toEqual([dataItem1.id]);
+      done();
+    });
+
+    dataSelection.select(dataItem1);
+  });
+
+  it('should emit current selection when selection changes', (done) => {
+    const dataSelection = new DataSelection<MockDataItem>('test');
+
+    let count = 0;
+    dataSelection.selection$.pipe(take(2)).subscribe((selection) => {
+      count++;
+      if (dataSelection.selected.length === 0) {
+        expect(selection).toEqual([]);
+      } else {
+        expect(selection).toEqual([dataItem1.id]);
+        expect(count).toBe(2);
+        done();
+      }
+    });
+
+    dataSelection.select(dataItem1);
+  });
+
   it('should emit query params when selection changes', (done) => {
     const dataSelection = new DataSelection<MockDataItem>('test');
 
+    let count = 0;
     dataSelection.queryParams$.pipe(take(2)).subscribe((queryParams) => {
+      count++;
       if (dataSelection.selected.length === 0) {
         expect(queryParams).toEqual({});
       } else {
         expect(queryParams).toEqual({ test: [dataItem1.id] });
+        expect(count).toBe(2);
         done();
       }
     });

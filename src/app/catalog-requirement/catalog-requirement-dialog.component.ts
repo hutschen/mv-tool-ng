@@ -20,7 +20,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { firstValueFrom, Observable } from 'rxjs';
+import { finalize, firstValueFrom, Observable } from 'rxjs';
 import { CatalogModule } from '../shared/services/catalog-module.service';
 import {
   CatalogRequirement,
@@ -61,6 +61,7 @@ export class CatalogRequirementDialogComponent {
   catalogRequirementInput: ICatalogRequirementInput = {
     summary: '',
   };
+  isSaving: boolean = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<CatalogRequirementDialogComponent>,
@@ -81,6 +82,7 @@ export class CatalogRequirementDialogComponent {
 
   async onSave(form: NgForm): Promise<void> {
     if (form.valid) {
+      // Define observable to create or update catalog requirement
       let catalogRequirement$: Observable<CatalogRequirement>;
       if (!this._dialogData.catalogRequirement) {
         catalogRequirement$ =
@@ -95,7 +97,21 @@ export class CatalogRequirementDialogComponent {
             this.catalogRequirementInput
           );
       }
-      this._dialogRef.close(await firstValueFrom(catalogRequirement$));
+
+      // Close dialog and return catalog requirement
+      this.isSaving = true;
+      this._dialogRef.disableClose = true;
+
+      this._dialogRef.close(
+        await firstValueFrom(
+          catalogRequirement$.pipe(
+            finalize(() => {
+              this.isSaving = false;
+              this._dialogRef.disableClose = false;
+            })
+          )
+        )
+      );
     }
   }
 

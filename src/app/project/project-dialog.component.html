@@ -20,12 +20,19 @@
   objectName="Project"
   (save)="onSave($event)"
   (cancel)="onCancel()"
+  [isSaving]="isSaving"
 >
   <div class="fx-column">
     <!-- Project name input -->
     <mat-form-field appearance="fill">
       <mat-label>Project name</mat-label>
-      <input name="name" matInput [(ngModel)]="projectInput.name" required />
+      <input
+        name="name"
+        matInput
+        [(ngModel)]="projectInput.name"
+        [disabled]="isSaving"
+        required
+      />
     </mat-form-field>
 
     <!-- Project description input -->
@@ -35,6 +42,7 @@
         name="description"
         matInput
         [(ngModel)]="projectInput.description"
+        [disabled]="isSaving"
       ></textarea>
     </mat-form-field>
 
@@ -42,6 +50,7 @@
     <mvtool-jira-project-input
       [locked]="jiraProjectLocked"
       [(jiraProjectId)]="projectInput.jira_project_id"
+      [disabled]="isSaving"
     >
     </mvtool-jira-project-input>
   </div>

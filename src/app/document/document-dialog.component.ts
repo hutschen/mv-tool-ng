@@ -20,7 +20,7 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
+import { Observable, finalize, firstValueFrom } from 'rxjs';
 import {
   IDocumentInput,
   Document,
@@ -63,6 +63,7 @@ export class DocumentDialogComponent {
     title: '',
     description: null,
   };
+  isSaving: boolean = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<DocumentDialogComponent>,
@@ -79,8 +80,9 @@ export class DocumentDialogComponent {
     return !this._dialogData.document;
   }
 
-  onSave(form: NgForm): void {
+  async onSave(form: NgForm) {
     if (form.valid) {
+      // Define observable to create or update document
       let document$: Observable<Document>;
       if (!this._dialogData.document) {
         document$ = this._documentService.createDocument(
@@ -93,7 +95,21 @@ export class DocumentDialogComponent {
           this.documentInput
         );
       }
-      document$.subscribe((document) => this._dialogRef.close(document));
+
+      // Perform action and close dialog
+      this.isSaving = true;
+      this._dialogRef.disableClose = true;
+
+      this._dialogRef.close(
+        await firstValueFrom(
+          document$.pipe(
+            finalize(() => {
+              this.isSaving = false;
+              this._dialogRef.disableClose = false;
+            })
+          )
+        )
+      );
     }
   }
 

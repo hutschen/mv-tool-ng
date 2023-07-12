@@ -15,7 +15,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <div mat-dialog-title>
-  <span>Edit {{ filtered ? "Filtered" : "All" }} Catalog Requirements</span>
+  <span>Edit {{ scope | titlecase }} Catalog Requirements</span>
 </div>
 <div mat-dialog-content>
   <p>
@@ -29,9 +29,10 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="referenceFlag"
-        [(ngModel)]="editFlags.reference"
-        (change)="onEditFlagChange('reference')"
+        [checked]="isEdited('reference')"
+        (change)="toggleEdit('reference')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
         <mat-label>Catalog requirement reference</mat-label>
@@ -39,7 +40,7 @@
           name="reference"
           matInput
           [(ngModel)]="patch.reference"
-          [disabled]="!editFlags.reference"
+          [disabled]="!isEdited('reference') || isSaving"
         />
       </mat-form-field>
     </div>
@@ -48,9 +49,10 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="titleFlag"
-        [(ngModel)]="editFlags.summary"
-        (change)="onEditFlagChange('summary')"
+        [checked]="isEdited('summary')"
+        (change)="toggleEdit('summary')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
         <mat-label>Catalog requirement summary</mat-label>
@@ -58,8 +60,8 @@
           name="summary"
           matInput
           [(ngModel)]="patch.summary"
-          [required]="editFlags.summary"
-          [disabled]="!editFlags.summary"
+          [required]="isEdited('summary')"
+          [disabled]="!isEdited('summary') || isSaving"
         />
       </mat-form-field>
     </div>
@@ -68,9 +70,10 @@
     <div class="fx-row fx-gap-5 fx-center">
       <mat-checkbox
         name="descriptionFlag"
-        [(ngModel)]="editFlags.description"
-        (change)="onEditFlagChange('description')"
+        [checked]="isEdited('description')"
+        (change)="toggleEdit('description')"
         class="checkbox"
+        [disabled]="isSaving"
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
         <mat-label>Catalog requirement description</mat-label>
@@ -78,26 +81,28 @@
           name="description"
           matInput
           [(ngModel)]="patch.description"
-          [disabled]="!editFlags.description"
+          [disabled]="!isEdited('description') || isSaving"
         ></textarea>
       </mat-form-field>
     </div>
   </form>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">
+  <button mat-button (click)="onCancel()" [disabled]="isSaving">
     <mat-icon>cancel</mat-icon>
     Cancel
   </button>
-  <button
-    mat-raised-button
-    color="accent"
-    [disabled]="form.invalid || isPatchEmpty"
-    type="submit"
-    form="bulkEditForm"
-  >
-    <mat-icon>save</mat-icon>
-    <span>&nbsp;</span>
-    Save
-  </button>
+  <mvtool-loading-overlay [isLoading]="isSaving" color="accent">
+    <button
+      mat-raised-button
+      color="accent"
+      [disabled]="form.invalid || !isPatchEdited || isSaving"
+      type="submit"
+      form="bulkEditForm"
+    >
+      <mat-icon>save</mat-icon>
+      <span>&nbsp;</span>
+      Save
+    </button>
+  </mvtool-loading-overlay>
 </div>

@@ -25,9 +25,8 @@ import {
   RequirementService,
   IRequirementPatch,
 } from '../shared/services/requirement.service';
-import { isEmpty } from 'radash';
 import { NgForm } from '@angular/forms';
-import { firstValueFrom } from 'rxjs';
+import { finalize, firstValueFrom } from 'rxjs';
 import { Project } from '../shared/services/project.service';
 import {
   MilestoneOptions,
@@ -35,11 +34,13 @@ import {
 } from '../shared/data/requirement/requirement-options';
 import { TargetObjectService } from '../shared/services/target-object.service';
 import { MilestoneService } from '../shared/services/milestone.service';
+import { PatchEditFlags } from '../shared/patch-edit-flags';
+import { BulkEditScope } from '../shared/bulk-edit-scope';
 
 export interface IRequirementBulkEditDialogData {
   project: Project;
   queryParams: IQueryParams;
-  filtered: boolean;
+  scope: BulkEditScope;
   fieldNames: string[];
 }
 
@@ -52,7 +53,7 @@ export class RequirementBulkEditDialogService {
   openRequirementBulkEditDialog(
     project: Project,
     queryParams: IQueryParams = {},
-    filtered: boolean = false,
+    scope: BulkEditScope = 'all',
     fieldNames: string[] = []
   ): MatDialogRef<
     RequirementBulkEditDialogComponent,
@@ -60,7 +61,7 @@ export class RequirementBulkEditDialogService {
   > {
     return this._dialog.open(RequirementBulkEditDialogComponent, {
       width: '550px',
-      data: { project, queryParams, filtered, fieldNames },
+      data: { project, queryParams, scope, fieldNames },
     });
   }
 }
@@ -74,19 +75,26 @@ export class RequirementBulkEditDialogService {
     '.fx-center { align-items: center; }',
   ],
 })
-export class RequirementBulkEditDialogComponent {
+export class RequirementBulkEditDialogComponent extends PatchEditFlags<IRequirementPatch> {
+  readonly complianceFlags: (keyof IRequirementPatch)[] = [
+    'compliance_status',
+    'compliance_comment',
+  ];
+
   patch: IRequirementPatch = {};
-  readonly editFlags = {
-    reference: false,
-    summary: false,
-    description: false,
-    target_object: false,
-    milestone: false,
-    compliance: false,
+  readonly defaultValues = {
+    reference: null,
+    summary: '',
+    description: null,
+    target_object: null,
+    milestone: null,
+    compliance_status: null,
+    compliance_comment: null,
   };
   readonly queryParams: IQueryParams;
-  readonly filtered: boolean;
+  readonly scope: BulkEditScope;
   protected _fieldNames: string[];
+  isSaving: boolean = false;
 
   // To select project related target objects and milestones
   readonly targetObjectOptions: TargetObjectOptions;
@@ -99,8 +107,9 @@ export class RequirementBulkEditDialogComponent {
     milestoneService: MilestoneService,
     @Inject(MAT_DIALOG_DATA) data: IRequirementBulkEditDialogData
   ) {
+    super();
     this.queryParams = data.queryParams;
-    this.filtered = data.filtered;
+    this.scope = data.scope;
     this._fieldNames = data.fieldNames;
 
     this.targetObjectOptions = new TargetObjectOptions(
@@ -116,48 +125,25 @@ export class RequirementBulkEditDialogComponent {
     );
   }
 
-  onEditFlagChange(
-    key:
-      | 'reference'
-      | 'summary'
-      | 'description'
-      | 'target_object'
-      | 'milestone'
-      | 'compliance'
-  ) {
-    if (key == 'compliance') {
-      if (this.editFlags[key]) {
-        this.patch['compliance_status'] = null;
-        this.patch['compliance_comment'] = null;
-      } else {
-        delete this.patch['compliance_status'];
-        delete this.patch['compliance_comment'];
-      }
-    } else {
-      if (this.editFlags[key]) {
-        if (key !== 'summary') this.patch[key] = null;
-      } else {
-        delete this.patch[key];
-      }
-    }
-  }
-
   get hasCompliance(): boolean {
     return this._fieldNames.includes('compliance_status');
   }
 
-  get isPatchEmpty(): boolean {
-    return isEmpty(this.patch);
-  }
-
   async onSave(form: NgForm) {
     if (form.valid) {
+      this.isSaving = true;
+      this._dialogRef.disableClose = true;
+
       this._dialogRef.close(
         await firstValueFrom(
-          this._requirementService.patchRequirements(
-            this.patch,
-            this.queryParams
-          )
+          this._requirementService
+            .patchRequirements(this.patch, this.queryParams)
+            .pipe(
+              finalize(() => {
+                this.isSaving = false;
+                this._dialogRef.disableClose = false;
+              })
+            )
         )
       );
     }

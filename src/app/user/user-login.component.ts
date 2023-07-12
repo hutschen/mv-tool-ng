@@ -16,7 +16,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { firstValueFrom } from 'rxjs';
+import { finalize, firstValueFrom } from 'rxjs';
 import { AuthService } from '../shared/services/auth.service';
 
 @Component({
@@ -33,6 +33,7 @@ export class UserLoginComponent {
     username: '',
     password: '',
   };
+  isLoggingIn: boolean = false;
 
   constructor(protected _auth: AuthService, protected _snackBar: MatSnackBar) {
     this.loggedIn = this._auth.loggedIn;
@@ -48,8 +49,11 @@ export class UserLoginComponent {
 
   async onSubmit(form: NgForm): Promise<void> {
     if (form.valid) {
+      this.isLoggingIn = true;
       const loggedIn = await firstValueFrom(
-        this._auth.logIn(this.credentials, this.keepLoggedIn)
+        this._auth
+          .logIn(this.credentials, this.keepLoggedIn)
+          .pipe(finalize(() => (this.isLoggingIn = false)))
       );
       if (!loggedIn) {
         this._snackBar.open(

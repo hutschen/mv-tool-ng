@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { BulkEditScope } from '../bulk-edit-scope';
 
 @Component({
   selector: 'mvtool-table-options',
@@ -35,8 +36,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
             [disabled]="bulkEditDisabled"
           >
             <mat-icon>edit_note</mat-icon>
-            <span *ngIf="!isTableFiltered">Edit all</span>
-            <span *ngIf="isTableFiltered">Edit filtered</span>
+            Edit {{ bulkEditScope }}
           </button>
           <mat-divider></mat-divider>
         </ng-container>
@@ -87,8 +87,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
             [disabled]="bulkDeleteDisabled"
           >
             <mat-icon>delete</mat-icon>
-            <span *ngIf="!isTableFiltered">Delete all</span>
-            <span *ngIf="isTableFiltered">Delete filtered</span>
+            Delete {{ bulkEditScope }}
           </button>
         </ng-container>
       </mat-menu>
@@ -110,7 +109,7 @@ export class TableOptionsComponent implements OnInit {
   @Input() hideColumnsDisabled: boolean = false;
   @Input() clearMarkersDisabled: boolean = false;
   @Input() bulkDeleteDisabled: boolean = false;
-  @Input() isTableFiltered: boolean = false;
+  @Input() bulkEditScope: BulkEditScope = 'all';
 
   constructor() {}
 
