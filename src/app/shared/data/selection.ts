@@ -15,11 +15,13 @@
 
 import { SelectionModel } from '@angular/cdk/collections';
 import { IDataItem } from './data';
-import { Observable, concat, map, of, shareReplay } from 'rxjs';
+import { Observable, map, startWith } from 'rxjs';
 import { IQueryParams } from '../services/query-params.service';
 
 export class DataSelection<T extends IDataItem> {
-  protected _selection: SelectionModel<T['id']>;
+  private __selection: SelectionModel<T['id']>;
+  readonly selectionChanged$: Observable<T['id'][]>;
+  readonly selection$: Observable<T['id'][]>;
   readonly queryParams$: Observable<IQueryParams>;
 
   constructor(
@@ -28,16 +30,23 @@ export class DataSelection<T extends IDataItem> {
     initQueryParams: IQueryParams = {},
     public readonly idType: 'number' | 'string' = 'number'
   ) {
-    this._selection = new SelectionModel(
+    // Define the selection model
+    this.__selection = new SelectionModel(
       multiple,
       this.__evalQueryParams(initQueryParams)
     );
-    this.queryParams$ = concat(
-      of(this._selection.selected), // emit initial value
-      this._selection.changed.pipe(map((e) => e.source.selected))
-    ).pipe(
-      map((selected) => (selected.length > 0 ? { [this.name]: selected } : {})),
-      shareReplay(1)
+
+    // Define the selectionChanged$ observable
+    this.selectionChanged$ = this.__selection.changed.pipe(
+      map((e) => e.source.selected)
+    );
+
+    // Define the selection$ observable
+    this.selection$ = this.selectionChanged$.pipe(startWith(this.selected));
+
+    // Define the queryParams$ observable
+    this.queryParams$ = this.selection$.pipe(
+      map((selected) => (selected.length > 0 ? { [this.name]: selected } : {}))
     );
   }
 
@@ -56,27 +65,27 @@ export class DataSelection<T extends IDataItem> {
 
   select(...values: T[]): boolean | void {
     const ids = values.map((v) => v.id);
-    return this._selection.select(...ids);
+    return this.__selection.select(...ids);
   }
 
   deselect(...values: T[]): boolean | void {
     const ids = values.map((v) => v.id);
-    return this._selection.deselect(...ids);
+    return this.__selection.deselect(...ids);
   }
 
   toggle(value: T): boolean | void {
-    return this._selection.toggle(value.id);
+    return this.__selection.toggle(value.id);
   }
 
   isSelected(value: T): boolean {
-    return this._selection.isSelected(value.id);
+    return this.__selection.isSelected(value.id);
   }
 
   get selected(): T['id'][] {
-    return this._selection.selected;
+    return this.__selection.selected;
   }
 
   clear(): void {
-    this._selection.clear();
+    this.__selection.clear();
   }
 }

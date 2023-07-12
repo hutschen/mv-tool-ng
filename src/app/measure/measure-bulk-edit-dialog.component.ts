@@ -31,11 +31,12 @@ import { Project } from '../shared/services/project.service';
 import { DocumentService } from '../shared/services/document.service';
 import { DocumentOptions } from '../shared/data/document/document-options';
 import { PatchEditFlags } from '../shared/patch-edit-flags';
+import { BulkEditScope } from '../shared/bulk-edit-scope';
 
 export interface IMeasureBulkEditDialogData {
   project: Project;
   queryParams: IQueryParams;
-  filtered: boolean;
+  scope: BulkEditScope;
   fieldNames: string[];
 }
 
@@ -48,12 +49,12 @@ export class MeasureBulkEditDialogService {
   openMeasureBulkEditDialog(
     project: Project,
     queryParams: IQueryParams = {},
-    filtered: boolean = false,
+    scope: BulkEditScope = 'all',
     fieldNames: string[] = []
   ): MatDialogRef<MeasureBulkEditDialogComponent, Measure[] | undefined> {
     return this._dialog.open(MeasureBulkEditDialogComponent, {
       width: '550px',
-      data: { project, queryParams, filtered, fieldNames },
+      data: { project, queryParams, scope, fieldNames },
     });
   }
 }
@@ -97,7 +98,7 @@ export class MeasureBulkEditDialogComponent extends PatchEditFlags<IMeasurePatch
     document_id: null,
   };
   readonly queryParams: IQueryParams;
-  readonly filtered: boolean;
+  readonly scope: BulkEditScope;
   protected _fieldNames: string[];
   isSaving: boolean = false;
 
@@ -112,7 +113,7 @@ export class MeasureBulkEditDialogComponent extends PatchEditFlags<IMeasurePatch
   ) {
     super();
     this.queryParams = data.queryParams;
-    this.filtered = data.filtered;
+    this.scope = data.scope;
     this._fieldNames = data.fieldNames;
 
     this.documentOptions = new DocumentOptions(

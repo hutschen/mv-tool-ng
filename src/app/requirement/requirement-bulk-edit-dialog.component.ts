@@ -35,11 +35,12 @@ import {
 import { TargetObjectService } from '../shared/services/target-object.service';
 import { MilestoneService } from '../shared/services/milestone.service';
 import { PatchEditFlags } from '../shared/patch-edit-flags';
+import { BulkEditScope } from '../shared/bulk-edit-scope';
 
 export interface IRequirementBulkEditDialogData {
   project: Project;
   queryParams: IQueryParams;
-  filtered: boolean;
+  scope: BulkEditScope;
   fieldNames: string[];
 }
 
@@ -52,7 +53,7 @@ export class RequirementBulkEditDialogService {
   openRequirementBulkEditDialog(
     project: Project,
     queryParams: IQueryParams = {},
-    filtered: boolean = false,
+    scope: BulkEditScope = 'all',
     fieldNames: string[] = []
   ): MatDialogRef<
     RequirementBulkEditDialogComponent,
@@ -60,7 +61,7 @@ export class RequirementBulkEditDialogService {
   > {
     return this._dialog.open(RequirementBulkEditDialogComponent, {
       width: '550px',
-      data: { project, queryParams, filtered, fieldNames },
+      data: { project, queryParams, scope, fieldNames },
     });
   }
 }
@@ -91,7 +92,7 @@ export class RequirementBulkEditDialogComponent extends PatchEditFlags<IRequirem
     compliance_comment: null,
   };
   readonly queryParams: IQueryParams;
-  readonly filtered: boolean;
+  readonly scope: BulkEditScope;
   protected _fieldNames: string[];
   isSaving: boolean = false;
 
@@ -108,7 +109,7 @@ export class RequirementBulkEditDialogComponent extends PatchEditFlags<IRequirem
   ) {
     super();
     this.queryParams = data.queryParams;
-    this.filtered = data.filtered;
+    this.scope = data.scope;
     this._fieldNames = data.fieldNames;
 
     this.targetObjectOptions = new TargetObjectOptions(

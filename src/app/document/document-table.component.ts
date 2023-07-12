@@ -36,6 +36,11 @@ import {
 import { isEmpty } from 'radash';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DocumentBulkEditDialogService } from './document-bulk-edit-dialog.component';
+import {
+  BulkEditScope,
+  toBulkEditScope,
+  toBulkEditScopeText,
+} from '../shared/bulk-edit-scope';
 
 @Component({
   selector: 'mvtool-document-table',
@@ -53,7 +58,7 @@ export class DocumentTableComponent implements OnInit {
   expanded!: DataSelection<Document>;
   exportQueryParams$!: Observable<IQueryParams>;
   bulkEditQueryParams$!: Observable<IQueryParams>;
-  bulkEditAll$!: Observable<boolean>;
+  bulkEditScope$!: Observable<BulkEditScope>;
   @Input() project!: Project;
 
   constructor(
@@ -103,11 +108,16 @@ export class DocumentTableComponent implements OnInit {
     this.bulkEditQueryParams$ = combineQueryParams([
       this.dataFrame.search.queryParams$,
       this.dataFrame.columns.filterQueryParams$,
+      this.marked.selection$.pipe(
+        map((selection) =>
+          selection.length > 0 ? { ids: selection } : ({} as IQueryParams)
+        )
+      ),
     ]);
 
     // Define bulk edit all flag
-    this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
-      map((queryParams) => isEmpty(queryParams))
+    this.bulkEditScope$ = this.bulkEditQueryParams$.pipe(
+      map((queryParams) => toBulkEditScope(queryParams))
     );
   }
 
@@ -117,7 +127,7 @@ export class DocumentTableComponent implements OnInit {
       const dialogRef =
         this._documentBulkEditDialogService.openDocumentBulkEditDialog(
           { project_ids: this.project.id, ...queryParams },
-          !isEmpty(queryParams)
+          await firstValueFrom(this.bulkEditScope$)
         );
       const documents = await firstValueFrom(dialogRef.afterClosed());
       if (documents) this.dataFrame.reload();
@@ -128,25 +138,19 @@ export class DocumentTableComponent implements OnInit {
 
   async onDeleteDocuments() {
     if (this.project) {
-      let dialogRef: MatDialogRef<ConfirmDialogComponent, boolean>;
-      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
-      if (isEmpty(queryParams)) {
-        dialogRef = this._confirmDialogService.openConfirmDialog(
-          'Delete all documents?',
-          'Are you sure you want to delete all documents in this project?'
-        );
-      } else {
-        dialogRef = this._confirmDialogService.openConfirmDialog(
-          'Delete filtered documents?',
-          'Are you sure you want to delete all documents that match the current filter?'
-        );
-      }
+      const scope = await firstValueFrom(this.bulkEditScope$);
+      const dialogRef = this._confirmDialogService.openConfirmDialog(
+        `Delete ${scope} documents?`,
+        `Are you sure you want to delete ${toBulkEditScopeText(
+          scope
+        )} documents of this project?`
+      );
       const confirm = await firstValueFrom(dialogRef.afterClosed());
       if (confirm) {
         await firstValueFrom(
           this._documentService.deleteDocuments({
             project_ids: this.project.id,
-            ...queryParams,
+            ...(await firstValueFrom(this.bulkEditQueryParams$)),
           })
         );
         this.dataFrame.reload();

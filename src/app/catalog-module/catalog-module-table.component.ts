@@ -39,6 +39,11 @@ import {
 import { isEmpty } from 'radash';
 import { MatDialogRef } from '@angular/material/dialog';
 import { CatalogModuleBulkEditDialogService } from './catalog-module-bulk-edit-dialog.component';
+import {
+  BulkEditScope,
+  toBulkEditScope,
+  toBulkEditScopeText,
+} from '../shared/bulk-edit-scope';
 
 @Component({
   selector: 'mvtool-catalog-module-table',
@@ -56,7 +61,7 @@ export class CatalogModuleTableComponent implements OnInit {
   expanded!: DataSelection<CatalogModule>;
   exportQueryParams$!: Observable<IQueryParams>;
   bulkEditQueryParams$!: Observable<IQueryParams>;
-  bulkEditAll$!: Observable<boolean>;
+  bulkEditScope$!: Observable<BulkEditScope>;
   @Input() catalog!: Catalog;
   @Output() clickCatalogModule = new EventEmitter<CatalogModule>();
 
@@ -107,11 +112,16 @@ export class CatalogModuleTableComponent implements OnInit {
     this.bulkEditQueryParams$ = combineQueryParams([
       this.dataFrame.search.queryParams$,
       this.dataFrame.columns.filterQueryParams$,
+      this.marked.selection$.pipe(
+        map((selection) =>
+          selection.length > 0 ? { ids: selection } : ({} as IQueryParams)
+        )
+      ),
     ]);
 
-    // Define bulk edit all flag
-    this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
-      map((queryParams) => isEmpty(queryParams))
+    // Define bulk edit scope
+    this.bulkEditScope$ = this.bulkEditQueryParams$.pipe(
+      map((queryParams) => toBulkEditScope(queryParams))
     );
   }
 
@@ -121,7 +131,7 @@ export class CatalogModuleTableComponent implements OnInit {
       const dialogRef =
         this._catalogModuleBulkEditDialogService.openCatalogModuleBulkEditDialog(
           { catalog_ids: this.catalog.id, ...queryParams },
-          !isEmpty(queryParams)
+          await firstValueFrom(this.bulkEditScope$)
         );
       const catalogModules = await firstValueFrom(dialogRef.afterClosed());
       if (catalogModules) this.dataFrame.reload();
@@ -132,25 +142,20 @@ export class CatalogModuleTableComponent implements OnInit {
 
   async onDeleteCatalogModules() {
     if (this.catalog) {
-      let dialogRef: MatDialogRef<ConfirmDialogComponent, boolean>;
-      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
-      if (isEmpty(queryParams)) {
-        dialogRef = this._confirmDialogService.openConfirmDialog(
-          'Delete all catalog modules?',
-          'Are you sure you want to delete all modules in this catalog?'
-        );
-      } else {
-        dialogRef = this._confirmDialogService.openConfirmDialog(
-          'Delete all filtered catalog modules?',
-          'Are you sure you want to delete all catalog modules that match the current filter?'
-        );
-      }
+      const scope = await firstValueFrom(this.bulkEditScope$);
+      const dialogRef = this._confirmDialogService.openConfirmDialog(
+        `Delete ${scope} catalog modules?`,
+        `Are you sure you want to delete ${toBulkEditScopeText(
+          scope
+        )}  modules of this catalog?`
+      );
+
       const confirm = await firstValueFrom(dialogRef.afterClosed());
       if (confirm) {
         await firstValueFrom(
           this._catalogModuleService.deleteCatalogModules({
             catalog_ids: this.catalog.id,
-            ...queryParams,
+            ...(await firstValueFrom(this.bulkEditQueryParams$)),
           })
         );
         this.dataFrame.reload();
