@@ -28,10 +28,11 @@ import { IQueryParams } from '../shared/services/query-params.service';
 import { NgForm } from '@angular/forms';
 import { finalize, firstValueFrom } from 'rxjs';
 import { PatchEditFlags } from '../shared/patch-edit-flags';
+import { BulkEditScope } from '../shared/bulk-edit-scope';
 
 export interface ICatalogModuleBulkEditDialogData {
   queryParams: IQueryParams;
-  filtered: boolean;
+  scope: BulkEditScope;
 }
 
 @Injectable({
@@ -42,14 +43,14 @@ export class CatalogModuleBulkEditDialogService {
 
   openCatalogModuleBulkEditDialog(
     queryParams: IQueryParams = {},
-    filtered: boolean = false
+    scope: BulkEditScope = 'all'
   ): MatDialogRef<
     CatalogModuleBulkEditDialogComponent,
     CatalogModule[] | undefined
   > {
     return this._dialog.open(CatalogModuleBulkEditDialogComponent, {
       width: '550px',
-      data: { queryParams, filtered },
+      data: { queryParams, scope },
     });
   }
 }
@@ -71,7 +72,7 @@ export class CatalogModuleBulkEditDialogComponent extends PatchEditFlags<ICatalo
     description: null,
   };
   readonly queryParams: IQueryParams;
-  readonly filtered: boolean;
+  readonly scope: BulkEditScope;
   isSaving: boolean = false;
 
   constructor(
@@ -82,7 +83,7 @@ export class CatalogModuleBulkEditDialogComponent extends PatchEditFlags<ICatalo
   ) {
     super();
     this.queryParams = data.queryParams;
-    this.filtered = data.filtered;
+    this.scope = data.scope;
   }
 
   async onSave(form: NgForm) {

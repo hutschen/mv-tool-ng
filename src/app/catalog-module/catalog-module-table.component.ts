@@ -127,7 +127,7 @@ export class CatalogModuleTableComponent implements OnInit {
       const dialogRef =
         this._catalogModuleBulkEditDialogService.openCatalogModuleBulkEditDialog(
           { catalog_ids: this.catalog.id, ...queryParams },
-          !isEmpty(queryParams)
+          await firstValueFrom(this.bulkEditScope$)
         );
       const catalogModules = await firstValueFrom(dialogRef.afterClosed());
       if (catalogModules) this.dataFrame.reload();

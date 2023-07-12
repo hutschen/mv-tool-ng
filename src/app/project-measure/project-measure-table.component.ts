@@ -139,7 +139,7 @@ export class ProjectMeasureTableComponent implements OnInit {
       this._measureBulkEditDialogService.openMeasureBulkEditDialog(
         this.project,
         { project_ids: this.project.id, ...queryParams },
-        !isEmpty(queryParams),
+        await firstValueFrom(this.bulkEditScope$),
         await firstValueFrom(this.dataFrame.getColumnNames())
       );
     const measures = await firstValueFrom(dialogRef.afterClosed());

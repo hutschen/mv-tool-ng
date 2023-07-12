@@ -141,7 +141,7 @@ export class RequirementTableComponent implements OnInit {
         this._requirementBulkEditDialogService.openRequirementBulkEditDialog(
           this.project,
           { project_ids: this.project.id, ...queryParams },
-          !isEmpty(queryParams),
+          await firstValueFrom(this.bulkEditScope$),
           await firstValueFrom(this.dataFrame.getColumnNames())
         );
       const requirements = await firstValueFrom(dialogRef.afterClosed());

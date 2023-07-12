@@ -123,7 +123,7 @@ export class DocumentTableComponent implements OnInit {
       const dialogRef =
         this._documentBulkEditDialogService.openDocumentBulkEditDialog(
           { project_ids: this.project.id, ...queryParams },
-          !isEmpty(queryParams)
+          await firstValueFrom(this.bulkEditScope$)
         );
       const documents = await firstValueFrom(dialogRef.afterClosed());
       if (documents) this.dataFrame.reload();
