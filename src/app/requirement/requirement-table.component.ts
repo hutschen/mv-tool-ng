@@ -44,7 +44,11 @@ import {
 import { MatDialogRef } from '@angular/material/dialog';
 import { isEmpty } from 'radash';
 import { RequirementBulkEditDialogService } from './requirement-bulk-edit-dialog.component';
-import { BulkEditScope, toBulkEditScope } from '../shared/bulk-edit-scope';
+import {
+  BulkEditScope,
+  toBulkEditScope,
+  toBulkEditScopeText,
+} from '../shared/bulk-edit-scope';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -153,25 +157,20 @@ export class RequirementTableComponent implements OnInit {
 
   async onDeleteRequirements() {
     if (this.project) {
-      let dialogRef: MatDialogRef<ConfirmDialogComponent, boolean>;
-      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
-      if (isEmpty(queryParams)) {
-        dialogRef = this._confirmDialogService.openConfirmDialog(
-          'Delete all requirements?',
-          'Are you sure you want to delete all requirements in this project?'
-        );
-      } else {
-        dialogRef = this._confirmDialogService.openConfirmDialog(
-          'Delete filtered requirements?',
-          'Are you sure you want to delete all requirements that match the current filter?'
-        );
-      }
+      const scope = await firstValueFrom(this.bulkEditScope$);
+      const dialogRef = this._confirmDialogService.openConfirmDialog(
+        `Delete ${scope} requirements?`,
+        `Are you sure you want to delete ${toBulkEditScopeText(
+          scope
+        )} requirements of this project?`
+      );
+
       const confirm = await firstValueFrom(dialogRef.afterClosed());
       if (confirm) {
         await firstValueFrom(
           this._requirementService.deleteRequirements({
             project_ids: this.project.id,
-            ...queryParams,
+            ...(await firstValueFrom(this.bulkEditQueryParams$)),
           })
         );
         this.dataFrame.reload();

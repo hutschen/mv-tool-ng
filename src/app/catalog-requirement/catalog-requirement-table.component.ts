@@ -39,7 +39,11 @@ import {
 import { isEmpty } from 'radash';
 import { MatDialogRef } from '@angular/material/dialog';
 import { CatalogRequirementBulkEditDialogService } from './catalog-requirement-bulk-edit-dialog.component';
-import { BulkEditScope, toBulkEditScope } from '../shared/bulk-edit-scope';
+import {
+  BulkEditScope,
+  toBulkEditScope,
+  toBulkEditScopeText,
+} from '../shared/bulk-edit-scope';
 
 @Component({
   selector: 'mvtool-catalog-requirement-table',
@@ -137,25 +141,20 @@ export class CatalogRequirementTableComponent implements OnInit {
 
   async onDeleteCatalogRequirements() {
     if (this.catalogModule) {
-      let dialogRef: MatDialogRef<ConfirmDialogComponent, boolean>;
-      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
-      if (isEmpty(queryParams)) {
-        dialogRef = this._confirmDialogService.openConfirmDialog(
-          'Delete all catalog requirements?',
-          'Are you sure you want to delete all requirements related to this catalog module?'
-        );
-      } else {
-        dialogRef = this._confirmDialogService.openConfirmDialog(
-          'Delete filtered catalog requirements?',
-          'Are you sure you want to delete all catalog requirement that match the current filter?'
-        );
-      }
+      const scope = await firstValueFrom(this.bulkEditScope$);
+      const dialogRef = this._confirmDialogService.openConfirmDialog(
+        `Delete ${scope} catalog requirements?`,
+        `Are you sure you want to delete ${toBulkEditScopeText(
+          scope
+        )} requirements of this catalog module?`
+      );
+
       const confirmed = await firstValueFrom(dialogRef.afterClosed());
       if (confirmed) {
         await firstValueFrom(
           this._catalogRequirementService.deleteCatalogRequirements({
             catalog_module_ids: this.catalogModule.id,
-            ...queryParams,
+            ...(await firstValueFrom(this.bulkEditQueryParams$)),
           })
         );
         this.dataFrame.reload();

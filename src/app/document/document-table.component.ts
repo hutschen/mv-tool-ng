@@ -36,7 +36,11 @@ import {
 import { isEmpty } from 'radash';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DocumentBulkEditDialogService } from './document-bulk-edit-dialog.component';
-import { BulkEditScope, toBulkEditScope } from '../shared/bulk-edit-scope';
+import {
+  BulkEditScope,
+  toBulkEditScope,
+  toBulkEditScopeText,
+} from '../shared/bulk-edit-scope';
 
 @Component({
   selector: 'mvtool-document-table',
@@ -134,25 +138,19 @@ export class DocumentTableComponent implements OnInit {
 
   async onDeleteDocuments() {
     if (this.project) {
-      let dialogRef: MatDialogRef<ConfirmDialogComponent, boolean>;
-      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
-      if (isEmpty(queryParams)) {
-        dialogRef = this._confirmDialogService.openConfirmDialog(
-          'Delete all documents?',
-          'Are you sure you want to delete all documents in this project?'
-        );
-      } else {
-        dialogRef = this._confirmDialogService.openConfirmDialog(
-          'Delete filtered documents?',
-          'Are you sure you want to delete all documents that match the current filter?'
-        );
-      }
+      const scope = await firstValueFrom(this.bulkEditScope$);
+      const dialogRef = this._confirmDialogService.openConfirmDialog(
+        `Delete ${scope} documents?`,
+        `Are you sure you want to delete ${toBulkEditScopeText(
+          scope
+        )} documents of this project?`
+      );
       const confirm = await firstValueFrom(dialogRef.afterClosed());
       if (confirm) {
         await firstValueFrom(
           this._documentService.deleteDocuments({
             project_ids: this.project.id,
-            ...queryParams,
+            ...(await firstValueFrom(this.bulkEditQueryParams$)),
           })
         );
         this.dataFrame.reload();

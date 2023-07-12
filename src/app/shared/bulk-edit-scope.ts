@@ -27,3 +27,14 @@ export function toBulkEditScope(queryParams: IQueryParams): BulkEditScope {
     return 'filtered';
   }
 }
+
+export function toBulkEditScopeText(scope: BulkEditScope): string {
+  switch (scope) {
+    case 'filtered':
+      return 'the filtered out';
+    case 'marked':
+      return 'the marked';
+    default:
+      return 'all';
+  }
+}

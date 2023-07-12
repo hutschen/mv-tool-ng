@@ -37,7 +37,11 @@ import {
 } from '../shared/components/confirm-dialog.component';
 import { isEmpty } from 'radash';
 import { MeasureBulkEditDialogService } from './measure-bulk-edit-dialog.component';
-import { BulkEditScope, toBulkEditScope } from '../shared/bulk-edit-scope';
+import {
+  BulkEditScope,
+  toBulkEditScope,
+  toBulkEditScopeText,
+} from '../shared/bulk-edit-scope';
 
 @Component({
   selector: 'mvtool-http-measure-table',
@@ -139,25 +143,20 @@ export class MeasureTableComponent implements OnInit {
 
   async onDeleteMeasures() {
     if (this.requirement) {
-      let dialogRef: MatDialogRef<ConfirmDialogComponent, boolean>;
-      const queryParams = await firstValueFrom(this.bulkEditQueryParams$);
-      if (isEmpty(queryParams)) {
-        dialogRef = this._confirmDialogService.openConfirmDialog(
-          'Delete all measures?',
-          'Are you sure you want to delete all measures related to this requirement?'
-        );
-      } else {
-        dialogRef = this._confirmDialogService.openConfirmDialog(
-          'Delete filtered measures?',
-          'Are you sure you want to delete all measures that match the current filter?'
-        );
-      }
+      const scope = await firstValueFrom(this.bulkEditScope$);
+      const dialogRef = this._confirmDialogService.openConfirmDialog(
+        `Delete ${scope} measures?`,
+        `Are you sure you want to delete ${toBulkEditScopeText(
+          scope
+        )} measures of this requirement?`
+      );
+
       const confirmed = await firstValueFrom(dialogRef.afterClosed());
       if (confirmed) {
         await firstValueFrom(
           this._measureService.deleteMeasures({
             requirement_ids: this.requirement.id,
-            ...queryParams,
+            ...(await firstValueFrom(this.bulkEditQueryParams$)),
           })
         );
         this.dataFrame.reload();
