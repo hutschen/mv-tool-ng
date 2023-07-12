@@ -36,6 +36,7 @@ import {
 import { isEmpty } from 'radash';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DocumentBulkEditDialogService } from './document-bulk-edit-dialog.component';
+import { BulkEditScope, toBulkEditScope } from '../shared/bulk-edit-scope';
 
 @Component({
   selector: 'mvtool-document-table',
@@ -53,7 +54,7 @@ export class DocumentTableComponent implements OnInit {
   expanded!: DataSelection<Document>;
   exportQueryParams$!: Observable<IQueryParams>;
   bulkEditQueryParams$!: Observable<IQueryParams>;
-  bulkEditAll$!: Observable<boolean>;
+  bulkEditScope$!: Observable<BulkEditScope>;
   @Input() project!: Project;
 
   constructor(
@@ -111,8 +112,8 @@ export class DocumentTableComponent implements OnInit {
     ]);
 
     // Define bulk edit all flag
-    this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
-      map((queryParams) => isEmpty(queryParams))
+    this.bulkEditScope$ = this.bulkEditQueryParams$.pipe(
+      map((queryParams) => toBulkEditScope(queryParams))
     );
   }
 

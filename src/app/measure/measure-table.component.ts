@@ -37,6 +37,7 @@ import {
 } from '../shared/components/confirm-dialog.component';
 import { isEmpty } from 'radash';
 import { MeasureBulkEditDialogService } from './measure-bulk-edit-dialog.component';
+import { BulkEditScope, toBulkEditScope } from '../shared/bulk-edit-scope';
 
 @Component({
   selector: 'mvtool-http-measure-table',
@@ -54,7 +55,7 @@ export class MeasureTableComponent implements OnInit {
   expanded!: DataSelection<Measure>;
   exportQueryParams$!: Observable<IQueryParams>;
   bulkEditQueryParams$!: Observable<IQueryParams>;
-  bulkEditAll$!: Observable<boolean>;
+  bulkEditScope$!: Observable<BulkEditScope>;
   @Input() requirement!: Requirement;
 
   constructor(
@@ -114,8 +115,8 @@ export class MeasureTableComponent implements OnInit {
     ]);
 
     // Define bulk edit all flag
-    this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
-      map((queryParams) => isEmpty(queryParams))
+    this.bulkEditScope$ = this.bulkEditQueryParams$.pipe(
+      map((queryParams) => toBulkEditScope(queryParams))
     );
   }
 

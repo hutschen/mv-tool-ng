@@ -44,6 +44,7 @@ import {
 import { MatDialogRef } from '@angular/material/dialog';
 import { isEmpty } from 'radash';
 import { RequirementBulkEditDialogService } from './requirement-bulk-edit-dialog.component';
+import { BulkEditScope, toBulkEditScope } from '../shared/bulk-edit-scope';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -60,7 +61,7 @@ export class RequirementTableComponent implements OnInit {
   expanded!: DataSelection<Requirement>;
   exportQueryParams$!: Observable<IQueryParams>;
   bulkEditQueryParams$!: Observable<IQueryParams>;
-  bulkEditAll$!: Observable<boolean>;
+  bulkEditScope$!: Observable<BulkEditScope>;
   @Input() project!: Project;
   @Output() clickRequirement = new EventEmitter<Requirement>();
 
@@ -127,9 +128,9 @@ export class RequirementTableComponent implements OnInit {
       ),
     ]);
 
-    // Define bulk edit all flag
-    this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
-      map((queryParams) => isEmpty(queryParams))
+    // Define bulk edit scope
+    this.bulkEditScope$ = this.bulkEditQueryParams$.pipe(
+      map((queryParams) => toBulkEditScope(queryParams))
     );
   }
 

@@ -39,6 +39,7 @@ import {
 import { isEmpty } from 'radash';
 import { MatDialogRef } from '@angular/material/dialog';
 import { CatalogRequirementBulkEditDialogService } from './catalog-requirement-bulk-edit-dialog.component';
+import { BulkEditScope, toBulkEditScope } from '../shared/bulk-edit-scope';
 
 @Component({
   selector: 'mvtool-catalog-requirement-table',
@@ -56,7 +57,7 @@ export class CatalogRequirementTableComponent implements OnInit {
   expanded!: DataSelection<CatalogRequirement>;
   exportQueryParams$!: Observable<IQueryParams>;
   bulkEditQueryParams$!: Observable<IQueryParams>;
-  bulkEditAll$!: Observable<boolean>;
+  bulkEditScope$!: Observable<BulkEditScope>;
   @Input() catalogModule!: CatalogModule;
 
   constructor(
@@ -113,9 +114,9 @@ export class CatalogRequirementTableComponent implements OnInit {
       ),
     ]);
 
-    // Define bulk edit all flag
-    this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
-      map((queryParams) => isEmpty(queryParams))
+    // Define bulk edit scope
+    this.bulkEditScope$ = this.bulkEditQueryParams$.pipe(
+      map((queryParams) => toBulkEditScope(queryParams))
     );
   }
 

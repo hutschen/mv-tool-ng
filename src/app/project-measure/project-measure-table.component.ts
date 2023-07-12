@@ -41,6 +41,7 @@ import {
 import { isEmpty } from 'radash';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MeasureBulkEditDialogService } from '../measure/measure-bulk-edit-dialog.component';
+import { BulkEditScope, toBulkEditScope } from '../shared/bulk-edit-scope';
 
 @Component({
   selector: 'mvtool-project-measure-table',
@@ -58,7 +59,7 @@ export class ProjectMeasureTableComponent implements OnInit {
   expanded!: DataSelection<Measure>;
   exportQueryParams$!: Observable<IQueryParams>;
   bulkEditQueryParams$!: Observable<IQueryParams>;
-  bulkEditAll$!: Observable<boolean>;
+  bulkEditScope$!: Observable<BulkEditScope>;
   @Input() project!: Project;
 
   constructor(
@@ -127,8 +128,8 @@ export class ProjectMeasureTableComponent implements OnInit {
     ]);
 
     // Define bulk edit all flag
-    this.bulkEditAll$ = this.bulkEditQueryParams$.pipe(
-      map((queryParams) => isEmpty(queryParams))
+    this.bulkEditScope$ = this.bulkEditQueryParams$.pipe(
+      map((queryParams) => toBulkEditScope(queryParams))
     );
   }
 
