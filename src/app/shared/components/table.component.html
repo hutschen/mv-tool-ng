@@ -93,6 +93,14 @@
         </div>
       </td>
     </tr>
+
+    <!-- Quick add -->
+    <ng-container matColumnDef="quick-add">
+      <td mat-footer-cell *matFooterCellDef colspan="100">
+        The quick-add input fields are displayed here.
+      </td>
+    </ng-container>
+    <tr mat-footer-row *matFooterRowDef="['quick-add']"></tr>
   </table>
 
   <!-- Paginator -->
