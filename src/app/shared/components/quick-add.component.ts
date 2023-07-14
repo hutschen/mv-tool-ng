@@ -13,11 +13,32 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'mvtool-quick-add',
-  template: ` <p>quick-add works!</p> `,
-  styles: [],
+  template: `
+    <div class="fx-column">
+      <mat-form-field>
+        <input matInput [placeholder]="placeholder" [(ngModel)]="value" />
+        <button
+          class="create-button"
+          matSuffix
+          mat-flat-button
+          color="primary"
+          [disabled]="!value"
+        >
+          <mat-icon>add</mat-icon>
+          {{ createLabel }}
+        </button>
+      </mat-form-field>
+    </div>
+  `,
+  styleUrls: ['../styles/flex.scss'],
+  styles: ['.create-button { margin-right: 8px; }'],
 })
-export class QuickAddComponent {}
+export class QuickAddComponent {
+  value = '';
+  @Input() placeholder = 'Start typing ...';
+  @Input() createLabel = 'Create';
+}
