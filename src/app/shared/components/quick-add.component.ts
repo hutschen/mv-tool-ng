@@ -14,31 +14,62 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
+import { Observable, finalize, firstValueFrom } from 'rxjs';
+
+export interface IQuickAddService<T> {
+  create(value: string): Observable<T>;
+}
 
 @Component({
   selector: 'mvtool-quick-add',
   template: `
     <div class="fx-column">
       <mat-form-field>
-        <input matInput [placeholder]="placeholder" [(ngModel)]="value" />
-        <button
-          class="create-button"
-          matSuffix
-          mat-flat-button
+        <input
+          matInput
+          [placeholder]="placeholder"
+          (keyup.enter)="onCreate()"
+          [(ngModel)]="value"
+        />
+        <mvtool-loading-overlay
+          [isLoading]="isCreating"
           color="primary"
-          [disabled]="!value"
+          matSuffix
         >
-          <mat-icon>add</mat-icon>
-          {{ createLabel }}
-        </button>
+          <button
+            class="create-button"
+            mat-flat-button
+            color="primary"
+            (click)="onCreate()"
+            [disabled]="!value || isCreating"
+          >
+            <mat-icon>add</mat-icon>
+            {{ createLabel }}
+          </button>
+        </mvtool-loading-overlay>
       </mat-form-field>
     </div>
   `,
   styleUrls: ['../styles/flex.scss'],
   styles: ['.create-button { margin-right: 8px; }'],
 })
-export class QuickAddComponent {
+export class QuickAddComponent<T> {
   value = '';
+  isCreating = false;
   @Input() placeholder = 'Start typing ...';
   @Input() createLabel = 'Create';
+  @Input() quickAddService!: IQuickAddService<T>;
+
+  async onCreate() {
+    if (this.isCreating) return;
+
+    // Save current value by creating the create$ observable
+    const create$ = this.quickAddService.create(this.value);
+    this.value = '';
+
+    this.isCreating = true;
+    await firstValueFrom(
+      create$.pipe(finalize(() => (this.isCreating = false)))
+    );
+  }
 }
