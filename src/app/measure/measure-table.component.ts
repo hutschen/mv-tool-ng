@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { Observable, firstValueFrom, map } from 'rxjs';
+import { Observable, firstValueFrom, map, tap } from 'rxjs';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
@@ -127,8 +127,21 @@ export class MeasureTableComponent implements OnInit {
 
     // Define quick-add service
     this.quickAddService = {
-      create: (value: string) =>
-        this.measureInteractions.onQuickAddMeasure(this.requirement, value),
+      create: (value: string) => {
+        return this._measureService
+          .createMeasure(this.requirement.id, {
+            summary: value,
+          })
+          .pipe(
+            tap((measure) => {
+              if (!this.dataFrame.addItem(measure)) {
+                // If the measure is not added switch to the next page of the
+                // data frame
+                this.dataFrame.pagination.toNextPage();
+              }
+            })
+          );
+      },
     };
   }
 

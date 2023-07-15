@@ -81,6 +81,13 @@ export class Paginator {
     });
   }
 
+  toNextPage(): void {
+    this._pageSubject.next({
+      pageSize: this.page.pageSize,
+      pageIndex: this.page.pageIndex + 1,
+    });
+  }
+
   setPage(page: IPage): void {
     this._pageSubject.next(page);
   }
