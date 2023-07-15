@@ -45,7 +45,7 @@ export class DocumentInteractionService
     if (resultingDocument) {
       this._interactionSubject.next({
         item: resultingDocument,
-        action: document ? 'update' : 'create',
+        action: document ? 'update' : 'add',
       });
     }
   }

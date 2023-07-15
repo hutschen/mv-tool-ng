@@ -57,7 +57,7 @@ export class MeasureInteractionService
       .createMeasure(requirement.id, { summary })
       .pipe(
         tap((measure) =>
-          this._interactionsSubject.next({ item: measure, action: 'create' })
+          this._interactionsSubject.next({ item: measure, action: 'add' })
         )
       );
   }
@@ -74,7 +74,7 @@ export class MeasureInteractionService
     if (resultingMeasure) {
       this._interactionsSubject.next({
         item: resultingMeasure,
-        action: measure ? 'update' : 'create',
+        action: measure ? 'update' : 'add',
       });
     }
   }

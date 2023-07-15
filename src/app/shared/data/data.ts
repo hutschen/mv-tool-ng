@@ -432,7 +432,7 @@ export class DataFrame<D extends IDataItem> {
   syncInteractions(interactionService: InteractionService<D>) {
     interactionService.interactions$.subscribe((interaction) => {
       switch (interaction.action) {
-        case 'create':
+        case 'add':
           this.addItem(interaction.item);
           break;
         case 'update':

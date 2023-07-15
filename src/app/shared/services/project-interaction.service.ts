@@ -54,7 +54,7 @@ export class ProjectInteractionService implements InteractionService<Project> {
     if (resultingProject) {
       this._interactionSubject.next({
         item: resultingProject,
-        action: project ? 'update' : 'create',
+        action: project ? 'update' : 'add',
       });
     }
   }
