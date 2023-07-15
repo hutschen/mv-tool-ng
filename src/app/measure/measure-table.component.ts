@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { Observable, firstValueFrom, map, tap } from 'rxjs';
+import { Observable, combineLatest, firstValueFrom, map, tap } from 'rxjs';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
@@ -62,6 +62,7 @@ export class MeasureTableComponent implements OnInit {
   bulkEditQueryParams$!: Observable<IQueryParams>;
   bulkEditScope$!: Observable<BulkEditScope>;
   quickAddService!: IQuickAddService<Measure>;
+  showQuickAdd$!: Observable<boolean>;
   @Input() requirement!: Requirement;
 
   constructor(
@@ -143,6 +144,16 @@ export class MeasureTableComponent implements OnInit {
           );
       },
     };
+
+    // Define obserable to show or hide quick-add
+    this.showQuickAdd$ = combineLatest([
+      this.dataFrame.search.isSet$,
+      this.dataFrame.columns.areFiltersSet$,
+      this.dataFrame.sort.isSorted$,
+      this.dataFrame.length$.pipe(
+        map((length) => !this.dataFrame.pagination.isLastPage(length))
+      ),
+    ]).pipe(map((flags) => !flags.some((flag) => flag)));
   }
 
   async onEditMeasures() {
