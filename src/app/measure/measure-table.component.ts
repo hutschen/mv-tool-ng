@@ -137,7 +137,7 @@ export class MeasureTableComponent implements OnInit {
               if (!this.dataFrame.addItem(measure)) {
                 // If the measure is not added switch to the next page of the
                 // data frame
-                this.dataFrame.pagination.toNextPage();
+                this.dataFrame.pagination.toLastPage(this.dataFrame.length);
               }
             })
           );
