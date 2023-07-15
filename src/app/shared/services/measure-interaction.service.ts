@@ -49,19 +49,6 @@ export class MeasureInteractionService
     protected _confirmDialogService: ConfirmDialogService
   ) {}
 
-  onQuickAddMeasure(
-    requirement: Requirement,
-    summary: string
-  ): Observable<Measure> {
-    return this._measureService
-      .createMeasure(requirement.id, { summary })
-      .pipe(
-        tap((measure) =>
-          this._interactionsSubject.next({ item: measure, action: 'quickAdd' })
-        )
-      );
-  }
-
   protected async _createOrEditMeasure(
     requirement: Requirement,
     measure?: Measure

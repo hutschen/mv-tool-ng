@@ -85,6 +85,14 @@ export class Paginator {
     });
   }
 
+  toLastPage(itemCount: number): void {
+    const lastPageIndex = Math.ceil(itemCount / this.page.pageSize) - 1;
+    this._pageSubject.next({
+      pageSize: this.page.pageSize,
+      pageIndex: lastPageIndex,
+    });
+  }
+
   toPreviousPage(): void {
     this._pageSubject.next({
       pageSize: this.page.pageSize,
