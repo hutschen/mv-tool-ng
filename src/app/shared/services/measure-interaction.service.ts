@@ -27,7 +27,7 @@ import { CompletionDialogService } from 'src/app/measure/completion-dialog.compo
 import { VerificationDialogService } from 'src/app/measure/verification-dialog.component';
 import { ConfirmDialogService } from '../components/confirm-dialog.component';
 import { ComplianceStatus, Requirement } from './requirement.service';
-import { Subject, firstValueFrom } from 'rxjs';
+import { Observable, Subject, firstValueFrom, tap } from 'rxjs';
 import { Interaction, InteractionService } from '../data/interaction';
 import { ComplianceInteractionService } from '../compliance-interaction';
 
@@ -48,6 +48,19 @@ export class MeasureInteractionService
     protected _verificationDialogService: VerificationDialogService,
     protected _confirmDialogService: ConfirmDialogService
   ) {}
+
+  onQuickAddMeasure(
+    requirement: Requirement,
+    summary: string
+  ): Observable<Measure> {
+    return this._measureService
+      .createMeasure(requirement.id, { summary })
+      .pipe(
+        tap((measure) =>
+          this._interactionsSubject.next({ item: measure, action: 'create' })
+        )
+      );
+  }
 
   protected async _createOrEditMeasure(
     requirement: Requirement,

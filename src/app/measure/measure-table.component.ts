@@ -42,6 +42,7 @@ import {
   toBulkEditScope,
   toBulkEditScopeText,
 } from '../shared/bulk-edit-scope';
+import { IQuickAddService } from '../shared/components/quick-add.component';
 
 @Component({
   selector: 'mvtool-http-measure-table',
@@ -60,6 +61,7 @@ export class MeasureTableComponent implements OnInit {
   exportQueryParams$!: Observable<IQueryParams>;
   bulkEditQueryParams$!: Observable<IQueryParams>;
   bulkEditScope$!: Observable<BulkEditScope>;
+  quickAddService!: IQuickAddService<Measure>;
   @Input() requirement!: Requirement;
 
   constructor(
@@ -122,6 +124,12 @@ export class MeasureTableComponent implements OnInit {
     this.bulkEditScope$ = this.bulkEditQueryParams$.pipe(
       map((queryParams) => toBulkEditScope(queryParams))
     );
+
+    // Define quick-add service
+    this.quickAddService = {
+      create: (value: string) =>
+        this.measureInteractions.onQuickAddMeasure(this.requirement, value),
+    };
   }
 
   async onEditMeasures() {
