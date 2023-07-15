@@ -40,6 +40,7 @@ import { IQuickAddService } from './quick-add.component';
     '.clickable-row { cursor: pointer; }',
     '.clickable-row:hover { background-color: rgba(0,0,0,0.04) !important; }',
     '.marked { background-color: rgba(0,0,0,0.08) !important; }',
+    '.hide { display: none; }',
   ],
 })
 export class TableComponent<T extends IDataItem> implements AfterContentInit {
