@@ -57,7 +57,7 @@ export class MeasureInteractionService
       .createMeasure(requirement.id, { summary })
       .pipe(
         tap((measure) =>
-          this._interactionsSubject.next({ item: measure, action: 'add' })
+          this._interactionsSubject.next({ item: measure, action: 'quickAdd' })
         )
       );
   }

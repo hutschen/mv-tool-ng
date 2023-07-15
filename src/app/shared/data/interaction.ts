@@ -18,7 +18,7 @@ import { IDataItem } from './data';
 
 export interface Interaction<D extends IDataItem> {
   item: D;
-  action: 'add' | 'update' | 'delete';
+  action: 'add' | 'quickAdd' | 'update' | 'delete';
 }
 
 export interface InteractionService<D extends IDataItem> {

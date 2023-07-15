@@ -378,12 +378,16 @@ export class DataFrame<D extends IDataItem> {
     return this._lengthSubject.value;
   }
 
-  addItem(item: D): boolean {
+  addItem(item: D, ignorePageSize: boolean = false): boolean {
     // FIXME: prevent adding duplicate items (items need unique ids)
     const data = this._dataSubject.value;
     this._lengthSubject.next(this._lengthSubject.value + 1);
+
+    // Only add item if pagination is disabled, page size is ignored or page is
+    // not full
     if (
       !this.pagination.enabled ||
+      ignorePageSize ||
       data.length < this.pagination.page.pageSize
     ) {
       data.push(item);
@@ -434,6 +438,9 @@ export class DataFrame<D extends IDataItem> {
       switch (interaction.action) {
         case 'add':
           this.addItem(interaction.item);
+          break;
+        case 'quickAdd':
+          this.addItem(interaction.item, true);
           break;
         case 'update':
           this.updateItem(interaction.item);
