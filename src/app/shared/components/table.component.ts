@@ -26,6 +26,7 @@ import {
 import { MatColumnDef, MatTable } from '@angular/material/table';
 import { DataColumn, DataFrame, IDataItem } from '../data/data';
 import { DataSelection } from '../data/selection';
+import { IQuickAddService } from './quick-add.component';
 
 @Component({
   selector: 'mvtool-table',
@@ -46,6 +47,7 @@ export class TableComponent<T extends IDataItem> implements AfterContentInit {
   @Input() noContentText = 'Nothing to display.';
   @Input() loadingText = 'Loading...';
   @Input() createLabel = 'Create One';
+  @Input() quickAddService?: IQuickAddService<T>;
   @Output() clickRow = new EventEmitter<T>();
   @Output() create = new EventEmitter<void>();
 

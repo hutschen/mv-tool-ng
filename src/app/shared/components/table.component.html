@@ -77,15 +77,15 @@
         </div>
 
         <div
-          *ngIf="!dataFrame.isLoading"
+          *ngIf="!dataFrame.isLoading && !quickAddService"
           class="fx-row fx-space-between-center"
         >
           <div>{{ noContentText }}</div>
           <button
             *ngIf="create.observed"
-            mat-raised-button
+            mat-flat-button
             (click)="create.emit()"
-            color="accent"
+            color="primary"
           >
             <mat-icon>add</mat-icon>
             {{ createLabel }}
@@ -95,12 +95,16 @@
     </tr>
 
     <!-- Quick add -->
-    <ng-container matColumnDef="quick-add">
-      <td mat-footer-cell *matFooterCellDef colspan="100">
-        <mvtool-quick-add></mvtool-quick-add>
-      </td>
+    <ng-container *ngIf="quickAddService">
+      <ng-container matColumnDef="quick-add">
+        <td mat-footer-cell *matFooterCellDef colspan="100">
+          <mvtool-quick-add
+            [quickAddService]="quickAddService"
+          ></mvtool-quick-add>
+        </td>
+      </ng-container>
+      <tr mat-footer-row *matFooterRowDef="['quick-add']"></tr>
     </ng-container>
-    <tr mat-footer-row *matFooterRowDef="['quick-add']"></tr>
   </table>
 
   <!-- Paginator -->
