@@ -421,12 +421,14 @@ export class DataFrame<D extends IDataItem> {
       data.splice(index, 1);
       this._dataSubject.next(data);
 
-      // Reload if page is not the last page
-      if (
-        !this.pagination.enabled ||
-        data.length + 1 === this.pagination.page.pageSize
-      ) {
-        this.reload();
+      if (this.pagination.enabled) {
+        // If page is not the last page, reload the page to fill the gap
+        if (!this.pagination.isLastPage(this.length + 1)) {
+          this.reload();
+        } else if (data.length === 0) {
+          // If page is the last page, which is now empty, switch to the previous page
+          this.pagination.toPreviousPage();
+        }
       }
       return true;
     }
