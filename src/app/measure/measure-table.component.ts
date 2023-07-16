@@ -14,7 +14,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { Observable, combineLatest, firstValueFrom, map, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  combineLatest,
+  debounce,
+  filter,
+  finalize,
+  firstValueFrom,
+  map,
+  tap,
+} from 'rxjs';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
@@ -127,6 +137,7 @@ export class MeasureTableComponent implements OnInit {
     );
 
     // Define quick-add service
+    const duringQuickAddSubject = new BehaviorSubject<boolean>(false);
     this.quickAddService = {
       create: (value: string) => {
         return this._measureService
@@ -135,12 +146,14 @@ export class MeasureTableComponent implements OnInit {
           })
           .pipe(
             tap((measure) => {
+              duringQuickAddSubject.next(true);
               if (!this.dataFrame.addItem(measure)) {
-                // If the measure is not added switch to the next page of the
-                // data frame
+                // If the measure is not added switch automatically to the last
+                // page of the data frame
                 this.dataFrame.pagination.toLastPage(this.dataFrame.length);
               }
-            })
+            }),
+            finalize(() => duringQuickAddSubject.next(false))
           );
       },
     };
@@ -151,6 +164,9 @@ export class MeasureTableComponent implements OnInit {
       this.dataFrame.columns.areFiltersSet$,
       this.dataFrame.sort.isSorted$,
       this.dataFrame.length$.pipe(
+        // Debounce to prevent the quick-add component from hiding if the page
+        // is changed automatically during the quick-add action
+        debounce(() => duringQuickAddSubject.pipe(filter((flag) => !flag))),
         map((length) => !this.dataFrame.pagination.isLastPage(length))
       ),
     ]).pipe(map((flags) => !flags.some((flag) => flag)));
