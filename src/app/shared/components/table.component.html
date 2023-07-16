@@ -77,7 +77,7 @@
         </div>
 
         <div
-          *ngIf="!dataFrame.isLoading && !quickAddService"
+          *ngIf="!dataFrame.isLoading && showNoContentMessage"
           class="fx-row fx-space-between-center"
         >
           <div>{{ noContentText }}</div>
@@ -93,21 +93,6 @@
         </div>
       </td>
     </tr>
-
-    <!-- Quick add -->
-    <ng-container matColumnDef="quick-add">
-      <td mat-footer-cell *matFooterCellDef colspan="100">
-        <mvtool-quick-add
-          *ngIf="quickAddService"
-          [quickAddService]="quickAddService"
-        ></mvtool-quick-add>
-      </td>
-    </ng-container>
-    <tr
-      mat-footer-row
-      *matFooterRowDef="quickAddService ? ['quick-add'] : []"
-      [ngClass]="{ hide: !quickAddService }"
-    ></tr>
   </table>
 
   <!-- Paginator -->

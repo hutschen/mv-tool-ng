@@ -30,7 +30,6 @@ import {
 } from '@angular/material/table';
 import { DataColumn, DataFrame, IDataItem } from '../data/data';
 import { DataSelection } from '../data/selection';
-import { IQuickAddService } from './quick-add.component';
 
 @Component({
   selector: 'mvtool-table',
@@ -44,15 +43,14 @@ import { IQuickAddService } from './quick-add.component';
     '.clickable-row { cursor: pointer; }',
     '.clickable-row:hover { background-color: rgba(0,0,0,0.04) !important; }',
     '.marked { background-color: rgba(0,0,0,0.08) !important; }',
-    '.hide { display: none; }',
   ],
 })
 export class TableComponent<T extends IDataItem> implements AfterContentInit {
   @Input() dataFrame!: DataFrame<T>;
+  @Input() showNoContentMessage = true;
   @Input() noContentText = 'Nothing to display.';
   @Input() loadingText = 'Loading...';
   @Input() createLabel = 'Create One';
-  @Input() quickAddService?: IQuickAddService<T>;
   @Output() clickRow = new EventEmitter<T>();
   @Output() create = new EventEmitter<void>();
 
