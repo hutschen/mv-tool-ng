@@ -23,7 +23,11 @@ import {
   QueryList,
   ViewChild,
 } from '@angular/core';
-import { MatColumnDef, MatTable } from '@angular/material/table';
+import {
+  MatColumnDef,
+  MatTable,
+  MatFooterRowDef,
+} from '@angular/material/table';
 import { DataColumn, DataFrame, IDataItem } from '../data/data';
 import { DataSelection } from '../data/selection';
 import { IQuickAddService } from './quick-add.component';
@@ -54,6 +58,7 @@ export class TableComponent<T extends IDataItem> implements AfterContentInit {
 
   @ViewChild(MatTable, { static: true }) matTable!: MatTable<T>;
   @ContentChildren(MatColumnDef) matColumnDefs!: QueryList<MatColumnDef>;
+  @ContentChildren(MatFooterRowDef) matFooterRowDefs!: QueryList<MatFooterRowDef>; // prettier-ignore
 
   columnsToAutoCreate: DataColumn<T>[] = [];
   @Input() marked?: DataSelection<T>;
@@ -70,6 +75,10 @@ export class TableComponent<T extends IDataItem> implements AfterContentInit {
     );
     this.columnsToAutoCreate = this.dataFrame.columns.columns.filter(
       (column) => !columnNamesDefined.includes(column.name)
+    );
+
+    this.matFooterRowDefs.forEach((footerRowDef) =>
+      this.matTable.addFooterRowDef(footerRowDef)
     );
   }
 }
