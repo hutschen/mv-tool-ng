@@ -79,6 +79,22 @@ describe('FilterByPattern', () => {
       done();
     });
   });
+
+  it('should indicate if pattern is set', (done: DoneFn) => {
+    sut.pattern = 'a new pattern';
+    sut.isSet$.pipe(take(1)).subscribe((isSet) => {
+      expect(isSet).toBeTrue();
+      done();
+    });
+  });
+
+  it('should indicate if pattern is not set', (done: DoneFn) => {
+    sut.clear();
+    sut.isSet$.pipe(take(1)).subscribe((isSet) => {
+      expect(isSet).toBeFalse();
+      done();
+    });
+  });
 });
 
 describe('FilterByValues', () => {
