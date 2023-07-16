@@ -112,6 +112,7 @@ import { QuickAddComponent } from './components/quick-add.component';
     CompletionInputComponent,
     VerificationInputComponent,
     LoadingOverlayComponent,
+    QuickAddComponent,
   ],
 })
 export class SharedModule {}

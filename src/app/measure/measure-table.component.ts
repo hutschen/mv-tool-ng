@@ -52,7 +52,7 @@ import { IQuickAddService } from '../shared/components/quick-add.component';
     '../shared/styles/flex.scss',
     '../shared/styles/truncate.scss',
   ],
-  styles: [],
+  styles: ['.hide { display: none; }'],
 })
 export class MeasureTableComponent implements OnInit {
   dataFrame!: MeasureDataFrame;
