@@ -20,6 +20,7 @@ import { IQueryParams } from '../services/query-params.service';
 export class Search {
   protected _patternSubject: BehaviorSubject<string>;
   readonly queryParams$: Observable<IQueryParams>;
+  readonly isSet$: Observable<boolean>;
 
   constructor(initQueryParams: IQueryParams = {}) {
     // Get initial pattern
@@ -33,6 +34,12 @@ export class Search {
       map((pattern) =>
         pattern.length > 0 ? { search: pattern } : ({} as IQueryParams)
       )
+    );
+
+    // Set isSet$ observable
+    this.isSet$ = this._patternSubject.asObservable().pipe(
+      distinctUntilChanged(),
+      map((pattern) => typeof pattern === 'string' && 0 < pattern.length)
     );
   }
 

@@ -65,7 +65,7 @@ export class CatalogModuleInteractionService
     if (resultingCatalogModule) {
       this._interactionsSubject.next({
         item: resultingCatalogModule,
-        action: catalogModule ? 'update' : 'create',
+        action: catalogModule ? 'update' : 'add',
       });
     }
   }

@@ -61,7 +61,7 @@ export class MeasureInteractionService
     if (resultingMeasure) {
       this._interactionsSubject.next({
         item: resultingMeasure,
-        action: measure ? 'update' : 'create',
+        action: measure ? 'update' : 'add',
       });
     }
   }

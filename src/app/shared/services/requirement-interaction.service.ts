@@ -70,7 +70,7 @@ export class RequirementInteractionService
     if (resultingRequirement) {
       this._interactionsSubject.next({
         item: resultingRequirement,
-        action: requirement ? 'update' : 'create',
+        action: requirement ? 'update' : 'add',
       });
     }
   }

@@ -382,6 +382,8 @@ export class DataFrame<D extends IDataItem> {
     // FIXME: prevent adding duplicate items (items need unique ids)
     const data = this._dataSubject.value;
     this._lengthSubject.next(this._lengthSubject.value + 1);
+
+    // Only add item if pagination is disabled or page is not full
     if (
       !this.pagination.enabled ||
       data.length < this.pagination.page.pageSize
@@ -417,12 +419,14 @@ export class DataFrame<D extends IDataItem> {
       data.splice(index, 1);
       this._dataSubject.next(data);
 
-      // Reload if page is not the last page
-      if (
-        !this.pagination.enabled ||
-        data.length + 1 === this.pagination.page.pageSize
-      ) {
-        this.reload();
+      if (this.pagination.enabled) {
+        // If page is not the last page, reload the page to fill the gap
+        if (!this.pagination.isLastPage(this.length + 1)) {
+          this.reload();
+        } else if (data.length === 0) {
+          // If page is the last page, which is now empty, switch to the previous page
+          this.pagination.toPreviousPage();
+        }
       }
       return true;
     }
@@ -432,7 +436,7 @@ export class DataFrame<D extends IDataItem> {
   syncInteractions(interactionService: InteractionService<D>) {
     interactionService.interactions$.subscribe((interaction) => {
       switch (interaction.action) {
-        case 'create':
+        case 'add':
           this.addItem(interaction.item);
           break;
         case 'update':

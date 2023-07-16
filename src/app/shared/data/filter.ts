@@ -59,7 +59,7 @@ export class FilterByPattern {
       })
     );
     this.isSet$ = this._patternSubject.pipe(
-      map((pattern) => pattern.length > 0)
+      map((pattern) => typeof pattern === 'string' && 0 < pattern.length)
     );
   }
 

@@ -74,10 +74,36 @@ export class Paginator {
     return this._pageSubject.value;
   }
 
+  isLastPage(itemCount: number): boolean {
+    return itemCount <= this.page.pageSize * (this.page.pageIndex + 1);
+  }
+
   toFirstPage(): void {
     this._pageSubject.next({
       pageSize: this.page.pageSize,
       pageIndex: 0,
+    });
+  }
+
+  toLastPage(itemCount: number): void {
+    const lastPageIndex = Math.ceil(itemCount / this.page.pageSize) - 1;
+    this._pageSubject.next({
+      pageSize: this.page.pageSize,
+      pageIndex: lastPageIndex,
+    });
+  }
+
+  toPreviousPage(): void {
+    this._pageSubject.next({
+      pageSize: this.page.pageSize,
+      pageIndex: 0 < this.page.pageIndex ? this.page.pageIndex - 1 : 0,
+    });
+  }
+
+  toNextPage(): void {
+    this._pageSubject.next({
+      pageSize: this.page.pageSize,
+      pageIndex: this.page.pageIndex + 1,
     });
   }
 
