@@ -27,7 +27,7 @@ import { CompletionDialogService } from 'src/app/measure/completion-dialog.compo
 import { VerificationDialogService } from 'src/app/measure/verification-dialog.component';
 import { ConfirmDialogService } from '../components/confirm-dialog.component';
 import { ComplianceStatus, Requirement } from './requirement.service';
-import { Observable, Subject, firstValueFrom, tap } from 'rxjs';
+import { Subject, firstValueFrom } from 'rxjs';
 import { Interaction, InteractionService } from '../data/interaction';
 import { ComplianceInteractionService } from '../compliance-interaction';
 

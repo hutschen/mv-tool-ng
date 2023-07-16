@@ -40,12 +40,7 @@ import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { MeasureInteractionService } from '../shared/services/measure-interaction.service';
 import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
-import { MatDialogRef } from '@angular/material/dialog';
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogService,
-} from '../shared/components/confirm-dialog.component';
-import { isEmpty } from 'radash';
+import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { MeasureBulkEditDialogService } from './measure-bulk-edit-dialog.component';
 import {
   BulkEditScope,
