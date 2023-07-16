@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { take } from 'rxjs';
 import { Search } from './search';
 
 describe('Search', () => {
@@ -27,7 +28,7 @@ describe('Search', () => {
 
   it('should be created', (done: DoneFn) => {
     // Test if initial query params are loaded
-    sut.queryParams$.subscribe((queryParams) => {
+    sut.queryParams$.pipe(take(1)).subscribe((queryParams) => {
       expect(queryParams).toEqual(initQueryParams);
       done();
     });
@@ -36,7 +37,7 @@ describe('Search', () => {
   it('should set pattern', (done: DoneFn) => {
     const pattern = 'a new pattern';
     sut.pattern = pattern;
-    sut.queryParams$.subscribe((queryParams) => {
+    sut.queryParams$.pipe(take(1)).subscribe((queryParams) => {
       expect(queryParams).toEqual({ search: pattern });
       done();
     });
@@ -48,8 +49,25 @@ describe('Search', () => {
 
   it('should clear pattern', (done: DoneFn) => {
     sut.clear();
-    sut.queryParams$.subscribe((queryParams) => {
+    sut.queryParams$.pipe(take(1)).subscribe((queryParams) => {
       expect(queryParams).toEqual({});
+      done();
+    });
+  });
+
+  it('should indicate that pattern is set', (done: DoneFn) => {
+    const pattern = 'a new pattern';
+    sut.pattern = pattern;
+    sut.isSet$.pipe(take(1)).subscribe((isSet) => {
+      expect(isSet).toBeTrue();
+      done();
+    });
+  });
+
+  it('should indicate that pattern is not set', (done: DoneFn) => {
+    sut.clear();
+    sut.isSet$.pipe(take(1)).subscribe((isSet) => {
+      expect(isSet).toBeFalse();
       done();
     });
   });
