@@ -15,6 +15,7 @@
 
 import { CatalogModule } from '../../services/catalog-module.service';
 import { Catalog } from '../../services/catalog.service';
+import { Document } from '../../services/document.service';
 import { Project } from '../../services/project.service';
 import { Requirement } from '../../services/requirement.service';
 import { DataField, IDataItem } from '../data';
@@ -35,24 +36,24 @@ export class StatusField<D extends IDataItem> extends DataField<
 }
 
 export class CompletionField extends DataField<
-  Requirement | Project,
+  Requirement | Project | Document,
   number | null
 > {
   constructor(optional: boolean = true) {
     super('completion', null, optional);
   }
 
-  override toValue(data: Requirement | Project): number | null {
+  override toValue(data: Requirement | Project | Document): number | null {
     return data.percentComplete;
   }
 
-  override toStr(data: Requirement | Project): string {
+  override toStr(data: Requirement | Project | Document): string {
     const completion = this.toValue(data);
     if (completion !== null) return `${completion}% complete`;
     else return 'Nothing to be completed';
   }
 
-  override toBool(data: Requirement | Project): boolean {
+  override toBool(data: Requirement | Project | Document): boolean {
     return this.toValue(data) !== null;
   }
 }

@@ -19,7 +19,11 @@ import { Project } from '../../services/project.service';
 import { IQueryParams } from '../../services/query-params.service';
 import { TextField } from '../custom/custom-fields';
 import { FilterByPattern, FilterForExistence, Filters } from '../filter';
-import { DescriptionColumn, TitleColumn } from '../custom/custom-colums';
+import {
+  CompletionColumn,
+  DescriptionColumn,
+  TitleColumn,
+} from '../custom/custom-colums';
 import { Observable } from 'rxjs';
 import { DocumentReferencesFilter } from './document-filters';
 
@@ -49,6 +53,7 @@ export class DocumentDataFrame extends DataFrame<Document> {
         referenceColumn,
         new TitleColumn(initQueryParams),
         new DescriptionColumn(initQueryParams),
+        new CompletionColumn(initQueryParams),
         new PlaceholderColumn('options'),
       ],
       initQueryParams
