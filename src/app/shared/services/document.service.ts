@@ -32,6 +32,9 @@ export type IDocumentPatch = Partial<IDocumentInput>;
 export interface IDocument extends IDocumentInput {
   id: number;
   project: IProject;
+  compliant_count?: number;
+  completed_count?: number;
+  verified_count?: number;
 }
 
 export class Document implements IDocument {
@@ -40,6 +43,9 @@ export class Document implements IDocument {
   title: string;
   description: string | null;
   project: Project;
+  compliant_count: number;
+  completed_count: number;
+  verified_count: number;
 
   constructor(document: IDocument) {
     this.id = document.id;
@@ -47,6 +53,9 @@ export class Document implements IDocument {
     this.title = document.title;
     this.description = document.description;
     this.project = new Project(document.project);
+    this.compliant_count = document.compliant_count ?? 0;
+    this.completed_count = document.completed_count ?? 0;
+    this.verified_count = document.verified_count ?? 0;
   }
 
   toDocumentInput(): IDocumentInput {
@@ -55,6 +64,44 @@ export class Document implements IDocument {
       title: this.title,
       description: this.description,
     };
+  }
+
+  get percentComplete(): number | null {
+    return this.compliant_count
+      ? Math.round((this.completed_count / this.compliant_count) * 100)
+      : null;
+  }
+
+  get percentVerified(): number | null {
+    return this.completed_count
+      ? Math.round((this.verified_count / this.completed_count) * 100)
+      : null;
+  }
+
+  get completionProgressColor(): string | null {
+    switch (this.percentComplete) {
+      case null:
+        return null;
+      case 0:
+        return 'warn';
+      case 100:
+        return 'primary';
+      default:
+        return 'accent';
+    }
+  }
+
+  get verificationProgressColor(): string | null {
+    switch (this.percentVerified) {
+      case null:
+        return null;
+      case 0:
+        return 'warn';
+      case 100:
+        return 'primary';
+      default:
+        return 'accent';
+    }
   }
 }
 
