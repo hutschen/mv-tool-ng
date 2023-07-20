@@ -52,8 +52,9 @@ export interface IRequirement {
   compliance_comment?: string | null;
   project: IProject;
   catalog_requirement?: ICatalogRequirement | null;
-  completion_progress?: number | null;
-  verification_progress?: number | null;
+  compliant_count?: number;
+  completed_count?: number;
+  verified_count?: number;
 }
 
 export class Requirement implements IRequirement {
@@ -68,8 +69,9 @@ export class Requirement implements IRequirement {
   compliance_comment: string | null;
   project: Project;
   catalog_requirement: CatalogRequirement | null;
-  completion_progress: number | null;
-  verification_progress: number | null;
+  compliant_count: number;
+  completed_count: number;
+  verified_count: number;
 
   constructor(requirement: IRequirement) {
     this.id = requirement.id;
@@ -85,8 +87,9 @@ export class Requirement implements IRequirement {
     this.catalog_requirement = requirement.catalog_requirement
       ? new CatalogRequirement(requirement.catalog_requirement)
       : null;
-    this.completion_progress = requirement.completion_progress ?? null;
-    this.verification_progress = requirement.verification_progress ?? null;
+    this.compliant_count = requirement.compliant_count ?? 0;
+    this.completed_count = requirement.completed_count ?? 0;
+    this.verified_count = requirement.verified_count ?? 0;
   }
 
   toRequirementInput(): IRequirementInput {
@@ -103,28 +106,37 @@ export class Requirement implements IRequirement {
   }
 
   get percentComplete(): number | null {
-    if (this.completion_progress === null) {
-      return null;
-    } else {
-      return Math.round(this.completion_progress * 100);
-    }
+    return this.compliant_count
+      ? Math.round((this.completed_count / this.compliant_count) * 100)
+      : null;
   }
 
   get percentVerified(): number | null {
-    if (this.verification_progress === null) {
-      return null;
-    } else {
-      return Math.round(this.verification_progress * 100);
-    }
+    return this.completed_count
+      ? Math.round((this.verified_count / this.completed_count) * 100)
+      : null;
   }
 
   get completionProgressColor(): string | null {
-    switch (this.completion_progress) {
+    switch (this.percentComplete) {
       case null:
         return null;
       case 0:
         return 'warn';
-      case 1:
+      case 100:
+        return 'primary';
+      default:
+        return 'accent';
+    }
+  }
+
+  get verificationProgressColor(): string | null {
+    switch (this.percentVerified) {
+      case null:
+        return null;
+      case 0:
+        return 'warn';
+      case 100:
         return 'primary';
       default:
         return 'accent';
