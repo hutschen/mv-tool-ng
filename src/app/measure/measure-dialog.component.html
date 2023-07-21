@@ -37,19 +37,23 @@
     <!-- Summary input -->
     <mat-form-field appearance="fill">
       <mat-label>Measure summary</mat-label>
-      <input
+      <textarea
         name="summary"
         matInput
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="1"
+        cdkAutosizeMaxRows="10"
         [(ngModel)]="measureInput.summary"
         [disabled]="isSaving"
         required
-      />
+      ></textarea>
     </mat-form-field>
 
     <!-- Description input -->
     <mat-form-field appearance="fill">
       <mat-label>Measure description</mat-label>
       <textarea
+        class="description-input"
         name="description"
         matInput
         [(ngModel)]="measureInput.description"
