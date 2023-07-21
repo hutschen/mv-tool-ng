@@ -31,8 +31,9 @@ export interface IProjectInput {
 export interface IProject extends IProjectInput {
   id: number;
   jira_project?: IJiraProject | null;
-  completion_progress?: number | null;
-  verification_progress?: number | null;
+  compliant_count?: number;
+  completed_count?: number;
+  verified_count?: number;
 }
 
 export class Project implements IProject {
@@ -41,8 +42,9 @@ export class Project implements IProject {
   description: string | null;
   jira_project_id: string | null;
   jira_project: IJiraProject | null;
-  completion_progress: number | null;
-  verification_progress: number | null;
+  compliant_count: number;
+  completed_count: number;
+  verified_count: number;
 
   constructor(project: IProject) {
     this.id = project.id;
@@ -50,8 +52,9 @@ export class Project implements IProject {
     this.description = project.description ?? null;
     this.jira_project_id = project.jira_project_id ?? null;
     this.jira_project = project.jira_project ?? null;
-    this.completion_progress = project.completion_progress ?? null;
-    this.verification_progress = project.verification_progress ?? null;
+    this.compliant_count = project.compliant_count ?? 0;
+    this.completed_count = project.completed_count ?? 0;
+    this.verified_count = project.verified_count ?? 0;
   }
 
   toProjectInput(): IProjectInput {
@@ -74,28 +77,37 @@ export class Project implements IProject {
   }
 
   get percentComplete(): number | null {
-    if (this.completion_progress === null) {
-      return null;
-    } else {
-      return Math.round(this.completion_progress * 100);
-    }
+    return this.compliant_count
+      ? Math.round((this.completed_count / this.compliant_count) * 100)
+      : null;
   }
 
   get percentVerified(): number | null {
-    if (this.verification_progress === null) {
-      return null;
-    } else {
-      return Math.round(this.verification_progress * 100);
-    }
+    return this.completed_count
+      ? Math.round((this.verified_count / this.completed_count) * 100)
+      : null;
   }
 
   get completionProgressColor(): string | null {
-    switch (this.completion_progress) {
+    switch (this.percentComplete) {
       case null:
         return null;
       case 0:
         return 'warn';
-      case 1:
+      case 100:
+        return 'primary';
+      default:
+        return 'accent';
+    }
+  }
+
+  get verificationProgressColor(): string | null {
+    switch (this.percentVerified) {
+      case null:
+        return null;
+      case 0:
+        return 'warn';
+      case 100:
         return 'primary';
       default:
         return 'accent';
