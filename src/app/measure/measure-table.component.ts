@@ -14,7 +14,17 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { Observable, firstValueFrom, map } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  combineLatest,
+  debounce,
+  filter,
+  finalize,
+  firstValueFrom,
+  map,
+  tap,
+} from 'rxjs';
 import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { UploadDialogService } from '../shared/components/upload-dialog.component';
@@ -30,18 +40,14 @@ import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { MeasureInteractionService } from '../shared/services/measure-interaction.service';
 import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
-import { MatDialogRef } from '@angular/material/dialog';
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogService,
-} from '../shared/components/confirm-dialog.component';
-import { isEmpty } from 'radash';
+import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { MeasureBulkEditDialogService } from './measure-bulk-edit-dialog.component';
 import {
   BulkEditScope,
   toBulkEditScope,
   toBulkEditScopeText,
 } from '../shared/bulk-edit-scope';
+import { IQuickAddService } from '../shared/components/quick-add.component';
 
 @Component({
   selector: 'mvtool-http-measure-table',
@@ -51,7 +57,7 @@ import {
     '../shared/styles/flex.scss',
     '../shared/styles/truncate.scss',
   ],
-  styles: [],
+  styles: ['.hide { display: none; }'],
 })
 export class MeasureTableComponent implements OnInit {
   dataFrame!: MeasureDataFrame;
@@ -60,6 +66,8 @@ export class MeasureTableComponent implements OnInit {
   exportQueryParams$!: Observable<IQueryParams>;
   bulkEditQueryParams$!: Observable<IQueryParams>;
   bulkEditScope$!: Observable<BulkEditScope>;
+  quickAddService!: IQuickAddService<Measure>;
+  showQuickAdd$!: Observable<boolean>;
   @Input() requirement!: Requirement;
 
   constructor(
@@ -122,6 +130,41 @@ export class MeasureTableComponent implements OnInit {
     this.bulkEditScope$ = this.bulkEditQueryParams$.pipe(
       map((queryParams) => toBulkEditScope(queryParams))
     );
+
+    // Define quick-add service
+    const duringQuickAddSubject = new BehaviorSubject<boolean>(false);
+    this.quickAddService = {
+      create: (value: string) => {
+        return this._measureService
+          .createMeasure(this.requirement.id, {
+            summary: value,
+          })
+          .pipe(
+            tap((measure) => {
+              duringQuickAddSubject.next(true);
+              if (!this.dataFrame.addItem(measure)) {
+                // If the measure is not added switch automatically to the last
+                // page of the data frame
+                this.dataFrame.pagination.toLastPage(this.dataFrame.length);
+              }
+            }),
+            finalize(() => duringQuickAddSubject.next(false))
+          );
+      },
+    };
+
+    // Define obserable to show or hide quick-add
+    this.showQuickAdd$ = combineLatest([
+      this.dataFrame.search.isSet$,
+      this.dataFrame.columns.areFiltersSet$,
+      this.dataFrame.sort.isSorted$,
+      this.dataFrame.length$.pipe(
+        // Debounce to prevent the quick-add component from hiding if the page
+        // is changed automatically during the quick-add action
+        debounce(() => duringQuickAddSubject.pipe(filter((flag) => !flag))),
+        map((length) => !this.dataFrame.pagination.isLastPage(length))
+      ),
+    ]).pipe(map((flags) => !flags.some((flag) => flag)));
   }
 
   async onEditMeasures() {

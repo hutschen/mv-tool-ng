@@ -58,13 +58,16 @@
       ></mat-checkbox>
       <mat-form-field appearance="fill" class="fx-grow">
         <mat-label>Measure summary</mat-label>
-        <input
+        <textarea
           name="summary"
           matInput
+          cdkTextareaAutosize
+          cdkAutosizeMinRows="1"
+          cdkAutosizeMaxRows="10"
           [(ngModel)]="patch.summary"
           [required]="isEdited('summary')"
           [disabled]="!isEdited('summary') || isSaving"
-        />
+        ></textarea>
       </mat-form-field>
     </div>
 

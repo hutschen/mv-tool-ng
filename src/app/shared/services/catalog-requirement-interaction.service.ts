@@ -73,7 +73,7 @@ export class CatalogRequirementInteractionService
     if (resultingCatalogRequirement) {
       this._interactionsSubject.next({
         item: resultingCatalogRequirement,
-        action: catalogRequirement ? 'update' : 'create',
+        action: catalogRequirement ? 'update' : 'add',
       });
     }
   }

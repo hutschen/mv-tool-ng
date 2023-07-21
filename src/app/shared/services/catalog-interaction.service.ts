@@ -54,7 +54,7 @@ export class CatalogInteractionService implements InteractionService<Catalog> {
     if (resultingCatalog) {
       this._interactionSubject.next({
         item: resultingCatalog,
-        action: catalog ? 'update' : 'create',
+        action: catalog ? 'update' : 'add',
       });
     }
   }

@@ -37,19 +37,23 @@
     <!-- Requirement summary input -->
     <mat-form-field appearance="fill">
       <mat-label>Requirement summary</mat-label>
-      <input
+      <textarea
         name="summary"
         matInput
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="1"
+        cdkAutosizeMaxRows="10"
         [(ngModel)]="requirementInput.summary"
         [disabled]="isSaving"
         required
-      />
+      ></textarea>
     </mat-form-field>
 
     <!-- Requirement description input -->
     <mat-form-field appearance="fill">
       <mat-label>Requirement description</mat-label>
       <textarea
+        class="description-input"
         name="description"
         matInput
         [(ngModel)]="requirementInput.description"

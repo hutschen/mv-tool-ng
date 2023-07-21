@@ -81,4 +81,54 @@ describe('Paginator', () => {
       done();
     });
   });
+
+  it('should set page to last page', (done: DoneFn) => {
+    const itemCount = 120;
+    const pageSize = initQueryParams.page_size;
+    const lastPageIndex = Math.ceil(itemCount / pageSize);
+
+    sut.toLastPage(itemCount);
+    sut.queryParams$.subscribe((queryParams) => {
+      expect(queryParams).toEqual({
+        page: lastPageIndex,
+        page_size: pageSize,
+      });
+      done();
+    });
+  });
+
+  it('should set page to next page', (done: DoneFn) => {
+    sut.toNextPage();
+    sut.queryParams$.subscribe((queryParams) => {
+      expect(queryParams).toEqual({
+        page: initQueryParams.page + 1,
+        page_size: initQueryParams.page_size,
+      });
+      done();
+    });
+  });
+
+  it('should stay on the first page when trying to switch to the previous page', (done: DoneFn) => {
+    sut.toPreviousPage();
+    sut.queryParams$.subscribe((queryParams) => {
+      expect(queryParams).toEqual({
+        page: 1,
+        page_size: initQueryParams.page_size,
+      });
+      done();
+    });
+  });
+
+  it('should set page to the previous page', (done: DoneFn) => {
+    sut.toNextPage();
+    sut.toPreviousPage();
+
+    sut.queryParams$.subscribe((queryParams) => {
+      expect(queryParams).toEqual({
+        page: 1,
+        page_size: initQueryParams.page_size,
+      });
+      done();
+    });
+  });
 });

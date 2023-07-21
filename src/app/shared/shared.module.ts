@@ -49,6 +49,7 @@ import { ComplianceInputComponent } from './components/compliance-input.componen
 import { CompletionInputComponent } from './components/completion-input.component';
 import { VerificationInputComponent } from './components/verification-input.component';
 import { LoadingOverlayComponent } from './components/loading-overlay.component';
+import { QuickAddComponent } from './components/quick-add.component';
 
 @NgModule({
   declarations: [
@@ -83,6 +84,7 @@ import { LoadingOverlayComponent } from './components/loading-overlay.component'
     CompletionInputComponent,
     VerificationInputComponent,
     LoadingOverlayComponent,
+    QuickAddComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
@@ -110,6 +112,7 @@ import { LoadingOverlayComponent } from './components/loading-overlay.component'
     CompletionInputComponent,
     VerificationInputComponent,
     LoadingOverlayComponent,
+    QuickAddComponent,
   ],
 })
 export class SharedModule {}

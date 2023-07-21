@@ -77,15 +77,15 @@
         </div>
 
         <div
-          *ngIf="!dataFrame.isLoading"
+          *ngIf="!dataFrame.isLoading && showNoContentMessage"
           class="fx-row fx-space-between-center"
         >
           <div>{{ noContentText }}</div>
           <button
             *ngIf="create.observed"
-            mat-raised-button
+            mat-flat-button
             (click)="create.emit()"
-            color="accent"
+            color="primary"
           >
             <mat-icon>add</mat-icon>
             {{ createLabel }}
