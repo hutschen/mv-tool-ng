@@ -44,12 +44,16 @@ export class CompletionField extends DataField<
   }
 
   override toValue(data: Requirement | Project | Document): number | null {
-    return data.percentComplete;
+    // Calculation completion percentage
+    return data.compliant_count
+      ? Math.round((data.completed_count / data.compliant_count) * 100)
+      : null;
   }
 
   override toStr(data: Requirement | Project | Document): string {
     const completion = this.toValue(data);
-    if (completion !== null) return `${completion}% complete`;
+    if (completion !== null)
+      return `${data.completed_count}/${data.compliant_count} completed, ${completion}% complete`;
     else return 'Nothing to be completed';
   }
 
