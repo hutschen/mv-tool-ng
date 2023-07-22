@@ -65,44 +65,6 @@ export class Document implements IDocument {
       description: this.description,
     };
   }
-
-  get percentComplete(): number | null {
-    return this.compliant_count
-      ? Math.round((this.completed_count / this.compliant_count) * 100)
-      : null;
-  }
-
-  get percentVerified(): number | null {
-    return this.completed_count
-      ? Math.round((this.verified_count / this.completed_count) * 100)
-      : null;
-  }
-
-  get completionProgressColor(): string | null {
-    switch (this.percentComplete) {
-      case null:
-        return null;
-      case 0:
-        return 'warn';
-      case 100:
-        return 'primary';
-      default:
-        return 'accent';
-    }
-  }
-
-  get verificationProgressColor(): string | null {
-    switch (this.percentVerified) {
-      case null:
-        return null;
-      case 0:
-        return 'warn';
-      case 100:
-        return 'primary';
-      default:
-        return 'accent';
-    }
-  }
 }
 
 export interface IDocumentRepresentation {
