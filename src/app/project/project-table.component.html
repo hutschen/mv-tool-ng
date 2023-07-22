@@ -75,15 +75,11 @@
         mat-cell
         *matCellDef="let project"
         [matTooltip]="column.field.toStr(project)"
-        class="indicator"
       >
-        <mat-progress-bar
+        <mvtool-progress-indicator
           *ngIf="column.field.toBool(project)"
-          mode="determinate"
           [value]="column.field.toValue(project)"
-          [color]="project.completionProgressColor"
-        >
-        </mat-progress-bar>
+        ></mvtool-progress-indicator>
       </td>
     </ng-container>
 
