@@ -23,6 +23,7 @@ import {
   CompletionColumn,
   DescriptionColumn,
   TitleColumn,
+  VerificationColumn,
 } from '../custom/custom-colums';
 import { Observable } from 'rxjs';
 import { DocumentReferencesFilter } from './document-filters';
@@ -54,6 +55,7 @@ export class DocumentDataFrame extends DataFrame<Document> {
         new TitleColumn(initQueryParams),
         new DescriptionColumn(initQueryParams),
         new CompletionColumn(initQueryParams),
+        new VerificationColumn(initQueryParams),
         new PlaceholderColumn('options'),
       ],
       initQueryParams

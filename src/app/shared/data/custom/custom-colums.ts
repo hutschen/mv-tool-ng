@@ -24,7 +24,12 @@ import {
   FilterForExistence,
   Filters,
 } from '../filter';
-import { CompletionField, StatusField, TextField } from './custom-fields';
+import {
+  CompletionField,
+  StatusField,
+  TextField,
+  VerificationField,
+} from './custom-fields';
 import { ComplianceStatusOptions } from './custom-options';
 
 export class ComplianceStatusColumn<D extends IDataItem> extends DataColumn<D> {
@@ -152,5 +157,13 @@ export class CompletionColumn extends DataColumn<
 > {
   constructor(initQueryParams: IQueryParams = {}, optional: boolean = true) {
     super(new CompletionField(optional), null, initQueryParams);
+  }
+}
+
+export class VerificationColumn extends DataColumn<
+  Requirement | Project | Document
+> {
+  constructor(initQueryParams: IQueryParams = {}, optional: boolean = true) {
+    super(new VerificationField(optional), null, initQueryParams);
   }
 }

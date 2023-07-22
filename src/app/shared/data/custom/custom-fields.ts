@@ -51,10 +51,37 @@ export class CompletionField extends DataField<
   }
 
   override toStr(data: Requirement | Project | Document): string {
-    const completion = this.toValue(data);
-    if (completion !== null)
-      return `${data.completed_count}/${data.compliant_count} completed, ${completion}% complete`;
+    const percent = this.toValue(data);
+    if (percent !== null)
+      return `${data.completed_count}/${data.compliant_count} completed, ${percent}% complete`;
     else return 'Nothing to be completed';
+  }
+
+  override toBool(data: Requirement | Project | Document): boolean {
+    return this.toValue(data) !== null;
+  }
+}
+
+export class VerificationField extends DataField<
+  Requirement | Project | Document,
+  number | null
+> {
+  constructor(optional: boolean = true) {
+    super('verification', null, optional);
+  }
+
+  override toValue(data: Requirement | Project | Document): number | null {
+    // Calculation verification percentage
+    return data.compliant_count
+      ? Math.round((data.verified_count / data.compliant_count) * 100)
+      : null;
+  }
+
+  override toStr(data: Requirement | Project | Document): string {
+    const percent = this.toValue(data);
+    if (percent !== null)
+      return `${data.verified_count}/${data.compliant_count} verified, ${percent}% verified`;
+    else return 'Nothing to be verified';
   }
 
   override toBool(data: Requirement | Project | Document): boolean {

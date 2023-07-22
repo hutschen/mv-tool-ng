@@ -33,6 +33,7 @@ import {
   DescriptionColumn,
   SummaryColumn,
   TextColumn,
+  VerificationColumn,
 } from '../custom/custom-colums';
 import { TextField } from '../custom/custom-fields';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
@@ -163,6 +164,7 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
         new ComplianceStatusColumn(initQueryParams),
         new ComplianceCommentColumn(initQueryParams),
         new CompletionColumn(initQueryParams),
+        new VerificationColumn(initQueryParams),
         complianceAlertColumn,
         new PlaceholderColumn('options'),
       ],
