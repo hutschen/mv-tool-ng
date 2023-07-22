@@ -96,6 +96,27 @@
       </td>
     </ng-container>
 
+    <!-- Verification column -->
+    <ng-container
+      *ngIf="dataFrame.columns.getColumn('verification') as column"
+      [matColumnDef]="column.name"
+    >
+      <th mat-header-cell *matHeaderCellDef>
+        {{ column.label }}
+      </th>
+      <td
+        mat-cell
+        *matCellDef="let requirement"
+        [matTooltip]="column.field.toStr(requirement)"
+        class="indicator"
+      >
+        <mvtool-progress-indicator
+          *ngIf="column.field.toBool(requirement)"
+          [value]="column.field.toValue(requirement)"
+        ></mvtool-progress-indicator>
+      </td>
+    </ng-container>
+
     <!-- Alert column -->
     <ng-container
       *ngIf="dataFrame.columns.getColumn('alert') as column"

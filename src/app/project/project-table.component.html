@@ -83,6 +83,26 @@
       </td>
     </ng-container>
 
+    <!-- Verification column -->
+    <ng-container
+      *ngIf="dataFrame.columns.getColumn('verification') as column"
+      [matColumnDef]="column.name"
+    >
+      <th mat-header-cell *matHeaderCellDef>
+        {{ column.label }}
+      </th>
+      <td
+        mat-cell
+        *matCellDef="let project"
+        [matTooltip]="column.field.toStr(project)"
+      >
+        <mvtool-progress-indicator
+          *ngIf="column.field.toBool(project)"
+          [value]="column.field.toValue(project)"
+        ></mvtool-progress-indicator>
+      </td>
+    </ng-container>
+
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef>
         <mvtool-table-options
