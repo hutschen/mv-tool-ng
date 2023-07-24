@@ -44,7 +44,7 @@
   >
     <!-- Completion column -->
     <ng-container
-      *ngIf="dataFrame.columns.getColumn('completion') as column"
+      *ngIf="dataFrame.columns.getColumn('completion_progress') as column"
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -66,7 +66,7 @@
 
     <!-- Verification column -->
     <ng-container
-      *ngIf="dataFrame.columns.getColumn('verification') as column"
+      *ngIf="dataFrame.columns.getColumn('verification_progress') as column"
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>

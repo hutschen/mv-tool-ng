@@ -159,10 +159,10 @@ export class CompletionColumn extends DataColumn<
     super(
       new CompletionField(optional),
       new Filters(
-        'Completion',
+        'Completion Progress',
         undefined,
         undefined,
-        new FilterForExistence('to_complete', initQueryParams)
+        new FilterForExistence('has_completion_progress', initQueryParams)
       ),
       initQueryParams
     );
@@ -176,10 +176,10 @@ export class VerificationColumn extends DataColumn<
     super(
       new VerificationField(optional),
       new Filters(
-        'Completion',
+        'Verification Progress',
         undefined,
         undefined,
-        new FilterForExistence('to_verify', initQueryParams)
+        new FilterForExistence('has_verification_progress', initQueryParams)
       ),
       initQueryParams
     );

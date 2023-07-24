@@ -40,7 +40,7 @@ export class CompletionField extends DataField<
   number | null
 > {
   constructor(optional: boolean = true) {
-    super('completion', null, optional);
+    super('completion_progress', 'Completion', optional);
   }
 
   override toValue(data: Requirement | Project | Document): number | null {
@@ -67,7 +67,7 @@ export class VerificationField extends DataField<
   number | null
 > {
   constructor(optional: boolean = true) {
-    super('verification', null, optional);
+    super('verification_progress', 'Verification', optional);
   }
 
   override toValue(data: Requirement | Project | Document): number | null {
