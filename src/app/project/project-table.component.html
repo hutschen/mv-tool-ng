@@ -68,7 +68,7 @@
       *ngIf="dataFrame.columns.getColumn('completion') as column"
       [matColumnDef]="column.name"
     >
-      <th mat-header-cell *matHeaderCellDef>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
         {{ column.label }}
       </th>
       <td
@@ -88,7 +88,7 @@
       *ngIf="dataFrame.columns.getColumn('verification') as column"
       [matColumnDef]="column.name"
     >
-      <th mat-header-cell *matHeaderCellDef>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
         {{ column.label }}
       </th>
       <td
