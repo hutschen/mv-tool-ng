@@ -156,7 +156,16 @@ export class CompletionColumn extends DataColumn<
   Requirement | Project | Document
 > {
   constructor(initQueryParams: IQueryParams = {}, optional: boolean = true) {
-    super(new CompletionField(optional), null, initQueryParams);
+    super(
+      new CompletionField(optional),
+      new Filters(
+        'Completion',
+        undefined,
+        undefined,
+        new FilterForExistence('to_complete', initQueryParams)
+      ),
+      initQueryParams
+    );
   }
 }
 
@@ -164,6 +173,15 @@ export class VerificationColumn extends DataColumn<
   Requirement | Project | Document
 > {
   constructor(initQueryParams: IQueryParams = {}, optional: boolean = true) {
-    super(new VerificationField(optional), null, initQueryParams);
+    super(
+      new VerificationField(optional),
+      new Filters(
+        'Completion',
+        undefined,
+        undefined,
+        new FilterForExistence('to_verify', initQueryParams)
+      ),
+      initQueryParams
+    );
   }
 }

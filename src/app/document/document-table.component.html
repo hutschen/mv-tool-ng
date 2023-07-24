@@ -48,7 +48,9 @@
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        {{ column.label }}
+        <mvtool-filter-header [filters]="column.filters">
+          {{ column.label }}
+        </mvtool-filter-header>
       </th>
       <td
         mat-cell
@@ -68,7 +70,9 @@
       [matColumnDef]="column.name"
     >
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
-        {{ column.label }}
+        <mvtool-filter-header [filters]="column.filters">
+          {{ column.label }}
+        </mvtool-filter-header>
       </th>
       <td
         mat-cell
