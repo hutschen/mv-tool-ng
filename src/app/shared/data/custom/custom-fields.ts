@@ -45,15 +45,15 @@ export class CompletionField extends DataField<
 
   override toValue(data: Requirement | Project | Document): number | null {
     // Calculation completion percentage
-    return data.compliant_count
-      ? Math.round((data.completed_count / data.compliant_count) * 100)
+    return data.completion_count
+      ? Math.round((data.completed_count / data.completion_count) * 100)
       : null;
   }
 
   override toStr(data: Requirement | Project | Document): string {
     const percent = this.toValue(data);
     if (percent !== null)
-      return `${data.completed_count}/${data.compliant_count} completed, ${percent}% complete`;
+      return `${data.completed_count}/${data.completion_count} completed, ${percent}% complete`;
     else return 'Nothing to be completed';
   }
 
@@ -72,15 +72,15 @@ export class VerificationField extends DataField<
 
   override toValue(data: Requirement | Project | Document): number | null {
     // Calculation verification percentage
-    return data.compliant_count
-      ? Math.round((data.verified_count / data.compliant_count) * 100)
+    return data.verification_count
+      ? Math.round((data.verified_count / data.verification_count) * 100)
       : null;
   }
 
   override toStr(data: Requirement | Project | Document): string {
     const percent = this.toValue(data);
     if (percent !== null)
-      return `${data.verified_count}/${data.compliant_count} verified, ${percent}% verified`;
+      return `${data.verified_count}/${data.verification_count} verified, ${percent}% verified`;
     else return 'Nothing to be verified';
   }
 

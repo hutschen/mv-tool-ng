@@ -31,8 +31,9 @@ export interface IProjectInput {
 export interface IProject extends IProjectInput {
   id: number;
   jira_project?: IJiraProject | null;
-  compliant_count?: number;
+  completion_count?: number;
   completed_count?: number;
+  verification_count?: number;
   verified_count?: number;
 }
 
@@ -42,8 +43,9 @@ export class Project implements IProject {
   description: string | null;
   jira_project_id: string | null;
   jira_project: IJiraProject | null;
-  compliant_count: number;
+  completion_count: number;
   completed_count: number;
+  verification_count: number;
   verified_count: number;
 
   constructor(project: IProject) {
@@ -52,8 +54,9 @@ export class Project implements IProject {
     this.description = project.description ?? null;
     this.jira_project_id = project.jira_project_id ?? null;
     this.jira_project = project.jira_project ?? null;
-    this.compliant_count = project.compliant_count ?? 0;
+    this.completion_count = project.completion_count ?? 0;
     this.completed_count = project.completed_count ?? 0;
+    this.verification_count = project.verification_count ?? 0;
     this.verified_count = project.verified_count ?? 0;
   }
 

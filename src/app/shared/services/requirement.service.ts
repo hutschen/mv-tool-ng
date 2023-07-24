@@ -52,8 +52,9 @@ export interface IRequirement {
   compliance_comment?: string | null;
   project: IProject;
   catalog_requirement?: ICatalogRequirement | null;
-  compliant_count?: number;
+  completion_count?: number;
   completed_count?: number;
+  verification_count?: number;
   verified_count?: number;
 }
 
@@ -69,8 +70,9 @@ export class Requirement implements IRequirement {
   compliance_comment: string | null;
   project: Project;
   catalog_requirement: CatalogRequirement | null;
-  compliant_count: number;
+  completion_count: number;
   completed_count: number;
+  verification_count: number;
   verified_count: number;
 
   constructor(requirement: IRequirement) {
@@ -87,8 +89,9 @@ export class Requirement implements IRequirement {
     this.catalog_requirement = requirement.catalog_requirement
       ? new CatalogRequirement(requirement.catalog_requirement)
       : null;
-    this.compliant_count = requirement.compliant_count ?? 0;
+    this.completion_count = requirement.completion_count ?? 0;
     this.completed_count = requirement.completed_count ?? 0;
+    this.verification_count = requirement.verification_count ?? 0; // prettier-ignore
     this.verified_count = requirement.verified_count ?? 0;
   }
 
