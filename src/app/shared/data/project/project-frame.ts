@@ -20,6 +20,7 @@ import {
   CompletionColumn,
   DescriptionColumn,
   NameColumn,
+  VerificationColumn,
 } from '../custom/custom-colums';
 import { DataColumn, DataFrame, PlaceholderColumn } from '../data';
 import { FilterForExistence, Filters } from '../filter';
@@ -47,6 +48,7 @@ export class ProjectDataFrame extends DataFrame<Project> {
         new DescriptionColumn(initQueryParams),
         jiraProjectColumn,
         new CompletionColumn(initQueryParams),
+        new VerificationColumn(initQueryParams),
         new PlaceholderColumn('options'),
       ],
       initQueryParams

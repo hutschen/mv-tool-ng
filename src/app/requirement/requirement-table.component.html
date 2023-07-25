@@ -77,11 +77,13 @@
 
     <!-- Completion column -->
     <ng-container
-      *ngIf="dataFrame.columns.getColumn('completion') as column"
+      *ngIf="dataFrame.columns.getColumn('completion_progress') as column"
       [matColumnDef]="column.name"
     >
-      <th mat-header-cell *matHeaderCellDef>
-        {{ column.label }}
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mvtool-filter-header [filters]="column.filters">
+          {{ column.label }}
+        </mvtool-filter-header>
       </th>
       <td
         mat-cell
@@ -89,13 +91,33 @@
         [matTooltip]="column.field.toStr(requirement)"
         class="indicator"
       >
-        <mat-progress-bar
+        <mvtool-progress-indicator
           *ngIf="column.field.toBool(requirement)"
-          mode="determinate"
           [value]="column.field.toValue(requirement)"
-          [color]="requirement.completionProgressColor"
-        >
-        </mat-progress-bar>
+        ></mvtool-progress-indicator>
+      </td>
+    </ng-container>
+
+    <!-- Verification column -->
+    <ng-container
+      *ngIf="dataFrame.columns.getColumn('verification_progress') as column"
+      [matColumnDef]="column.name"
+    >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mvtool-filter-header [filters]="column.filters">
+          {{ column.label }}
+        </mvtool-filter-header>
+      </th>
+      <td
+        mat-cell
+        *matCellDef="let requirement"
+        [matTooltip]="column.field.toStr(requirement)"
+        class="indicator"
+      >
+        <mvtool-progress-indicator
+          *ngIf="column.field.toBool(requirement)"
+          [value]="column.field.toValue(requirement)"
+        ></mvtool-progress-indicator>
       </td>
     </ng-container>
 

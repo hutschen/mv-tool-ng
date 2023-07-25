@@ -42,6 +42,50 @@
     [matSortActive]="(dataFrame.sort.active$ | async) ?? ''"
     [matSortDirection]="(dataFrame.sort.direction$ | async) ?? ''"
   >
+    <!-- Completion column -->
+    <ng-container
+      *ngIf="dataFrame.columns.getColumn('completion_progress') as column"
+      [matColumnDef]="column.name"
+    >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mvtool-filter-header [filters]="column.filters">
+          {{ column.label }}
+        </mvtool-filter-header>
+      </th>
+      <td
+        mat-cell
+        *matCellDef="let document"
+        [matTooltip]="column.field.toStr(document)"
+      >
+        <mvtool-progress-indicator
+          *ngIf="column.field.toBool(document)"
+          [value]="column.field.toValue(document)"
+        ></mvtool-progress-indicator>
+      </td>
+    </ng-container>
+
+    <!-- Verification column -->
+    <ng-container
+      *ngIf="dataFrame.columns.getColumn('verification_progress') as column"
+      [matColumnDef]="column.name"
+    >
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mvtool-filter-header [filters]="column.filters">
+          {{ column.label }}
+        </mvtool-filter-header>
+      </th>
+      <td
+        mat-cell
+        *matCellDef="let document"
+        [matTooltip]="column.field.toStr(document)"
+      >
+        <mvtool-progress-indicator
+          *ngIf="column.field.toBool(document)"
+          [value]="column.field.toValue(document)"
+        ></mvtool-progress-indicator>
+      </td>
+    </ng-container>
+
     <!-- Options column -->
     <ng-container matColumnDef="options">
       <th mat-header-cell *matHeaderCellDef>

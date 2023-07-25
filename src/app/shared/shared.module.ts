@@ -50,6 +50,7 @@ import { CompletionInputComponent } from './components/completion-input.componen
 import { VerificationInputComponent } from './components/verification-input.component';
 import { LoadingOverlayComponent } from './components/loading-overlay.component';
 import { QuickAddComponent } from './components/quick-add.component';
+import { ProgressIndicatorComponent } from './components/progress-indicator.component';
 
 @NgModule({
   declarations: [
@@ -85,6 +86,7 @@ import { QuickAddComponent } from './components/quick-add.component';
     VerificationInputComponent,
     LoadingOverlayComponent,
     QuickAddComponent,
+    ProgressIndicatorComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
@@ -113,6 +115,7 @@ import { QuickAddComponent } from './components/quick-add.component';
     VerificationInputComponent,
     LoadingOverlayComponent,
     QuickAddComponent,
+    ProgressIndicatorComponent,
   ],
 })
 export class SharedModule {}

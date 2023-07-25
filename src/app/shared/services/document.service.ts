@@ -32,6 +32,10 @@ export type IDocumentPatch = Partial<IDocumentInput>;
 export interface IDocument extends IDocumentInput {
   id: number;
   project: IProject;
+  completion_count?: number;
+  completed_count?: number;
+  verification_count?: number;
+  verified_count?: number;
 }
 
 export class Document implements IDocument {
@@ -40,6 +44,10 @@ export class Document implements IDocument {
   title: string;
   description: string | null;
   project: Project;
+  completion_count: number;
+  completed_count: number;
+  verification_count: number;
+  verified_count: number;
 
   constructor(document: IDocument) {
     this.id = document.id;
@@ -47,6 +55,10 @@ export class Document implements IDocument {
     this.title = document.title;
     this.description = document.description;
     this.project = new Project(document.project);
+    this.completion_count = document.completion_count ?? 0;
+    this.completed_count = document.completed_count ?? 0;
+    this.verification_count = document.verification_count ?? 0;
+    this.verified_count = document.verified_count ?? 0;
   }
 
   toDocumentInput(): IDocumentInput {

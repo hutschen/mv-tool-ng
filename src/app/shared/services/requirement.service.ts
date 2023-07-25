@@ -52,8 +52,10 @@ export interface IRequirement {
   compliance_comment?: string | null;
   project: IProject;
   catalog_requirement?: ICatalogRequirement | null;
-  completion_progress?: number | null;
-  verification_progress?: number | null;
+  completion_count?: number;
+  completed_count?: number;
+  verification_count?: number;
+  verified_count?: number;
 }
 
 export class Requirement implements IRequirement {
@@ -68,8 +70,10 @@ export class Requirement implements IRequirement {
   compliance_comment: string | null;
   project: Project;
   catalog_requirement: CatalogRequirement | null;
-  completion_progress: number | null;
-  verification_progress: number | null;
+  completion_count: number;
+  completed_count: number;
+  verification_count: number;
+  verified_count: number;
 
   constructor(requirement: IRequirement) {
     this.id = requirement.id;
@@ -85,8 +89,10 @@ export class Requirement implements IRequirement {
     this.catalog_requirement = requirement.catalog_requirement
       ? new CatalogRequirement(requirement.catalog_requirement)
       : null;
-    this.completion_progress = requirement.completion_progress ?? null;
-    this.verification_progress = requirement.verification_progress ?? null;
+    this.completion_count = requirement.completion_count ?? 0;
+    this.completed_count = requirement.completed_count ?? 0;
+    this.verification_count = requirement.verification_count ?? 0; // prettier-ignore
+    this.verified_count = requirement.verified_count ?? 0;
   }
 
   toRequirementInput(): IRequirementInput {
@@ -100,35 +106,6 @@ export class Requirement implements IRequirement {
       compliance_comment: this.compliance_comment,
       catalog_requirement_id: this.catalog_requirement?.id || null,
     };
-  }
-
-  get percentComplete(): number | null {
-    if (this.completion_progress === null) {
-      return null;
-    } else {
-      return Math.round(this.completion_progress * 100);
-    }
-  }
-
-  get percentVerified(): number | null {
-    if (this.verification_progress === null) {
-      return null;
-    } else {
-      return Math.round(this.verification_progress * 100);
-    }
-  }
-
-  get completionProgressColor(): string | null {
-    switch (this.completion_progress) {
-      case null:
-        return null;
-      case 0:
-        return 'warn';
-      case 1:
-        return 'primary';
-      default:
-        return 'accent';
-    }
   }
 
   get gsAbsicherung(): string | null {
