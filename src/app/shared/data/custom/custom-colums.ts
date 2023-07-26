@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { Document } from '../../services/document.service';
 import { Project } from '../../services/project.service';
 import { IQueryParams } from '../../services/query-params.service';
 import { Requirement } from '../../services/requirement.service';
@@ -23,7 +24,12 @@ import {
   FilterForExistence,
   Filters,
 } from '../filter';
-import { CompletionField, StatusField, TextField } from './custom-fields';
+import {
+  CompletionField,
+  StatusField,
+  TextField,
+  VerificationField,
+} from './custom-fields';
 import { ComplianceStatusOptions } from './custom-options';
 
 export class ComplianceStatusColumn<D extends IDataItem> extends DataColumn<D> {
@@ -146,8 +152,36 @@ export class VerificationCommentColumn<
   }
 }
 
-export class CompletionColumn extends DataColumn<Requirement | Project> {
+export class CompletionColumn extends DataColumn<
+  Requirement | Project | Document
+> {
   constructor(initQueryParams: IQueryParams = {}, optional: boolean = true) {
-    super(new CompletionField(optional), null, initQueryParams);
+    super(
+      new CompletionField(optional),
+      new Filters(
+        'Completion Progress',
+        undefined,
+        undefined,
+        new FilterForExistence('has_completion_progress', initQueryParams)
+      ),
+      initQueryParams
+    );
+  }
+}
+
+export class VerificationColumn extends DataColumn<
+  Requirement | Project | Document
+> {
+  constructor(initQueryParams: IQueryParams = {}, optional: boolean = true) {
+    super(
+      new VerificationField(optional),
+      new Filters(
+        'Verification Progress',
+        undefined,
+        undefined,
+        new FilterForExistence('has_verification_progress', initQueryParams)
+      ),
+      initQueryParams
+    );
   }
 }
