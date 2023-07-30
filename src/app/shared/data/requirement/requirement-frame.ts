@@ -146,7 +146,12 @@ export class RequirementDataFrame extends DataFrame<Requirement> {
     // Alert column
     const complianceAlertColumn = new DataColumn(
       new ComplianceAlertField(),
-      null,
+      new Filters(
+        'Alert',
+        undefined,
+        undefined,
+        new FilterForExistence('has_alert', initQueryParams)
+      ),
       initQueryParams
     );
 
