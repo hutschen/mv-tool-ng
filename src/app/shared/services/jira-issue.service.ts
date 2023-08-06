@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 import { JiraProjectService } from './jira-project.service';
 import { MeasureService } from './measure.service';
@@ -50,20 +50,16 @@ export class JiraIssueService {
     protected _measureService: MeasureService
   ) {}
 
-  getJiraIssuesUrl(jiraProjectId: string): string {
-    return `${this._jiraProjects.getJiraProjectUrl(jiraProjectId)}/jira-issues`;
+  getJiraIssuesUrl(): string {
+    return 'jira-issues';
   }
 
   getJiraIssueUrl(measureId: number): string {
     return `${this._measureService.getMeasureUrl(measureId)}/jira-issue`;
   }
 
-  getJiraIssues(jiraProjectId: string): Observable<IJiraIssue[]> {
-    return this._crud.list_legacy(this.getJiraIssuesUrl(jiraProjectId));
-  }
-
   queryJiraIssues(params: IQueryParams = {}) {
-    return this._crud.query('jira-issues', params);
+    return this._crud.query(this.getJiraIssuesUrl(), params);
   }
 
   createAndLinkJiraIssue(
