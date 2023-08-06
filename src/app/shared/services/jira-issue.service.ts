@@ -18,6 +18,7 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
 import { JiraProjectService } from './jira-project.service';
 import { MeasureService } from './measure.service';
+import { IQueryParams } from './query-params.service';
 
 export interface IJiraIssueStatus {
   name: string;
@@ -59,6 +60,10 @@ export class JiraIssueService {
 
   getJiraIssues(jiraProjectId: string): Observable<IJiraIssue[]> {
     return this._crud.list_legacy(this.getJiraIssuesUrl(jiraProjectId));
+  }
+
+  queryJiraIssues(params: IQueryParams = {}) {
+    return this._crud.query('jira-issues', params);
   }
 
   createAndLinkJiraIssue(
