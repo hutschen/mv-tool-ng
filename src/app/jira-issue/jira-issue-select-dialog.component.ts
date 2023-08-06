@@ -10,6 +10,7 @@ import {
   JiraIssueService,
 } from '../shared/services/jira-issue.service';
 import { IJiraProject } from '../shared/services/jira-project.service';
+import { map } from 'rxjs';
 
 export interface IJiraIssueSelectDialogData {
   jiraProject: IJiraProject;
@@ -113,7 +114,8 @@ export class JiraIssueSelectDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this._jiraIssueService
-      .getJiraIssues(this.jiraProject.id)
+      .queryJiraIssues({ project_ids: this.jiraProject.id })
+      .pipe(map((jiraIssues) => jiraIssues as IJiraIssue[]))
       .subscribe((jiraIssues) => {
         this.jiraIssues = jiraIssues;
         this.jiraIssuesLoaded = true;
