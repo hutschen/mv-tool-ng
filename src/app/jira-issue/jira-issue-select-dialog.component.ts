@@ -1,15 +1,13 @@
-import { Component, Inject, Injectable, OnInit } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import {
   MatDialog,
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import {
-  IJiraIssue,
-  JiraIssueService,
-} from '../shared/services/jira-issue.service';
+import { JiraIssueService } from '../shared/services/jira-issue.service';
 import { IJiraProject } from '../shared/services/jira-project.service';
+import { JiraIssueOptions } from '../shared/data/jira-issue/jira-issue-options';
 
 export interface IJiraIssueSelectDialogData {
   jiraProject: IJiraProject;
@@ -23,7 +21,7 @@ export class JiraIssueSelectDialogService {
 
   openJiraIssueSelectDialog(
     jiraProject: IJiraProject
-  ): MatDialogRef<JiraIssueSelectDialogComponent, IJiraIssue> {
+  ): MatDialogRef<JiraIssueSelectDialogComponent, string | null> {
     return this._dialog.open(JiraIssueSelectDialogComponent, {
       width: '500px',
       data: { jiraProject },
@@ -35,9 +33,7 @@ export class JiraIssueSelectDialogService {
   selector: 'mvtool-jira-issue-select-dialog',
   template: `
     <!-- Title -->
-    <div mat-dialog-title>
-      <h1><span>Select JIRA Issue</span></h1>
-    </div>
+    <div mat-dialog-title>Select JIRA Issue</div>
 
     <!-- Content -->
     <div mat-dialog-content>
@@ -47,31 +43,14 @@ export class JiraIssueSelectDialogService {
         (submit)="onSubmit(jiraIssueSelectForm)"
         class="fx-column"
       >
-        <mat-form-field appearance="fill">
-          <mat-label>Issue</mat-label>
-          <input
-            name="jiraIssueKey"
-            type="text"
-            matInput
-            [(ngModel)]="filterValue"
-            [matAutocomplete]="issueAutocomplete"
-            required
-          />
-          <mat-autocomplete #issueAutocomplete="matAutocomplete">
-            <mat-option
-              *ngFor="let issue of filteredJiraIssues"
-              [value]="issue.key"
-            >
-              {{ issue.key }}: {{ issue.summary }}
-            </mat-option>
-          </mat-autocomplete>
-          <mat-spinner
-            class="loading-spinner"
-            *ngIf="!jiraIssuesLoaded"
-            matSuffix
-            diameter="20"
-          ></mat-spinner>
-        </mat-form-field>
+        <mvtool-options-input
+          name="jira_issue_id"
+          label="JIRA Issue"
+          placeholder="Select JIRA Issue"
+          [options]="jiraIssueOptions"
+          [(ngModel)]="jiraIssueId"
+          required
+        ></mvtool-options-input>
       </form>
     </div>
 
@@ -97,54 +76,25 @@ export class JiraIssueSelectDialogService {
   styleUrls: ['../shared/styles/flex.scss'],
   styles: ['.loading-spinner { margin-right: 8px; }'],
 })
-export class JiraIssueSelectDialogComponent implements OnInit {
-  jiraProject: IJiraProject;
-  jiraIssues: IJiraIssue[] = [];
-  filterValue: string | null = null;
-  jiraIssuesLoaded: boolean = false;
+export class JiraIssueSelectDialogComponent {
+  jiraIssueOptions: JiraIssueOptions;
+  jiraIssueId: string | null = null;
 
   constructor(
     protected _jiraIssueService: JiraIssueService,
     protected _dialogRef: MatDialogRef<JiraIssueSelectDialogComponent>,
     @Inject(MAT_DIALOG_DATA) dialogData: IJiraIssueSelectDialogData
   ) {
-    this.jiraProject = dialogData.jiraProject;
-  }
-
-  ngOnInit(): void {
-    this._jiraIssueService
-      .getJiraIssues(this.jiraProject.id)
-      .subscribe((jiraIssues) => {
-        this.jiraIssues = jiraIssues;
-        this.jiraIssuesLoaded = true;
-      });
-  }
-
-  get filteredJiraIssues(): IJiraIssue[] {
-    if (!this.filterValue) {
-      return [];
-    }
-
-    const filterValue = this.filterValue.toLowerCase();
-    return this.jiraIssues.filter((issue) =>
-      `${issue.key}: ${issue.summary}`.toLowerCase().includes(filterValue)
+    this.jiraIssueOptions = new JiraIssueOptions(
+      this._jiraIssueService,
+      dialogData.jiraProject,
+      false
     );
-  }
-
-  get jiraIssue(): IJiraIssue | undefined {
-    if (!this.filterValue) {
-      return undefined;
-    }
-    return this.jiraIssues.find((issue) => issue.key === this.filterValue);
   }
 
   onSubmit(form: NgForm): void {
     if (form.valid) {
-      if (this.jiraIssue) {
-        this._dialogRef.close(this.jiraIssue);
-      } else {
-        form.controls['jiraIssueKey'].setErrors({ invalid: true });
-      }
+      this._dialogRef.close(this.jiraIssueId);
     }
   }
 

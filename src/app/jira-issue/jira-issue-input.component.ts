@@ -171,10 +171,10 @@ export class JiraIssueInputComponent implements OnInit {
         jiraProject: this.project?.jira_project,
       } as IJiraIssueSelectDialogData,
     });
-    dialogRef.afterClosed().subscribe(async (jiraIssue) => {
-      if (jiraIssue && this.measure) {
+    dialogRef.afterClosed().subscribe(async (jiraIssueId) => {
+      if (jiraIssueId && this.measure) {
         const measureInput = this.measure.toMeasureInput();
-        measureInput.jira_issue_id = jiraIssue.id;
+        measureInput.jira_issue_id = jiraIssueId;
         this.loading = true;
         this.measure = await firstValueFrom(
           this._measureService.updateMeasure(this.measure.id, measureInput)
