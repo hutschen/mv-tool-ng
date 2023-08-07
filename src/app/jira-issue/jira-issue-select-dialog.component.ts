@@ -1,16 +1,12 @@
-import { Component, Inject, Injectable, OnInit } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import {
   MatDialog,
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import {
-  IJiraIssue,
-  JiraIssueService,
-} from '../shared/services/jira-issue.service';
+import { JiraIssueService } from '../shared/services/jira-issue.service';
 import { IJiraProject } from '../shared/services/jira-project.service';
-import { map } from 'rxjs';
 import { JiraIssueOptions } from '../shared/data/jira-issue/jira-issue-options';
 
 export interface IJiraIssueSelectDialogData {
@@ -25,7 +21,7 @@ export class JiraIssueSelectDialogService {
 
   openJiraIssueSelectDialog(
     jiraProject: IJiraProject
-  ): MatDialogRef<JiraIssueSelectDialogComponent, IJiraIssue> {
+  ): MatDialogRef<JiraIssueSelectDialogComponent, string | null> {
     return this._dialog.open(JiraIssueSelectDialogComponent, {
       width: '500px',
       data: { jiraProject },
@@ -52,7 +48,8 @@ export class JiraIssueSelectDialogService {
           label="JIRA Issue"
           placeholder="Select JIRA Issue"
           [options]="jiraIssueOptions"
-          [(ngModel)]="filterValue"
+          [(ngModel)]="jiraIssueId"
+          required
         ></mvtool-options-input>
       </form>
     </div>
@@ -79,61 +76,25 @@ export class JiraIssueSelectDialogService {
   styleUrls: ['../shared/styles/flex.scss'],
   styles: ['.loading-spinner { margin-right: 8px; }'],
 })
-export class JiraIssueSelectDialogComponent implements OnInit {
-  jiraProject: IJiraProject;
-  jiraIssues: IJiraIssue[] = [];
-  filterValue: string | null = null;
-  jiraIssuesLoaded: boolean = false;
+export class JiraIssueSelectDialogComponent {
   jiraIssueOptions: JiraIssueOptions;
+  jiraIssueId: string | null = null;
 
   constructor(
     protected _jiraIssueService: JiraIssueService,
     protected _dialogRef: MatDialogRef<JiraIssueSelectDialogComponent>,
     @Inject(MAT_DIALOG_DATA) dialogData: IJiraIssueSelectDialogData
   ) {
-    this.jiraProject = dialogData.jiraProject;
     this.jiraIssueOptions = new JiraIssueOptions(
       this._jiraIssueService,
-      this.jiraProject,
+      dialogData.jiraProject,
       false
     );
   }
 
-  ngOnInit(): void {
-    this._jiraIssueService
-      .queryJiraIssues({ project_ids: this.jiraProject.id })
-      .pipe(map((jiraIssues) => jiraIssues as IJiraIssue[]))
-      .subscribe((jiraIssues) => {
-        this.jiraIssues = jiraIssues;
-        this.jiraIssuesLoaded = true;
-      });
-  }
-
-  get filteredJiraIssues(): IJiraIssue[] {
-    if (!this.filterValue) {
-      return [];
-    }
-
-    const filterValue = this.filterValue.toLowerCase();
-    return this.jiraIssues.filter((issue) =>
-      `${issue.key}: ${issue.summary}`.toLowerCase().includes(filterValue)
-    );
-  }
-
-  get jiraIssue(): IJiraIssue | undefined {
-    if (!this.filterValue) {
-      return undefined;
-    }
-    return this.jiraIssues.find((issue) => issue.id === this.filterValue);
-  }
-
   onSubmit(form: NgForm): void {
     if (form.valid) {
-      if (this.jiraIssue) {
-        this._dialogRef.close(this.jiraIssue);
-      } else {
-        form.controls['jiraIssueKey'].setErrors({ invalid: true });
-      }
+      this._dialogRef.close(this.jiraIssueId);
     }
   }
 
