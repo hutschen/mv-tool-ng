@@ -27,11 +27,7 @@ import {
 import { IJiraIssueInput } from '../shared/services/jira-issue.service';
 import { IJiraProject } from '../shared/services/jira-project.service';
 import { Measure } from '../shared/services/measure.service';
-
-export interface IJiraIssueDialogData {
-  jiraProject: IJiraProject;
-  measure: Measure;
-}
+import { firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -40,12 +36,11 @@ export class JiraIssueDialogService {
   constructor(protected _dialog: MatDialog) {}
 
   openJiraIssueDialog(
-    jiraProject: IJiraProject,
     measure: Measure
-  ): MatDialogRef<JiraIssueDialogComponent, IJiraIssueInput> {
+  ): MatDialogRef<JiraIssueDialogComponent, Measure> {
     return this._dialog.open(JiraIssueDialogComponent, {
       width: '500px',
-      data: { jiraProject, measure },
+      data: measure,
     });
   }
 }
@@ -68,12 +63,21 @@ export class JiraIssueDialogComponent implements OnInit {
   constructor(
     protected _jiraIssueTypeService: JiraIssueTypeService,
     protected _dialogRef: MatDialogRef<JiraIssueDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) dialogData: IJiraIssueDialogData
+    @Inject(MAT_DIALOG_DATA) protected _measure: Measure
   ) {
-    this.jiraProject = dialogData.jiraProject;
-    this.jiraIssueInput.summary = dialogData.measure.summary;
-    this.jiraIssueInput.description = this._generateDescription(
-      dialogData.measure
+    if (_measure.requirement.project.jira_project == null) {
+      throw new Error('measure.requirement.project.jira_project is null');
+    }
+
+    this.jiraProject = _measure.requirement.project.jira_project;
+    this.jiraIssueInput.summary = _measure.summary.slice(0, 255); // Jira issue summary is limited to 255 characters
+    this.jiraIssueInput.description = this._generateDescription(_measure);
+  }
+
+  async ngOnInit() {
+    // Retrieve Jira issue types for the Jira project
+    this.jiraIssueTypes = await firstValueFrom(
+      this._jiraIssueTypeService.getJiraIssueTypes(this.jiraProject.id)
     );
   }
 
@@ -89,14 +93,6 @@ export class JiraIssueDialogComponent implements OnInit {
       description += `\nMeasure description: ${measure.description}\n`;
     }
     return description;
-  }
-
-  ngOnInit(): void {
-    this._jiraIssueTypeService
-      .getJiraIssueTypes(this.jiraProject.id)
-      .subscribe((jiraIssueTypes) => {
-        this.jiraIssueTypes = jiraIssueTypes;
-      });
   }
 
   onSave(form: NgForm): void {

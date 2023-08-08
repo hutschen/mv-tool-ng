@@ -19,10 +19,7 @@ import { firstValueFrom } from 'rxjs';
 import { JiraIssueService } from '../shared/services/jira-issue.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
-import {
-  IJiraIssueDialogData,
-  JiraIssueDialogComponent,
-} from './jira-issue-dialog.component';
+import { JiraIssueDialogComponent } from './jira-issue-dialog.component';
 import {
   IJiraIssueSelectDialogData,
   JiraIssueSelectDialogComponent,
@@ -142,10 +139,7 @@ export class JiraIssueInputComponent implements OnInit {
   onCreateJiraIssue(): void {
     let dialogRef = this._dialog.open(JiraIssueDialogComponent, {
       width: '500px',
-      data: {
-        jiraProject: this.project?.jira_project,
-        measure: this.measure,
-      } as IJiraIssueDialogData,
+      data: this.measure,
     });
     dialogRef.afterClosed().subscribe(async (jiraIssueInput) => {
       if (jiraIssueInput && this.measure) {
