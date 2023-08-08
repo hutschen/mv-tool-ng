@@ -62,6 +62,7 @@ export class JiraIssueDialogComponent implements OnInit {
     description: null,
     issuetype_id: '',
   };
+  maxSummaryLength: number = 255; // Jira issue summary is limited to 255 characters
   isSaving: boolean = false;
 
   constructor(
@@ -75,7 +76,7 @@ export class JiraIssueDialogComponent implements OnInit {
     }
 
     this.jiraProject = _measure.requirement.project.jira_project;
-    this.jiraIssueInput.summary = _measure.summary.slice(0, 255); // Jira issue summary is limited to 255 characters
+    this.jiraIssueInput.summary = _measure.summary.slice(0, this.maxSummaryLength); // prettier-ignore
     this.jiraIssueInput.description = this._generateDescription(_measure);
   }
 

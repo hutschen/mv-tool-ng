@@ -46,11 +46,15 @@
       <mat-label>Summary</mat-label>
       <input
         name="summary"
+        [maxLength]="maxSummaryLength"
         matInput
         [(ngModel)]="jiraIssueInput.summary"
         [disabled]="isSaving"
         required
       />
+      <mat-hint align="end">
+        {{ jiraIssueInput.summary.length }} / {{ maxSummaryLength }}
+      </mat-hint>
     </mat-form-field>
 
     <!-- Description input -->
