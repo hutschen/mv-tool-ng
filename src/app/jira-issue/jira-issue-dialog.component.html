@@ -44,14 +44,17 @@
     <!-- Summary input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Summary</mat-label>
-      <input
+      <textarea
         name="summary"
         [maxLength]="maxSummaryLength"
         matInput
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="1"
+        cdkAutosizeMaxRows="10"
         [(ngModel)]="jiraIssueInput.summary"
         [disabled]="isSaving"
         required
-      />
+      ></textarea>
       <mat-hint align="end">
         {{ jiraIssueInput.summary.length }} / {{ maxSummaryLength }}
       </mat-hint>
@@ -61,6 +64,7 @@
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Description</mat-label>
       <textarea
+        class="description-input"
         name="description"
         matInput
         [(ngModel)]="jiraIssueInput.description"
