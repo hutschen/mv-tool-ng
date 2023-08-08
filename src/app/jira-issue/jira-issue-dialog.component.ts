@@ -77,7 +77,22 @@ export class JiraIssueDialogComponent implements OnInit {
 
     this.jiraProject = _measure.requirement.project.jira_project;
     this.summary = _measure.summary;
-    this.jiraIssueInput.description = this._generateDescription(_measure);
+    this.jiraIssueInput.description =
+      JiraIssueDialogComponent.generateDescription(_measure);
+  }
+
+  static generateDescription(measure: Measure): string {
+    const requirement = measure.requirement;
+    let description = '';
+
+    if (requirement.reference) {
+      description += `Requirement reference: ${requirement.reference}\n`;
+    }
+    description += `Requirement summary: ${requirement.summary}\n`;
+    if (measure.description) {
+      description += `\nMeasure description: ${measure.description}\n`;
+    }
+    return description;
   }
 
   async ngOnInit() {
@@ -102,20 +117,6 @@ export class JiraIssueDialogComponent implements OnInit {
     if (event.key === 'Enter') {
       event.preventDefault();
     }
-  }
-
-  protected _generateDescription(measure: Measure): string {
-    const requirement = measure.requirement;
-    let description = '';
-
-    if (requirement.reference) {
-      description += `Requirement reference: ${requirement.reference}\n`;
-    }
-    description += `Requirement summary: ${requirement.summary}\n`;
-    if (measure.description) {
-      description += `\nMeasure description: ${measure.description}\n`;
-    }
-    return description;
   }
 
   async onSave(form: NgForm) {
