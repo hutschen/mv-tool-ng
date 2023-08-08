@@ -51,8 +51,9 @@
         cdkTextareaAutosize
         cdkAutosizeMinRows="1"
         cdkAutosizeMaxRows="10"
-        [(ngModel)]="jiraIssueInput.summary"
+        [(ngModel)]="summary"
         [disabled]="isSaving"
+        (keydown)="onSummaryKeydown($event)"
         required
       ></textarea>
       <mat-hint align="end">

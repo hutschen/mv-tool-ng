@@ -76,7 +76,7 @@ export class JiraIssueDialogComponent implements OnInit {
     }
 
     this.jiraProject = _measure.requirement.project.jira_project;
-    this.jiraIssueInput.summary = _measure.summary.slice(0, this.maxSummaryLength); // prettier-ignore
+    this.summary = _measure.summary;
     this.jiraIssueInput.description = this._generateDescription(_measure);
   }
 
@@ -85,6 +85,23 @@ export class JiraIssueDialogComponent implements OnInit {
     this.jiraIssueTypes = await firstValueFrom(
       this._jiraIssueTypeService.getJiraIssueTypes(this.jiraProject.id)
     );
+  }
+
+  get summary(): string {
+    return this.jiraIssueInput.summary;
+  }
+
+  set summary(summary: string) {
+    this.jiraIssueInput.summary = summary
+      .slice(0, this.maxSummaryLength) // Limit summary length
+      .replace(/(\r\n|\n|\r)/gm, ' '); // Remove line breaks
+  }
+
+  onSummaryKeydown(event: KeyboardEvent): void {
+    // Prevent entering line breaks in summary
+    if (event.key === 'Enter') {
+      event.preventDefault();
+    }
   }
 
   protected _generateDescription(measure: Measure): string {
