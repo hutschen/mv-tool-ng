@@ -24,10 +24,13 @@ import {
   IJiraIssueType,
   JiraIssueTypeService,
 } from '../shared/services/jira-issue-type.service';
-import { IJiraIssueInput } from '../shared/services/jira-issue.service';
+import {
+  IJiraIssueInput,
+  JiraIssueService,
+} from '../shared/services/jira-issue.service';
 import { IJiraProject } from '../shared/services/jira-project.service';
 import { Measure } from '../shared/services/measure.service';
-import { firstValueFrom } from 'rxjs';
+import { finalize, firstValueFrom, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -59,9 +62,11 @@ export class JiraIssueDialogComponent implements OnInit {
     description: null,
     issuetype_id: '',
   };
+  isSaving: boolean = false;
 
   constructor(
     protected _jiraIssueTypeService: JiraIssueTypeService,
+    protected _jiraIssueService: JiraIssueService,
     protected _dialogRef: MatDialogRef<JiraIssueDialogComponent>,
     @Inject(MAT_DIALOG_DATA) protected _measure: Measure
   ) {
@@ -95,10 +100,34 @@ export class JiraIssueDialogComponent implements OnInit {
     return description;
   }
 
-  onSave(form: NgForm): void {
-    if (form.valid) {
-      this._dialogRef.close(this.jiraIssueInput);
-    }
+  async onSave(form: NgForm) {
+    if (!form.valid) throw new Error('form is not valid');
+
+    // Define observable to create and link Jira issue to measure
+    const measure$ = this._jiraIssueService
+      .createAndLinkJiraIssue(this._measure.id, this.jiraIssueInput)
+      .pipe(
+        map((jiraIssue) => {
+          this._measure.jira_issue = jiraIssue;
+          this._measure.jira_issue_id = jiraIssue.id;
+          return this._measure;
+        })
+      );
+
+    // Perform action and close dialog
+    this.isSaving = true;
+    this._dialogRef.disableClose = true;
+
+    this._dialogRef.close(
+      await firstValueFrom(
+        measure$.pipe(
+          finalize(() => {
+            this.isSaving = false;
+            this._dialogRef.disableClose = false;
+          })
+        )
+      )
+    );
   }
 
   onCancel(): void {

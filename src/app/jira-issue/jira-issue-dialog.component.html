@@ -20,6 +20,7 @@
   objectName="Jira Issue"
   (save)="onSave($event)"
   (cancel)="onCancel()"
+  [isSaving]="isSaving"
 >
   <div class="fx-column">
     <!-- Select issue type -->
@@ -28,6 +29,7 @@
       <mat-select
         name="jiraIssueType"
         [(ngModel)]="jiraIssueInput.issuetype_id"
+        [disabled]="isSaving"
         required
       >
         <mat-option
@@ -46,6 +48,7 @@
         name="summary"
         matInput
         [(ngModel)]="jiraIssueInput.summary"
+        [disabled]="isSaving"
         required
       />
     </mat-form-field>
@@ -57,6 +60,7 @@
         name="description"
         matInput
         [(ngModel)]="jiraIssueInput.description"
+        [disabled]="isSaving"
       ></textarea>
     </mat-form-field>
   </div>

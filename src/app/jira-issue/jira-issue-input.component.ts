@@ -19,7 +19,7 @@ import { firstValueFrom } from 'rxjs';
 import { JiraIssueService } from '../shared/services/jira-issue.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
-import { JiraIssueDialogComponent } from './jira-issue-dialog.component';
+import { JiraIssueDialogService } from './jira-issue-dialog.component';
 import {
   IJiraIssueSelectDialogData,
   JiraIssueSelectDialogComponent,
@@ -119,7 +119,7 @@ import {
   styles: [],
 })
 export class JiraIssueInputComponent implements OnInit {
-  @Input() measure: Measure | null = null;
+  @Input() measure?: Measure;
   @Output() measureChange = new EventEmitter<Measure>();
   project: Project | null = null;
   loading: boolean = false;
@@ -127,6 +127,7 @@ export class JiraIssueInputComponent implements OnInit {
   constructor(
     protected _jiraIssueService: JiraIssueService,
     protected _measureService: MeasureService,
+    protected _jiraIssueDialogService: JiraIssueDialogService,
     protected _dialog: MatDialog
   ) {}
 
@@ -137,24 +138,13 @@ export class JiraIssueInputComponent implements OnInit {
   }
 
   onCreateJiraIssue(): void {
-    let dialogRef = this._dialog.open(JiraIssueDialogComponent, {
-      width: '500px',
-      data: this.measure,
-    });
-    dialogRef.afterClosed().subscribe(async (jiraIssueInput) => {
-      if (jiraIssueInput && this.measure) {
-        this.loading = true;
-        const jiraIssue = await firstValueFrom(
-          this._jiraIssueService.createAndLinkJiraIssue(
-            this.measure.id,
-            jiraIssueInput
-          )
-        );
-        this.measure.jira_issue = jiraIssue;
-        this.measure.jira_issue_id = jiraIssue.id;
-        this.measureChange.emit(this.measure);
-        this.loading = false;
-      }
+    if (!this.measure) throw new Error('measure is undefined');
+
+    let dialogRef = this._jiraIssueDialogService.openJiraIssueDialog(
+      this.measure
+    );
+    dialogRef.afterClosed().subscribe((measure) => {
+      if (measure) this.measureChange.emit(this.measure);
     });
   }
 
