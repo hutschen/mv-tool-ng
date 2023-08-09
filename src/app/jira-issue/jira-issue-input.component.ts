@@ -140,11 +140,11 @@ export class JiraIssueInputComponent implements OnInit {
   onCreateJiraIssue(): void {
     if (!this.measure) throw new Error('measure is undefined');
 
-    let dialogRef = this._jiraIssueDialogService.openJiraIssueDialog(
+    const dialogRef = this._jiraIssueDialogService.openJiraIssueDialog(
       this.measure
     );
     dialogRef.afterClosed().subscribe((measure) => {
-      if (measure) this.measureChange.emit(this.measure);
+      if (measure) this.measureChange.emit(measure);
     });
   }
 
