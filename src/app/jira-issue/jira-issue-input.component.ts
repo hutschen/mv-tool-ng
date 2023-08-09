@@ -14,16 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { firstValueFrom } from 'rxjs';
-import { JiraIssueService } from '../shared/services/jira-issue.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
 import { JiraIssueDialogService } from './jira-issue-dialog.component';
-import {
-  IJiraIssueSelectDialogData,
-  JiraIssueSelectDialogComponent,
-} from './jira-issue-select-dialog.component';
+import { JiraIssueSelectDialogService } from './jira-issue-select-dialog.component';
 
 @Component({
   selector: 'mvtool-jira-issue-input',
@@ -125,10 +120,9 @@ export class JiraIssueInputComponent implements OnInit {
   loading: boolean = false;
 
   constructor(
-    protected _jiraIssueService: JiraIssueService,
     protected _measureService: MeasureService,
     protected _jiraIssueDialogService: JiraIssueDialogService,
-    protected _dialog: MatDialog
+    protected _jiraIssueSelectDialogService: JiraIssueSelectDialogService
   ) {}
 
   ngOnInit(): void {
@@ -149,23 +143,14 @@ export class JiraIssueInputComponent implements OnInit {
   }
 
   onSelectJiraIssue(): void {
-    let dialogRef = this._dialog.open(JiraIssueSelectDialogComponent, {
-      width: '500px',
-      data: {
-        jiraProject: this.project?.jira_project,
-      } as IJiraIssueSelectDialogData,
-    });
-    dialogRef.afterClosed().subscribe(async (jiraIssueId) => {
-      if (jiraIssueId && this.measure) {
-        const measureInput = this.measure.toMeasureInput();
-        measureInput.jira_issue_id = jiraIssueId;
-        this.loading = true;
-        this.measure = await firstValueFrom(
-          this._measureService.updateMeasure(this.measure.id, measureInput)
-        );
-        this.measureChange.emit(this.measure);
-        this.loading = false;
-      }
+    if (!this.measure) throw new Error('measure is undefined');
+
+    const dialogRef =
+      this._jiraIssueSelectDialogService.openJiraIssueSelectDialog(
+        this.measure
+      );
+    dialogRef.afterClosed().subscribe((measure) => {
+      if (measure) this.measureChange.emit(measure);
     });
   }
 

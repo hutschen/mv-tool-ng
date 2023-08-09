@@ -6,12 +6,9 @@ import {
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import { JiraIssueService } from '../shared/services/jira-issue.service';
-import { IJiraProject } from '../shared/services/jira-project.service';
 import { JiraIssueOptions } from '../shared/data/jira-issue/jira-issue-options';
-
-export interface IJiraIssueSelectDialogData {
-  jiraProject: IJiraProject;
-}
+import { Measure, MeasureService } from '../shared/services/measure.service';
+import { finalize, firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -20,11 +17,11 @@ export class JiraIssueSelectDialogService {
   constructor(protected _dialog: MatDialog) {}
 
   openJiraIssueSelectDialog(
-    jiraProject: IJiraProject
-  ): MatDialogRef<JiraIssueSelectDialogComponent, string | null> {
+    measure: Measure
+  ): MatDialogRef<JiraIssueSelectDialogComponent, Measure> {
     return this._dialog.open(JiraIssueSelectDialogComponent, {
       width: '500px',
-      data: { jiraProject },
+      data: measure,
     });
   }
 }
@@ -40,7 +37,7 @@ export class JiraIssueSelectDialogService {
       <form
         id="jiraIssueSelectForm"
         #jiraIssueSelectForm="ngForm"
-        (submit)="onSubmit(jiraIssueSelectForm)"
+        (submit)="onSave(jiraIssueSelectForm)"
         class="fx-column"
       >
         <mvtool-options-input
@@ -49,6 +46,7 @@ export class JiraIssueSelectDialogService {
           placeholder="Select JIRA Issue"
           [options]="jiraIssueOptions"
           [(ngModel)]="jiraIssueId"
+          [disabled]="isSaving"
           required
         ></mvtool-options-input>
       </form>
@@ -60,17 +58,20 @@ export class JiraIssueSelectDialogService {
         <mat-icon>cancel</mat-icon>
         Cancel
       </button>
-      <button
-        [disabled]="jiraIssueSelectForm.invalid"
-        mat-raised-button
-        class="form-button"
-        color="accent"
-        type="submit"
-        form="jiraIssueSelectForm"
-      >
-        <mat-icon>save</mat-icon>
-        Save
-      </button>
+      <mvtool-loading-overlay [isLoading]="isSaving" color="accent">
+        <button
+          [disabled]="jiraIssueSelectForm.invalid"
+          mat-raised-button
+          class="form-button"
+          color="accent"
+          type="submit"
+          form="jiraIssueSelectForm"
+          [disabled]="isSaving"
+        >
+          <mat-icon>save</mat-icon>
+          Save
+        </button>
+      </mvtool-loading-overlay>
     </div>
   `,
   styleUrls: ['../shared/styles/flex.scss'],
@@ -79,23 +80,47 @@ export class JiraIssueSelectDialogService {
 export class JiraIssueSelectDialogComponent {
   jiraIssueOptions: JiraIssueOptions;
   jiraIssueId: string | null = null;
+  isSaving: boolean = false;
 
   constructor(
     protected _jiraIssueService: JiraIssueService,
+    protected _measureService: MeasureService,
     protected _dialogRef: MatDialogRef<JiraIssueSelectDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) dialogData: IJiraIssueSelectDialogData
+    @Inject(MAT_DIALOG_DATA) protected _measure: Measure
   ) {
+    if (_measure.requirement.project.jira_project == null) {
+      throw new Error('measure.requirement.project.jira_project is null');
+    }
+
     this.jiraIssueOptions = new JiraIssueOptions(
       this._jiraIssueService,
-      dialogData.jiraProject,
+      _measure.requirement.project.jira_project,
       false
     );
   }
 
-  onSubmit(form: NgForm): void {
-    if (form.valid) {
-      this._dialogRef.close(this.jiraIssueId);
-    }
+  async onSave(form: NgForm) {
+    if (!form.valid) throw new Error('form is invalid');
+
+    // Define observable to patch measure
+    const measure$ = this._measureService.patchMeasure(this._measure.id, {
+      jira_issue_id: this.jiraIssueId,
+    });
+
+    // Perform patch and close dialog
+    this.isSaving = true;
+    this._dialogRef.disableClose = true;
+
+    this._dialogRef.close(
+      await firstValueFrom(
+        measure$.pipe(
+          finalize(() => {
+            this.isSaving = false;
+            this._dialogRef.disableClose = false;
+          })
+        )
+      )
+    );
   }
 
   onCancel(): void {
