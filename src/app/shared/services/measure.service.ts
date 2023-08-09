@@ -236,6 +236,15 @@ export class MeasureService {
       .pipe(map((measures) => measures.map((m) => new Measure(m))));
   }
 
+  patchMeasure(
+    measureId: number,
+    measurePatch: IMeasurePatch
+  ): Observable<Measure> {
+    return this._crud_measure
+      .patch(this.getMeasureUrl(measureId), measurePatch)
+      .pipe(map((measure) => new Measure(measure)));
+  }
+
   deleteMeasure(measureId: number): Observable<null> {
     return this._crud_measure.delete(this.getMeasureUrl(measureId));
   }
