@@ -232,7 +232,7 @@ export class MeasureService {
     params: IQueryParams = {}
   ): Observable<Measure[]> {
     return this._crud_measure
-      .patch('measures', measurePatch, params)
+      .patchMany('measures', measurePatch, params)
       .pipe(map((measures) => measures.map((m) => new Measure(m))));
   }
 

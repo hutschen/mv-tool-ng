@@ -188,7 +188,7 @@ export class RequirementService {
     params: IQueryParams = {}
   ): Observable<Requirement[]> {
     return this._crud_requirement
-      .patch('requirements', requirementPatch, params)
+      .patchMany('requirements', requirementPatch, params)
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }
 

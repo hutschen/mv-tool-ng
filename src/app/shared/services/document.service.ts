@@ -141,7 +141,7 @@ export class DocumentService {
     params: IQueryParams = {}
   ): Observable<Document[]> {
     return this._crud_document
-      .patch('documents', documentPatch, params)
+      .patchMany('documents', documentPatch, params)
       .pipe(map((documents) => documents.map((d) => new Document(d))));
   }
 

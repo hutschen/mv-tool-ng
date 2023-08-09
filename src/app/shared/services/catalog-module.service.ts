@@ -132,7 +132,7 @@ export class CatalogModuleService {
     params: IQueryParams = {}
   ): Observable<CatalogModule[]> {
     return this._crud_catalog_module
-      .patch('catalog-modules', catalogModulePatch, params)
+      .patchMany('catalog-modules', catalogModulePatch, params)
       .pipe(map((cms) => cms.map((cm) => new CatalogModule(cm))));
   }
 

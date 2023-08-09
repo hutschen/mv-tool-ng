@@ -166,7 +166,7 @@ export class CatalogRequirementService {
     params: IQueryParams = {}
   ): Observable<CatalogRequirement[]> {
     return this._crud_catalog_requirement
-      .patch('catalog-requirements', catalogRequirementPatch, params)
+      .patchMany('catalog-requirements', catalogRequirementPatch, params)
       .pipe(map((crs) => crs.map((cr) => new CatalogRequirement(cr))));
   }
 

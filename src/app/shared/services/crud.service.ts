@@ -91,7 +91,7 @@ export class CRUDService<InputType, OutputType> {
     );
   }
 
-  patch(
+  patchMany(
     relativeUrl: string,
     itemPatch: Partial<InputType>,
     params: IQueryParams = {}

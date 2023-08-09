@@ -140,7 +140,7 @@ describe('CRUDService', () => {
   });
 
   it('should patch items', (done: DoneFn) => {
-    sut.patch('items', inputMock).subscribe({
+    sut.patchMany('items', inputMock).subscribe({
       next: (value) => expect(value).toEqual([outputMock]),
       complete: () => done(),
     });
