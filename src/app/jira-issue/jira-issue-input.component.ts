@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { finalize, firstValueFrom } from 'rxjs';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
 import { JiraIssueDialogService } from './jira-issue-dialog.component';
@@ -155,15 +155,19 @@ export class JiraIssueInputComponent implements OnInit {
   }
 
   async onUnlinkJiraIssue(): Promise<void> {
-    if (this.measure) {
-      const measureInput = this.measure.toMeasureInput();
-      measureInput.jira_issue_id = null;
-      this.loading = true;
-      this.measure = await firstValueFrom(
-        this._measureService.updateMeasure(this.measure.id, measureInput)
-      );
-      this.measureChange.emit(this.measure);
-      this.loading = false;
-    }
+    if (!this.measure) throw new Error('measure is undefined');
+
+    // Define observable to patch measure
+    const measure$ = this._measureService.patchMeasure(this.measure.id, {
+      jira_issue_id: null,
+    });
+
+    // Perform patch
+    this.loading = true;
+    this.measure = await firstValueFrom(
+      measure$.pipe(finalize(() => (this.loading = false)))
+    );
+
+    this.measureChange.emit(this.measure);
   }
 }
