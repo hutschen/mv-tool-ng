@@ -150,6 +150,7 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
     this.loadedOptions$ = this.filterCtrl.valueChanges.pipe(
       startWith(null),
       debounceTime(this.options.hasToLoad ? 250 : 0),
+      distinctUntilChanged(),
       switchMap((filter) => {
         this._isLoadingOptions = true && this.options.hasToLoad;
         return this.options

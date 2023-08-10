@@ -24,14 +24,13 @@ import {
   IJiraIssueType,
   JiraIssueTypeService,
 } from '../shared/services/jira-issue-type.service';
-import { IJiraIssueInput } from '../shared/services/jira-issue.service';
+import {
+  IJiraIssueInput,
+  JiraIssueService,
+} from '../shared/services/jira-issue.service';
 import { IJiraProject } from '../shared/services/jira-project.service';
 import { Measure } from '../shared/services/measure.service';
-
-export interface IJiraIssueDialogData {
-  jiraProject: IJiraProject;
-  measure: Measure;
-}
+import { finalize, firstValueFrom, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -40,12 +39,11 @@ export class JiraIssueDialogService {
   constructor(protected _dialog: MatDialog) {}
 
   openJiraIssueDialog(
-    jiraProject: IJiraProject,
     measure: Measure
-  ): MatDialogRef<JiraIssueDialogComponent, IJiraIssueInput> {
+  ): MatDialogRef<JiraIssueDialogComponent, Measure> {
     return this._dialog.open(JiraIssueDialogComponent, {
       width: '500px',
-      data: { jiraProject, measure },
+      data: measure,
     });
   }
 }
@@ -54,7 +52,7 @@ export class JiraIssueDialogService {
   selector: 'mvtool-jira-issue-dialog',
   templateUrl: './jira-issue-dialog.component.html',
   styleUrls: ['../shared/styles/flex.scss'],
-  styles: ['textarea { min-height: 100px; }'],
+  styles: ['.description-input { min-height: 100px; }'],
 })
 export class JiraIssueDialogComponent implements OnInit {
   jiraProject: IJiraProject;
@@ -64,20 +62,26 @@ export class JiraIssueDialogComponent implements OnInit {
     description: null,
     issuetype_id: '',
   };
+  maxSummaryLength: number = 255; // Jira issue summary is limited to 255 characters
+  isSaving: boolean = false;
 
   constructor(
     protected _jiraIssueTypeService: JiraIssueTypeService,
+    protected _jiraIssueService: JiraIssueService,
     protected _dialogRef: MatDialogRef<JiraIssueDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) dialogData: IJiraIssueDialogData
+    @Inject(MAT_DIALOG_DATA) protected _measure: Measure
   ) {
-    this.jiraProject = dialogData.jiraProject;
-    this.jiraIssueInput.summary = dialogData.measure.summary;
-    this.jiraIssueInput.description = this._generateDescription(
-      dialogData.measure
-    );
+    if (_measure.requirement.project.jira_project == null) {
+      throw new Error('measure.requirement.project.jira_project is null');
+    }
+
+    this.jiraProject = _measure.requirement.project.jira_project;
+    this.summary = _measure.summary;
+    this.jiraIssueInput.description =
+      JiraIssueDialogComponent.generateDescription(_measure);
   }
 
-  protected _generateDescription(measure: Measure): string {
+  static generateDescription(measure: Measure): string {
     const requirement = measure.requirement;
     let description = '';
 
@@ -91,18 +95,58 @@ export class JiraIssueDialogComponent implements OnInit {
     return description;
   }
 
-  ngOnInit(): void {
-    this._jiraIssueTypeService
-      .getJiraIssueTypes(this.jiraProject.id)
-      .subscribe((jiraIssueTypes) => {
-        this.jiraIssueTypes = jiraIssueTypes;
-      });
+  async ngOnInit() {
+    // Retrieve Jira issue types for the Jira project
+    this.jiraIssueTypes = await firstValueFrom(
+      this._jiraIssueTypeService.getJiraIssueTypes(this.jiraProject.id)
+    );
   }
 
-  onSave(form: NgForm): void {
-    if (form.valid) {
-      this._dialogRef.close(this.jiraIssueInput);
+  get summary(): string {
+    return this.jiraIssueInput.summary;
+  }
+
+  set summary(summary: string) {
+    this.jiraIssueInput.summary = summary
+      .slice(0, this.maxSummaryLength) // Limit summary length
+      .replace(/(\r\n|\n|\r)/gm, ' '); // Remove line breaks
+  }
+
+  onSummaryKeydown(event: KeyboardEvent): void {
+    // Prevent entering line breaks in summary
+    if (event.key === 'Enter') {
+      event.preventDefault();
     }
+  }
+
+  async onSave(form: NgForm) {
+    if (!form.valid) throw new Error('form is not valid');
+
+    // Define observable to create and link Jira issue to measure
+    const measure$ = this._jiraIssueService
+      .createAndLinkJiraIssue(this._measure.id, this.jiraIssueInput)
+      .pipe(
+        map((jiraIssue) => {
+          this._measure.jira_issue = jiraIssue;
+          this._measure.jira_issue_id = jiraIssue.id;
+          return this._measure;
+        })
+      );
+
+    // Perform action and close dialog
+    this.isSaving = true;
+    this._dialogRef.disableClose = true;
+
+    this._dialogRef.close(
+      await firstValueFrom(
+        measure$.pipe(
+          finalize(() => {
+            this.isSaving = false;
+            this._dialogRef.disableClose = false;
+          })
+        )
+      )
+    );
   }
 
   onCancel(): void {

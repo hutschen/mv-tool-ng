@@ -232,8 +232,17 @@ export class MeasureService {
     params: IQueryParams = {}
   ): Observable<Measure[]> {
     return this._crud_measure
-      .patch('measures', measurePatch, params)
+      .patchMany('measures', measurePatch, params)
       .pipe(map((measures) => measures.map((m) => new Measure(m))));
+  }
+
+  patchMeasure(
+    measureId: number,
+    measurePatch: IMeasurePatch
+  ): Observable<Measure> {
+    return this._crud_measure
+      .patch(this.getMeasureUrl(measureId), measurePatch)
+      .pipe(map((measure) => new Measure(measure)));
   }
 
   deleteMeasure(measureId: number): Observable<null> {

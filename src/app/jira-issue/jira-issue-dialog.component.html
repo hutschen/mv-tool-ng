@@ -20,6 +20,7 @@
   objectName="Jira Issue"
   (save)="onSave($event)"
   (cancel)="onCancel()"
+  [isSaving]="isSaving"
 >
   <div class="fx-column">
     <!-- Select issue type -->
@@ -28,6 +29,7 @@
       <mat-select
         name="jiraIssueType"
         [(ngModel)]="jiraIssueInput.issuetype_id"
+        [disabled]="isSaving"
         required
       >
         <mat-option
@@ -42,21 +44,32 @@
     <!-- Summary input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Summary</mat-label>
-      <input
+      <textarea
         name="summary"
+        [maxLength]="maxSummaryLength"
         matInput
-        [(ngModel)]="jiraIssueInput.summary"
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="1"
+        cdkAutosizeMaxRows="10"
+        [(ngModel)]="summary"
+        [disabled]="isSaving"
+        (keydown)="onSummaryKeydown($event)"
         required
-      />
+      ></textarea>
+      <mat-hint align="end">
+        {{ jiraIssueInput.summary.length }} / {{ maxSummaryLength }}
+      </mat-hint>
     </mat-form-field>
 
     <!-- Description input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Description</mat-label>
       <textarea
+        class="description-input"
         name="description"
         matInput
         [(ngModel)]="jiraIssueInput.description"
+        [disabled]="isSaving"
       ></textarea>
     </mat-form-field>
   </div>

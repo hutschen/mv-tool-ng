@@ -91,7 +91,7 @@ export class CRUDService<InputType, OutputType> {
     );
   }
 
-  patch(
+  patchMany(
     relativeUrl: string,
     itemPatch: Partial<InputType>,
     params: IQueryParams = {}
@@ -103,6 +103,17 @@ export class CRUDService<InputType, OutputType> {
         params,
         ...this._httpOptions,
       }
+    );
+  }
+
+  patch(
+    relativeUrl: string,
+    itemPatch: Partial<InputType>
+  ): Observable<OutputType> {
+    return this._httpClient.patch<OutputType>(
+      this.toAbsoluteUrl(relativeUrl),
+      itemPatch,
+      this._httpOptions
     );
   }
 

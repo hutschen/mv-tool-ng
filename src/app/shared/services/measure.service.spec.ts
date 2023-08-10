@@ -225,6 +225,18 @@ describe('MeasureService', () => {
     mockResponse.flush([outputMock]);
   });
 
+  it('should patch measure', (done: DoneFn) => {
+    sut.patchMeasure(outputMock.id, inputMock).subscribe({
+      next: (value) => expect(value).toEqual(new Measure(outputMock)),
+      complete: done,
+    });
+    const mockResponse = httpMock.expectOne({
+      method: 'patch',
+      url: crud.toAbsoluteUrl(sut.getMeasureUrl(outputMock.id)),
+    });
+    mockResponse.flush(outputMock);
+  });
+
   it('should delete measure', (done: DoneFn) => {
     sut
       .deleteMeasure(outputMock.id)
