@@ -192,6 +192,15 @@ export class RequirementService {
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }
 
+  patchRequirement(
+    requirementId: number,
+    requirementPatch: IRequirementPatch
+  ): Observable<Requirement> {
+    return this._crud_requirement
+      .patch(this.getRequirementUrl(requirementId), requirementPatch)
+      .pipe(map((requirement) => new Requirement(requirement)));
+  }
+
   deleteRequirement(requirementId: number): Observable<null> {
     return this._crud_requirement.delete(this.getRequirementUrl(requirementId));
   }
