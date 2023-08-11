@@ -126,11 +126,11 @@ export class MeasureInteractionService
     measure: Measure,
     complianceStatus: ComplianceStatus | null
   ) {
-    const measureInput = measure.toMeasureInput();
-    measureInput.compliance_status = complianceStatus;
     this._interactionsSubject.next({
       item: await firstValueFrom(
-        this._measureService.updateMeasure(measure.id, measureInput)
+        this._measureService.patchMeasure(measure.id, {
+          compliance_status: complianceStatus,
+        })
       ),
       action: 'update',
     });
@@ -140,11 +140,11 @@ export class MeasureInteractionService
     measure: Measure,
     completionStatus: CompletionStatus | null
   ) {
-    const measureInput = measure.toMeasureInput();
-    measureInput.completion_status = completionStatus;
     this._interactionsSubject.next({
       item: await firstValueFrom(
-        this._measureService.updateMeasure(measure.id, measureInput)
+        this._measureService.patchMeasure(measure.id, {
+          completion_status: completionStatus,
+        })
       ),
       action: 'update',
     });
@@ -154,11 +154,11 @@ export class MeasureInteractionService
     measure: Measure,
     verificationMethod: VerificationMethod | null
   ) {
-    const measureInput = measure.toMeasureInput();
-    measureInput.verification_method = verificationMethod;
     this._interactionsSubject.next({
       item: await firstValueFrom(
-        this._measureService.updateMeasure(measure.id, measureInput)
+        this._measureService.patchMeasure(measure.id, {
+          verification_method: verificationMethod,
+        })
       ),
       action: 'update',
     });
@@ -168,11 +168,11 @@ export class MeasureInteractionService
     measure: Measure,
     verificationStatus: VerificationStatus | null
   ) {
-    const measureInput = measure.toMeasureInput();
-    measureInput.verification_status = verificationStatus;
     this._interactionsSubject.next({
       item: await firstValueFrom(
-        this._measureService.updateMeasure(measure.id, measureInput)
+        this._measureService.patchMeasure(measure.id, {
+          verification_status: verificationStatus,
+        })
       ),
       action: 'update',
     });

@@ -113,14 +113,11 @@ export class RequirementInteractionService
     requirement: Requirement,
     complianceStatus: ComplianceStatus | null
   ) {
-    const requirementInput = requirement.toRequirementInput();
-    requirementInput.compliance_status = complianceStatus;
     this._interactionsSubject.next({
       item: await firstValueFrom(
-        this._requirementService.updateRequirement(
-          requirement.id,
-          requirementInput
-        )
+        this._requirementService.patchRequirement(requirement.id, {
+          compliance_status: complianceStatus,
+        })
       ),
       action: 'update',
     });
