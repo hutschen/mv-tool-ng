@@ -78,8 +78,12 @@ export class MeasureInteractionService
   }
 
   async onEditCompliance(measure: Measure): Promise<void> {
-    const dialogRef =
-      this._complianceDialogService.openComplianceDialog(measure);
+    const ms = this._measureService; // alias for shorter lines
+    const dialogRef = this._complianceDialogService.openComplianceDialog(
+      measure,
+      { patchCompliance: ms.patchMeasure.bind(ms) }
+    );
+
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
       this._interactionsSubject.next({

@@ -83,8 +83,12 @@ export class RequirementInteractionService
   }
 
   async onEditCompliance(requirement: Requirement): Promise<void> {
-    const dialogRef =
-      this._complianceDialogService.openComplianceDialog(requirement);
+    const rs = this._requirementService; // alias for shorter lines
+    const dialogRef = this._complianceDialogService.openComplianceDialog(
+      requirement,
+      { patchCompliance: rs.patchRequirement.bind(rs) }
+    );
+
     const updatedRequirement = await firstValueFrom(dialogRef.afterClosed());
     if (updatedRequirement) {
       this._interactionsSubject.next({
