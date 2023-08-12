@@ -13,15 +13,28 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { Observable } from 'rxjs';
 import { IDataItem } from './data/data';
 import { InteractionService } from './data/interaction';
 
 export type ComplianceStatus = 'C' | 'PC' | 'NC' | 'N/A';
 
+export interface ICompliancePatch {
+  compliance_status?: ComplianceStatus | null;
+  compliance_comment?: string | null;
+}
+
 export interface ICompliantItem extends IDataItem {
   compliance_status: ComplianceStatus | null;
   compliance_status_hint?: ComplianceStatus | null;
   compliance_comment: string | null;
+}
+
+export interface IComplianceService {
+  patchCompliance(
+    itemId: ICompliantItem['id'],
+    compliancePatch: ICompliancePatch
+  ): Observable<ICompliantItem>;
 }
 
 export interface ComplianceInteractionService
