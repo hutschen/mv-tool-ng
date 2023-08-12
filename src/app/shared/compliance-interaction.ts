@@ -13,17 +13,21 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import { IDataItem } from './data/data';
 import { InteractionService } from './data/interaction';
-import { Measure } from './services/measure.service';
-import { ComplianceStatus, Requirement } from './services/requirement.service';
+import { ComplianceStatus } from './services/requirement.service';
 
-export type CompliantItem = Measure | Requirement;
+export interface ICompliantItem extends IDataItem {
+  compliance_status: ComplianceStatus | null;
+  compliance_status_hint?: ComplianceStatus | null;
+  compliance_comment: string | null;
+}
 
 export interface ComplianceInteractionService
-  extends InteractionService<CompliantItem> {
+  extends InteractionService<ICompliantItem> {
   onSetComplianceStatus(
-    item: CompliantItem,
+    item: ICompliantItem,
     complianceStatus: ComplianceStatus | null
   ): Promise<void>;
-  onEditCompliance(item: CompliantItem): Promise<void>;
+  onEditCompliance(item: ICompliantItem): Promise<void>;
 }

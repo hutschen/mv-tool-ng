@@ -19,7 +19,7 @@ import { OptionValue } from '../data/options';
 import { ComplianceStatus } from '../services/requirement.service';
 import {
   ComplianceInteractionService,
-  CompliantItem,
+  ICompliantItem,
 } from '../compliance-interaction';
 
 @Component({
@@ -52,13 +52,13 @@ import {
   styles: [],
 })
 export class ComplianceStatusComponent {
-  @Input() item!: CompliantItem;
+  @Input() item!: ICompliantItem;
   @Input() complianceInteractions!: ComplianceInteractionService;
   complianceStatusOptions = new ComplianceStatusOptions(false);
 
   constructor() {}
 
-  onSetComplianceStatus(item: CompliantItem, value: OptionValue) {
+  onSetComplianceStatus(item: ICompliantItem, value: OptionValue) {
     this.complianceInteractions.onSetComplianceStatus(
       item,
       value as ComplianceStatus
