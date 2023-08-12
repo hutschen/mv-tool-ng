@@ -15,11 +15,7 @@
 
 import { Injectable } from '@angular/core';
 import { Interaction, InteractionService } from '../data/interaction';
-import {
-  ComplianceStatus,
-  Requirement,
-  RequirementService,
-} from './requirement.service';
+import { Requirement, RequirementService } from './requirement.service';
 import {
   Observable,
   Subject,
@@ -32,7 +28,10 @@ import { RequirementDialogService } from 'src/app/requirement/requirement-dialog
 import { ComplianceDialogService } from '../components/compliance-dialog.component';
 import { ConfirmDialogService } from '../components/confirm-dialog.component';
 import { Project } from './project.service';
-import { ComplianceInteractionService } from '../compliance-interaction';
+import {
+  ComplianceInteractionService,
+  ComplianceStatus,
+} from '../compliance-interaction';
 
 @Injectable({
   providedIn: 'root',

@@ -15,7 +15,8 @@
 
 import { IDataItem } from './data/data';
 import { InteractionService } from './data/interaction';
-import { ComplianceStatus } from './services/requirement.service';
+
+export type ComplianceStatus = 'C' | 'PC' | 'NC' | 'N/A';
 
 export interface ICompliantItem extends IDataItem {
   compliance_status: ComplianceStatus | null;

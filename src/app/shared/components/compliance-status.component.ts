@@ -16,9 +16,9 @@
 import { Component, Input } from '@angular/core';
 import { ComplianceStatusOptions } from '../data/custom/custom-options';
 import { OptionValue } from '../data/options';
-import { ComplianceStatus } from '../services/requirement.service';
 import {
   ComplianceInteractionService,
+  ComplianceStatus,
   ICompliantItem,
 } from '../compliance-interaction';
 

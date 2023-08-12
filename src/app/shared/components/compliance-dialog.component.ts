@@ -26,13 +26,13 @@ import {
   MeasureService,
 } from '../services/measure.service';
 import {
-  ComplianceStatus,
   IRequirementInput,
   Requirement,
   RequirementService,
 } from '../services/requirement.service';
 import { ComplianceStatusOptions } from '../data/custom/custom-options';
 import { Observable, finalize, firstValueFrom } from 'rxjs';
+import { ComplianceStatus } from '../compliance-interaction';
 
 @Injectable({
   providedIn: 'root',

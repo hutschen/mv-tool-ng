@@ -26,10 +26,13 @@ import { ComplianceDialogService } from '../components/compliance-dialog.compone
 import { CompletionDialogService } from 'src/app/measure/completion-dialog.component';
 import { VerificationDialogService } from 'src/app/measure/verification-dialog.component';
 import { ConfirmDialogService } from '../components/confirm-dialog.component';
-import { ComplianceStatus, Requirement } from './requirement.service';
+import { Requirement } from './requirement.service';
 import { Subject, firstValueFrom } from 'rxjs';
 import { Interaction, InteractionService } from '../data/interaction';
-import { ComplianceInteractionService } from '../compliance-interaction';
+import {
+  ComplianceInteractionService,
+  ComplianceStatus,
+} from '../compliance-interaction';
 
 @Injectable({
   providedIn: 'root',

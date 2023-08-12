@@ -21,12 +21,12 @@ import { IDocument, Document } from './document.service';
 import { DownloadService } from './download.service';
 import { IJiraIssue } from './jira-issue.service';
 import {
-  ComplianceStatus,
   IRequirement,
   Requirement,
   RequirementService,
 } from './requirement.service';
 import { UploadService } from './upload.service';
+import { ComplianceStatus } from '../compliance-interaction';
 
 export type CompletionStatus = 'open' | 'in progress' | 'completed';
 export type VerificationMethod = 'R' | 'T' | 'I';
