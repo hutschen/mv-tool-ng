@@ -20,13 +20,11 @@
 
 <!-- Content -->
 <div mat-dialog-content>
-  <form id="complianceForm" #form="ngForm" (submit)="onSave(form)">
+  <form id="complianceForm" (submit)="onSave()" [formGroup]="complianceForm">
     <div class="fx-column">
       <!-- Display compliance status hint -->
       <div
-        *ngIf="
-          complianceStatusHint && complianceStatusHint !== complianceStatus
-        "
+        *ngIf="complianceStatusHint$ | async as complianceStatusHint"
         class="fx-row fx-gap-5"
       >
         <p><mat-icon>warning</mat-icon></p>
@@ -40,11 +38,7 @@
       <!-- Compliance Status Input -->
       <mat-form-field appearance="fill">
         <mat-label>Select compliance status</mat-label>
-        <mat-select
-          name="complianceStatus"
-          [(ngModel)]="complianceStatus"
-          [disabled]="isSaving"
-        >
+        <mat-select formControlName="complianceStatus">
           <mat-option [value]="null">None</mat-option>
           <mat-option
             *ngFor="
@@ -60,12 +54,7 @@
       <!-- Compliance Comment Input -->
       <mat-form-field appearance="fill">
         <mat-label>Compliance Comment</mat-label>
-        <textarea
-          name="complianceComment"
-          matInput
-          [(ngModel)]="itemInput.compliance_comment"
-          [disabled]="!complianceStatus || isSaving"
-        ></textarea>
+        <textarea matInput formControlName="complianceComment"></textarea>
       </mat-form-field>
     </div>
   </form>
@@ -81,10 +70,9 @@
     <button
       mat-raised-button
       color="accent"
-      [disabled]="form.invalid"
       type="submit"
       form="complianceForm"
-      [disabled]="isSaving"
+      [disabled]="isSaving || complianceForm.invalid"
     >
       <mat-icon>save</mat-icon>
       Save
