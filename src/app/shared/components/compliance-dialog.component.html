@@ -15,54 +15,79 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<mvtool-create-edit-dialog
-  [createMode]="false"
-  objectName="Compliance"
-  (save)="onSave($event)"
-  (cancel)="onCancel()"
-  [isSaving]="isSaving"
->
-  <div class="fx-column">
-    <!-- Display compliance status hint -->
-    <div
-      *ngIf="complianceStatusHint && complianceStatusHint !== complianceStatus"
-      class="fx-row fx-gap-5"
-    >
-      <p><mat-icon>warning</mat-icon></p>
-      <p>
-        The automatically inferred compliance status is
-        <strong>{{ complianceStatusHint }}</strong
-        >.
-      </p>
-    </div>
+<!-- Title -->
+<div mat-dialog-title>Edit Compliance</div>
 
-    <!-- Compliance Status Input -->
-    <mat-form-field appearance="fill">
-      <mat-label>Select compliance status</mat-label>
-      <mat-select
-        name="complianceStatus"
-        [(ngModel)]="complianceStatus"
-        [disabled]="isSaving"
+<!-- Content -->
+<div mat-dialog-content>
+  <form id="complianceForm" #form="ngForm" (submit)="onSave(form)">
+    <div class="fx-column">
+      <!-- Display compliance status hint -->
+      <div
+        *ngIf="
+          complianceStatusHint && complianceStatusHint !== complianceStatus
+        "
+        class="fx-row fx-gap-5"
       >
-        <mat-option [value]="null">None</mat-option>
-        <mat-option
-          *ngFor="let option of complianceStatusOptions.filterOptions() | async"
-          [value]="option.value"
-        >
-          {{ option.label }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+        <p><mat-icon>warning</mat-icon></p>
+        <p>
+          The automatically inferred compliance status is
+          <strong>{{ complianceStatusHint }}</strong
+          >.
+        </p>
+      </div>
 
-    <!-- Compliance Comment Input -->
-    <mat-form-field appearance="fill">
-      <mat-label>Compliance Comment</mat-label>
-      <textarea
-        name="complianceComment"
-        matInput
-        [(ngModel)]="itemInput.compliance_comment"
-        [disabled]="!complianceStatus || isSaving"
-      ></textarea>
-    </mat-form-field>
-  </div>
-</mvtool-create-edit-dialog>
+      <!-- Compliance Status Input -->
+      <mat-form-field appearance="fill">
+        <mat-label>Select compliance status</mat-label>
+        <mat-select
+          name="complianceStatus"
+          [(ngModel)]="complianceStatus"
+          [disabled]="isSaving"
+        >
+          <mat-option [value]="null">None</mat-option>
+          <mat-option
+            *ngFor="
+              let option of complianceStatusOptions.filterOptions() | async
+            "
+            [value]="option.value"
+          >
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Compliance Comment Input -->
+      <mat-form-field appearance="fill">
+        <mat-label>Compliance Comment</mat-label>
+        <textarea
+          name="complianceComment"
+          matInput
+          [(ngModel)]="itemInput.compliance_comment"
+          [disabled]="!complianceStatus || isSaving"
+        ></textarea>
+      </mat-form-field>
+    </div>
+  </form>
+</div>
+
+<!-- Actions -->
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="isSaving">
+    <mat-icon>cancel</mat-icon>
+    Cancel
+  </button>
+  <mvtool-loading-overlay [isLoading]="isSaving" color="accent">
+    <button
+      mat-raised-button
+      color="accent"
+      [disabled]="form.invalid"
+      type="submit"
+      form="complianceForm"
+      [disabled]="isSaving"
+    >
+      <mat-icon>save</mat-icon>
+      Save
+    </button>
+  </mvtool-loading-overlay>
+</div>
