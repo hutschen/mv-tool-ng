@@ -20,7 +20,7 @@ import {
   VerificationMethod,
   VerificationStatus,
 } from './measure.service';
-import { CompletionStatus } from '../completion';
+import { CompletionStatus, ICompletionInteractionService } from '../completion';
 import { MeasureDialogService } from 'src/app/measure/measure-dialog.component';
 import { ComplianceDialogService } from '../components/compliance-dialog.component';
 import { CompletionDialogService } from 'src/app/measure/completion-dialog.component';
@@ -35,7 +35,10 @@ import { IComplianceInteractionService, ComplianceStatus } from '../compliance';
   providedIn: 'root',
 })
 export class MeasureInteractionService
-  implements IInteractionService<Measure>, IComplianceInteractionService
+  implements
+    IInteractionService<Measure>,
+    IComplianceInteractionService,
+    ICompletionInteractionService
 {
   protected _interactionsSubject = new Subject<IInteraction<Measure>>();
   readonly interactions$ = this._interactionsSubject.asObservable();
@@ -91,12 +94,15 @@ export class MeasureInteractionService
   }
 
   async onEditCompletion(measure: Measure): Promise<void> {
-    const dialogRef =
-      this._completionDialogService.openCompletionDialog(measure);
+    const ms = this._measureService; // alias for shorter lines
+    const dialogRef = this._completionDialogService.openCompletionDialog(
+      measure,
+      { patchCompletion: ms.patchMeasure.bind(ms) }
+    );
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
       this._interactionsSubject.next({
-        item: updatedMeasure,
+        item: updatedMeasure as Measure,
         action: 'update',
       });
     }
