@@ -28,13 +28,13 @@ import { RequirementDialogService } from 'src/app/requirement/requirement-dialog
 import { ComplianceDialogService } from '../components/compliance-dialog.component';
 import { ConfirmDialogService } from '../components/confirm-dialog.component';
 import { Project } from './project.service';
-import { ComplianceInteractionService, ComplianceStatus } from '../compliance';
+import { IComplianceInteractionService, ComplianceStatus } from '../compliance';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RequirementInteractionService
-  implements InteractionService<Requirement>, ComplianceInteractionService
+  implements InteractionService<Requirement>, IComplianceInteractionService
 {
   protected _interactionsSubject = new Subject<Interaction<Requirement>>();
   readonly interactions$ = this._interactionsSubject.asObservable();

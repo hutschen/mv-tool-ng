@@ -37,7 +37,7 @@ export interface IComplianceService {
   ): Observable<ICompliantItem>;
 }
 
-export interface ComplianceInteractionService
+export interface IComplianceInteractionService
   extends InteractionService<ICompliantItem> {
   onSetComplianceStatus(
     item: ICompliantItem,

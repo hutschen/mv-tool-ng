@@ -17,7 +17,7 @@ import { Component, Input } from '@angular/core';
 import { ComplianceStatusOptions } from '../data/custom/custom-options';
 import { OptionValue } from '../data/options';
 import {
-  ComplianceInteractionService,
+  IComplianceInteractionService,
   ComplianceStatus,
   ICompliantItem,
 } from '../compliance';
@@ -53,7 +53,7 @@ import {
 })
 export class ComplianceStatusComponent {
   @Input() item!: ICompliantItem;
-  @Input() complianceInteractions!: ComplianceInteractionService;
+  @Input() complianceInteractions!: IComplianceInteractionService;
   complianceStatusOptions = new ComplianceStatusOptions(false);
 
   constructor() {}
