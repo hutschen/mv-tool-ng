@@ -24,7 +24,7 @@ import { IQueryParams } from './query-params.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
 import { IUploadState, UploadService } from './upload.service';
-import { ComplianceStatus } from '../compliance-interaction';
+import { ComplianceStatus } from '../compliance';
 
 export interface IRequirementInput {
   reference?: string | null;

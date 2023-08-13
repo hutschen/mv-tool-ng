@@ -26,7 +26,7 @@ import {
   RequirementService,
 } from './requirement.service';
 import { UploadService } from './upload.service';
-import { ComplianceStatus } from '../compliance-interaction';
+import { ComplianceStatus } from '../compliance';
 
 export type CompletionStatus = 'open' | 'in progress' | 'completed';
 export type VerificationMethod = 'R' | 'T' | 'I';

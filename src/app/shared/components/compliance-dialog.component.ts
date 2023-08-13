@@ -27,7 +27,7 @@ import {
   ICompliancePatch,
   IComplianceService,
   ICompliantItem,
-} from '../compliance-interaction';
+} from '../compliance';
 
 export interface IComplianceDialogData {
   compliantItem: ICompliantItem;

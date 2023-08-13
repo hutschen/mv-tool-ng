@@ -29,10 +29,7 @@ import { ConfirmDialogService } from '../components/confirm-dialog.component';
 import { Requirement } from './requirement.service';
 import { Subject, firstValueFrom } from 'rxjs';
 import { Interaction, InteractionService } from '../data/interaction';
-import {
-  ComplianceInteractionService,
-  ComplianceStatus,
-} from '../compliance-interaction';
+import { ComplianceInteractionService, ComplianceStatus } from '../compliance';
 
 @Injectable({
   providedIn: 'root',

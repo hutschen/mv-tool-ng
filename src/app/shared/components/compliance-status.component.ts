@@ -20,7 +20,7 @@ import {
   ComplianceInteractionService,
   ComplianceStatus,
   ICompliantItem,
-} from '../compliance-interaction';
+} from '../compliance';
 
 @Component({
   selector: 'mvtool-compliance-status',
