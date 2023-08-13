@@ -30,20 +30,20 @@ import {
       [matMenuTriggerFor]="menu"
       (click)="$event.stopImmediatePropagation()"
     >
-      {{ item.compliance_status ?? 'Not Set' }}
+      {{ compliantItem.compliance_status ?? 'Not Set' }}
     </button>
     <mat-menu #menu="matMenu">
       <button
         mat-menu-item
         *ngFor="let option of complianceStatusOptions.filterOptions() | async"
-        (click)="onSetComplianceStatus(item, option.value)"
+        (click)="onSetComplianceStatus(compliantItem, option.value)"
       >
         {{ option.label }}
       </button>
       <mat-divider></mat-divider>
       <button
         mat-menu-item
-        (click)="complianceInteractions.onEditCompliance(item)"
+        (click)="complianceInteractions.onEditCompliance(compliantItem)"
       >
         Edit Compliance
       </button>
@@ -52,15 +52,15 @@ import {
   styles: [],
 })
 export class ComplianceStatusComponent {
-  @Input() item!: ICompliantItem;
+  @Input() compliantItem!: ICompliantItem;
   @Input() complianceInteractions!: IComplianceInteractionService;
   complianceStatusOptions = new ComplianceStatusOptions(false);
 
   constructor() {}
 
-  onSetComplianceStatus(item: ICompliantItem, value: OptionValue) {
+  onSetComplianceStatus(compliantItem: ICompliantItem, value: OptionValue) {
     this.complianceInteractions.onSetComplianceStatus(
-      item,
+      compliantItem,
       value as ComplianceStatus
     );
   }
