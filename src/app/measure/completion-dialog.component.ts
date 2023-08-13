@@ -21,11 +21,11 @@ import {
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import {
-  CompletionStatus,
   IMeasureInput,
   Measure,
   MeasureService,
 } from '../shared/services/measure.service';
+import { CompletionStatus } from '../shared/completion';
 import { CompletionStatusOptions } from '../shared/data/custom/custom-options';
 import { finalize, firstValueFrom } from 'rxjs';
 

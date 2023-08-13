@@ -14,7 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
-import { Measure, CompletionStatus } from '../services/measure.service';
+import { Measure } from '../services/measure.service';
+import { CompletionStatus } from '../completion';
 import { MeasureInteractionService } from '../services/measure-interaction.service';
 import { CompletionStatusOptions } from '../data/custom/custom-options';
 import { OptionValue } from '../data/options';

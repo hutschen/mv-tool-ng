@@ -15,12 +15,12 @@
 
 import { Injectable } from '@angular/core';
 import {
-  CompletionStatus,
   Measure,
   MeasureService,
   VerificationMethod,
   VerificationStatus,
 } from './measure.service';
+import { CompletionStatus } from '../completion';
 import { MeasureDialogService } from 'src/app/measure/measure-dialog.component';
 import { ComplianceDialogService } from '../components/compliance-dialog.component';
 import { CompletionDialogService } from 'src/app/measure/completion-dialog.component';

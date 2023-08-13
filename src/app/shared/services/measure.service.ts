@@ -27,8 +27,8 @@ import {
 } from './requirement.service';
 import { UploadService } from './upload.service';
 import { ComplianceStatus } from '../compliance';
+import { CompletionStatus } from '../completion';
 
-export type CompletionStatus = 'open' | 'in progress' | 'completed';
 export type VerificationMethod = 'R' | 'T' | 'I';
 export type VerificationStatus =
   | 'verified'
