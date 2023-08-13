@@ -126,19 +126,6 @@ export class Measure implements IMeasure {
     return this.completion_status === 'completed';
   }
 
-  get completionStatusColor(): string | null {
-    switch (this.completion_status) {
-      case 'completed':
-        return 'primary';
-      case 'in progress':
-        return 'accent';
-      case 'open':
-        return 'warn';
-      default:
-        return null;
-    }
-  }
-
   get verificationStatusColor(): string | null {
     switch (this.verification_status) {
       case 'verified':

@@ -14,9 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
-import { Measure } from '../services/measure.service';
-import { CompletionStatus } from '../completion';
-import { MeasureInteractionService } from '../services/measure-interaction.service';
+import {
+  CompletionStatus,
+  ICompletionInteractionService,
+  IToCompleteItem,
+} from '../completion';
 import { CompletionStatusOptions } from '../data/custom/custom-options';
 import { OptionValue } from '../data/options';
 
@@ -27,25 +29,25 @@ import { OptionValue } from '../data/options';
       <button
         mat-button
         [matMenuTriggerFor]="menu"
-        [color]="measure.completionStatusColor"
+        [color]="completionStatusColor"
         (click)="$event.stopImmediatePropagation()"
       >
-        <mat-icon *ngIf="measure.completed">check</mat-icon>
-        <mat-icon *ngIf="!measure.completed">close</mat-icon>
-        {{ measure.completion_status ?? 'not set' | titlecase }}
+        <mat-icon *ngIf="toCompleteItem.completed">check</mat-icon>
+        <mat-icon *ngIf="!toCompleteItem.completed">close</mat-icon>
+        {{ toCompleteItem.completion_status ?? 'not set' | titlecase }}
       </button>
       <mat-menu #menu="matMenu">
         <button
           mat-menu-item
           *ngFor="let option of completionStatusOptions.filterOptions() | async"
-          (click)="onSetCompletionStatus(measure, option.value)"
+          (click)="onSetCompletionStatus(toCompleteItem, option.value)"
         >
           {{ option.label }}
         </button>
         <mat-divider></mat-divider>
         <button
           mat-menu-item
-          (click)="measureInteractions.onEditCompletion(measure)"
+          (click)="completionInteractions.onEditCompletion(toCompleteItem)"
         >
           Edit Completion
         </button>
@@ -55,15 +57,29 @@ import { OptionValue } from '../data/options';
   styles: [],
 })
 export class CompletionStatusComponent {
-  @Input() measure!: Measure;
+  @Input() toCompleteItem!: IToCompleteItem;
+  @Input() completionInteractions!: ICompletionInteractionService;
   completionStatusOptions = new CompletionStatusOptions(false);
 
-  constructor(readonly measureInteractions: MeasureInteractionService) {}
+  constructor() {}
 
-  onSetCompletionStatus(measure: Measure, completionStatus: OptionValue) {
-    this.measureInteractions.onSetCompletionStatus(
-      measure,
-      completionStatus as CompletionStatus
+  get completionStatusColor(): string | null {
+    switch (this.toCompleteItem.completion_status) {
+      case 'completed':
+        return 'primary';
+      case 'in progress':
+        return 'accent';
+      case 'open':
+        return 'warn';
+      default:
+        return null;
+    }
+  }
+
+  onSetCompletionStatus(toCompleteItem: IToCompleteItem, value: OptionValue) {
+    this.completionInteractions.onSetCompletionStatus(
+      toCompleteItem,
+      value as CompletionStatus
     );
   }
 }
