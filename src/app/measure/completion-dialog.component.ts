@@ -13,21 +13,25 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject, Injectable } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { Component, Inject, Injectable, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import {
   MatDialog,
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import {
-  IMeasureInput,
-  Measure,
-  MeasureService,
-} from '../shared/services/measure.service';
-import { CompletionStatus } from '../shared/completion';
+  ICompletionPatch,
+  ICompletionService,
+  IToCompleteItem,
+} from '../shared/completion';
 import { CompletionStatusOptions } from '../shared/data/custom/custom-options';
-import { finalize, firstValueFrom } from 'rxjs';
+import { finalize, firstValueFrom, startWith } from 'rxjs';
+
+export interface ICompletionDialogData {
+  toCompleteItem: IToCompleteItem;
+  completionService: ICompletionService;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -36,120 +40,156 @@ export class CompletionDialogService {
   constructor(protected _dialog: MatDialog) {}
 
   openCompletionDialog(
-    measure: Measure
-  ): MatDialogRef<CompletionDialogComponent, Measure> {
-    const dialogRef = this._dialog.open(CompletionDialogComponent, {
+    toCompleteItem: IToCompleteItem,
+    completionService: ICompletionService
+  ): MatDialogRef<CompletionDialogComponent, IToCompleteItem> {
+    const data: ICompletionDialogData = { toCompleteItem, completionService };
+    return this._dialog.open(CompletionDialogComponent, {
       width: '500px',
-      data: measure,
+      data,
     });
-    return dialogRef;
   }
 }
 
 @Component({
   selector: 'mvtool-completion-dialog',
   template: `
-    <mvtool-create-edit-dialog
-      [createMode]="false"
-      objectName="Completion"
-      (save)="onSave($event)"
-      (cancel)="onCancel()"
-      [isSaving]="isSaving"
-    >
-      <div class="fx-column">
-        <!-- Completion status -->
-        <mat-form-field appearance="fill">
-          <mat-label>Select completion status</mat-label>
-          <mat-select
-            name="completionStatus"
-            [(ngModel)]="completionStatus"
-            [disabled]="isSaving"
-          >
-            <mat-option [value]="null">None</mat-option>
-            <mat-option
-              *ngFor="
-                let option of completionStatusOptions.filterOptions() | async
-              "
-              [value]="option.value"
-            >
-              {{ option.label }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+    <!-- Title -->
+    <div mat-dialog-title>Edit Completion</div>
 
-        <!-- Completion comment -->
-        <mat-form-field appearance="fill">
-          <mat-label>Completion comment</mat-label>
-          <textarea
-            name="completionComment"
-            matInput
-            [(ngModel)]="measureInput.completion_comment"
-            [disabled]="!completionStatus || isSaving"
-          ></textarea>
-        </mat-form-field>
-      </div>
-    </mvtool-create-edit-dialog>
+    <div mat-dialog-content>
+      <form
+        id="completionForm"
+        (submit)="onSave()"
+        [formGroup]="completionForm"
+      >
+        <div class="fx-column">
+          <!-- Completion status -->
+          <mat-form-field appearance="fill">
+            <mat-label>Select completion status</mat-label>
+            <mat-select formControlName="completionStatus">
+              <mat-option [value]="null">None</mat-option>
+              <mat-option
+                *ngFor="
+                  let option of completionStatusOptions.filterOptions() | async
+                "
+                [value]="option.value"
+              >
+                {{ option.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Completion comment -->
+          <mat-form-field appearance="fill">
+            <mat-label>Completion comment</mat-label>
+            <textarea matInput formControlName="completionComment"></textarea>
+          </mat-form-field>
+        </div>
+      </form>
+    </div>
+
+    <!-- Actions -->
+    <div mat-dialog-actions align="end">
+      <button mat-button (click)="onCancel()" [disabled]="isSaving">
+        <mat-icon>cancel</mat-icon>
+        Cancel
+      </button>
+      <mvtool-loading-overlay [isLoading]="isSaving" color="accent">
+        <button
+          mat-raised-button
+          color="accent"
+          type="submit"
+          form="completionForm"
+          [disabled]="isSaving || completionForm.invalid"
+        >
+          <mat-icon>save</mat-icon>
+          Save
+        </button>
+      </mvtool-loading-overlay>
+    </div>
   `,
   styleUrls: ['../shared/styles/flex.scss'],
   styles: ['textarea { min-height: 100px; }'],
 })
-export class CompletionDialogComponent {
-  // completionStatuses = ['open', 'in progress', 'completed'];
-  completionStatusOptions = new CompletionStatusOptions(false);
-  measureInput: IMeasureInput;
-  protected _preservedCompletionComment: string | null = null;
+export class CompletionDialogComponent implements OnInit {
+  readonly completionStatusOptions = new CompletionStatusOptions(false);
+  protected _toCompleteItem: IToCompleteItem;
+  protected _completionService: ICompletionService;
+  protected _completionPatch: ICompletionPatch = {};
+  completionForm!: FormGroup;
   isSaving: boolean = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<CompletionDialogComponent>,
-    protected _measureService: MeasureService,
-    @Inject(MAT_DIALOG_DATA) protected _measure: Measure
+    @Inject(MAT_DIALOG_DATA) data: ICompletionDialogData
   ) {
-    this.measureInput = this._measure.toMeasureInput();
+    this._toCompleteItem = data.toCompleteItem;
+    this._completionService = data.completionService;
   }
 
-  get completionStatus(): CompletionStatus | null {
-    return this.measureInput.completion_status ?? null;
+  ngOnInit(): void {
+    const statusCtrl = new FormControl(this._toCompleteItem.completion_status);
+    const commentCtrl = new FormControl(this._toCompleteItem.completion_comment); // prettier-ignore
+    let preservedComment = this._toCompleteItem.completion_comment;
+
+    this.completionForm = new FormGroup({
+      completionStatus: statusCtrl,
+      completionComment: commentCtrl,
+    });
+
+    // React on completion status changes
+    statusCtrl.valueChanges
+      .pipe(startWith(statusCtrl.value))
+      .subscribe((status) => {
+        // Update completion status
+        this._completionPatch.completion_status = status;
+
+        // Enable or disable commentCtrl
+        if (status && commentCtrl.disabled) {
+          commentCtrl.setValue(preservedComment);
+          commentCtrl.enable();
+        } else if (!status && commentCtrl.enabled) {
+          commentCtrl.disable();
+          preservedComment = commentCtrl.value;
+          commentCtrl.setValue(null);
+        }
+      });
+
+    // React on comment changes
+    commentCtrl.valueChanges
+      .pipe(startWith(commentCtrl.value))
+      .subscribe((comment) => {
+        // Update completion comment
+        this._completionPatch.completion_comment = comment || null;
+      });
   }
 
-  set completionStatus(value: CompletionStatus | null) {
-    this.measureInput.completion_status = value;
-    if (!value) {
-      // Preserve and remove the completion comment
-      this._preservedCompletionComment =
-        this.measureInput.completion_comment ?? null;
-      this.measureInput.completion_comment = null;
-    } else {
-      // Restore the completion comment if no comment is set
-      if (!this.measureInput.completion_comment) {
-        this.measureInput.completion_comment = this._preservedCompletionComment;
-      }
-    }
-  }
+  async onSave() {
+    if (this.completionForm.invalid) throw new Error('Form is invalid');
 
-  async onSave(form: NgForm) {
-    if (form.valid) {
-      // Define observable to update measure
-      const measure$ = this._measureService.updateMeasure(
-        this._measure.id,
-        this.measureInput
-      );
+    // Define observable to update completion
+    const item$ = this._completionService.patchCompletion(
+      this._toCompleteItem.id,
+      this._completionPatch
+    );
 
-      // Perform update and close dialog
-      this.isSaving = true;
-      this._dialogRef.disableClose = true;
+    // Perform update and close dialog
+    this.isSaving = true;
+    this.completionForm.disable({ emitEvent: false });
+    this._dialogRef.disableClose = true;
 
-      this._dialogRef.close(
-        await firstValueFrom(
-          measure$.pipe(
-            finalize(() => {
-              this.isSaving = false;
-              this._dialogRef.disableClose = false;
-            })
-          )
+    this._dialogRef.close(
+      await firstValueFrom(
+        item$.pipe(
+          finalize(() => {
+            this.isSaving = false;
+            this.completionForm.enable({ emitEvent: false });
+            this._dialogRef.disableClose = false;
+          })
         )
-      );
-    }
+      )
+    );
   }
 
   onCancel(): void {
