@@ -25,34 +25,37 @@ import { OptionValue } from '../data/options';
 @Component({
   selector: 'mvtool-completion-status',
   template: `
-    <div class="indicator">
+    <mvtool-loading-overlay [isLoading]="isLoading">
+      <div class="indicator">
+        <button
+          mat-button
+          [matMenuTriggerFor]="menu"
+          [color]="completionStatusColor"
+          (click)="$event.stopImmediatePropagation()"
+          [disabled]="isLoading"
+        >
+          <mat-icon *ngIf="toCompleteItem.completed">check</mat-icon>
+          <mat-icon *ngIf="!toCompleteItem.completed">close</mat-icon>
+          {{ toCompleteItem.completion_status ?? 'not set' | titlecase }}
+        </button>
+      </div>
+    </mvtool-loading-overlay>
+    <mat-menu #menu="matMenu">
       <button
-        mat-button
-        [matMenuTriggerFor]="menu"
-        [color]="completionStatusColor"
-        (click)="$event.stopImmediatePropagation()"
+        mat-menu-item
+        *ngFor="let option of completionStatusOptions.filterOptions() | async"
+        (click)="onSetCompletionStatus(toCompleteItem, option.value)"
       >
-        <mat-icon *ngIf="toCompleteItem.completed">check</mat-icon>
-        <mat-icon *ngIf="!toCompleteItem.completed">close</mat-icon>
-        {{ toCompleteItem.completion_status ?? 'not set' | titlecase }}
+        {{ option.label }}
       </button>
-      <mat-menu #menu="matMenu">
-        <button
-          mat-menu-item
-          *ngFor="let option of completionStatusOptions.filterOptions() | async"
-          (click)="onSetCompletionStatus(toCompleteItem, option.value)"
-        >
-          {{ option.label }}
-        </button>
-        <mat-divider></mat-divider>
-        <button
-          mat-menu-item
-          (click)="completionInteractions.onEditCompletion(toCompleteItem)"
-        >
-          Edit Completion
-        </button>
-      </mat-menu>
-    </div>
+      <mat-divider></mat-divider>
+      <button
+        mat-menu-item
+        (click)="completionInteractions.onEditCompletion(toCompleteItem)"
+      >
+        Edit Completion
+      </button>
+    </mat-menu>
   `,
   styles: [],
 })
@@ -60,6 +63,7 @@ export class CompletionStatusComponent {
   @Input() toCompleteItem!: IToCompleteItem;
   @Input() completionInteractions!: ICompletionInteractionService;
   completionStatusOptions = new CompletionStatusOptions(false);
+  isLoading = false;
 
   constructor() {}
 
@@ -76,10 +80,18 @@ export class CompletionStatusComponent {
     }
   }
 
-  onSetCompletionStatus(toCompleteItem: IToCompleteItem, value: OptionValue) {
-    this.completionInteractions.onSetCompletionStatus(
-      toCompleteItem,
-      value as CompletionStatus
-    );
+  async onSetCompletionStatus(
+    toCompleteItem: IToCompleteItem,
+    value: OptionValue
+  ) {
+    this.isLoading = true;
+    try {
+      await this.completionInteractions.onSetCompletionStatus(
+        toCompleteItem,
+        value as CompletionStatus
+      );
+    } finally {
+      this.isLoading = false;
+    }
   }
 }

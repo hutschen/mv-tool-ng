@@ -25,13 +25,16 @@ import {
 @Component({
   selector: 'mvtool-compliance-status',
   template: `
-    <button
-      mat-button
-      [matMenuTriggerFor]="menu"
-      (click)="$event.stopImmediatePropagation()"
-    >
-      {{ compliantItem.compliance_status ?? 'Not Set' }}
-    </button>
+    <mvtool-loading-overlay [isLoading]="isLoading">
+      <button
+        mat-button
+        [matMenuTriggerFor]="menu"
+        (click)="$event.stopImmediatePropagation()"
+        [disabled]="isLoading"
+      >
+        {{ compliantItem.compliance_status ?? 'Not Set' }}
+      </button>
+    </mvtool-loading-overlay>
     <mat-menu #menu="matMenu">
       <button
         mat-menu-item
@@ -55,13 +58,22 @@ export class ComplianceStatusComponent {
   @Input() compliantItem!: ICompliantItem;
   @Input() complianceInteractions!: IComplianceInteractionService;
   complianceStatusOptions = new ComplianceStatusOptions(false);
+  isLoading = false;
 
   constructor() {}
 
-  onSetComplianceStatus(compliantItem: ICompliantItem, value: OptionValue) {
-    this.complianceInteractions.onSetComplianceStatus(
-      compliantItem,
-      value as ComplianceStatus
-    );
+  async onSetComplianceStatus(
+    compliantItem: ICompliantItem,
+    value: OptionValue
+  ) {
+    this.isLoading = true;
+    try {
+      await this.complianceInteractions.onSetComplianceStatus(
+        compliantItem,
+        value as ComplianceStatus
+      );
+    } finally {
+      this.isLoading = false;
+    }
   }
 }
