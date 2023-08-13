@@ -15,7 +15,7 @@
 
 import { Observable } from 'rxjs';
 import { IDataItem } from './data/data';
-import { InteractionService } from './data/interaction';
+import { IInteractionService } from './data/interaction';
 
 export type ComplianceStatus = 'C' | 'PC' | 'NC' | 'N/A';
 
@@ -38,7 +38,7 @@ export interface IComplianceService {
 }
 
 export interface IComplianceInteractionService
-  extends InteractionService<ICompliantItem> {
+  extends IInteractionService<ICompliantItem> {
   onSetComplianceStatus(
     item: ICompliantItem,
     complianceStatus: ComplianceStatus | null

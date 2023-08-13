@@ -15,7 +15,7 @@
 
 import { Observable } from 'rxjs';
 import { IDataItem } from './data/data';
-import { InteractionService } from './data/interaction';
+import { IInteractionService } from './data/interaction';
 
 export type CompletionStatus = 'open' | 'in progress' | 'completed';
 
@@ -38,7 +38,7 @@ export interface ICompletionService {
 }
 
 export interface ICompletionInteractionService
-  extends InteractionService<IToCompleteItem> {
+  extends IInteractionService<IToCompleteItem> {
   onSetCompletionStatus(
     item: IToCompleteItem,
     completionStatus: CompletionStatus | null

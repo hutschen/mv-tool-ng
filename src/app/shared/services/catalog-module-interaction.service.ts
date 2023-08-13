@@ -15,7 +15,7 @@
 
 import { Injectable } from '@angular/core';
 import { CatalogModule, CatalogModuleService } from './catalog-module.service';
-import { Interaction, InteractionService } from '../data/interaction';
+import { IInteraction, IInteractionService } from '../data/interaction';
 import {
   Observable,
   Subject,
@@ -32,9 +32,9 @@ import { Catalog } from './catalog.service';
   providedIn: 'root',
 })
 export class CatalogModuleInteractionService
-  implements InteractionService<CatalogModule>
+  implements IInteractionService<CatalogModule>
 {
-  protected _interactionsSubject = new Subject<Interaction<CatalogModule>>();
+  protected _interactionsSubject = new Subject<IInteraction<CatalogModule>>();
   readonly interactions$ = this._interactionsSubject.asObservable();
 
   constructor(

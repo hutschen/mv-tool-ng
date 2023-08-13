@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { Interaction, InteractionService } from '../data/interaction';
+import { IInteraction, IInteractionService } from '../data/interaction';
 import { Requirement, RequirementService } from './requirement.service';
 import {
   Observable,
@@ -34,9 +34,9 @@ import { IComplianceInteractionService, ComplianceStatus } from '../compliance';
   providedIn: 'root',
 })
 export class RequirementInteractionService
-  implements InteractionService<Requirement>, IComplianceInteractionService
+  implements IInteractionService<Requirement>, IComplianceInteractionService
 {
-  protected _interactionsSubject = new Subject<Interaction<Requirement>>();
+  protected _interactionsSubject = new Subject<IInteraction<Requirement>>();
   readonly interactions$ = this._interactionsSubject.asObservable();
 
   constructor(
