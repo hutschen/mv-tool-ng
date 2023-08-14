@@ -20,9 +20,7 @@ import { BehaviorSubject, debounce, shareReplay, startWith, timer } from 'rxjs';
   selector: 'mvtool-loading-overlay',
   template: `
     <div class="overlay-container" [class.overlay-active]="loading$ | async">
-      <div class="overlay-content">
-        <ng-content></ng-content>
-      </div>
+      <ng-content></ng-content>
       <div class="overlay-background" *ngIf="loading$ | async">
         <mat-spinner [diameter]="diameter" [color]="color"></mat-spinner>
       </div>
@@ -32,10 +30,7 @@ import { BehaviorSubject, debounce, shareReplay, startWith, timer } from 'rxjs';
     `
       .overlay-container {
         position: relative;
-      }
-      .overlay-content {
-        width: 100%;
-        height: 100%;
+        display: inline-flex;
       }
       .overlay-background {
         display: flex;
@@ -44,8 +39,8 @@ import { BehaviorSubject, debounce, shareReplay, startWith, timer } from 'rxjs';
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
+        right: 0;
+        bottom: 0;
         z-index: 10;
       }
       .overlay-active {
