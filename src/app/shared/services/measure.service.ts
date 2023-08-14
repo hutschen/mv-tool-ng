@@ -28,12 +28,7 @@ import {
 import { UploadService } from './upload.service';
 import { ComplianceStatus } from '../compliance';
 import { CompletionStatus } from '../completion';
-
-export type VerificationMethod = 'R' | 'T' | 'I';
-export type VerificationStatus =
-  | 'verified'
-  | 'partially verified'
-  | 'not verified';
+import { VerificationMethod, VerificationStatus } from '../verification';
 
 export interface IMeasureInput {
   reference?: string | null;

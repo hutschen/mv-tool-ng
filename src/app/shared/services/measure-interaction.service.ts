@@ -14,12 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import {
-  Measure,
-  MeasureService,
-  VerificationMethod,
-  VerificationStatus,
-} from './measure.service';
+import { Measure, MeasureService } from './measure.service';
+import { VerificationMethod, VerificationStatus } from '../verification';
 import { CompletionStatus, ICompletionInteractionService } from '../completion';
 import { MeasureDialogService } from 'src/app/measure/measure-dialog.component';
 import { ComplianceDialogService } from '../components/compliance-dialog.component';

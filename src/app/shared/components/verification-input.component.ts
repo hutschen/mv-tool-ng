@@ -15,10 +15,7 @@
 
 import { Component } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import {
-  VerificationMethod,
-  VerificationStatus,
-} from '../services/measure.service';
+import { VerificationMethod, VerificationStatus } from '../verification';
 import {
   VerificationMethodOptions,
   VerificationStatusOptions,

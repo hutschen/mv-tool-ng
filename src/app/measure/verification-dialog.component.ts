@@ -24,9 +24,8 @@ import {
   IMeasureInput,
   Measure,
   MeasureService,
-  VerificationMethod,
-  VerificationStatus,
 } from '../shared/services/measure.service';
+import { VerificationMethod, VerificationStatus } from '../shared/verification';
 import {
   VerificationMethodOptions,
   VerificationStatusOptions,

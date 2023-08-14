@@ -14,7 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
-import { Measure, VerificationStatus } from '../services/measure.service';
+import { Measure } from '../services/measure.service';
+import { VerificationStatus } from '../verification';
 import { MeasureInteractionService } from '../services/measure-interaction.service';
 import { VerificationStatusOptions } from '../data/custom/custom-options';
 import { OptionValue } from '../data/options';
