@@ -105,8 +105,11 @@ export class MeasureInteractionService
   }
 
   async onEditVerification(measure: Measure): Promise<void> {
-    const dialogRef =
-      this._verificationDialogService.openVerificationDialog(measure);
+    const ms = this._measureService; // alias for shorter lines
+    const dialogRef = this._verificationDialogService.openVerificationDialog(
+      measure,
+      { patchVerification: ms.patchMeasure.bind(ms) }
+    );
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
       this._interactionsSubject.next({
