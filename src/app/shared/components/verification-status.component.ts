@@ -14,60 +14,82 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
-import { Measure } from '../services/measure.service';
-import { VerificationStatus } from '../verification';
-import { MeasureInteractionService } from '../services/measure-interaction.service';
+import {
+  IToVerifyItem,
+  IVerificationInteractionService,
+  VerificationStatus,
+} from '../verification';
 import { VerificationStatusOptions } from '../data/custom/custom-options';
 import { OptionValue } from '../data/options';
 
 @Component({
   selector: 'mvtool-verification-status',
   template: `
-    <div class="indicator">
+    <mvtool-loading-overlay [isLoading]="isLoading">
+      <div class="indicator">
+        <button
+          mat-button
+          [matMenuTriggerFor]="menu"
+          [color]="verificationStatusColor"
+          (click)="$event.stopImmediatePropagation()"
+          matTooltip="Click to edit verification status"
+          [disabled]="!toVerifyItem.verification_method || isLoading"
+        >
+          <mat-icon *ngIf="toVerifyItem.verified">check</mat-icon>
+          <mat-icon *ngIf="!toVerifyItem.verified">close</mat-icon>
+          {{ toVerifyItem.verification_status ?? 'not set' | titlecase }}
+        </button>
+      </div>
+    </mvtool-loading-overlay>
+    <mat-menu #menu="matMenu">
       <button
-        mat-button
-        [matMenuTriggerFor]="menu"
-        [color]="measure.verificationStatusColor"
-        (click)="$event.stopImmediatePropagation()"
-        matTooltip="Click to edit verification status"
-        [disabled]="!measure.verification_method"
+        mat-menu-item
+        *ngFor="let option of verificationStatusOptions.filterOptions() | async"
+        (click)="onSetVerificationStatus(option.value)"
       >
-        <mat-icon *ngIf="measure.verified">check</mat-icon>
-        <mat-icon *ngIf="!measure.verified">close</mat-icon>
-        {{ measure.verification_status ?? 'not set' | titlecase }}
+        {{ option.label }}
       </button>
-      <mat-menu #menu="matMenu">
-        <button
-          mat-menu-item
-          *ngFor="
-            let option of verificationStatusOptions.filterOptions() | async
-          "
-          (click)="onSetVerificationStatus(measure, option.value)"
-        >
-          {{ option.label }}
-        </button>
-        <mat-divider></mat-divider>
-        <button
-          mat-menu-item
-          (click)="measureInteractions.onEditVerification(measure)"
-        >
-          Edit Verification
-        </button>
-      </mat-menu>
-    </div>
+      <mat-divider></mat-divider>
+      <button
+        mat-menu-item
+        (click)="verificationInteractions.onEditVerification(toVerifyItem)"
+      >
+        Edit Verification
+      </button>
+    </mat-menu>
   `,
   styles: [],
 })
 export class VerificationStatusComponent {
-  @Input() measure!: Measure;
+  @Input() toVerifyItem!: IToVerifyItem;
+  @Input() verificationInteractions!: IVerificationInteractionService;
   verificationStatusOptions = new VerificationStatusOptions(false);
+  isLoading = false;
 
-  constructor(readonly measureInteractions: MeasureInteractionService) {}
+  constructor() {}
 
-  onSetVerificationStatus(measure: Measure, value: OptionValue) {
-    this.measureInteractions.onSetVerificationStatus(
-      measure,
-      value as VerificationStatus
-    );
+  get verificationStatusColor(): string | null {
+    switch (this.toVerifyItem.verification_status) {
+      case 'verified':
+        return 'primary';
+      case 'partially verified':
+        return 'accent';
+      case 'not verified':
+        return 'warn';
+      default:
+        return null;
+    }
+  }
+
+  async onSetVerificationStatus(value: OptionValue) {
+    this.isLoading = true;
+    try {
+      await this.verificationInteractions.onSetVerificationStatus(
+        this.toVerifyItem,
+        value as VerificationStatus
+      );
+    } finally {
+      this.isLoading = false;
+    }
   }
 }

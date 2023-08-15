@@ -121,19 +121,6 @@ export class Measure implements IMeasure {
     return this.completion_status === 'completed';
   }
 
-  get verificationStatusColor(): string | null {
-    switch (this.verification_status) {
-      case 'verified':
-        return 'primary';
-      case 'partially verified':
-        return 'accent';
-      case 'not verified':
-        return 'warn';
-      default:
-        return null;
-    }
-  }
-
   get verified(): boolean {
     return this.verification_status === 'verified';
   }

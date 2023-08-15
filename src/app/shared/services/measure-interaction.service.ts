@@ -15,7 +15,11 @@
 
 import { Injectable } from '@angular/core';
 import { Measure, MeasureService } from './measure.service';
-import { VerificationMethod, VerificationStatus } from '../verification';
+import {
+  IVerificationInteractionService,
+  VerificationMethod,
+  VerificationStatus,
+} from '../verification';
 import { CompletionStatus, ICompletionInteractionService } from '../completion';
 import { MeasureDialogService } from 'src/app/measure/measure-dialog.component';
 import { ComplianceDialogService } from '../components/compliance-dialog.component';
@@ -34,7 +38,8 @@ export class MeasureInteractionService
   implements
     IInteractionService<Measure>,
     IComplianceInteractionService,
-    ICompletionInteractionService
+    ICompletionInteractionService,
+    IVerificationInteractionService
 {
   protected _interactionsSubject = new Subject<IInteraction<Measure>>();
   readonly interactions$ = this._interactionsSubject.asObservable();
