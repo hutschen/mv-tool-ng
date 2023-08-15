@@ -180,6 +180,8 @@ export class MeasureInteractionService
     this._interactionsSubject.next({
       item: await firstValueFrom(
         this._measureService.patchMeasure(measure.id, {
+          // verification status can only be set if verification method is set
+          verification_method: measure.verification_method,
           verification_status: verificationStatus,
         })
       ),
