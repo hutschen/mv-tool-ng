@@ -14,9 +14,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component } from '@angular/core';
-import { ComplianceStatus } from '../services/requirement.service';
 import { ComplianceStatusOptions } from '../data/custom/custom-options';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ComplianceStatus } from '../compliance';
 
 export interface ICompliance {
   compliance_status?: ComplianceStatus | null; // TODO: move definition of ComplianceStatus to this file

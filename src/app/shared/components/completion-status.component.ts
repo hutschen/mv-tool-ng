@@ -14,55 +14,84 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, Input } from '@angular/core';
-import { Measure, CompletionStatus } from '../services/measure.service';
-import { MeasureInteractionService } from '../services/measure-interaction.service';
+import {
+  CompletionStatus,
+  ICompletionInteractionService,
+  IToCompleteItem,
+} from '../completion';
 import { CompletionStatusOptions } from '../data/custom/custom-options';
 import { OptionValue } from '../data/options';
 
 @Component({
   selector: 'mvtool-completion-status',
   template: `
-    <div class="indicator">
+    <mvtool-loading-overlay [isLoading]="isLoading">
+      <div class="indicator">
+        <button
+          mat-button
+          [matMenuTriggerFor]="menu"
+          [color]="completionStatusColor"
+          (click)="$event.stopImmediatePropagation()"
+          [disabled]="isLoading"
+        >
+          <mat-icon *ngIf="toCompleteItem.completed">check</mat-icon>
+          <mat-icon *ngIf="!toCompleteItem.completed">close</mat-icon>
+          {{ toCompleteItem.completion_status ?? 'not set' | titlecase }}
+        </button>
+      </div>
+    </mvtool-loading-overlay>
+    <mat-menu #menu="matMenu">
       <button
-        mat-button
-        [matMenuTriggerFor]="menu"
-        [color]="measure.completionStatusColor"
-        (click)="$event.stopImmediatePropagation()"
+        mat-menu-item
+        *ngFor="let option of completionStatusOptions.filterOptions() | async"
+        (click)="onSetCompletionStatus(toCompleteItem, option.value)"
       >
-        <mat-icon *ngIf="measure.completed">check</mat-icon>
-        <mat-icon *ngIf="!measure.completed">close</mat-icon>
-        {{ measure.completion_status ?? 'not set' | titlecase }}
+        {{ option.label }}
       </button>
-      <mat-menu #menu="matMenu">
-        <button
-          mat-menu-item
-          *ngFor="let option of completionStatusOptions.filterOptions() | async"
-          (click)="onSetCompletionStatus(measure, option.value)"
-        >
-          {{ option.label }}
-        </button>
-        <mat-divider></mat-divider>
-        <button
-          mat-menu-item
-          (click)="measureInteractions.onEditCompletion(measure)"
-        >
-          Edit Completion
-        </button>
-      </mat-menu>
-    </div>
+      <mat-divider></mat-divider>
+      <button
+        mat-menu-item
+        (click)="completionInteractions.onEditCompletion(toCompleteItem)"
+      >
+        Edit Completion
+      </button>
+    </mat-menu>
   `,
   styles: [],
 })
 export class CompletionStatusComponent {
-  @Input() measure!: Measure;
+  @Input() toCompleteItem!: IToCompleteItem;
+  @Input() completionInteractions!: ICompletionInteractionService;
   completionStatusOptions = new CompletionStatusOptions(false);
+  isLoading = false;
 
-  constructor(readonly measureInteractions: MeasureInteractionService) {}
+  constructor() {}
 
-  onSetCompletionStatus(measure: Measure, completionStatus: OptionValue) {
-    this.measureInteractions.onSetCompletionStatus(
-      measure,
-      completionStatus as CompletionStatus
-    );
+  get completionStatusColor(): string | null {
+    switch (this.toCompleteItem.completion_status) {
+      case 'completed':
+        return 'primary';
+      case 'in progress':
+        return 'accent';
+      case 'open':
+        return 'warn';
+      default:
+        return null;
+    }
+  }
+
+  async onSetCompletionStatus(
+    toCompleteItem: IToCompleteItem,
+    value: OptionValue
+  ) {
+    this.isLoading = true;
+    try {
+      await this.completionInteractions.onSetCompletionStatus(
+        toCompleteItem,
+        value as CompletionStatus
+      );
+    } finally {
+      this.isLoading = false;
+    }
   }
 }

@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { Interaction, InteractionService } from '../data/interaction';
+import { IInteraction, IInteractionService } from '../data/interaction';
 import { Document, DocumentService } from './document.service';
 import { Subject, firstValueFrom } from 'rxjs';
 import { DocumentDialogService } from 'src/app/document/document-dialog.component';
@@ -25,9 +25,9 @@ import { Project } from './project.service';
   providedIn: 'root',
 })
 export class DocumentInteractionService
-  implements InteractionService<Document>
+  implements IInteractionService<Document>
 {
-  protected _interactionSubject = new Subject<Interaction<Document>>();
+  protected _interactionSubject = new Subject<IInteraction<Document>>();
   readonly interactions$ = this._interactionSubject.asObservable();
 
   constructor(

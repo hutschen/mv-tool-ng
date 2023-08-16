@@ -14,30 +14,34 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
+import { Measure, MeasureService } from './measure.service';
 import {
-  CompletionStatus,
-  Measure,
-  MeasureService,
+  IVerificationInteractionService,
   VerificationMethod,
   VerificationStatus,
-} from './measure.service';
+} from '../verification';
+import { CompletionStatus, ICompletionInteractionService } from '../completion';
 import { MeasureDialogService } from 'src/app/measure/measure-dialog.component';
 import { ComplianceDialogService } from '../components/compliance-dialog.component';
 import { CompletionDialogService } from 'src/app/measure/completion-dialog.component';
 import { VerificationDialogService } from 'src/app/measure/verification-dialog.component';
 import { ConfirmDialogService } from '../components/confirm-dialog.component';
-import { ComplianceStatus, Requirement } from './requirement.service';
+import { Requirement } from './requirement.service';
 import { Subject, firstValueFrom } from 'rxjs';
-import { Interaction, InteractionService } from '../data/interaction';
-import { ComplianceInteractionService } from '../compliance-interaction';
+import { IInteraction, IInteractionService } from '../data/interaction';
+import { IComplianceInteractionService, ComplianceStatus } from '../compliance';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MeasureInteractionService
-  implements InteractionService<Measure>, ComplianceInteractionService
+  implements
+    IInteractionService<Measure>,
+    IComplianceInteractionService,
+    ICompletionInteractionService,
+    IVerificationInteractionService
 {
-  protected _interactionsSubject = new Subject<Interaction<Measure>>();
+  protected _interactionsSubject = new Subject<IInteraction<Measure>>();
   readonly interactions$ = this._interactionsSubject.asObservable();
 
   constructor(
@@ -75,8 +79,12 @@ export class MeasureInteractionService
   }
 
   async onEditCompliance(measure: Measure): Promise<void> {
-    const dialogRef =
-      this._complianceDialogService.openComplianceDialog(measure);
+    const ms = this._measureService; // alias for shorter lines
+    const dialogRef = this._complianceDialogService.openComplianceDialog(
+      measure,
+      { patchCompliance: ms.patchMeasure.bind(ms) }
+    );
+
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
       this._interactionsSubject.next({
@@ -87,20 +95,26 @@ export class MeasureInteractionService
   }
 
   async onEditCompletion(measure: Measure): Promise<void> {
-    const dialogRef =
-      this._completionDialogService.openCompletionDialog(measure);
+    const ms = this._measureService; // alias for shorter lines
+    const dialogRef = this._completionDialogService.openCompletionDialog(
+      measure,
+      { patchCompletion: ms.patchMeasure.bind(ms) }
+    );
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
       this._interactionsSubject.next({
-        item: updatedMeasure,
+        item: updatedMeasure as Measure,
         action: 'update',
       });
     }
   }
 
   async onEditVerification(measure: Measure): Promise<void> {
-    const dialogRef =
-      this._verificationDialogService.openVerificationDialog(measure);
+    const ms = this._measureService; // alias for shorter lines
+    const dialogRef = this._verificationDialogService.openVerificationDialog(
+      measure,
+      { patchVerification: ms.patchMeasure.bind(ms) }
+    );
     const updatedMeasure = await firstValueFrom(dialogRef.afterClosed());
     if (updatedMeasure) {
       this._interactionsSubject.next({
@@ -126,11 +140,11 @@ export class MeasureInteractionService
     measure: Measure,
     complianceStatus: ComplianceStatus | null
   ) {
-    const measureInput = measure.toMeasureInput();
-    measureInput.compliance_status = complianceStatus;
     this._interactionsSubject.next({
       item: await firstValueFrom(
-        this._measureService.updateMeasure(measure.id, measureInput)
+        this._measureService.patchMeasure(measure.id, {
+          compliance_status: complianceStatus,
+        })
       ),
       action: 'update',
     });
@@ -140,11 +154,11 @@ export class MeasureInteractionService
     measure: Measure,
     completionStatus: CompletionStatus | null
   ) {
-    const measureInput = measure.toMeasureInput();
-    measureInput.completion_status = completionStatus;
     this._interactionsSubject.next({
       item: await firstValueFrom(
-        this._measureService.updateMeasure(measure.id, measureInput)
+        this._measureService.patchMeasure(measure.id, {
+          completion_status: completionStatus,
+        })
       ),
       action: 'update',
     });
@@ -154,11 +168,11 @@ export class MeasureInteractionService
     measure: Measure,
     verificationMethod: VerificationMethod | null
   ) {
-    const measureInput = measure.toMeasureInput();
-    measureInput.verification_method = verificationMethod;
     this._interactionsSubject.next({
       item: await firstValueFrom(
-        this._measureService.updateMeasure(measure.id, measureInput)
+        this._measureService.patchMeasure(measure.id, {
+          verification_method: verificationMethod,
+        })
       ),
       action: 'update',
     });
@@ -168,11 +182,13 @@ export class MeasureInteractionService
     measure: Measure,
     verificationStatus: VerificationStatus | null
   ) {
-    const measureInput = measure.toMeasureInput();
-    measureInput.verification_status = verificationStatus;
     this._interactionsSubject.next({
       item: await firstValueFrom(
-        this._measureService.updateMeasure(measure.id, measureInput)
+        this._measureService.patchMeasure(measure.id, {
+          // verification status can only be set if verification method is set
+          verification_method: measure.verification_method,
+          verification_status: verificationStatus,
+        })
       ),
       action: 'update',
     });

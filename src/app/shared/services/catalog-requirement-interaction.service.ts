@@ -18,7 +18,7 @@ import {
   CatalogRequirement,
   CatalogRequirementService,
 } from './catalog-requirement.service';
-import { Interaction, InteractionService } from '../data/interaction';
+import { IInteraction, IInteractionService } from '../data/interaction';
 import {
   Observable,
   Subject,
@@ -35,10 +35,10 @@ import { ConfirmDialogService } from '../components/confirm-dialog.component';
   providedIn: 'root',
 })
 export class CatalogRequirementInteractionService
-  implements InteractionService<CatalogRequirement>
+  implements IInteractionService<CatalogRequirement>
 {
   protected _interactionsSubject = new Subject<
-    Interaction<CatalogRequirement>
+    IInteraction<CatalogRequirement>
   >();
   readonly interactions$ = this._interactionsSubject.asObservable();
 

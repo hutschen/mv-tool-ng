@@ -19,10 +19,12 @@ import { BehaviorSubject, debounce, shareReplay, startWith, timer } from 'rxjs';
 @Component({
   selector: 'mvtool-loading-overlay',
   template: `
-    <div class="overlay-container" [class.overlay-active]="loading$ | async">
-      <div class="overlay-content">
-        <ng-content></ng-content>
-      </div>
+    <div
+      class="overlay-container"
+      [ngClass]="overlayType"
+      [class.overlay-active]="loading$ | async"
+    >
+      <ng-content></ng-content>
       <div class="overlay-background" *ngIf="loading$ | async">
         <mat-spinner [diameter]="diameter" [color]="color"></mat-spinner>
       </div>
@@ -33,9 +35,11 @@ import { BehaviorSubject, debounce, shareReplay, startWith, timer } from 'rxjs';
       .overlay-container {
         position: relative;
       }
-      .overlay-content {
-        width: 100%;
-        height: 100%;
+      .overlay-container.block {
+        display: flex;
+      }
+      .overlay-container.inline {
+        display: inline-flex;
       }
       .overlay-background {
         display: flex;
@@ -44,8 +48,8 @@ import { BehaviorSubject, debounce, shareReplay, startWith, timer } from 'rxjs';
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
+        right: 0;
+        bottom: 0;
         z-index: 10;
       }
       .overlay-active {
@@ -58,6 +62,7 @@ export class LoadingOverlayComponent {
   @Input() diameter: number = 20;
   @Input() color: string = 'primary';
   @Input() delay: number = 500;
+  @Input() overlayType: 'block' | 'inline' = 'inline';
 
   // Use a BehaviorSubject to implement the isLoading getter. Then debounce the
   // loading state to not show the loading indicator when the loading process is

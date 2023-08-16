@@ -13,8 +13,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject, Injectable } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { Component, Inject, Injectable, OnInit } from '@angular/core';
+import { FormControl, FormGroup, NgForm } from '@angular/forms';
 import {
   MatDialog,
   MatDialogRef,
@@ -24,14 +24,24 @@ import {
   IMeasureInput,
   Measure,
   MeasureService,
+} from '../shared/services/measure.service';
+import {
+  IToVerifyItem,
+  IVerificationPatch,
+  IVerificationService,
   VerificationMethod,
   VerificationStatus,
-} from '../shared/services/measure.service';
+} from '../shared/verification';
 import {
   VerificationMethodOptions,
   VerificationStatusOptions,
 } from '../shared/data/custom/custom-options';
-import { finalize, firstValueFrom } from 'rxjs';
+import { combineLatest, finalize, firstValueFrom, startWith } from 'rxjs';
+
+export interface IVerificationDialogData {
+  toVerifyItem: IToVerifyItem;
+  verificationService: IVerificationService;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -40,151 +50,184 @@ export class VerificationDialogService {
   constructor(protected _dialog: MatDialog) {}
 
   openVerificationDialog(
-    measure: Measure
+    toVerifyItem: IToVerifyItem,
+    verificationService: IVerificationService
   ): MatDialogRef<VerificationDialogComponent, Measure> {
-    const dialogRef = this._dialog.open(VerificationDialogComponent, {
+    const data: IVerificationDialogData = { toVerifyItem, verificationService };
+    return this._dialog.open(VerificationDialogComponent, {
       width: '500px',
-      data: measure,
+      data,
     });
-    return dialogRef;
   }
 }
 
 @Component({
   selector: 'mvtool-verification-dialog',
   template: `
-    <mvtool-create-edit-dialog
-      [createMode]="false"
-      objectName="Verification Status"
-      (save)="onSave($event)"
-      (cancel)="onCancel()"
-      [isSaving]="isSaving"
-    >
-      <div class="fx-column">
-        <!-- Verification method -->
-        <mat-form-field appearance="fill">
-          <mat-label>Verification method</mat-label>
-          <mat-select
-            name="verificationMethod"
-            [(ngModel)]="verificationMethod"
-            [disabled]="isSaving"
-          >
-            <mat-option [value]="null">None</mat-option>
-            <mat-option
-              *ngFor="
-                let option of verificationMethodOptions.filterOptions() | async
-              "
-              [value]="option.value"
-            >
-              {{ option.label }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+    <!-- Title -->
+    <div mat-dialog-title>Edit Verification Status</div>
 
-        <!-- Verification status -->
-        <mat-form-field appearance="fill">
-          <mat-label>Verification status</mat-label>
-          <mat-select
-            name="verificationStatus"
-            [(ngModel)]="measureInput.verification_status"
-            [disabled]="!verificationMethod || isSaving"
-          >
-            <mat-option [value]="null">None</mat-option>
-            <mat-option
-              *ngFor="
-                let option of verificationStatusOptions.filterOptions() | async
-              "
-              [value]="option.value"
-            >
-              {{ option.label }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+    <!-- Content -->
+    <div mat-dialog-content>
+      <form
+        id="verificationForm"
+        [formGroup]="verificationForm"
+        (submit)="onSave()"
+      >
+        <div class="fx-column">
+          <!-- Verification method -->
+          <mat-form-field appearance="fill">
+            <mat-label>Verification method</mat-label>
+            <mat-select formControlName="verificationMethod">
+              <mat-option [value]="null">None</mat-option>
+              <mat-option
+                *ngFor="
+                  let option of verificationMethodOptions.filterOptions()
+                    | async
+                "
+                [value]="option.value"
+              >
+                {{ option.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
 
-        <!-- Verification comment -->
-        <mat-form-field appearance="fill">
-          <mat-label>Verification comment</mat-label>
-          <textarea
-            matInput
-            name="verificationComment"
-            [(ngModel)]="measureInput.verification_comment"
-            [disabled]="!verificationMethod || isSaving"
-          ></textarea>
-        </mat-form-field>
+          <!-- Verification status -->
+          <mat-form-field appearance="fill">
+            <mat-label>Verification status</mat-label>
+            <mat-select formControlName="verificationStatus">
+              <mat-option [value]="null">None</mat-option>
+              <mat-option
+                *ngFor="
+                  let option of verificationStatusOptions.filterOptions()
+                    | async
+                "
+                [value]="option.value"
+              >
+                {{ option.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Verification comment -->
+          <mat-form-field appearance="fill">
+            <mat-label>Verification comment</mat-label>
+            <textarea matInput formControlName="verificationComment"></textarea>
+          </mat-form-field>
+        </div>
+      </form>
+
+      <!-- Actions -->
+      <div mat-dialog-actions align="end">
+        <button mat-button (click)="onCancel()" [disabled]="isSaving">
+          <mat-icon>cancel</mat-icon>
+          Cancel
+        </button>
+        <mvtool-loading-overlay [isLoading]="isSaving" color="accent">
+          <button
+            mat-raised-button
+            color="accent"
+            type="submit"
+            form="verificationForm"
+            [disabled]="isSaving || verificationForm.invalid"
+          >
+            <mat-icon>save</mat-icon>
+            Save
+          </button>
+        </mvtool-loading-overlay>
       </div>
-    </mvtool-create-edit-dialog>
+    </div>
   `,
   styleUrls: ['../shared/styles/flex.scss'],
   styles: ['textarea { min-height: 100px; }'],
 })
-export class VerificationDialogComponent {
+export class VerificationDialogComponent implements OnInit {
   verificationMethodOptions = new VerificationMethodOptions(false);
   verificationStatusOptions = new VerificationStatusOptions(false);
-  measureInput: IMeasureInput;
-  protected _preservedVerificationStatus: VerificationStatus | null = null;
-  protected _preservedVerificationComment: string | null = null;
+  protected _toVerifyItem: IToVerifyItem;
+  protected _verificationService: IVerificationService;
+  protected _verificationPatch: IVerificationPatch = {};
+  verificationForm!: FormGroup;
   isSaving: boolean = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<VerificationDialogComponent>,
-    protected _measureService: MeasureService,
-    @Inject(MAT_DIALOG_DATA) protected _measure: Measure
+    @Inject(MAT_DIALOG_DATA) data: IVerificationDialogData
   ) {
-    this.measureInput = this._measure.toMeasureInput();
+    this._toVerifyItem = data.toVerifyItem;
+    this._verificationService = data.verificationService;
   }
 
-  set verificationMethod(value: VerificationMethod | null) {
-    this.measureInput.verification_method = value;
-    if (!value) {
-      // Preserve verification status and comment
-      this._preservedVerificationStatus =
-        this.measureInput.verification_status ?? null;
-      this._preservedVerificationComment =
-        this.measureInput.verification_comment ?? null;
+  ngOnInit(): void {
+    const methodCtrl = new FormControl(this._toVerifyItem.verification_method);
+    const statusCtrl = new FormControl(this._toVerifyItem.verification_status);
+    const commentCtrl = new FormControl(this._toVerifyItem.verification_comment); // prettier-ignore
+    let preservedStatus = this._toVerifyItem.verification_status;
+    let preservedComment = this._toVerifyItem.verification_comment;
 
-      // Clear verification status and comment
-      this.measureInput.verification_status = null;
-      this.measureInput.verification_comment = null;
-    } else {
-      // Restore verification status and comment if they are not set
-      if (!this.measureInput.verification_status) {
-        this.measureInput.verification_status =
-          this._preservedVerificationStatus;
-      }
-      if (!this.measureInput.verification_comment) {
-        this.measureInput.verification_comment =
-          this._preservedVerificationComment;
-      }
-    }
+    this.verificationForm = new FormGroup({
+      verificationMethod: methodCtrl,
+      verificationStatus: statusCtrl,
+      verificationComment: commentCtrl,
+    });
+
+    // React on verification method changes
+    methodCtrl.valueChanges
+      .pipe(startWith(methodCtrl.value))
+      .subscribe((method) => {
+        this._verificationPatch.verification_method = method;
+
+        // Enable or disable verification status and comment
+        if (method && statusCtrl.disabled && commentCtrl.disabled) {
+          statusCtrl.setValue(preservedStatus);
+          commentCtrl.setValue(preservedComment);
+          statusCtrl.enable();
+          commentCtrl.enable();
+        } else if (!method && statusCtrl.enabled && commentCtrl.enabled) {
+          statusCtrl.disable();
+          commentCtrl.disable();
+          preservedStatus = statusCtrl.value;
+          preservedComment = commentCtrl.value;
+          statusCtrl.setValue(null);
+          commentCtrl.setValue(null);
+        }
+      });
+
+    // React on verification status and comment changes
+    combineLatest([
+      statusCtrl.valueChanges.pipe(startWith(statusCtrl.value)),
+      commentCtrl.valueChanges.pipe(startWith(commentCtrl.value)),
+    ]).subscribe(([status, comment]) => {
+      this._verificationPatch.verification_status = status;
+      this._verificationPatch.verification_comment = comment || null;
+    });
   }
 
-  get verificationMethod(): VerificationMethod | null {
-    return this.measureInput.verification_method ?? null;
-  }
+  async onSave() {
+    if (this.verificationForm.invalid) throw new Error('Form is invalid');
 
-  async onSave(form: NgForm) {
-    if (form.valid) {
-      // Define observable to update measure
-      const measure$ = this._measureService.updateMeasure(
-        this._measure.id,
-        this.measureInput
-      );
+    // Define observable to update verification
+    const item$ = this._verificationService.patchVerification(
+      this._toVerifyItem.id,
+      this._verificationPatch
+    );
 
-      // Perform update and close dialog
-      this.isSaving = true;
-      this._dialogRef.disableClose = true;
+    // Perform update and close dialog
+    this.isSaving = true;
+    this.verificationForm.disable({ emitEvent: false });
+    this._dialogRef.disableClose = true;
 
-      this._dialogRef.close(
-        await firstValueFrom(
-          measure$.pipe(
-            finalize(() => {
-              this.isSaving = false;
-              this._dialogRef.disableClose = false;
-            })
-          )
+    this._dialogRef.close(
+      await firstValueFrom(
+        item$.pipe(
+          finalize(() => {
+            this.isSaving = false;
+            this.verificationForm.enable({ emitEvent: false });
+            this._dialogRef.disableClose = false;
+          })
         )
-      );
-    }
+      )
+    );
   }
 
   onCancel(): void {

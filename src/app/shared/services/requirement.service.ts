@@ -24,8 +24,7 @@ import { IQueryParams } from './query-params.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
 import { IUploadState, UploadService } from './upload.service';
-
-export type ComplianceStatus = 'C' | 'PC' | 'NC' | 'N/A';
+import { ComplianceStatus } from '../compliance';
 
 export interface IRequirementInput {
   reference?: string | null;
@@ -190,6 +189,15 @@ export class RequirementService {
     return this._crud_requirement
       .patchMany('requirements', requirementPatch, params)
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
+  }
+
+  patchRequirement(
+    requirementId: number,
+    requirementPatch: IRequirementPatch
+  ): Observable<Requirement> {
+    return this._crud_requirement
+      .patch(this.getRequirementUrl(requirementId), requirementPatch)
+      .pipe(map((requirement) => new Requirement(requirement)));
   }
 
   deleteRequirement(requirementId: number): Observable<null> {

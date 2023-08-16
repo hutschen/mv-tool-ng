@@ -21,19 +21,14 @@ import { IDocument, Document } from './document.service';
 import { DownloadService } from './download.service';
 import { IJiraIssue } from './jira-issue.service';
 import {
-  ComplianceStatus,
   IRequirement,
   Requirement,
   RequirementService,
 } from './requirement.service';
 import { UploadService } from './upload.service';
-
-export type CompletionStatus = 'open' | 'in progress' | 'completed';
-export type VerificationMethod = 'R' | 'T' | 'I';
-export type VerificationStatus =
-  | 'verified'
-  | 'partially verified'
-  | 'not verified';
+import { ComplianceStatus } from '../compliance';
+import { CompletionStatus } from '../completion';
+import { VerificationMethod, VerificationStatus } from '../verification';
 
 export interface IMeasureInput {
   reference?: string | null;
@@ -124,32 +119,6 @@ export class Measure implements IMeasure {
 
   get completed(): boolean {
     return this.completion_status === 'completed';
-  }
-
-  get completionStatusColor(): string | null {
-    switch (this.completion_status) {
-      case 'completed':
-        return 'primary';
-      case 'in progress':
-        return 'accent';
-      case 'open':
-        return 'warn';
-      default:
-        return null;
-    }
-  }
-
-  get verificationStatusColor(): string | null {
-    switch (this.verification_status) {
-      case 'verified':
-        return 'primary';
-      case 'partially verified':
-        return 'accent';
-      case 'not verified':
-        return 'warn';
-      default:
-        return null;
-    }
   }
 
   get verified(): boolean {

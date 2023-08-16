@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { Interaction, InteractionService } from '../data/interaction';
+import { IInteraction, IInteractionService } from '../data/interaction';
 import { Project, ProjectService } from './project.service';
 import {
   Observable,
@@ -30,8 +30,8 @@ import { ConfirmDialogService } from '../components/confirm-dialog.component';
 @Injectable({
   providedIn: 'root',
 })
-export class ProjectInteractionService implements InteractionService<Project> {
-  protected _interactionSubject = new Subject<Interaction<Project>>();
+export class ProjectInteractionService implements IInteractionService<Project> {
+  protected _interactionSubject = new Subject<IInteraction<Project>>();
   readonly interactions$ = this._interactionSubject.asObservable();
 
   constructor(
