@@ -24,6 +24,21 @@ export interface IAutoNumber {
   suffix: string | null;
 }
 
+export function isAutoNumber(obj: any): obj is IAutoNumber {
+  return (
+    obj &&
+    obj.kind === 'number' &&
+    typeof obj.start === 'number' &&
+    obj.start > 0 &&
+    Number.isInteger(obj.start) &&
+    typeof obj.step === 'number' &&
+    obj.step > 0 &&
+    Number.isInteger(obj.step) &&
+    (typeof obj.prefix === 'string' || obj.prefix === null) &&
+    (typeof obj.suffix === 'string' || obj.suffix === null)
+  );
+}
+
 @Component({
   selector: 'mvtool-auto-number-input',
   template: `
