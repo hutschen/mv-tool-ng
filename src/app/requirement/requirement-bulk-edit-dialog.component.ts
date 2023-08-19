@@ -72,6 +72,7 @@ export class RequirementBulkEditDialogService {
   styleUrls: ['../shared/styles/flex.scss'],
   styles: [
     '.checkbox { margin-bottom: 21.5px; }',
+    '.toggle { text-align: right; margin: -8px 0 16px 0;}',
     '.fx-center { align-items: center; }',
   ],
 })
