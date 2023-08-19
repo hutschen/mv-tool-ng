@@ -28,7 +28,7 @@ export interface IAutoNumber {
   selector: 'mvtool-auto-number-input',
   template: `
     <div class="fx-column" [formGroup]="autoNumberForm">
-      <div class="fx-row fx-gap-15">
+      <div class="fx-row fx-gap-15 hint-space">
         <mat-form-field class="fx-grow">
           <mat-label>Start</mat-label>
           <input matInput formControlName="start" required />
@@ -46,25 +46,34 @@ export interface IAutoNumber {
           </mat-error>
         </mat-form-field>
       </div>
-      <div class="fx-row fx-gap-15">
+      <div class="fx-row fx-gap-15 hint-space">
         <mat-form-field class="fx-grow">
           <mat-label>Prefix</mat-label>
           <input matInput formControlName="prefix" />
+          <mat-hint>Text before number</mat-hint>
         </mat-form-field>
         <mat-form-field class="fx-grow">
           <mat-label>Suffix</mat-label>
           <input matInput formControlName="suffix" />
+          <mat-hint>Text after number</mat-hint>
         </mat-form-field>
       </div>
     </div>
   `,
   styleUrls: ['../styles/flex.scss'],
-  styles: [],
+  styles: ['.hint-space { margin-bottom: 8px; }'],
 })
 export class AutoNumberInputComponent implements OnInit {
   protected readonly _validationMessage = 'Must be a number > 0.';
   protected _startCtrl!: FormControl<number | null>;
   protected _stepCtrl!: FormControl<number | null>;
+  protected readonly _autoNumber: IAutoNumber = {
+    kind: 'number',
+    start: 1,
+    step: 1,
+    prefix: null,
+    suffix: null,
+  };
   autoNumberForm!: FormGroup;
 
   constructor() {}
@@ -72,10 +81,16 @@ export class AutoNumberInputComponent implements OnInit {
   ngOnInit(): void {
     // Define form controls
     const validateNumber = Validators.pattern(/^[1-9]\d*$/);
-    this._startCtrl = new FormControl(1, [Validators.required, validateNumber]);
-    this._stepCtrl = new FormControl(1, [Validators.required, validateNumber]);
-    const prefixCtrl = new FormControl<string | null>(null);
-    const suffixCtrl = new FormControl<string | null>(null);
+    this._startCtrl = new FormControl(this._autoNumber.start, [
+      Validators.required,
+      validateNumber,
+    ]);
+    this._stepCtrl = new FormControl(this._autoNumber.step, [
+      Validators.required,
+      validateNumber,
+    ]);
+    const prefixCtrl = new FormControl<string | null>(this._autoNumber.prefix);
+    const suffixCtrl = new FormControl<string | null>(this._autoNumber.suffix);
 
     // Define form group
     this.autoNumberForm = new FormGroup({
