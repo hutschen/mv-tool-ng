@@ -15,9 +15,41 @@
 
 import { Component } from '@angular/core';
 
+export interface IAutoNumber {
+  kind: 'number';
+  start: number;
+  step: number;
+  prefix: string;
+  suffix: string;
+}
+
 @Component({
   selector: 'mvtool-auto-number-input',
-  template: ` <p>auto-number-input works!</p> `,
+  template: `
+    <div class="fx-column">
+      <div class="fx-row fx-gap-15">
+        <mat-form-field class="fx-grow">
+          <mat-label>Start</mat-label>
+          <input matInput />
+        </mat-form-field>
+        <mat-form-field class="fx-grow">
+          <mat-label>Step</mat-label>
+          <input matInput />
+        </mat-form-field>
+      </div>
+      <div class="fx-row fx-gap-15">
+        <mat-form-field class="fx-grow">
+          <mat-label>Prefix</mat-label>
+          <input matInput />
+        </mat-form-field>
+        <mat-form-field class="fx-grow">
+          <mat-label>Suffix</mat-label>
+          <input matInput />
+        </mat-form-field>
+      </div>
+    </div>
+  `,
+  styleUrls: ['../styles/flex.scss'],
   styles: [],
 })
 export class AutoNumberInputComponent {}
