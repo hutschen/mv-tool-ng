@@ -29,6 +29,7 @@ import { UploadService } from './upload.service';
 import { ComplianceStatus } from '../compliance';
 import { CompletionStatus } from '../completion';
 import { VerificationMethod, VerificationStatus } from '../verification';
+import { IAutoNumber } from '../components/auto-number-input.component';
 
 export interface IMeasureInput {
   reference?: string | null;
@@ -45,7 +46,10 @@ export interface IMeasureInput {
   document_id?: number | null;
 }
 
-export type IMeasurePatch = Partial<IMeasureInput>;
+export interface IMeasurePatch
+  extends Omit<Partial<IMeasureInput>, 'reference'> {
+  reference?: string | IAutoNumber | null;
+}
 
 export interface IMeasure {
   id: number;
@@ -142,7 +146,11 @@ export class Measure implements IMeasure {
 })
 export class MeasureService {
   constructor(
-    protected _crud_measure: CRUDService<IMeasureInput, IMeasure>,
+    protected _crud_measure: CRUDService<
+      IMeasureInput,
+      IMeasure,
+      IMeasurePatch
+    >,
     protected _crud_str: CRUDService<string, string>,
     protected _download: DownloadService,
     protected _upload: UploadService,

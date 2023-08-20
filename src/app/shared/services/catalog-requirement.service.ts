@@ -24,6 +24,7 @@ import { CRUDService, IPage } from './crud.service';
 import { IQueryParams } from './query-params.service';
 import { DownloadService } from './download.service';
 import { UploadService } from './upload.service';
+import { IAutoNumber } from '../components/auto-number-input.component';
 
 export interface ICatalogRequirementInput {
   reference?: string | null;
@@ -35,7 +36,10 @@ export interface ICatalogRequirementInput {
   gs_verantwortliche?: string | null;
 }
 
-export type ICatalogRequirementPatch = Partial<ICatalogRequirementInput>;
+export interface ICatalogRequirementPatch
+  extends Omit<Partial<ICatalogRequirementInput>, 'reference'> {
+  reference?: string | IAutoNumber | null;
+}
 
 export interface ICatalogRequirement extends ICatalogRequirementInput {
   id: number;
@@ -91,7 +95,8 @@ export class CatalogRequirementService {
   constructor(
     protected _crud_catalog_requirement: CRUDService<
       ICatalogRequirementInput,
-      ICatalogRequirement
+      ICatalogRequirement,
+      ICatalogRequirementPatch
     >,
     protected _crud_str: CRUDService<null, string>,
     protected _crud_repr: CRUDService<null, ICatalogRequirementRepresentation>,
