@@ -35,15 +35,32 @@
         class="checkbox"
         [disabled]="isSaving"
       ></mat-checkbox>
-      <mat-form-field appearance="fill" class="fx-grow">
-        <mat-label>Requirement reference</mat-label>
-        <input
+      <div class="fx-column fx-grow">
+        <mat-form-field appearance="fill" *ngIf="!autoNumberToggle.checked">
+          <mat-label>Requirement reference</mat-label>
+          <input
+            name="reference"
+            matInput
+            [(ngModel)]="patch.reference"
+            [disabled]="!isEdited('reference') || isSaving"
+          />
+        </mat-form-field>
+        <mvtool-auto-number-input
+          *ngIf="autoNumberToggle.checked"
           name="reference"
-          matInput
           [(ngModel)]="patch.reference"
           [disabled]="!isEdited('reference') || isSaving"
-        />
-      </mat-form-field>
+          [required]="autoNumberToggle.checked && isEdited('reference')"
+        ></mvtool-auto-number-input>
+        <mat-slide-toggle
+          class="toggle"
+          [disabled]="!isEdited('reference') || isSaving"
+          (change)="patch.reference = null"
+          #autoNumberToggle
+        >
+          Number automatically
+        </mat-slide-toggle>
+      </div>
     </div>
 
     <!-- Summary -->

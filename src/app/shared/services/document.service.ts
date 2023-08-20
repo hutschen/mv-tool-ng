@@ -20,6 +20,7 @@ import { DownloadService } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
 import { IQueryParams } from './query-params.service';
 import { UploadService } from './upload.service';
+import { IAutoNumber } from '../components/auto-number-input.component';
 
 export interface IDocumentInput {
   reference: string | null;
@@ -27,7 +28,10 @@ export interface IDocumentInput {
   description: string | null;
 }
 
-export type IDocumentPatch = Partial<IDocumentInput>;
+export interface IDocumentPatch
+  extends Omit<Partial<IDocumentInput>, 'reference'> {
+  reference?: string | IAutoNumber | null;
+}
 
 export interface IDocument extends IDocumentInput {
   id: number;
@@ -81,7 +85,11 @@ export interface IDocumentRepresentation {
 })
 export class DocumentService {
   constructor(
-    protected _crud_document: CRUDService<IDocumentInput, IDocument>,
+    protected _crud_document: CRUDService<
+      IDocumentInput,
+      IDocument,
+      IDocumentPatch
+    >,
     protected _crud_str: CRUDService<null, string>,
     protected _crud_repr: CRUDService<null, IDocumentRepresentation>,
     protected _download: DownloadService,

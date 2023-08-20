@@ -25,6 +25,7 @@ import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
 import { IUploadState, UploadService } from './upload.service';
 import { ComplianceStatus } from '../compliance';
+import { IAutoNumber } from '../components/auto-number-input.component';
 
 export interface IRequirementInput {
   reference?: string | null;
@@ -37,7 +38,10 @@ export interface IRequirementInput {
   catalog_requirement_id?: number | null;
 }
 
-export type IRequirementPatch = Partial<IRequirementInput>;
+export interface IRequirementPatch
+  extends Omit<Partial<IRequirementInput>, 'reference'> {
+  reference?: string | IAutoNumber | null;
+}
 
 export interface IRequirement {
   id: number;
@@ -127,7 +131,11 @@ export interface IRequirementRepresentation {
 })
 export class RequirementService {
   constructor(
-    protected _crud_requirement: CRUDService<IRequirementInput, IRequirement>,
+    protected _crud_requirement: CRUDService<
+      IRequirementInput,
+      IRequirement,
+      IRequirementPatch
+    >,
     protected _crud_str: CRUDService<null, string>,
     protected _crud_repr: CRUDService<null, IRequirementRepresentation>,
     protected _download: DownloadService,
