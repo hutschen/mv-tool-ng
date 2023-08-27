@@ -64,7 +64,10 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
   template: `
     <div class="fx-column">
       <mat-form-field appearance="fill">
-        <mat-label>{{ label }}</mat-label>
+        <mat-label>
+          <span>{{ label }}</span>
+          <span *ngIf="isRequired" aria-hidden="true">*</span>
+        </mat-label>
         <mat-chip-grid
           #chipGrid
           aria-label="Value selection"
@@ -140,11 +143,14 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
   onTouched: () => void = () => {};
   isDisabled = false;
 
+  constructor(protected _elementRef: ElementRef) {}
+
   ngOnInit(): void {
     // Load options when the filter changes
     this.loadedOptions$ = this.filterCtrl.valueChanges.pipe(
       startWith(null),
       debounceTime(this.options.hasToLoad ? 250 : 0),
+      distinctUntilChanged(),
       switchMap((filter) => {
         this._isLoadingOptions = true && this.options.hasToLoad;
         return this.options
@@ -219,6 +225,10 @@ export class OptionsInputComponent implements OnInit, ControlValueAccessor {
         );
         this.onTouched();
       });
+  }
+
+  get isRequired(): boolean {
+    return this._elementRef.nativeElement.hasAttribute('required');
   }
 
   get isLoading(): boolean {

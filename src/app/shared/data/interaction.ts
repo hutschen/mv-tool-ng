@@ -16,11 +16,11 @@
 import { Observable } from 'rxjs';
 import { IDataItem } from './data';
 
-export interface Interaction<D extends IDataItem> {
+export interface IInteraction<D extends IDataItem> {
   item: D;
   action: 'add' | 'update' | 'delete';
 }
 
-export interface InteractionService<D extends IDataItem> {
-  readonly interactions$: Observable<Interaction<D>>;
+export interface IInteractionService<D extends IDataItem> {
+  readonly interactions$: Observable<IInteraction<D>>;
 }

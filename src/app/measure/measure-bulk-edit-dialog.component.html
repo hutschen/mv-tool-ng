@@ -25,7 +25,6 @@
     <code>*</code> symbol. Otherwise, the input element can be left empty in
     order to clear existing values.
   </p>
-
   <form id="bulkEditForm" #form="ngForm" (submit)="onSave(form)">
     <!-- Reference -->
     <div class="fx-row fx-gap-5 fx-center">
@@ -36,15 +35,32 @@
         class="checkbox"
         [disabled]="isSaving"
       ></mat-checkbox>
-      <mat-form-field appearance="fill" class="fx-grow">
-        <mat-label>Measure reference</mat-label>
-        <input
+      <div class="fx-column fx-grow">
+        <mat-form-field appearance="fill" *ngIf="!autoNumberToggle.checked">
+          <mat-label>Measure reference</mat-label>
+          <input
+            name="reference"
+            matInput
+            [(ngModel)]="patch.reference"
+            [disabled]="!isEdited('reference') || isSaving"
+          />
+        </mat-form-field>
+        <mvtool-auto-number-input
+          *ngIf="autoNumberToggle.checked"
           name="reference"
-          matInput
           [(ngModel)]="patch.reference"
           [disabled]="!isEdited('reference') || isSaving"
-        />
-      </mat-form-field>
+          [required]="autoNumberToggle.checked && isEdited('reference')"
+        ></mvtool-auto-number-input>
+        <mat-slide-toggle
+          class="toggle"
+          [disabled]="!isEdited('reference') || isSaving"
+          (change)="patch.reference = null"
+          #autoNumberToggle
+        >
+          Number automatically
+        </mat-slide-toggle>
+      </div>
     </div>
 
     <!-- Summary -->

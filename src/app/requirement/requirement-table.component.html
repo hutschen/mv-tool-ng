@@ -69,7 +69,7 @@
       </th>
       <td mat-cell *matCellDef="let requirement">
         <mvtool-compliance-status
-          [item]="requirement"
+          [compliantItem]="requirement"
           [complianceInteractions]="requirementInteractions"
         ></mvtool-compliance-status>
       </td>
@@ -126,16 +126,17 @@
       *ngIf="dataFrame.columns.getColumn('alert') as column"
       [matColumnDef]="column.name"
     >
-      <th mat-header-cell *matHeaderCellDef></th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        <mvtool-filter-header [filters]="column.filters">
+          {{ column.label }}
+        </mvtool-filter-header>
+      </th>
       <td
         mat-cell
         *matCellDef="let requirement"
         [matTooltip]="column.field.toStr(requirement)"
       >
-        <div
-          *ngIf="column.field.toBool(requirement)"
-          class="fx-row fx-center-center"
-        >
+        <div *ngIf="column.field.toBool(requirement)">
           <button
             mat-icon-button
             (click)="

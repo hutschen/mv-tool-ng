@@ -29,6 +29,7 @@ import { RequirementModule } from '../requirement/requirement.module';
 import { CompletionDialogComponent } from './completion-dialog.component';
 import { MeasureTableComponent } from './measure-table.component';
 import { MeasureBulkEditDialogComponent } from './measure-bulk-edit-dialog.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 const routes = [
   {
@@ -58,6 +59,7 @@ const routes = [
     JiraIssueModule,
     RequirementModule,
     RouterModule.forChild(routes),
+    ReactiveFormsModule,
   ],
   exports: [],
 })

@@ -28,7 +28,11 @@ export interface IPage<T> {
 @Injectable({
   providedIn: 'root',
 })
-export class CRUDService<InputType, OutputType> {
+export class CRUDService<
+  InputType,
+  OutputType,
+  PatchType = Partial<InputType>
+> {
   constructor(
     protected _httpClient: HttpClient,
     protected _auth: AuthService
@@ -91,9 +95,9 @@ export class CRUDService<InputType, OutputType> {
     );
   }
 
-  patch(
+  patchMany(
     relativeUrl: string,
-    itemPatch: Partial<InputType>,
+    itemPatch: PatchType,
     params: IQueryParams = {}
   ): Observable<OutputType[]> {
     return this._httpClient.patch<OutputType[]>(
@@ -103,6 +107,14 @@ export class CRUDService<InputType, OutputType> {
         params,
         ...this._httpOptions,
       }
+    );
+  }
+
+  patch(relativeUrl: string, itemPatch: PatchType): Observable<OutputType> {
+    return this._httpClient.patch<OutputType>(
+      this.toAbsoluteUrl(relativeUrl),
+      itemPatch,
+      this._httpOptions
     );
   }
 

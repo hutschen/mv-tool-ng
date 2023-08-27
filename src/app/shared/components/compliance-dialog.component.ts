@@ -13,26 +13,26 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject, Injectable } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { Component, Inject, Injectable, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import {
   MatDialog,
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import {
-  IMeasureInput,
-  Measure,
-  MeasureService,
-} from '../services/measure.service';
+import { ComplianceStatusOptions } from '../data/custom/custom-options';
+import { Observable, finalize, firstValueFrom, map, startWith } from 'rxjs';
 import {
   ComplianceStatus,
-  IRequirementInput,
-  Requirement,
-  RequirementService,
-} from '../services/requirement.service';
-import { ComplianceStatusOptions } from '../data/custom/custom-options';
-import { Observable, finalize, firstValueFrom } from 'rxjs';
+  ICompliancePatch,
+  IComplianceService,
+  ICompliantItem,
+} from '../compliance';
+
+export interface IComplianceDialogData {
+  compliantItem: ICompliantItem;
+  complianceService: IComplianceService;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -41,11 +41,12 @@ export class ComplianceDialogService {
   constructor(protected _dialog: MatDialog) {}
 
   openComplianceDialog(
-    item: Requirement | Measure
-  ): MatDialogRef<ComplianceDialogComponent, Requirement | Measure> {
+    compliantItem: ICompliantItem,
+    complianceService: IComplianceService
+  ): MatDialogRef<ComplianceDialogComponent, ICompliantItem> {
     const dialogRef = this._dialog.open(ComplianceDialogComponent, {
       width: '500px',
-      data: item,
+      data: { compliantItem, complianceService },
     });
     return dialogRef;
   }
@@ -57,88 +58,93 @@ export class ComplianceDialogService {
   styleUrls: ['../styles/flex.scss'],
   styles: ['textarea { min-height: 100px; }'],
 })
-export class ComplianceDialogComponent {
+export class ComplianceDialogComponent implements OnInit {
   readonly complianceStatusOptions = new ComplianceStatusOptions(false);
-  itemInput: IRequirementInput | IMeasureInput;
-  protected _preservedComplianceComment: string | null = null;
-  isSaving: boolean = false;
+  protected _compliantItem: ICompliantItem;
+  protected _complianceService: IComplianceService;
+  protected _compliancePatch: ICompliancePatch = {};
+  complianceStatusHint$!: Observable<ComplianceStatus | null>;
+  complianceForm!: FormGroup;
+  isSaving = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<ComplianceDialogComponent>,
-    protected _requirementService: RequirementService,
-    protected _measureService: MeasureService,
-    @Inject(MAT_DIALOG_DATA) protected _item: Requirement | Measure
+    @Inject(MAT_DIALOG_DATA) data: IComplianceDialogData
   ) {
-    if (_item instanceof Requirement) {
-      this.itemInput = _item.toRequirementInput();
-    } else {
-      this.itemInput = _item.toMeasureInput();
-    }
-
-    // Initially set the compliance status to the inferred value
-    if (!this.complianceStatus && this.complianceStatusHint) {
-      this.complianceStatus = this.complianceStatusHint;
-    }
+    this._compliantItem = data.compliantItem;
+    this._complianceService = data.complianceService;
   }
 
-  set complianceStatus(value: ComplianceStatus | null) {
-    this.itemInput.compliance_status = value;
-    if (!value) {
-      // Preserve and remove the comment
-      this._preservedComplianceComment =
-        this.itemInput.compliance_comment ?? null;
-      this.itemInput.compliance_comment = null;
-    } else {
-      // Restore the comment to the preserved one if no comment is set
-      if (!this.itemInput.compliance_comment) {
-        this.itemInput.compliance_comment = this._preservedComplianceComment;
-      }
-    }
+  ngOnInit(): void {
+    const statusCtrl = new FormControl(this._compliantItem.compliance_status);
+    const commentCtrl = new FormControl(this._compliantItem.compliance_comment);
+    let preservedComment = this._compliantItem.compliance_comment;
+
+    this.complianceForm = new FormGroup({
+      complianceStatus: statusCtrl,
+      complianceComment: commentCtrl,
+    });
+
+    // Define observable for compliance status hint
+    this.complianceStatusHint$ = statusCtrl.valueChanges.pipe(
+      startWith(statusCtrl.value),
+      map((status) => {
+        const hint = this._compliantItem.compliance_status_hint;
+        if (!hint || !status || status === hint) return null;
+        else return hint;
+      })
+    );
+
+    // React to changes in compliance status
+    statusCtrl.valueChanges
+      .pipe(startWith(statusCtrl.value))
+      .subscribe((status) => {
+        this._compliancePatch.compliance_status = status;
+
+        // Enable or disable commentCtrl
+        if (status && commentCtrl.disabled) {
+          commentCtrl.setValue(preservedComment);
+          commentCtrl.enable();
+        } else if (!status && commentCtrl.enabled) {
+          commentCtrl.disable();
+          preservedComment = commentCtrl.value;
+          commentCtrl.setValue(null);
+        }
+      });
+
+    // React to changes in compliance comment
+    commentCtrl.valueChanges
+      .pipe(startWith(commentCtrl.value))
+      .subscribe((comment) => {
+        this._compliancePatch.compliance_comment = comment || null;
+      });
   }
 
-  get complianceStatus(): ComplianceStatus | null {
-    return this.itemInput.compliance_status ?? null;
-  }
+  async onSave() {
+    if (this.complianceForm.invalid) throw new Error('Form is invalid');
 
-  get complianceStatusHint(): ComplianceStatus | null {
-    if (this._item instanceof Requirement) {
-      return this._item.compliance_status_hint;
-    } else {
-      return null;
-    }
-  }
+    // Define observable to update requirement or measure
+    const item$ = this._complianceService.patchCompliance(
+      this._compliantItem.id,
+      this._compliancePatch
+    );
 
-  async onSave(form: NgForm) {
-    if (form.valid) {
-      // Define observable to update requirement or measure
-      let item$: Observable<Requirement | Measure>;
-      if (this._item instanceof Requirement) {
-        item$ = this._requirementService.updateRequirement(
-          this._item.id,
-          this.itemInput as IRequirementInput
-        );
-      } else {
-        item$ = this._measureService.updateMeasure(
-          this._item.id,
-          this.itemInput as IMeasureInput
-        );
-      }
+    // Perform update and close dialog
+    this.isSaving = true;
+    this.complianceForm.disable({ emitEvent: false });
+    this._dialogRef.disableClose = true;
 
-      // Perform update and close dialog
-      this.isSaving = true;
-      this._dialogRef.disableClose = true;
-
-      this._dialogRef.close(
-        await firstValueFrom(
-          item$.pipe(
-            finalize(() => {
-              this.isSaving = false;
-              this._dialogRef.disableClose = false;
-            })
-          )
+    this._dialogRef.close(
+      await firstValueFrom(
+        item$.pipe(
+          finalize(() => {
+            this.isSaving = false;
+            this.complianceForm.enable({ emitEvent: false });
+            this._dialogRef.disableClose = false;
+          })
         )
-      );
-    }
+      )
+    );
   }
 
   onCancel(): void {

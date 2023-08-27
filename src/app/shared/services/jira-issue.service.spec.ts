@@ -72,10 +72,7 @@ describe('JiraIssueService', () => {
   });
 
   it('should return jira issues url', () => {
-    const jiraProjectId = outputMock.project_id;
-    expect(sut.getJiraIssuesUrl(jiraProjectId)).toEqual(
-      `jira-projects/${jiraProjectId}/jira-issues`
-    );
+    expect(sut.getJiraIssuesUrl()).toEqual('jira-issues');
   });
 
   it('should return jira issue url', () => {
@@ -85,14 +82,14 @@ describe('JiraIssueService', () => {
     );
   });
 
-  it('should list jira issues', (done: DoneFn) => {
-    sut.getJiraIssues(outputMock.project_id).subscribe({
+  it('should query jira issues', (done: DoneFn) => {
+    sut.queryJiraIssues().subscribe({
       next: (value) => expect(value).toEqual([outputMock]),
       complete: done,
     });
     const mockResponse = httpMock.expectOne({
       method: 'get',
-      url: crud.toAbsoluteUrl(sut.getJiraIssuesUrl(outputMock.project_id)),
+      url: crud.toAbsoluteUrl(sut.getJiraIssuesUrl()),
     });
     mockResponse.flush([outputMock]);
   });

@@ -140,7 +140,7 @@ describe('CRUDService', () => {
   });
 
   it('should patch items', (done: DoneFn) => {
-    sut.patch('items', inputMock).subscribe({
+    sut.patchMany('items', inputMock).subscribe({
       next: (value) => expect(value).toEqual([outputMock]),
       complete: () => done(),
     });
@@ -149,6 +149,18 @@ describe('CRUDService', () => {
       url: baseUrl + '/items',
     });
     mockResponse.flush([outputMock]);
+  });
+
+  it('should patch an item', (done: DoneFn) => {
+    sut.patch('items/1', inputMock).subscribe({
+      next: (value) => expect(value).toEqual(outputMock),
+      complete: () => done(),
+    });
+    const mockResponse = httpMock.expectOne({
+      method: 'patch',
+      url: baseUrl + '/items/1',
+    });
+    mockResponse.flush(outputMock);
   });
 
   it('should delete an item', (done: DoneFn) => {

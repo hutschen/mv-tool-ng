@@ -21,19 +21,15 @@ import { IDocument, Document } from './document.service';
 import { DownloadService } from './download.service';
 import { IJiraIssue } from './jira-issue.service';
 import {
-  ComplianceStatus,
   IRequirement,
   Requirement,
   RequirementService,
 } from './requirement.service';
 import { UploadService } from './upload.service';
-
-export type CompletionStatus = 'open' | 'in progress' | 'completed';
-export type VerificationMethod = 'R' | 'T' | 'I';
-export type VerificationStatus =
-  | 'verified'
-  | 'partially verified'
-  | 'not verified';
+import { ComplianceStatus } from '../compliance';
+import { CompletionStatus } from '../completion';
+import { VerificationMethod, VerificationStatus } from '../verification';
+import { IAutoNumber } from '../components/auto-number-input.component';
 
 export interface IMeasureInput {
   reference?: string | null;
@@ -50,7 +46,10 @@ export interface IMeasureInput {
   document_id?: number | null;
 }
 
-export type IMeasurePatch = Partial<IMeasureInput>;
+export interface IMeasurePatch
+  extends Omit<Partial<IMeasureInput>, 'reference'> {
+  reference?: string | IAutoNumber | null;
+}
 
 export interface IMeasure {
   id: number;
@@ -126,32 +125,6 @@ export class Measure implements IMeasure {
     return this.completion_status === 'completed';
   }
 
-  get completionStatusColor(): string | null {
-    switch (this.completion_status) {
-      case 'completed':
-        return 'primary';
-      case 'in progress':
-        return 'accent';
-      case 'open':
-        return 'warn';
-      default:
-        return null;
-    }
-  }
-
-  get verificationStatusColor(): string | null {
-    switch (this.verification_status) {
-      case 'verified':
-        return 'primary';
-      case 'partially verified':
-        return 'accent';
-      case 'not verified':
-        return 'warn';
-      default:
-        return null;
-    }
-  }
-
   get verified(): boolean {
     return this.verification_status === 'verified';
   }
@@ -173,7 +146,11 @@ export class Measure implements IMeasure {
 })
 export class MeasureService {
   constructor(
-    protected _crud_measure: CRUDService<IMeasureInput, IMeasure>,
+    protected _crud_measure: CRUDService<
+      IMeasureInput,
+      IMeasure,
+      IMeasurePatch
+    >,
     protected _crud_str: CRUDService<string, string>,
     protected _download: DownloadService,
     protected _upload: UploadService,
@@ -232,8 +209,17 @@ export class MeasureService {
     params: IQueryParams = {}
   ): Observable<Measure[]> {
     return this._crud_measure
-      .patch('measures', measurePatch, params)
+      .patchMany('measures', measurePatch, params)
       .pipe(map((measures) => measures.map((m) => new Measure(m))));
+  }
+
+  patchMeasure(
+    measureId: number,
+    measurePatch: IMeasurePatch
+  ): Observable<Measure> {
+    return this._crud_measure
+      .patch(this.getMeasureUrl(measureId), measurePatch)
+      .pipe(map((measure) => new Measure(measure)));
   }
 
   deleteMeasure(measureId: number): Observable<null> {

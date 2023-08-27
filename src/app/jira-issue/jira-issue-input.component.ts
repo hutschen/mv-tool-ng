@@ -14,19 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { firstValueFrom } from 'rxjs';
-import { JiraIssueService } from '../shared/services/jira-issue.service';
+import { finalize, firstValueFrom } from 'rxjs';
 import { Measure, MeasureService } from '../shared/services/measure.service';
 import { Project } from '../shared/services/project.service';
-import {
-  IJiraIssueDialogData,
-  JiraIssueDialogComponent,
-} from './jira-issue-dialog.component';
-import {
-  IJiraIssueSelectDialogData,
-  JiraIssueSelectDialogComponent,
-} from './jira-issue-select-dialog.component';
+import { JiraIssueDialogService } from './jira-issue-dialog.component';
+import { JiraIssueSelectDialogService } from './jira-issue-select-dialog.component';
 
 @Component({
   selector: 'mvtool-jira-issue-input',
@@ -122,15 +114,15 @@ import {
   styles: [],
 })
 export class JiraIssueInputComponent implements OnInit {
-  @Input() measure: Measure | null = null;
+  @Input() measure?: Measure;
   @Output() measureChange = new EventEmitter<Measure>();
   project: Project | null = null;
   loading: boolean = false;
 
   constructor(
-    protected _jiraIssueService: JiraIssueService,
     protected _measureService: MeasureService,
-    protected _dialog: MatDialog
+    protected _jiraIssueDialogService: JiraIssueDialogService,
+    protected _jiraIssueSelectDialogService: JiraIssueSelectDialogService
   ) {}
 
   ngOnInit(): void {
@@ -140,61 +132,42 @@ export class JiraIssueInputComponent implements OnInit {
   }
 
   onCreateJiraIssue(): void {
-    let dialogRef = this._dialog.open(JiraIssueDialogComponent, {
-      width: '500px',
-      data: {
-        jiraProject: this.project?.jira_project,
-        measure: this.measure,
-      } as IJiraIssueDialogData,
-    });
-    dialogRef.afterClosed().subscribe(async (jiraIssueInput) => {
-      if (jiraIssueInput && this.measure) {
-        this.loading = true;
-        const jiraIssue = await firstValueFrom(
-          this._jiraIssueService.createAndLinkJiraIssue(
-            this.measure.id,
-            jiraIssueInput
-          )
-        );
-        this.measure.jira_issue = jiraIssue;
-        this.measure.jira_issue_id = jiraIssue.id;
-        this.measureChange.emit(this.measure);
-        this.loading = false;
-      }
+    if (!this.measure) throw new Error('measure is undefined');
+
+    const dialogRef = this._jiraIssueDialogService.openJiraIssueDialog(
+      this.measure
+    );
+    dialogRef.afterClosed().subscribe((measure) => {
+      if (measure) this.measureChange.emit(measure);
     });
   }
 
   onSelectJiraIssue(): void {
-    let dialogRef = this._dialog.open(JiraIssueSelectDialogComponent, {
-      width: '500px',
-      data: {
-        jiraProject: this.project?.jira_project,
-      } as IJiraIssueSelectDialogData,
-    });
-    dialogRef.afterClosed().subscribe(async (jiraIssue) => {
-      if (jiraIssue && this.measure) {
-        const measureInput = this.measure.toMeasureInput();
-        measureInput.jira_issue_id = jiraIssue.id;
-        this.loading = true;
-        this.measure = await firstValueFrom(
-          this._measureService.updateMeasure(this.measure.id, measureInput)
-        );
-        this.measureChange.emit(this.measure);
-        this.loading = false;
-      }
+    if (!this.measure) throw new Error('measure is undefined');
+
+    const dialogRef =
+      this._jiraIssueSelectDialogService.openJiraIssueSelectDialog(
+        this.measure
+      );
+    dialogRef.afterClosed().subscribe((measure) => {
+      if (measure) this.measureChange.emit(measure);
     });
   }
 
   async onUnlinkJiraIssue(): Promise<void> {
-    if (this.measure) {
-      const measureInput = this.measure.toMeasureInput();
-      measureInput.jira_issue_id = null;
-      this.loading = true;
-      this.measure = await firstValueFrom(
-        this._measureService.updateMeasure(this.measure.id, measureInput)
-      );
-      this.measureChange.emit(this.measure);
-      this.loading = false;
-    }
+    if (!this.measure) throw new Error('measure is undefined');
+
+    // Define observable to patch measure
+    const measure$ = this._measureService.patchMeasure(this.measure.id, {
+      jira_issue_id: null,
+    });
+
+    // Perform patch
+    this.loading = true;
+    this.measure = await firstValueFrom(
+      measure$.pipe(finalize(() => (this.loading = false)))
+    );
+
+    this.measureChange.emit(this.measure);
   }
 }

@@ -34,7 +34,7 @@ import { Search } from './search';
 import { IQueryParams } from '../services/query-params.service';
 import { Sorting } from './sort';
 import { IPage } from '../services/crud.service';
-import { InteractionService } from './interaction';
+import { IInteractionService } from './interaction';
 
 export interface IDataItem {
   id: number | string;
@@ -433,7 +433,7 @@ export class DataFrame<D extends IDataItem> {
     return false;
   }
 
-  syncInteractions(interactionService: InteractionService<D>) {
+  syncInteractions(interactionService: IInteractionService<D>) {
     interactionService.interactions$.subscribe((interaction) => {
       switch (interaction.action) {
         case 'add':

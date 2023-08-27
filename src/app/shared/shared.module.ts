@@ -51,6 +51,7 @@ import { VerificationInputComponent } from './components/verification-input.comp
 import { LoadingOverlayComponent } from './components/loading-overlay.component';
 import { QuickAddComponent } from './components/quick-add.component';
 import { ProgressIndicatorComponent } from './components/progress-indicator.component';
+import { AutoNumberInputComponent } from './components/auto-number-input.component';
 
 @NgModule({
   declarations: [
@@ -87,6 +88,7 @@ import { ProgressIndicatorComponent } from './components/progress-indicator.comp
     LoadingOverlayComponent,
     QuickAddComponent,
     ProgressIndicatorComponent,
+    AutoNumberInputComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
@@ -116,6 +118,7 @@ import { ProgressIndicatorComponent } from './components/progress-indicator.comp
     LoadingOverlayComponent,
     QuickAddComponent,
     ProgressIndicatorComponent,
+    AutoNumberInputComponent,
   ],
 })
 export class SharedModule {}

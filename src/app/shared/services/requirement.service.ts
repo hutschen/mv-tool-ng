@@ -24,8 +24,8 @@ import { IQueryParams } from './query-params.service';
 import { DownloadService, IDownloadState } from './download.service';
 import { IProject, Project, ProjectService } from './project.service';
 import { IUploadState, UploadService } from './upload.service';
-
-export type ComplianceStatus = 'C' | 'PC' | 'NC' | 'N/A';
+import { ComplianceStatus } from '../compliance';
+import { IAutoNumber } from '../components/auto-number-input.component';
 
 export interface IRequirementInput {
   reference?: string | null;
@@ -38,7 +38,10 @@ export interface IRequirementInput {
   catalog_requirement_id?: number | null;
 }
 
-export type IRequirementPatch = Partial<IRequirementInput>;
+export interface IRequirementPatch
+  extends Omit<Partial<IRequirementInput>, 'reference'> {
+  reference?: string | IAutoNumber | null;
+}
 
 export interface IRequirement {
   id: number;
@@ -128,7 +131,11 @@ export interface IRequirementRepresentation {
 })
 export class RequirementService {
   constructor(
-    protected _crud_requirement: CRUDService<IRequirementInput, IRequirement>,
+    protected _crud_requirement: CRUDService<
+      IRequirementInput,
+      IRequirement,
+      IRequirementPatch
+    >,
     protected _crud_str: CRUDService<null, string>,
     protected _crud_repr: CRUDService<null, IRequirementRepresentation>,
     protected _download: DownloadService,
@@ -188,8 +195,17 @@ export class RequirementService {
     params: IQueryParams = {}
   ): Observable<Requirement[]> {
     return this._crud_requirement
-      .patch('requirements', requirementPatch, params)
+      .patchMany('requirements', requirementPatch, params)
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
+  }
+
+  patchRequirement(
+    requirementId: number,
+    requirementPatch: IRequirementPatch
+  ): Observable<Requirement> {
+    return this._crud_requirement
+      .patch(this.getRequirementUrl(requirementId), requirementPatch)
+      .pipe(map((requirement) => new Requirement(requirement)));
   }
 
   deleteRequirement(requirementId: number): Observable<null> {

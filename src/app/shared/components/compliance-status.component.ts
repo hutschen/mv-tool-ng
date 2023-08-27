@@ -16,34 +16,37 @@
 import { Component, Input } from '@angular/core';
 import { ComplianceStatusOptions } from '../data/custom/custom-options';
 import { OptionValue } from '../data/options';
-import { ComplianceStatus } from '../services/requirement.service';
 import {
-  ComplianceInteractionService,
-  CompliantItem,
-} from '../compliance-interaction';
+  IComplianceInteractionService,
+  ComplianceStatus,
+  ICompliantItem,
+} from '../compliance';
 
 @Component({
   selector: 'mvtool-compliance-status',
   template: `
-    <button
-      mat-button
-      [matMenuTriggerFor]="menu"
-      (click)="$event.stopImmediatePropagation()"
-    >
-      {{ item.compliance_status ?? 'Not Set' }}
-    </button>
+    <mvtool-loading-overlay [isLoading]="isLoading">
+      <button
+        mat-button
+        [matMenuTriggerFor]="menu"
+        (click)="$event.stopImmediatePropagation()"
+        [disabled]="isLoading"
+      >
+        {{ compliantItem.compliance_status ?? 'Not Set' }}
+      </button>
+    </mvtool-loading-overlay>
     <mat-menu #menu="matMenu">
       <button
         mat-menu-item
         *ngFor="let option of complianceStatusOptions.filterOptions() | async"
-        (click)="onSetComplianceStatus(item, option.value)"
+        (click)="onSetComplianceStatus(compliantItem, option.value)"
       >
         {{ option.label }}
       </button>
       <mat-divider></mat-divider>
       <button
         mat-menu-item
-        (click)="complianceInteractions.onEditCompliance(item)"
+        (click)="complianceInteractions.onEditCompliance(compliantItem)"
       >
         Edit Compliance
       </button>
@@ -52,16 +55,25 @@ import {
   styles: [],
 })
 export class ComplianceStatusComponent {
-  @Input() item!: CompliantItem;
-  @Input() complianceInteractions!: ComplianceInteractionService;
+  @Input() compliantItem!: ICompliantItem;
+  @Input() complianceInteractions!: IComplianceInteractionService;
   complianceStatusOptions = new ComplianceStatusOptions(false);
+  isLoading = false;
 
   constructor() {}
 
-  onSetComplianceStatus(item: CompliantItem, value: OptionValue) {
-    this.complianceInteractions.onSetComplianceStatus(
-      item,
-      value as ComplianceStatus
-    );
+  async onSetComplianceStatus(
+    compliantItem: ICompliantItem,
+    value: OptionValue
+  ) {
+    this.isLoading = true;
+    try {
+      await this.complianceInteractions.onSetComplianceStatus(
+        compliantItem,
+        value as ComplianceStatus
+      );
+    } finally {
+      this.isLoading = false;
+    }
   }
 }

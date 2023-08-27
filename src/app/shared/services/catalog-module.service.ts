@@ -20,6 +20,7 @@ import { CRUDService, IPage } from './crud.service';
 import { IQueryParams } from './query-params.service';
 import { UploadService } from './upload.service';
 import { DownloadService } from './download.service';
+import { IAutoNumber } from '../components/auto-number-input.component';
 
 export interface ICatalogModuleInput {
   reference: string | null;
@@ -27,7 +28,10 @@ export interface ICatalogModuleInput {
   description: string | null;
 }
 
-export type ICatalogModulePatch = Partial<ICatalogModuleInput>;
+export interface ICatalogModulePatch
+  extends Omit<Partial<ICatalogModuleInput>, 'reference'> {
+  reference?: string | IAutoNumber | null;
+}
 
 export interface ICatalogModule extends ICatalogModuleInput {
   id: number;
@@ -71,7 +75,8 @@ export class CatalogModuleService {
   constructor(
     protected _crud_catalog_module: CRUDService<
       ICatalogModuleInput,
-      ICatalogModule
+      ICatalogModule,
+      ICatalogModulePatch
     >,
     protected _crud_str: CRUDService<null, string>,
     protected _crud_repr: CRUDService<null, ICatalogModuleRepresentation>,
@@ -132,7 +137,7 @@ export class CatalogModuleService {
     params: IQueryParams = {}
   ): Observable<CatalogModule[]> {
     return this._crud_catalog_module
-      .patch('catalog-modules', catalogModulePatch, params)
+      .patchMany('catalog-modules', catalogModulePatch, params)
       .pipe(map((cms) => cms.map((cm) => new CatalogModule(cm))));
   }
 

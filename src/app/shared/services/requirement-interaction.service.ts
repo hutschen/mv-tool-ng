@@ -14,12 +14,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { Injectable } from '@angular/core';
-import { Interaction, InteractionService } from '../data/interaction';
-import {
-  ComplianceStatus,
-  Requirement,
-  RequirementService,
-} from './requirement.service';
+import { IInteraction, IInteractionService } from '../data/interaction';
+import { Requirement, RequirementService } from './requirement.service';
 import {
   Observable,
   Subject,
@@ -32,15 +28,15 @@ import { RequirementDialogService } from 'src/app/requirement/requirement-dialog
 import { ComplianceDialogService } from '../components/compliance-dialog.component';
 import { ConfirmDialogService } from '../components/confirm-dialog.component';
 import { Project } from './project.service';
-import { ComplianceInteractionService } from '../compliance-interaction';
+import { IComplianceInteractionService, ComplianceStatus } from '../compliance';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RequirementInteractionService
-  implements InteractionService<Requirement>, ComplianceInteractionService
+  implements IInteractionService<Requirement>, IComplianceInteractionService
 {
-  protected _interactionsSubject = new Subject<Interaction<Requirement>>();
+  protected _interactionsSubject = new Subject<IInteraction<Requirement>>();
   readonly interactions$ = this._interactionsSubject.asObservable();
 
   constructor(
@@ -84,8 +80,12 @@ export class RequirementInteractionService
   }
 
   async onEditCompliance(requirement: Requirement): Promise<void> {
-    const dialogRef =
-      this._complianceDialogService.openComplianceDialog(requirement);
+    const rs = this._requirementService; // alias for shorter lines
+    const dialogRef = this._complianceDialogService.openComplianceDialog(
+      requirement,
+      { patchCompliance: rs.patchRequirement.bind(rs) }
+    );
+
     const updatedRequirement = await firstValueFrom(dialogRef.afterClosed());
     if (updatedRequirement) {
       this._interactionsSubject.next({
@@ -113,14 +113,11 @@ export class RequirementInteractionService
     requirement: Requirement,
     complianceStatus: ComplianceStatus | null
   ) {
-    const requirementInput = requirement.toRequirementInput();
-    requirementInput.compliance_status = complianceStatus;
     this._interactionsSubject.next({
       item: await firstValueFrom(
-        this._requirementService.updateRequirement(
-          requirement.id,
-          requirementInput
-        )
+        this._requirementService.patchRequirement(requirement.id, {
+          compliance_status: complianceStatus,
+        })
       ),
       action: 'update',
     });

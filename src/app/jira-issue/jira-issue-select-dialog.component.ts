@@ -1,19 +1,14 @@
-import { Component, Inject, Injectable, OnInit } from '@angular/core';
+import { Component, Inject, Injectable } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import {
   MatDialog,
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import {
-  IJiraIssue,
-  JiraIssueService,
-} from '../shared/services/jira-issue.service';
-import { IJiraProject } from '../shared/services/jira-project.service';
-
-export interface IJiraIssueSelectDialogData {
-  jiraProject: IJiraProject;
-}
+import { JiraIssueService } from '../shared/services/jira-issue.service';
+import { JiraIssueOptions } from '../shared/data/jira-issue/jira-issue-options';
+import { Measure, MeasureService } from '../shared/services/measure.service';
+import { finalize, firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -22,11 +17,11 @@ export class JiraIssueSelectDialogService {
   constructor(protected _dialog: MatDialog) {}
 
   openJiraIssueSelectDialog(
-    jiraProject: IJiraProject
-  ): MatDialogRef<JiraIssueSelectDialogComponent, IJiraIssue> {
+    measure: Measure
+  ): MatDialogRef<JiraIssueSelectDialogComponent, Measure> {
     return this._dialog.open(JiraIssueSelectDialogComponent, {
       width: '500px',
-      data: { jiraProject },
+      data: measure,
     });
   }
 }
@@ -35,43 +30,25 @@ export class JiraIssueSelectDialogService {
   selector: 'mvtool-jira-issue-select-dialog',
   template: `
     <!-- Title -->
-    <div mat-dialog-title>
-      <h1><span>Select JIRA Issue</span></h1>
-    </div>
+    <div mat-dialog-title>Select JIRA Issue</div>
 
     <!-- Content -->
     <div mat-dialog-content>
       <form
         id="jiraIssueSelectForm"
         #jiraIssueSelectForm="ngForm"
-        (submit)="onSubmit(jiraIssueSelectForm)"
+        (submit)="onSave(jiraIssueSelectForm)"
         class="fx-column"
       >
-        <mat-form-field appearance="fill">
-          <mat-label>Issue</mat-label>
-          <input
-            name="jiraIssueKey"
-            type="text"
-            matInput
-            [(ngModel)]="filterValue"
-            [matAutocomplete]="issueAutocomplete"
-            required
-          />
-          <mat-autocomplete #issueAutocomplete="matAutocomplete">
-            <mat-option
-              *ngFor="let issue of filteredJiraIssues"
-              [value]="issue.key"
-            >
-              {{ issue.key }}: {{ issue.summary }}
-            </mat-option>
-          </mat-autocomplete>
-          <mat-spinner
-            class="loading-spinner"
-            *ngIf="!jiraIssuesLoaded"
-            matSuffix
-            diameter="20"
-          ></mat-spinner>
-        </mat-form-field>
+        <mvtool-options-input
+          name="jira_issue_id"
+          label="JIRA Issue"
+          placeholder="Select JIRA Issue"
+          [options]="jiraIssueOptions"
+          [(ngModel)]="jiraIssueId"
+          [disabled]="isSaving"
+          required
+        ></mvtool-options-input>
       </form>
     </div>
 
@@ -81,71 +58,69 @@ export class JiraIssueSelectDialogService {
         <mat-icon>cancel</mat-icon>
         Cancel
       </button>
-      <button
-        [disabled]="jiraIssueSelectForm.invalid"
-        mat-raised-button
-        class="form-button"
-        color="accent"
-        type="submit"
-        form="jiraIssueSelectForm"
-      >
-        <mat-icon>save</mat-icon>
-        Save
-      </button>
+      <mvtool-loading-overlay [isLoading]="isSaving" color="accent">
+        <button
+          [disabled]="jiraIssueSelectForm.invalid"
+          mat-raised-button
+          class="form-button"
+          color="accent"
+          type="submit"
+          form="jiraIssueSelectForm"
+          [disabled]="isSaving"
+        >
+          <mat-icon>save</mat-icon>
+          Save
+        </button>
+      </mvtool-loading-overlay>
     </div>
   `,
   styleUrls: ['../shared/styles/flex.scss'],
   styles: ['.loading-spinner { margin-right: 8px; }'],
 })
-export class JiraIssueSelectDialogComponent implements OnInit {
-  jiraProject: IJiraProject;
-  jiraIssues: IJiraIssue[] = [];
-  filterValue: string | null = null;
-  jiraIssuesLoaded: boolean = false;
+export class JiraIssueSelectDialogComponent {
+  jiraIssueOptions: JiraIssueOptions;
+  jiraIssueId: string | null = null;
+  isSaving: boolean = false;
 
   constructor(
     protected _jiraIssueService: JiraIssueService,
+    protected _measureService: MeasureService,
     protected _dialogRef: MatDialogRef<JiraIssueSelectDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) dialogData: IJiraIssueSelectDialogData
+    @Inject(MAT_DIALOG_DATA) protected _measure: Measure
   ) {
-    this.jiraProject = dialogData.jiraProject;
-  }
-
-  ngOnInit(): void {
-    this._jiraIssueService
-      .getJiraIssues(this.jiraProject.id)
-      .subscribe((jiraIssues) => {
-        this.jiraIssues = jiraIssues;
-        this.jiraIssuesLoaded = true;
-      });
-  }
-
-  get filteredJiraIssues(): IJiraIssue[] {
-    if (!this.filterValue) {
-      return [];
+    if (_measure.requirement.project.jira_project == null) {
+      throw new Error('measure.requirement.project.jira_project is null');
     }
 
-    const filterValue = this.filterValue.toLowerCase();
-    return this.jiraIssues.filter((issue) =>
-      `${issue.key}: ${issue.summary}`.toLowerCase().includes(filterValue)
+    this.jiraIssueOptions = new JiraIssueOptions(
+      this._jiraIssueService,
+      _measure.requirement.project.jira_project,
+      false
     );
   }
 
-  get jiraIssue(): IJiraIssue | undefined {
-    if (!this.filterValue) {
-      return undefined;
-    }
-    return this.jiraIssues.find((issue) => issue.key === this.filterValue);
-  }
+  async onSave(form: NgForm) {
+    if (!form.valid) throw new Error('form is invalid');
 
-  onSubmit(form: NgForm): void {
-    if (form.valid) {
-      if (this.jiraIssue) {
-        this._dialogRef.close(this.jiraIssue);
-      } else {
-        form.controls['jiraIssueKey'].setErrors({ invalid: true });
-      }
-    }
+    // Define observable to patch measure
+    const measure$ = this._measureService.patchMeasure(this._measure.id, {
+      jira_issue_id: this.jiraIssueId,
+    });
+
+    // Perform patch and close dialog
+    this.isSaving = true;
+    this._dialogRef.disableClose = true;
+
+    this._dialogRef.close(
+      await firstValueFrom(
+        measure$.pipe(
+          finalize(() => {
+            this.isSaving = false;
+            this._dialogRef.disableClose = false;
+          })
+        )
+      )
+    );
   }
 
   onCancel(): void {
