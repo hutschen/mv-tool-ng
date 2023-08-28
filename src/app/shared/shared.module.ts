@@ -52,6 +52,7 @@ import { LoadingOverlayComponent } from './components/loading-overlay.component'
 import { QuickAddComponent } from './components/quick-add.component';
 import { ProgressIndicatorComponent } from './components/progress-indicator.component';
 import { AutoNumberInputComponent } from './components/auto-number-input.component';
+import { CsvSettingsInputComponent } from './components/csv-settings-input.component';
 
 @NgModule({
   declarations: [
@@ -89,6 +90,7 @@ import { AutoNumberInputComponent } from './components/auto-number-input.compone
     QuickAddComponent,
     ProgressIndicatorComponent,
     AutoNumberInputComponent,
+    CsvSettingsInputComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
@@ -119,6 +121,7 @@ import { AutoNumberInputComponent } from './components/auto-number-input.compone
     QuickAddComponent,
     ProgressIndicatorComponent,
     AutoNumberInputComponent,
+    CsvSettingsInputComponent,
   ],
 })
 export class SharedModule {}
