@@ -22,7 +22,7 @@ import {
 import { IQueryParams } from '../services/query-params.service';
 import { IDownloadState } from '../services/download.service';
 import { Observable, Subject, Subscription, of, switchMap } from 'rxjs';
-import { IOption, Options } from '../data/options';
+import { IOption, Options, StaticOptions } from '../data/options';
 import {
   FormBuilder,
   FormControl,
@@ -108,6 +108,13 @@ export class ExportDatasetDialogComponent {
   readonly datasetQueryParams: IQueryParams;
   readonly exportDatasetService: IExportDatasetService;
   columnNameOptions!: Options;
+  readonly formatOptions = new StaticOptions(
+    [
+      { label: 'Excel', value: 'xlsx' },
+      { label: 'CSV', value: 'csv' },
+    ],
+    false
+  );
 
   protected _downloadSubject = new Subject<IDownloadState>();
   protected _downloadSubscription?: Subscription;
@@ -115,7 +122,7 @@ export class ExportDatasetDialogComponent {
 
   // Form groups for the different steps in the dialog
   selectColumnsForm: FormGroup;
-  chooseFilenameForm: FormGroup;
+  fileSettingsForm: FormGroup;
 
   @ViewChild('columnSelectionList')
   columnSelectionList?: SelectionListComponent;
@@ -138,11 +145,19 @@ export class ExportDatasetDialogComponent {
           this.columnSelectionList?.isAllSelected ? { selection: false } : null,
       }
     );
-    this.chooseFilenameForm = formBuilder.group({
-      filenameInput: [
-        dialogData.filename,
-        [Validators.required, filenameValidator],
-      ],
+    const csvSettingsCtrl = new FormControl(null, Validators.required);
+    this.fileSettingsForm = formBuilder.group({
+      filename: [dialogData.filename, [Validators.required, filenameValidator]],
+      format: ['xlsx', Validators.required],
+    });
+
+    // Update csvSettingsCtrl when format changes
+    this.fileSettingsForm.get('format')?.valueChanges.subscribe((format) => {
+      if (format === 'csv') {
+        this.fileSettingsForm.addControl('csvSettings', csvSettingsCtrl);
+      } else {
+        this.fileSettingsForm.removeControl('csvSettings');
+      }
     });
 
     // Validate selectColumnsForm when columnNameOptions changes
@@ -151,8 +166,12 @@ export class ExportDatasetDialogComponent {
     );
   }
 
+  get suffix(): string {
+    return '.' + this.fileSettingsForm.get('format')?.value;
+  }
+
   get filename(): string {
-    return this.chooseFilenameForm.get('filenameInput')?.value + '.xlsx';
+    return this.fileSettingsForm.get('filename')?.value + this.suffix;
   }
 
   get downloadStarted(): boolean {
