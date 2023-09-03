@@ -174,7 +174,7 @@ export class CatalogRequirementTableComponent implements OnInit {
             ...(await firstValueFrom(this.exportQueryParams$)),
           },
           {
-            downloadDataset:
+            downloadExcel:
               this._catalogRequirementService.downloadCatalogRequirementExcel.bind(
                 this._catalogRequirementService
               ),

@@ -175,7 +175,7 @@ export class CatalogModuleTableComponent implements OnInit {
             ...(await firstValueFrom(this.exportQueryParams$)),
           },
           {
-            downloadDataset:
+            downloadExcel:
               this._catalogModuleService.downloadCatalogModuleExcel.bind(
                 this._catalogModuleService
               ),

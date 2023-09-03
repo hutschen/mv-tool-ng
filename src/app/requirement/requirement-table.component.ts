@@ -190,7 +190,7 @@ export class RequirementTableComponent implements OnInit {
             ...(await firstValueFrom(this.exportQueryParams$)),
           },
           {
-            downloadDataset:
+            downloadExcel:
               this._requirementService.downloadRequirementsExcel.bind(
                 this._requirementService
               ),

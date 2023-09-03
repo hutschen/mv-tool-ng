@@ -87,7 +87,7 @@ export class ProjectTableComponent implements OnInit {
       'Projects',
       await firstValueFrom(this.exportQueryParams$),
       {
-        downloadDataset: this._projectService.downloadProjectsExcel.bind(
+        downloadExcel: this._projectService.downloadProjectsExcel.bind(
           this._projectService
         ),
         getColumnNames: this._projectService.getProjectsExcelColumnNames.bind(

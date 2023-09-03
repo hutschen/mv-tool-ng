@@ -33,7 +33,7 @@ import {
 import { SelectionListComponent } from './selection-list.component';
 
 export interface IExportDatasetService {
-  downloadDataset(params: IQueryParams): Observable<IDownloadState>;
+  downloadExcel(params: IQueryParams): Observable<IDownloadState>;
   getColumnNames(): Observable<string[]>;
 }
 
@@ -193,7 +193,7 @@ export class ExportDatasetDialogComponent {
         : this.datasetQueryParams;
 
     this._downloadSubscription = this.exportDatasetService
-      .downloadDataset(queryParams)
+      .downloadExcel(queryParams)
       .subscribe({
         next: (downloadState) => this._downloadSubject.next(downloadState),
         error: (error) => this._downloadSubject.error(error),

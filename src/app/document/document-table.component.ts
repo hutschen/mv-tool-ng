@@ -170,7 +170,7 @@ export class DocumentTableComponent implements OnInit {
             ...(await firstValueFrom(this.exportQueryParams$)),
           },
           {
-            downloadDataset: this._documentService.downloadDocumentExcel.bind(
+            downloadExcel: this._documentService.downloadDocumentExcel.bind(
               this._documentService
             ),
             getColumnNames:
