@@ -132,6 +132,10 @@ export class CatalogService {
     return this._crud_repr.query('catalog/representations', params);
   }
 
+  downloadCatalogCsv(params: IQueryParams = {}) {
+    return this._download.download('csv/catalogs', params);
+  }
+
   downloadCatalogExcel(params: IQueryParams = {}) {
     return this._download.download('excel/catalogs', params);
   }

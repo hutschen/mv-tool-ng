@@ -155,6 +155,10 @@ export class ProjectService {
     return this._crud_repr.query('project/representations', params);
   }
 
+  downloadProjectCsv(params: IQueryParams = {}) {
+    return this._download.download('csv/projects', params);
+  }
+
   downloadProjectExcel(params: IQueryParams = {}) {
     return this._download.download('excel/projects', params);
   }

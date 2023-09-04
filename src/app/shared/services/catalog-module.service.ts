@@ -166,6 +166,10 @@ export class CatalogModuleService {
     return this._crud_repr.query('catalog-module/representations', params);
   }
 
+  downloadCatalogModuleCsv(params: IQueryParams) {
+    return this._download.download('csv/catalog-modules', params);
+  }
+
   downloadCatalogModuleExcel(params: IQueryParams) {
     return this._download.download('excel/catalog-modules', params);
   }

@@ -241,6 +241,12 @@ export class RequirementService {
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }
 
+  downloadRequirementCsv(
+    params: IQueryParams = {}
+  ): Observable<IDownloadState> {
+    return this._download.download('csv/requirements', params);
+  }
+
   downloadRequirementExcel(
     params: IQueryParams = {}
   ): Observable<IDownloadState> {

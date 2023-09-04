@@ -175,6 +175,10 @@ export class DocumentService {
     return this._crud_repr.query('document/representations', params);
   }
 
+  downloadDocumentCsv(params: IQueryParams = {}) {
+    return this._download.download('csv/documents', params);
+  }
+
   downloadDocumentExcel(params: IQueryParams = {}) {
     return this._download.download('excel/documents', params);
   }
