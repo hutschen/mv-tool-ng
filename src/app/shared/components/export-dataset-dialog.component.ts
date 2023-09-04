@@ -34,6 +34,7 @@ import { SelectionListComponent } from './selection-list.component';
 
 export interface IExportDatasetService {
   downloadExcel(params: IQueryParams): Observable<IDownloadState>;
+  downloadCsv(params: IQueryParams): Observable<IDownloadState>;
   getColumnNames(): Observable<string[]>;
 }
 

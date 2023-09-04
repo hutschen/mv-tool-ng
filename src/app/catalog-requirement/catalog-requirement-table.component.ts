@@ -178,6 +178,10 @@ export class CatalogRequirementTableComponent implements OnInit {
               this._catalogRequirementService.downloadCatalogRequirementExcel.bind(
                 this._catalogRequirementService
               ),
+            downloadCsv:
+              this._catalogRequirementService.downloadCatalogRequirementCsv.bind(
+                this._catalogRequirementService
+              ),
             getColumnNames:
               this._catalogRequirementService.getCatalogRequirementExcelColumnNames.bind(
                 this._catalogRequirementService

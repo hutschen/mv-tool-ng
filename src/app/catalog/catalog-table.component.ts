@@ -94,6 +94,9 @@ export class CatalogTableComponent implements OnInit {
         downloadExcel: this._catalogService.downloadCatalogExcel.bind(
           this._catalogService
         ),
+        downloadCsv: this._catalogService.downloadCatalogCsv.bind(
+          this._catalogService
+        ),
         getColumnNames: this._catalogService.getCatalogExcelColumnNames.bind(
           this._catalogService
         ),

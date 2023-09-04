@@ -173,6 +173,9 @@ export class DocumentTableComponent implements OnInit {
             downloadExcel: this._documentService.downloadDocumentExcel.bind(
               this._documentService
             ),
+            downloadCsv: this._documentService.downloadDocumentCsv.bind(
+              this._documentService
+            ),
             getColumnNames:
               this._documentService.getDocumentExcelColumnNames.bind(
                 this._documentService

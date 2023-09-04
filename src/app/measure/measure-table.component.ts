@@ -222,6 +222,9 @@ export class MeasureTableComponent implements OnInit {
             downloadExcel: this._measureService.downloadMeasureExcel.bind(
               this._measureService
             ),
+            downloadCsv: this._measureService.downloadMeasureCsv.bind(
+              this._measureService
+            ),
             getColumnNames:
               this._measureService.getMeasureExcelColumnNames.bind(
                 this._measureService

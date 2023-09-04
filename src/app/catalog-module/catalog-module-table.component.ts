@@ -179,6 +179,10 @@ export class CatalogModuleTableComponent implements OnInit {
               this._catalogModuleService.downloadCatalogModuleExcel.bind(
                 this._catalogModuleService
               ),
+            downloadCsv:
+              this._catalogModuleService.downloadCatalogModuleCsv.bind(
+                this._catalogModuleService
+              ),
             getColumnNames:
               this._catalogModuleService.getCatalogModuleExcelColumnNames.bind(
                 this._catalogModuleService

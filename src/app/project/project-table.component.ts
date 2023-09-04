@@ -90,6 +90,9 @@ export class ProjectTableComponent implements OnInit {
         downloadExcel: this._projectService.downloadProjectExcel.bind(
           this._projectService
         ),
+        downloadCsv: this._projectService.downloadProjectCsv.bind(
+          this._projectService
+        ),
         getColumnNames: this._projectService.getProjectExcelColumnNames.bind(
           this._projectService
         ),

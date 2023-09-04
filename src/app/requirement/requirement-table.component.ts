@@ -194,6 +194,9 @@ export class RequirementTableComponent implements OnInit {
               this._requirementService.downloadRequirementExcel.bind(
                 this._requirementService
               ),
+            downloadCsv: this._requirementService.downloadRequirementCsv.bind(
+              this._requirementService
+            ),
             getColumnNames:
               this._requirementService.getRequirementExcelColumnNames.bind(
                 this._requirementService
