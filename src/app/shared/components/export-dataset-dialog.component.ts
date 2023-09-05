@@ -31,6 +31,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { SelectionListComponent } from './selection-list.component';
+import { ICsvSettings } from './csv-settings-input.component';
 
 export interface IExportDatasetService {
   downloadExcel(params: IQueryParams): Observable<IDownloadState>;
@@ -182,24 +183,31 @@ export class ExportDatasetDialogComponent {
   onDownload(): void {
     if (this.downloadStarted) return;
 
-    // Extract selected column names
+    // Extract selected column names and compose basic query params
     const selectedColumns = this.columnNameOptions.selection.map(
       (option) => option.value as string
     );
-
-    // Compose query params for download
-    const queryParams: IQueryParams =
+    let queryParams: IQueryParams =
       selectedColumns.length > 0
         ? { ...this.datasetQueryParams, hidden_columns: selectedColumns }
         : this.datasetQueryParams;
 
-    this._downloadSubscription = this.exportDatasetService
-      .downloadExcel(queryParams)
-      .subscribe({
-        next: (downloadState) => this._downloadSubject.next(downloadState),
-        error: (error) => this._downloadSubject.error(error),
-        complete: () => this._downloadSubject.complete(),
-      });
+    // Handle case when format is csv or not
+    let downloadDataset: (params: IQueryParams) => Observable<IDownloadState>;
+    if (this.fileSettingsForm.get('format')?.value === 'csv') {
+      const csvSettings: ICsvSettings =
+        this.fileSettingsForm.get('csvSettings')?.value;
+      queryParams = { ...queryParams, ...csvSettings };
+      downloadDataset = this.exportDatasetService.downloadCsv;
+    } else {
+      downloadDataset = this.exportDatasetService.downloadExcel;
+    }
+
+    this._downloadSubscription = downloadDataset(queryParams).subscribe({
+      next: (downloadState) => this._downloadSubject.next(downloadState),
+      error: (error) => this._downloadSubject.error(error),
+      complete: () => this._downloadSubject.complete(),
+    });
   }
 
   onClose(): void {
