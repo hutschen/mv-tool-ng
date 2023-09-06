@@ -13,7 +13,31 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component } from '@angular/core';
+import { Component, Injectable } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
+import { IUploadState } from '../services/upload.service';
+
+export interface IImportDatasetService {
+  uploadExcel(file: File): Observable<IUploadState>;
+  uploadCsv(file: File): Observable<IUploadState>;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ImportDatasetDialogService {
+  constructor(protected _dialog: MatDialog) {}
+
+  openImportDatasetDialog(
+    importDatasetService: IImportDatasetService
+  ): MatDialogRef<ImportDatasetDialogComponent, IUploadState> {
+    return this._dialog.open(ImportDatasetDialogComponent, {
+      width: '500px',
+      data: importDatasetService,
+    });
+  }
+}
 
 @Component({
   selector: 'mvtool-import-dataset-dialog',
