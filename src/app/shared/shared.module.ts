@@ -54,6 +54,7 @@ import { ProgressIndicatorComponent } from './components/progress-indicator.comp
 import { AutoNumberInputComponent } from './components/auto-number-input.component';
 import { CsvSettingsInputComponent } from './components/csv-settings-input.component';
 import { ImportDatasetDialogComponent } from './components/import-dataset-dialog.component';
+import { FileInputComponent } from './components/file-input.component';
 
 @NgModule({
   declarations: [
@@ -93,6 +94,7 @@ import { ImportDatasetDialogComponent } from './components/import-dataset-dialog
     AutoNumberInputComponent,
     CsvSettingsInputComponent,
     ImportDatasetDialogComponent,
+    FileInputComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
