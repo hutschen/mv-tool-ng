@@ -13,7 +13,13 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Input, OnInit, forwardRef } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  forwardRef,
+} from '@angular/core';
 import { IOption, Options } from '../data/options';
 import {
   Observable,
@@ -50,6 +56,7 @@ import {
           [formControl]="filterCtrl"
           [matAutocomplete]="auto"
           (blur)="onTouched()"
+          [required]="isRequired"
         />
         <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption>
           <mat-option
@@ -84,7 +91,7 @@ export class AutocompleteComponent implements OnInit, ControlValueAccessor {
   onChange: (_: any) => void = () => {};
   onTouched: () => void = () => {};
 
-  constructor() {}
+  constructor(protected _elementRef: ElementRef) {}
 
   ngOnInit(): void {
     // Load options when the filter changes
@@ -104,6 +111,10 @@ export class AutocompleteComponent implements OnInit, ControlValueAccessor {
       this.onChange(value);
       this.onTouched();
     });
+  }
+
+  get isRequired(): boolean {
+    return this._elementRef.nativeElement.hasAttribute('required');
   }
 
   writeValue(value: any): void {

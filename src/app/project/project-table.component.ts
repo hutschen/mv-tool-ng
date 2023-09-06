@@ -87,10 +87,13 @@ export class ProjectTableComponent implements OnInit {
       'Projects',
       await firstValueFrom(this.exportQueryParams$),
       {
-        downloadDataset: this._projectService.downloadProjectsExcel.bind(
+        downloadExcel: this._projectService.downloadProjectExcel.bind(
           this._projectService
         ),
-        getColumnNames: this._projectService.getProjectsExcelColumnNames.bind(
+        downloadCsv: this._projectService.downloadProjectCsv.bind(
+          this._projectService
+        ),
+        getColumnNames: this._projectService.getProjectExcelColumnNames.bind(
           this._projectService
         ),
       },
@@ -102,7 +105,7 @@ export class ProjectTableComponent implements OnInit {
   async onImportProjectsExcel(): Promise<void> {
     const dialogRef = this._uploadDialogService.openUploadDialog(
       (file: File) => {
-        return this._projectService.uploadProjectsExcel(file);
+        return this._projectService.uploadProjectExcel(file);
       }
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());

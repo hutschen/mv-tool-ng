@@ -175,8 +175,12 @@ export class CatalogModuleTableComponent implements OnInit {
             ...(await firstValueFrom(this.exportQueryParams$)),
           },
           {
-            downloadDataset:
+            downloadExcel:
               this._catalogModuleService.downloadCatalogModuleExcel.bind(
+                this._catalogModuleService
+              ),
+            downloadCsv:
+              this._catalogModuleService.downloadCatalogModuleCsv.bind(
                 this._catalogModuleService
               ),
             getColumnNames:

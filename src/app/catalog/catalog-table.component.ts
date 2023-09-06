@@ -91,7 +91,10 @@ export class CatalogTableComponent implements OnInit {
       'Catalogs',
       await firstValueFrom(this.exportQueryParams$),
       {
-        downloadDataset: this._catalogService.downloadCatalogExcel.bind(
+        downloadExcel: this._catalogService.downloadCatalogExcel.bind(
+          this._catalogService
+        ),
+        downloadCsv: this._catalogService.downloadCatalogCsv.bind(
           this._catalogService
         ),
         getColumnNames: this._catalogService.getCatalogExcelColumnNames.bind(

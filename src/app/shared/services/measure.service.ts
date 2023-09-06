@@ -241,6 +241,10 @@ export class MeasureService {
     return this._crud_str.query('measure/references', params);
   }
 
+  downloadMeasureCsv(params: IQueryParams = {}) {
+    return this._download.download('csv/measures', params);
+  }
+
   downloadMeasureExcel(params: IQueryParams = {}) {
     return this._download.download('excel/measures', params);
   }

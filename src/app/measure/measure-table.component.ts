@@ -219,7 +219,10 @@ export class MeasureTableComponent implements OnInit {
             ...(await firstValueFrom(this.exportQueryParams$)),
           },
           {
-            downloadDataset: this._measureService.downloadMeasureExcel.bind(
+            downloadExcel: this._measureService.downloadMeasureExcel.bind(
+              this._measureService
+            ),
+            downloadCsv: this._measureService.downloadMeasureCsv.bind(
               this._measureService
             ),
             getColumnNames:

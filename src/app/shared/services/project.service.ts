@@ -155,17 +155,21 @@ export class ProjectService {
     return this._crud_repr.query('project/representations', params);
   }
 
-  downloadProjectsExcel(params: IQueryParams = {}) {
+  downloadProjectCsv(params: IQueryParams = {}) {
+    return this._download.download('csv/projects', params);
+  }
+
+  downloadProjectExcel(params: IQueryParams = {}) {
     return this._download.download('excel/projects', params);
   }
 
-  getProjectsExcelColumnNames(): Observable<string[]> {
+  getProjectExcelColumnNames(): Observable<string[]> {
     return this._crud_str.query(
       'excel/projects/column-names' //
     ) as Observable<string[]>;
   }
 
-  uploadProjectsExcel(file: File, params: IQueryParams = {}) {
+  uploadProjectExcel(file: File, params: IQueryParams = {}) {
     return this._upload.upload('excel/projects', file, params);
   }
 }

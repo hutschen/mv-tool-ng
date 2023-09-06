@@ -203,6 +203,10 @@ export class CatalogRequirementService {
     return this._crud_repr.query('catalog-requirement/representations', params);
   }
 
+  downloadCatalogRequirementCsv(params: IQueryParams = {}) {
+    return this._download.download('csv/catalog-requirements', params);
+  }
+
   downloadCatalogRequirementExcel(params: IQueryParams = {}) {
     return this._download.download('excel/catalog-requirements', params);
   }

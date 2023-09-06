@@ -190,12 +190,15 @@ export class RequirementTableComponent implements OnInit {
             ...(await firstValueFrom(this.exportQueryParams$)),
           },
           {
-            downloadDataset:
-              this._requirementService.downloadRequirementsExcel.bind(
+            downloadExcel:
+              this._requirementService.downloadRequirementExcel.bind(
                 this._requirementService
               ),
+            downloadCsv: this._requirementService.downloadRequirementCsv.bind(
+              this._requirementService
+            ),
             getColumnNames:
-              this._requirementService.getRequirementsExcelColumnNames.bind(
+              this._requirementService.getRequirementExcelColumnNames.bind(
                 this._requirementService
               ),
           },
@@ -211,7 +214,7 @@ export class RequirementTableComponent implements OnInit {
     const dialogRef = this._uploadDialogService.openUploadDialog(
       (file: File) => {
         if (this.project) {
-          return this._requirementService.uploadRequirementsExcel(file, {
+          return this._requirementService.uploadRequirementExcel(file, {
             fallback_project_id: this.project.id,
           });
         } else {
