@@ -48,11 +48,8 @@
         <mat-form-field appearance="fill">
           <mat-label>File format</mat-label>
           <mat-select formControlName="format">
-            <mat-option
-              *ngFor="let option of formatOptions.getAllOptions() | async"
-              [value]="option.value"
-            >
-              {{ option.label }}
+            <mat-option *ngFor="let format of _formats" [value]="format.value">
+              {{ format.label }}
             </mat-option>
           </mat-select>
         </mat-form-field>

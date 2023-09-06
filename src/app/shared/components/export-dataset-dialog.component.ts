@@ -110,13 +110,10 @@ export class ExportDatasetDialogComponent {
   readonly datasetQueryParams: IQueryParams;
   readonly exportDatasetService: IExportDatasetService;
   columnNameOptions!: Options;
-  readonly formatOptions = new StaticOptions(
-    [
-      { label: 'Excel', value: 'xlsx' },
-      { label: 'CSV', value: 'csv' },
-    ],
-    false
-  );
+  protected _formats: IOption[] = [
+    { label: 'Excel', value: 'xlsx' },
+    { label: 'CSV', value: 'csv' },
+  ];
 
   protected _downloadSubject = new Subject<IDownloadState>();
   protected _downloadSubscription?: Subscription;
