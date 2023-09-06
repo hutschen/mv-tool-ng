@@ -144,7 +144,10 @@ export class ExportDatasetDialogComponent {
           this.columnSelectionList?.isAllSelected ? { selection: false } : null,
       }
     );
-    const csvSettingsCtrl = new FormControl(null, Validators.required);
+    const csvSettingsCtrl = new FormControl<ICsvSettings | null>(
+      { encoding: 'utf-8-sig', delimiter: ';' },
+      Validators.required
+    );
     this.fileSettingsForm = formBuilder.group({
       filename: [dialogData.filename, [Validators.required, filenameValidator]],
       format: ['xlsx', Validators.required],
