@@ -58,6 +58,7 @@ export class ImportDatasetDialogService {
         class="fx-column"
       >
         <!-- Choose file -->
+        <mvtool-file-input formControlName="file"></mvtool-file-input>
 
         <!-- Select file format -->
         <mat-form-field appearance="fill">
@@ -119,11 +120,11 @@ export class ImportDatasetDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const fileCtrl = new FormControl(null, [Validators.required]);
-    const formatCtrl = new FormControl('xlsx', [Validators.required]);
+    const fileCtrl = new FormControl(null, Validators.required);
+    const formatCtrl = new FormControl('xlsx', Validators.required);
     const csvSettingsCtrl = new FormControl<ICsvSettings | null>(
       { encoding: 'utf-8-sig', delimiter: ';' },
-      [Validators.required]
+      Validators.required
     );
 
     this._uploadForm = new FormGroup({
