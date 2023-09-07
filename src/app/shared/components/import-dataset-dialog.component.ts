@@ -120,7 +120,7 @@ export class ImportDatasetDialogComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const fileCtrl = new FormControl(null, Validators.required);
+    const fileCtrl = new FormControl<File | null>(null, Validators.required);
     const formatCtrl = new FormControl('xlsx', Validators.required);
     const csvSettingsCtrl = new FormControl<ICsvSettings | null>(
       { encoding: 'utf-8-sig', delimiter: ';' },
@@ -130,6 +130,15 @@ export class ImportDatasetDialogComponent implements OnInit {
     this._uploadForm = new FormGroup({
       file: fileCtrl,
       format: formatCtrl,
+    });
+
+    // Set format to CSV if file name ends with .csv
+    fileCtrl.valueChanges.subscribe((file) => {
+      if (file && file.name.endsWith('.csv')) {
+        formatCtrl.setValue('csv');
+      } else {
+        formatCtrl.setValue('xlsx');
+      }
     });
 
     // Add CSV settings control if format is CSV, remove otherwise
