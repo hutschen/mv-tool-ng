@@ -106,7 +106,10 @@ export class FileInputComponent implements OnInit, ControlValueAccessor {
   }
 
   writeValue(obj: any): void {
-    // Setting a file programmatically is not currently supported
+    // When a file is set from the outside, update only the filename
+    if (obj instanceof File) {
+      this.fileForm.patchValue({ filename: obj.name }, { emitEvent: false });
+    }
   }
 
   registerOnChange(fn: any): void {
