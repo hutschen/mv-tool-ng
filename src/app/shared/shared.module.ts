@@ -55,6 +55,7 @@ import { AutoNumberInputComponent } from './components/auto-number-input.compone
 import { CsvSettingsInputComponent } from './components/csv-settings-input.component';
 import { ImportDatasetDialogComponent } from './components/import-dataset-dialog.component';
 import { FileInputComponent } from './components/file-input.component';
+import { UploadComponent } from './components/upload.component';
 
 @NgModule({
   declarations: [
@@ -95,6 +96,7 @@ import { FileInputComponent } from './components/file-input.component';
     CsvSettingsInputComponent,
     ImportDatasetDialogComponent,
     FileInputComponent,
+    UploadComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
