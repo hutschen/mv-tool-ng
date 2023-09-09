@@ -19,15 +19,16 @@ import {
   MatDialog,
   MatDialogRef,
 } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
+import { Observable, finalize, tap } from 'rxjs';
 import { IUploadState } from '../services/upload.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { IOption } from '../data/options';
 import { ICsvSettings } from './csv-settings-input.component';
+import { IQueryParams } from '../services/query-params.service';
 
 export interface IImportDatasetService {
-  uploadExcel(file: File): Observable<IUploadState>;
-  uploadCsv(file: File): Observable<IUploadState>;
+  uploadExcel(file: File, params?: IQueryParams): Observable<IUploadState>;
+  uploadCsv(file: File, params?: IQueryParams): Observable<IUploadState>;
 }
 
 @Injectable({
@@ -51,7 +52,7 @@ export class ImportDatasetDialogService {
   template: `
     <div mat-dialog-content>
       <form
-        *ngIf="!_uploadStarted"
+        *ngIf="!_upload$"
         id="uploadForm"
         [formGroup]="_uploadForm"
         (submit)="onUpload()"
@@ -77,14 +78,13 @@ export class ImportDatasetDialogService {
         ></mvtool-csv-settings-input>
       </form>
 
-      <ng-template *ngIf="_uploadStarted">
-        <!-- Progress bar -->
-      </ng-template>
+      <!-- Progress bar -->
+      <mvtool-upload *ngIf="_upload$" [upload$]="_upload$"></mvtool-upload>
     </div>
 
     <!-- Actions -->
     <div mat-dialog-actions mat-dialog-actions align="end">
-      <button mat-button (click)="onClose()" [disabled]="_uploadStarted">
+      <button mat-button (click)="onClose()" [disabled]="_upload$">
         Cancel
       </button>
       <button
@@ -92,7 +92,7 @@ export class ImportDatasetDialogService {
         color="accent"
         type="submit"
         form="uploadForm"
-        [disabled]="_uploadStarted || _uploadForm.invalid"
+        [disabled]="_upload$ || _uploadForm.invalid"
       >
         <mat-icon>file_upload</mat-icon>
         Upload file
@@ -104,7 +104,7 @@ export class ImportDatasetDialogService {
 })
 export class ImportDatasetDialogComponent implements OnInit {
   protected _uploadForm!: FormGroup;
-  protected _uploadState: IUploadState | null = null;
+  protected _upload$: Observable<IUploadState> | null = null;
   protected _formats: IOption[] = [
     { label: 'Excel', value: 'xlsx' },
     { label: 'CSV', value: 'csv' },
@@ -151,20 +151,39 @@ export class ImportDatasetDialogComponent implements OnInit {
     });
   }
 
-  protected get _uploadStarted(): boolean {
-    return this._uploadState !== null;
-  }
-
   onUpload(): void {
     // Perform checks for the case where the form not submitted by the submit button
-    if (this._uploadStarted) return;
+    if (this._upload$) return;
     if (this._uploadForm.invalid) throw new Error('Form is invalid');
 
-    throw new Error('Method not implemented.');
+    // Prepare upload
+    let upload$: Observable<IUploadState>;
+    if (this._uploadForm.value.format === 'csv') {
+      upload$ = this._importDatasetService.uploadCsv(
+        this._uploadForm.value.file,
+        this._uploadForm.value.csvSettings
+      );
+    } else {
+      upload$ = this._importDatasetService.uploadExcel(
+        this._uploadForm.value.file
+      );
+    }
+
+    // Start upload by assinging upload$ to this._upload$
+    this._dialogRef.disableClose = true;
+    this._upload$ = upload$.pipe(
+      tap((uploadState) => {
+        if (uploadState.state === 'done') this._dialogRef.close(uploadState);
+      }),
+      finalize(() => {
+        this._upload$ = null;
+        this._dialogRef.disableClose = false;
+      })
+    );
   }
 
   onClose(): void {
-    if (this._uploadStarted) throw new Error('Upload already started');
+    if (this._upload$) throw new Error('Upload already started');
     this._dialogRef.close(null);
   }
 }
