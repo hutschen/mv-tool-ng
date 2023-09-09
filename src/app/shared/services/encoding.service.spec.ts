@@ -20,6 +20,7 @@ import {
 } from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
 import { EncodingService, IEncoding } from './encoding.service';
+import { AuthService } from './auth.service';
 
 describe('EncodingService', () => {
   let sut: EncodingService;
@@ -30,6 +31,10 @@ describe('EncodingService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
+    });
+    TestBed.inject(AuthService).setAccessToken({
+      access_token: 'token',
+      token_type: 'bearer',
     });
     crud = TestBed.inject(CRUDService);
     httpMock = TestBed.inject(HttpTestingController);
