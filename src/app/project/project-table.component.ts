@@ -103,14 +103,17 @@ export class ProjectTableComponent implements OnInit {
   }
 
   async onImportProjectsDataset(): Promise<void> {
-    const dialogRef = this._importDatasetDialogService.openImportDatasetDialog({
-      uploadExcel: this._projectService.uploadProjectExcel.bind(
-        this._projectService
-      ),
-      uploadCsv: this._projectService.uploadProjectCsv.bind(
-        this._projectService
-      ),
-    });
+    const dialogRef = this._importDatasetDialogService.openImportDatasetDialog(
+      'Projects',
+      {
+        uploadExcel: this._projectService.uploadProjectExcel.bind(
+          this._projectService
+        ),
+        uploadCsv: this._projectService.uploadProjectCsv.bind(
+          this._projectService
+        ),
+      }
+    );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());
     if (uploadState && uploadState.state === 'done') {
       this.dataFrame.reload();

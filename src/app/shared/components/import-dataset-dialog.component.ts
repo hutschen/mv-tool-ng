@@ -31,6 +31,11 @@ export interface IImportDatasetService {
   uploadCsv(file: File, params?: IQueryParams): Observable<IUploadState>;
 }
 
+export interface IImportDatasetDialogData {
+  datasetName: string;
+  importDatasetService: IImportDatasetService;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -38,11 +43,16 @@ export class ImportDatasetDialogService {
   constructor(protected _dialog: MatDialog) {}
 
   openImportDatasetDialog(
+    datasetName: string,
     importDatasetService: IImportDatasetService
   ): MatDialogRef<ImportDatasetDialogComponent, IUploadState | null> {
+    const data: IImportDatasetDialogData = {
+      datasetName,
+      importDatasetService,
+    };
     return this._dialog.open(ImportDatasetDialogComponent, {
       width: '500px',
-      data: importDatasetService,
+      data,
     });
   }
 }
@@ -50,6 +60,7 @@ export class ImportDatasetDialogService {
 @Component({
   selector: 'mvtool-import-dataset-dialog',
   template: `
+    <div mat-dialog-title>Import {{ _datasetName }}</div>
     <div mat-dialog-content>
       <form
         *ngIf="!_upload$"
@@ -103,6 +114,8 @@ export class ImportDatasetDialogService {
   styles: [],
 })
 export class ImportDatasetDialogComponent implements OnInit {
+  protected _datasetName: string;
+  protected _importDatasetService: IImportDatasetService;
   protected _uploadForm!: FormGroup;
   protected _upload$: Observable<IUploadState> | null = null;
   protected _formats: IOption[] = [
@@ -115,9 +128,11 @@ export class ImportDatasetDialogComponent implements OnInit {
       ImportDatasetDialogComponent,
       IUploadState | null
     >,
-    @Inject(MAT_DIALOG_DATA)
-    protected _importDatasetService: IImportDatasetService
-  ) {}
+    @Inject(MAT_DIALOG_DATA) dialogData: IImportDatasetDialogData
+  ) {
+    this._datasetName = dialogData.datasetName;
+    this._importDatasetService = dialogData.importDatasetService;
+  }
 
   ngOnInit(): void {
     const fileCtrl = new FormControl<File | null>(null, Validators.required);
