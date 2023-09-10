@@ -241,19 +241,29 @@ export class RequirementService {
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }
 
-  downloadRequirementsExcel(
+  downloadRequirementCsv(
+    params: IQueryParams = {}
+  ): Observable<IDownloadState> {
+    return this._download.download('csv/requirements', params);
+  }
+
+  downloadRequirementExcel(
     params: IQueryParams = {}
   ): Observable<IDownloadState> {
     return this._download.download('excel/requirements', params);
   }
 
-  getRequirementsExcelColumnNames(): Observable<string[]> {
+  getRequirementExcelColumnNames(): Observable<string[]> {
     return this._crud_str.query(
       'excel/requirements/column-names'
     ) as Observable<string[]>;
   }
 
-  uploadRequirementsExcel(
+  uploadRequirementCsv(file: File, params: IQueryParams = {}) {
+    return this._upload.upload('csv/requirements', file, params);
+  }
+
+  uploadRequirementExcel(
     file: File,
     params: IQueryParams = {}
   ): Observable<IUploadState> {

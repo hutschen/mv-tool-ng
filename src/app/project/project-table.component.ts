@@ -22,12 +22,11 @@ import {
   QueryParamsService,
 } from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
-import { DownloadDialogService } from '../shared/components/download-dialog.component';
-import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { ProjectInteractionService } from '../shared/services/project-interaction.service';
 import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
+import { ImportDatasetDialogService } from '../shared/components/import-dataset-dialog.component';
 
 @Component({
   selector: 'mvtool-project-table',
@@ -45,10 +44,9 @@ export class ProjectTableComponent implements OnInit {
   constructor(
     protected _queryParamsService: QueryParamsService,
     protected _projectService: ProjectService,
-    protected _downloadDialogService: DownloadDialogService,
-    protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
     protected _exportDatasetDialogService: ExportDatasetDialogService,
+    protected _importDatasetDialogService: ImportDatasetDialogService,
     readonly projectInteractions: ProjectInteractionService
   ) {}
 
@@ -87,10 +85,13 @@ export class ProjectTableComponent implements OnInit {
       'Projects',
       await firstValueFrom(this.exportQueryParams$),
       {
-        downloadDataset: this._projectService.downloadProjectsExcel.bind(
+        downloadExcel: this._projectService.downloadProjectExcel.bind(
           this._projectService
         ),
-        getColumnNames: this._projectService.getProjectsExcelColumnNames.bind(
+        downloadCsv: this._projectService.downloadProjectCsv.bind(
+          this._projectService
+        ),
+        getColumnNames: this._projectService.getProjectExcelColumnNames.bind(
           this._projectService
         ),
       },
@@ -99,10 +100,16 @@ export class ProjectTableComponent implements OnInit {
     await firstValueFrom(dialogRef.afterClosed());
   }
 
-  async onImportProjectsExcel(): Promise<void> {
-    const dialogRef = this._uploadDialogService.openUploadDialog(
-      (file: File) => {
-        return this._projectService.uploadProjectsExcel(file);
+  async onImportProjectsDataset(): Promise<void> {
+    const dialogRef = this._importDatasetDialogService.openImportDatasetDialog(
+      'Projects',
+      {
+        uploadExcel: this._projectService.uploadProjectExcel.bind(
+          this._projectService
+        ),
+        uploadCsv: this._projectService.uploadProjectCsv.bind(
+          this._projectService
+        ),
       }
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());

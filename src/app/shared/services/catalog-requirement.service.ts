@@ -203,6 +203,10 @@ export class CatalogRequirementService {
     return this._crud_repr.query('catalog-requirement/representations', params);
   }
 
+  downloadCatalogRequirementCsv(params: IQueryParams = {}) {
+    return this._download.download('csv/catalog-requirements', params);
+  }
+
   downloadCatalogRequirementExcel(params: IQueryParams = {}) {
     return this._download.download('excel/catalog-requirements', params);
   }
@@ -211,6 +215,10 @@ export class CatalogRequirementService {
     return this._crud_str.query(
       'excel/catalog-requirements/column-names'
     ) as Observable<string[]>;
+  }
+
+  uploadCatalogRequirementCsv(file: File, params: IQueryParams = {}) {
+    return this._upload.upload('csv/catalog-requirements', file, params);
   }
 
   uploadCatalogRequirementExcel(file: File, params: IQueryParams = {}) {

@@ -241,6 +241,10 @@ export class MeasureService {
     return this._crud_str.query('measure/references', params);
   }
 
+  downloadMeasureCsv(params: IQueryParams = {}) {
+    return this._download.download('csv/measures', params);
+  }
+
   downloadMeasureExcel(params: IQueryParams = {}) {
     return this._download.download('excel/measures', params);
   }
@@ -249,6 +253,10 @@ export class MeasureService {
     return this._crud_str.query(
       'excel/measures/column-names' //
     ) as Observable<string[]>;
+  }
+
+  uploadMeasureCsv(file: File, params: IQueryParams = {}) {
+    return this._upload.upload('csv/measures', file, params);
   }
 
   uploadMeasureExcel(file: File, params: IQueryParams = {}) {

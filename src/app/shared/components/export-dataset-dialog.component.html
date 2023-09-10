@@ -41,15 +41,33 @@
     </mat-step>
 
     <!-- Choose filename for export -->
-    <mat-step [stepControl]="chooseFilenameForm" [editable]="!downloadStarted">
-      <ng-template matStepLabel>Choose filename</ng-template>
-      <form [formGroup]="chooseFilenameForm" class="step-form fx-column">
-        <p>Please choose a filename for the export file.</p>
+    <mat-step [stepControl]="fileSettingsForm" [editable]="!downloadStarted">
+      <ng-template matStepLabel>Choose format and filename</ng-template>
+      <form [formGroup]="fileSettingsForm" class="step-form fx-column">
+        <!-- Format -->
+        <mat-form-field appearance="fill">
+          <mat-label>File format</mat-label>
+          <mat-select formControlName="format">
+            <mat-option *ngFor="let format of _formats" [value]="format.value">
+              {{ format.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Filename -->
         <mat-form-field appearance="fill">
           <mat-label>Filename</mat-label>
-          <input matInput formControlName="filenameInput" required />
-          <div matSuffix class="suffix">.xlsx</div>
+          <input matInput formControlName="filename" required />
+          <div matSuffix class="suffix">{{ suffix }}</div>
         </mat-form-field>
+
+        <!-- CSV settings -->
+        <mvtool-csv-settings-input
+          *ngIf="fileSettingsForm.get('csvSettings')"
+          formControlName="csvSettings"
+        >
+        </mvtool-csv-settings-input>
+
         <div class="fx-row fx-end-center">
           <button mat-button matStepperPrevious>
             <mat-icon>arrow_back</mat-icon>
@@ -58,7 +76,7 @@
           <button
             mat-button
             matStepperNext
-            [disabled]="!chooseFilenameForm.valid"
+            [disabled]="!fileSettingsForm.valid"
             (click)="onDownload()"
           >
             <mat-icon>file_download</mat-icon>

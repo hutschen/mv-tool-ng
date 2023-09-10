@@ -22,12 +22,11 @@ import {
   QueryParamsService,
 } from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
-import { DownloadDialogService } from '../shared/components/download-dialog.component';
-import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { CatalogInteractionService } from '../shared/services/catalog-interaction.service';
 import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
+import { ImportDatasetDialogService } from '../shared/components/import-dataset-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-table',
@@ -49,10 +48,9 @@ export class CatalogTableComponent implements OnInit {
   constructor(
     protected _queryParamsService: QueryParamsService,
     protected _catalogService: CatalogService,
-    protected _downloadDialogService: DownloadDialogService,
-    protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
     protected _exportDatasetDialogService: ExportDatasetDialogService,
+    protected _importDatasetDialogService: ImportDatasetDialogService,
     readonly catalogInteractions: CatalogInteractionService
   ) {}
 
@@ -91,7 +89,10 @@ export class CatalogTableComponent implements OnInit {
       'Catalogs',
       await firstValueFrom(this.exportQueryParams$),
       {
-        downloadDataset: this._catalogService.downloadCatalogExcel.bind(
+        downloadExcel: this._catalogService.downloadCatalogExcel.bind(
+          this._catalogService
+        ),
+        downloadCsv: this._catalogService.downloadCatalogCsv.bind(
           this._catalogService
         ),
         getColumnNames: this._catalogService.getCatalogExcelColumnNames.bind(
@@ -103,10 +104,16 @@ export class CatalogTableComponent implements OnInit {
     await firstValueFrom(dialogRef.afterClosed());
   }
 
-  async onImportCatalogs(): Promise<void> {
-    const dialogRef = this._uploadDialogService.openUploadDialog(
-      (file: File) => {
-        return this._catalogService.uploadCatalogExcel(file);
+  async onImportCatalogsDataset(): Promise<void> {
+    const dialogRef = this._importDatasetDialogService.openImportDatasetDialog(
+      'Catalogs',
+      {
+        uploadExcel: this._catalogService.uploadCatalogExcel.bind(
+          this._catalogService
+        ),
+        uploadCsv: this._catalogService.uploadCatalogCsv.bind(
+          this._catalogService
+        ),
       }
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());

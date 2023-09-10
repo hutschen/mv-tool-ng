@@ -19,7 +19,7 @@
   <mvtool-table-toolbar
     (refresh)="this.dataFrame.reload()"
     (create)="measureInteractions.onCreateMeasure(requirement)"
-    (upload)="onImportMeasures()"
+    (upload)="onImportMeasuresDataset()"
     (download)="onExportMeasuresDataset()"
     [(search)]="dataFrame.search.pattern"
     searchLabel="Search Measures"

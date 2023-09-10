@@ -166,6 +166,10 @@ export class CatalogModuleService {
     return this._crud_repr.query('catalog-module/representations', params);
   }
 
+  downloadCatalogModuleCsv(params: IQueryParams) {
+    return this._download.download('csv/catalog-modules', params);
+  }
+
   downloadCatalogModuleExcel(params: IQueryParams) {
     return this._download.download('excel/catalog-modules', params);
   }
@@ -174,6 +178,10 @@ export class CatalogModuleService {
     return this._crud_str.query(
       'excel/catalog-modules/column-names' //
     ) as Observable<string[]>;
+  }
+
+  uploadCatalogModuleCsv(file: File, params: IQueryParams) {
+    return this._upload.upload('csv/catalog-modules', file, params);
   }
 
   uploadCatalogModuleExcel(file: File, params: IQueryParams) {

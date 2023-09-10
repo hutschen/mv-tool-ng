@@ -20,7 +20,7 @@
   <mvtool-table-toolbar
     (refresh)="this.dataFrame.reload()"
     (create)="catalogInteractions.onCreateCatalog()"
-    (upload)="onImportCatalogs()"
+    (upload)="onImportCatalogsDataset()"
     (download)="onExportCatalogsDataset()"
     [(search)]="dataFrame.search.pattern"
     searchLabel="Search Catalogs"

@@ -22,7 +22,7 @@ import {
 import { IQueryParams } from '../services/query-params.service';
 import { IDownloadState } from '../services/download.service';
 import { Observable, Subject, Subscription, of, switchMap } from 'rxjs';
-import { IOption, Options } from '../data/options';
+import { IOption, Options, StaticOptions } from '../data/options';
 import {
   FormBuilder,
   FormControl,
@@ -31,9 +31,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { SelectionListComponent } from './selection-list.component';
+import { ICsvSettings } from './csv-settings-input.component';
 
 export interface IExportDatasetService {
-  downloadDataset(params: IQueryParams): Observable<IDownloadState>;
+  downloadExcel(params: IQueryParams): Observable<IDownloadState>;
+  downloadCsv(params: IQueryParams): Observable<IDownloadState>;
   getColumnNames(): Observable<string[]>;
 }
 
@@ -108,6 +110,10 @@ export class ExportDatasetDialogComponent {
   readonly datasetQueryParams: IQueryParams;
   readonly exportDatasetService: IExportDatasetService;
   columnNameOptions!: Options;
+  protected _formats: IOption[] = [
+    { label: 'Excel', value: 'xlsx' },
+    { label: 'CSV', value: 'csv' },
+  ];
 
   protected _downloadSubject = new Subject<IDownloadState>();
   protected _downloadSubscription?: Subscription;
@@ -115,7 +121,7 @@ export class ExportDatasetDialogComponent {
 
   // Form groups for the different steps in the dialog
   selectColumnsForm: FormGroup;
-  chooseFilenameForm: FormGroup;
+  fileSettingsForm: FormGroup;
 
   @ViewChild('columnSelectionList')
   columnSelectionList?: SelectionListComponent;
@@ -138,11 +144,22 @@ export class ExportDatasetDialogComponent {
           this.columnSelectionList?.isAllSelected ? { selection: false } : null,
       }
     );
-    this.chooseFilenameForm = formBuilder.group({
-      filenameInput: [
-        dialogData.filename,
-        [Validators.required, filenameValidator],
-      ],
+    const csvSettingsCtrl = new FormControl<ICsvSettings | null>(
+      { encoding: 'utf-8-sig', delimiter: ';' },
+      Validators.required
+    );
+    this.fileSettingsForm = formBuilder.group({
+      filename: [dialogData.filename, [Validators.required, filenameValidator]],
+      format: ['xlsx', Validators.required],
+    });
+
+    // Update csvSettingsCtrl when format changes
+    this.fileSettingsForm.get('format')?.valueChanges.subscribe((format) => {
+      if (format === 'csv') {
+        this.fileSettingsForm.addControl('csvSettings', csvSettingsCtrl);
+      } else {
+        this.fileSettingsForm.removeControl('csvSettings');
+      }
     });
 
     // Validate selectColumnsForm when columnNameOptions changes
@@ -151,8 +168,12 @@ export class ExportDatasetDialogComponent {
     );
   }
 
+  get suffix(): string {
+    return '.' + this.fileSettingsForm.get('format')?.value;
+  }
+
   get filename(): string {
-    return this.chooseFilenameForm.get('filenameInput')?.value + '.xlsx';
+    return this.fileSettingsForm.get('filename')?.value + this.suffix;
   }
 
   get downloadStarted(): boolean {
@@ -162,24 +183,31 @@ export class ExportDatasetDialogComponent {
   onDownload(): void {
     if (this.downloadStarted) return;
 
-    // Extract selected column names
+    // Extract selected column names and compose basic query params
     const selectedColumns = this.columnNameOptions.selection.map(
       (option) => option.value as string
     );
-
-    // Compose query params for download
-    const queryParams: IQueryParams =
+    let queryParams: IQueryParams =
       selectedColumns.length > 0
         ? { ...this.datasetQueryParams, hidden_columns: selectedColumns }
         : this.datasetQueryParams;
 
-    this._downloadSubscription = this.exportDatasetService
-      .downloadDataset(queryParams)
-      .subscribe({
-        next: (downloadState) => this._downloadSubject.next(downloadState),
-        error: (error) => this._downloadSubject.error(error),
-        complete: () => this._downloadSubject.complete(),
-      });
+    // Handle case when format is csv or not
+    let downloadDataset: (params: IQueryParams) => Observable<IDownloadState>;
+    if (this.fileSettingsForm.get('format')?.value === 'csv') {
+      const csvSettings: ICsvSettings =
+        this.fileSettingsForm.get('csvSettings')?.value;
+      queryParams = { ...queryParams, ...csvSettings };
+      downloadDataset = this.exportDatasetService.downloadCsv;
+    } else {
+      downloadDataset = this.exportDatasetService.downloadExcel;
+    }
+
+    this._downloadSubscription = downloadDataset(queryParams).subscribe({
+      next: (downloadState) => this._downloadSubject.next(downloadState),
+      error: (error) => this._downloadSubject.error(error),
+      complete: () => this._downloadSubject.complete(),
+    });
   }
 
   onClose(): void {

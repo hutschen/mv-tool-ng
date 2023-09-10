@@ -80,8 +80,8 @@ export class TableToolbarComponent {
   @Output() searchChange = new EventEmitter<string>();
   @Input() refeshLabel: string = 'Refresh Table';
   @Input() createLabel: string = 'Create';
-  @Input() uploadLabel: string = 'Import Excel';
-  @Input() downloadLabel: string = 'Export Excel';
+  @Input() uploadLabel: string = 'Import';
+  @Input() downloadLabel: string = 'Export';
   @Input() searchLabel: string = 'Filter';
   @Input() showSearch: boolean = false;
   protected _searchStr: string = '';

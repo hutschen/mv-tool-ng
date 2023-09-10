@@ -175,6 +175,10 @@ export class DocumentService {
     return this._crud_repr.query('document/representations', params);
   }
 
+  downloadDocumentCsv(params: IQueryParams = {}) {
+    return this._download.download('csv/documents', params);
+  }
+
   downloadDocumentExcel(params: IQueryParams = {}) {
     return this._download.download('excel/documents', params);
   }
@@ -183,6 +187,10 @@ export class DocumentService {
     return this._crud_str.query(
       'excel/documents/column-names' //
     ) as Observable<string[]>;
+  }
+
+  uploadDocumentCsv(file: File, params: IQueryParams = {}) {
+    return this._upload.upload('csv/documents', file, params);
   }
 
   uploadDocumentExcel(file: File, params: IQueryParams = {}) {

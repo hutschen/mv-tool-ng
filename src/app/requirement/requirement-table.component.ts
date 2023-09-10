@@ -15,8 +15,6 @@
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Observable, firstValueFrom, map } from 'rxjs';
-import { DownloadDialogService } from '../shared/components/download-dialog.component';
-import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { Project } from '../shared/services/project.service';
 import {
   Requirement,
@@ -37,18 +35,14 @@ import { DataSelection } from '../shared/data/selection';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { RequirementInteractionService } from '../shared/services/requirement-interaction.service';
 import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogService,
-} from '../shared/components/confirm-dialog.component';
-import { MatDialogRef } from '@angular/material/dialog';
-import { isEmpty } from 'radash';
+import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { RequirementBulkEditDialogService } from './requirement-bulk-edit-dialog.component';
 import {
   BulkEditScope,
   toBulkEditScope,
   toBulkEditScopeText,
 } from '../shared/bulk-edit-scope';
+import { ImportDatasetDialogService } from '../shared/components/import-dataset-dialog.component';
 
 @Component({
   selector: 'mvtool-requirement-table',
@@ -78,8 +72,7 @@ export class RequirementTableComponent implements OnInit {
     protected _milestoneService: MilestoneService,
     protected _targetObjectService: TargetObjectService,
     protected _exportDatasetDialogService: ExportDatasetDialogService,
-    protected _downloadDialogService: DownloadDialogService,
-    protected _uploadDialogService: UploadDialogService,
+    protected _importDatasetDialogService: ImportDatasetDialogService,
     protected _requirementImportDialogService: RequirementImportDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
     protected _confirmDialogService: ConfirmDialogService,
@@ -190,12 +183,15 @@ export class RequirementTableComponent implements OnInit {
             ...(await firstValueFrom(this.exportQueryParams$)),
           },
           {
-            downloadDataset:
-              this._requirementService.downloadRequirementsExcel.bind(
+            downloadExcel:
+              this._requirementService.downloadRequirementExcel.bind(
                 this._requirementService
               ),
+            downloadCsv: this._requirementService.downloadRequirementCsv.bind(
+              this._requirementService
+            ),
             getColumnNames:
-              this._requirementService.getRequirementsExcelColumnNames.bind(
+              this._requirementService.getRequirementExcelColumnNames.bind(
                 this._requirementService
               ),
           },
@@ -207,17 +203,20 @@ export class RequirementTableComponent implements OnInit {
     }
   }
 
-  async onImportRequirementsExcel(): Promise<void> {
-    const dialogRef = this._uploadDialogService.openUploadDialog(
-      (file: File) => {
-        if (this.project) {
-          return this._requirementService.uploadRequirementsExcel(file, {
-            fallback_project_id: this.project.id,
-          });
-        } else {
-          throw new Error('Project is undefined');
-        }
-      }
+  async onImportRequirementsDataset(): Promise<void> {
+    if (!this.project) throw new Error('Project is undefined');
+
+    const dialogRef = this._importDatasetDialogService.openImportDatasetDialog(
+      'Requirements',
+      {
+        uploadExcel: this._requirementService.uploadRequirementExcel.bind(
+          this._requirementService
+        ),
+        uploadCsv: this._requirementService.uploadRequirementCsv.bind(
+          this._requirementService
+        ),
+      },
+      { fallback_project_id: this.project.id }
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());
     if (uploadState && uploadState.state === 'done') {

@@ -26,24 +26,18 @@ import {
 } from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { CatalogRequirementDataFrame } from '../shared/data/catalog-requirement/catalog-requirement-frame';
-import { DownloadDialogService } from '../shared/components/download-dialog.component';
-import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { CatalogRequirementInteractionService } from '../shared/services/catalog-requirement-interaction.service';
 import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogService,
-} from '../shared/components/confirm-dialog.component';
-import { isEmpty } from 'radash';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { CatalogRequirementBulkEditDialogService } from './catalog-requirement-bulk-edit-dialog.component';
 import {
   BulkEditScope,
   toBulkEditScope,
   toBulkEditScopeText,
 } from '../shared/bulk-edit-scope';
+import { ImportDatasetDialogService } from '../shared/components/import-dataset-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-requirement-table',
@@ -68,10 +62,9 @@ export class CatalogRequirementTableComponent implements OnInit {
     protected _queryParamsService: QueryParamsService,
     protected _catalogRequirementService: CatalogRequirementService,
     protected _catalogRequirementBulkEditDialogService: CatalogRequirementBulkEditDialogService,
-    protected _downloadDialogService: DownloadDialogService,
-    protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
     protected _exportDatasetDialogService: ExportDatasetDialogService,
+    protected _importDatasetDialogService: ImportDatasetDialogService,
     protected _confirmDialogService: ConfirmDialogService,
     readonly catalogRequirementInteractions: CatalogRequirementInteractionService
   ) {}
@@ -174,8 +167,12 @@ export class CatalogRequirementTableComponent implements OnInit {
             ...(await firstValueFrom(this.exportQueryParams$)),
           },
           {
-            downloadDataset:
+            downloadExcel:
               this._catalogRequirementService.downloadCatalogRequirementExcel.bind(
+                this._catalogRequirementService
+              ),
+            downloadCsv:
+              this._catalogRequirementService.downloadCatalogRequirementCsv.bind(
                 this._catalogRequirementService
               ),
             getColumnNames:
@@ -191,18 +188,20 @@ export class CatalogRequirementTableComponent implements OnInit {
     }
   }
 
-  async onImportCatalogRequirementsExcel(): Promise<void> {
-    const dialogRef = this._uploadDialogService.openUploadDialog(
-      (file: File) => {
-        if (this.catalogModule) {
-          return this._catalogRequirementService.uploadCatalogRequirementExcel(
-            file,
-            { fallback_catalog_module_id: this.catalogModule.id }
-          );
-        } else {
-          throw new Error('Catalog module is undefined');
-        }
-      }
+  async onImportCatalogRequirementsDataset(): Promise<void> {
+    const dialogRef = this._importDatasetDialogService.openImportDatasetDialog(
+      'Catalog Requirements',
+      {
+        uploadExcel:
+          this._catalogRequirementService.uploadCatalogRequirementExcel.bind(
+            this._catalogRequirementService
+          ),
+        uploadCsv:
+          this._catalogRequirementService.uploadCatalogRequirementCsv.bind(
+            this._catalogRequirementService
+          ),
+      },
+      { fallback_catalog_module_id: this.catalogModule.id }
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());
     if (uploadState && uploadState.state === 'done') {
