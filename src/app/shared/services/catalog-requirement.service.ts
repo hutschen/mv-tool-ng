@@ -217,6 +217,10 @@ export class CatalogRequirementService {
     ) as Observable<string[]>;
   }
 
+  uploadCatalogRequirementCsv(file: File, params: IQueryParams = {}) {
+    return this._upload.upload('csv/catalog-requirements', file, params);
+  }
+
   uploadCatalogRequirementExcel(file: File, params: IQueryParams = {}) {
     return this._upload.upload('excel/catalog-requirements', file, params);
   }
