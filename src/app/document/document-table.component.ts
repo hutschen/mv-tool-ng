@@ -15,8 +15,6 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { Observable, firstValueFrom, map } from 'rxjs';
-import { DownloadDialogService } from '../shared/components/download-dialog.component';
-import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { DocumentService, Document } from '../shared/services/document.service';
 import { Project } from '../shared/services/project.service';
 import { DocumentDataFrame } from '../shared/data/document/document-frame';
@@ -29,18 +27,14 @@ import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { DocumentInteractionService } from '../shared/services/document-interaction.service';
 import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogService,
-} from '../shared/components/confirm-dialog.component';
-import { isEmpty } from 'radash';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { DocumentBulkEditDialogService } from './document-bulk-edit-dialog.component';
 import {
   BulkEditScope,
   toBulkEditScope,
   toBulkEditScopeText,
 } from '../shared/bulk-edit-scope';
+import { ImportDatasetDialogService } from '../shared/components/import-dataset-dialog.component';
 
 @Component({
   selector: 'mvtool-document-table',
@@ -65,10 +59,9 @@ export class DocumentTableComponent implements OnInit {
     protected _queryParamsService: QueryParamsService,
     protected _documentService: DocumentService,
     protected _documentBulkEditDialogService: DocumentBulkEditDialogService,
-    protected _downloadDialogService: DownloadDialogService,
-    protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
     protected _exportDatasetDialogService: ExportDatasetDialogService,
+    protected _importDatasetDialogService: ImportDatasetDialogService,
     protected _confirmDialogService: ConfirmDialogService,
     readonly documentInteractions: DocumentInteractionService
   ) {}
@@ -189,17 +182,20 @@ export class DocumentTableComponent implements OnInit {
     }
   }
 
-  async onImportDocuments(): Promise<void> {
-    const dialogRef = this._uploadDialogService.openUploadDialog(
-      (file: File) => {
-        if (this.project) {
-          return this._documentService.uploadDocumentExcel(file, {
-            fallback_project_id: this.project.id,
-          });
-        } else {
-          throw new Error('Project is undefined');
-        }
-      }
+  async onImportDocumentsDataset(): Promise<void> {
+    if (!this.project) throw new Error('Project is undefined');
+
+    const dialogRef = this._importDatasetDialogService.openImportDatasetDialog(
+      'Documents',
+      {
+        uploadExcel: this._documentService.uploadDocumentExcel.bind(
+          this._documentService
+        ),
+        uploadCsv: this._documentService.uploadDocumentCsv.bind(
+          this._documentService
+        ),
+      },
+      { fallback_project_id: this.project.id }
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());
     if (uploadState && uploadState.state === 'done') {

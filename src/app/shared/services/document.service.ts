@@ -189,6 +189,10 @@ export class DocumentService {
     ) as Observable<string[]>;
   }
 
+  uploadDocumentCsv(file: File, params: IQueryParams = {}) {
+    return this._upload.upload('csv/documents', file, params);
+  }
+
   uploadDocumentExcel(file: File, params: IQueryParams = {}) {
     return this._upload.upload('excel/documents', file, params);
   }

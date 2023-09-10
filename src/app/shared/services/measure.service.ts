@@ -255,6 +255,10 @@ export class MeasureService {
     ) as Observable<string[]>;
   }
 
+  uploadMeasureCsv(file: File, params: IQueryParams = {}) {
+    return this._upload.upload('csv/measures', file, params);
+  }
+
   uploadMeasureExcel(file: File, params: IQueryParams = {}) {
     return this._upload.upload('excel/measures', file, params);
   }

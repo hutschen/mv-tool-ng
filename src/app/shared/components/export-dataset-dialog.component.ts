@@ -110,13 +110,10 @@ export class ExportDatasetDialogComponent {
   readonly datasetQueryParams: IQueryParams;
   readonly exportDatasetService: IExportDatasetService;
   columnNameOptions!: Options;
-  readonly formatOptions = new StaticOptions(
-    [
-      { label: 'Excel', value: 'xlsx' },
-      { label: 'CSV', value: 'csv' },
-    ],
-    false
-  );
+  protected _formats: IOption[] = [
+    { label: 'Excel', value: 'xlsx' },
+    { label: 'CSV', value: 'csv' },
+  ];
 
   protected _downloadSubject = new Subject<IDownloadState>();
   protected _downloadSubscription?: Subscription;
@@ -147,7 +144,10 @@ export class ExportDatasetDialogComponent {
           this.columnSelectionList?.isAllSelected ? { selection: false } : null,
       }
     );
-    const csvSettingsCtrl = new FormControl(null, Validators.required);
+    const csvSettingsCtrl = new FormControl<ICsvSettings | null>(
+      { encoding: 'utf-8-sig', delimiter: ';' },
+      Validators.required
+    );
     this.fileSettingsForm = formBuilder.group({
       filename: [dialogData.filename, [Validators.required, filenameValidator]],
       format: ['xlsx', Validators.required],

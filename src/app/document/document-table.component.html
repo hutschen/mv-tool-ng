@@ -19,7 +19,7 @@
   <mvtool-table-toolbar
     (refresh)="this.dataFrame.reload()"
     (create)="documentInteractions.onCreateDocument(project)"
-    (upload)="onImportDocuments()"
+    (upload)="onImportDocumentsDataset()"
     (download)="onExportDocumentsDataset()"
     [(search)]="dataFrame.search.pattern"
     searchLabel="Search Documents"

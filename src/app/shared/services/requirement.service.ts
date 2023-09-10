@@ -259,6 +259,10 @@ export class RequirementService {
     ) as Observable<string[]>;
   }
 
+  uploadRequirementCsv(file: File, params: IQueryParams = {}) {
+    return this._upload.upload('csv/requirements', file, params);
+  }
+
   uploadRequirementExcel(
     file: File,
     params: IQueryParams = {}

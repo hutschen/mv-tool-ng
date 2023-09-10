@@ -180,6 +180,10 @@ export class CatalogModuleService {
     ) as Observable<string[]>;
   }
 
+  uploadCatalogModuleCsv(file: File, params: IQueryParams) {
+    return this._upload.upload('csv/catalog-modules', file, params);
+  }
+
   uploadCatalogModuleExcel(file: File, params: IQueryParams) {
     return this._upload.upload('excel/catalog-modules', file, params);
   }

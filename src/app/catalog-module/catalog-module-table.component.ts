@@ -15,7 +15,6 @@
 
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Observable, firstValueFrom, map } from 'rxjs';
-import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import {
   CatalogModule,
   CatalogModuleService,
@@ -27,23 +26,19 @@ import {
 } from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
 import { CatalogModuleDataFrame } from '../shared/data/catalog-module/catalog-module-frame';
-import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { CatalogModuleInteractionService } from '../shared/services/catalog-module-interaction.service';
 import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
-import {
-  ConfirmDialogComponent,
-  ConfirmDialogService,
-} from '../shared/components/confirm-dialog.component';
-import { isEmpty } from 'radash';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ConfirmDialogService } from '../shared/components/confirm-dialog.component';
 import { CatalogModuleBulkEditDialogService } from './catalog-module-bulk-edit-dialog.component';
 import {
   BulkEditScope,
   toBulkEditScope,
   toBulkEditScopeText,
 } from '../shared/bulk-edit-scope';
+import { ImportDatasetDialogService } from '../shared/components/import-dataset-dialog.component';
+import { UploadDialogService } from '../shared/components/upload-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-module-table',
@@ -70,9 +65,9 @@ export class CatalogModuleTableComponent implements OnInit {
     protected _catalogModuleService: CatalogModuleService,
     protected _catalogModuleBulkEditDialogService: CatalogModuleBulkEditDialogService,
     protected _uploadDialogService: UploadDialogService,
-    protected _downloadDialogService: DownloadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
     protected _exportDatasetDialogService: ExportDatasetDialogService,
+    protected _importDatasetDialogService: ImportDatasetDialogService,
     protected _confirmDialogService: ConfirmDialogService,
     readonly catalogModuleInteractions: CatalogModuleInteractionService
   ) {}
@@ -196,17 +191,20 @@ export class CatalogModuleTableComponent implements OnInit {
     }
   }
 
-  async onImportCatalogModulesExcel(): Promise<void> {
-    const dialogRef = this._uploadDialogService.openUploadDialog(
-      (file: File) => {
-        if (this.catalog) {
-          return this._catalogModuleService.uploadCatalogModuleExcel(file, {
-            fallback_catalog_id: this.catalog.id,
-          });
-        } else {
-          throw new Error('Catalog is undefined');
-        }
-      }
+  async onImportCatalogModulesDataset(): Promise<void> {
+    if (!this.catalog) throw new Error('catalog is undefined');
+
+    const dialogRef = this._importDatasetDialogService.openImportDatasetDialog(
+      'Catalog Modules',
+      {
+        uploadExcel: this._catalogModuleService.uploadCatalogModuleExcel.bind(
+          this._catalogModuleService
+        ),
+        uploadCsv: this._catalogModuleService.uploadCatalogModuleCsv.bind(
+          this._catalogModuleService
+        ),
+      },
+      { fallback_catalog_id: this.catalog.id }
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());
     if (uploadState && uploadState.state === 'done') {

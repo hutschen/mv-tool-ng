@@ -29,8 +29,8 @@
       Import
     </button>
     <mat-menu #importMenu="matMenu">
-      <button mat-menu-item (click)="onImportRequirementsExcel()">
-        Import Excel
+      <button mat-menu-item (click)="onImportRequirementsDataset()">
+        Import Excel/CSV
       </button>
       <button mat-menu-item (click)="onImportFromCatalog()">
         Import from Catalog
@@ -38,7 +38,7 @@
     </mat-menu>
     <button mat-button (click)="onExportRequirementsDataset()">
       <mat-icon>file_download</mat-icon>
-      Export Excel
+      Export
     </button>
   </mvtool-table-toolbar>
 </div>

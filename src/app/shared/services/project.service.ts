@@ -169,6 +169,10 @@ export class ProjectService {
     ) as Observable<string[]>;
   }
 
+  uploadProjectCsv(file: File, params: IQueryParams = {}) {
+    return this._upload.upload('csv/projects', file, params);
+  }
+
   uploadProjectExcel(file: File, params: IQueryParams = {}) {
     return this._upload.upload('excel/projects', file, params);
   }

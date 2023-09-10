@@ -53,6 +53,9 @@ import { QuickAddComponent } from './components/quick-add.component';
 import { ProgressIndicatorComponent } from './components/progress-indicator.component';
 import { AutoNumberInputComponent } from './components/auto-number-input.component';
 import { CsvSettingsInputComponent } from './components/csv-settings-input.component';
+import { ImportDatasetDialogComponent } from './components/import-dataset-dialog.component';
+import { FileInputComponent } from './components/file-input.component';
+import { UploadComponent } from './components/upload.component';
 
 @NgModule({
   declarations: [
@@ -91,6 +94,9 @@ import { CsvSettingsInputComponent } from './components/csv-settings-input.compo
     ProgressIndicatorComponent,
     AutoNumberInputComponent,
     CsvSettingsInputComponent,
+    ImportDatasetDialogComponent,
+    FileInputComponent,
+    UploadComponent,
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
@@ -122,6 +128,7 @@ import { CsvSettingsInputComponent } from './components/csv-settings-input.compo
     ProgressIndicatorComponent,
     AutoNumberInputComponent,
     CsvSettingsInputComponent,
+    ImportDatasetDialogComponent,
   ],
 })
 export class SharedModule {}
