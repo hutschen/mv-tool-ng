@@ -25,9 +25,7 @@ import {
   map,
   tap,
 } from 'rxjs';
-import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
-import { UploadDialogService } from '../shared/components/upload-dialog.component';
 import { MeasureDataFrame } from '../shared/data/measure/measure-frame';
 import { DocumentService } from '../shared/services/document.service';
 import { Measure, MeasureService } from '../shared/services/measure.service';
@@ -48,6 +46,7 @@ import {
   toBulkEditScopeText,
 } from '../shared/bulk-edit-scope';
 import { IQuickAddService } from '../shared/components/quick-add.component';
+import { ImportDatasetDialogService } from '../shared/components/import-dataset-dialog.component';
 
 @Component({
   selector: 'mvtool-http-measure-table',
@@ -75,10 +74,9 @@ export class MeasureTableComponent implements OnInit {
     protected _measureService: MeasureService,
     protected _documentService: DocumentService,
     protected _measureBulkEditDialogService: MeasureBulkEditDialogService,
-    protected _downloadDialogService: DownloadDialogService,
-    protected _uploadDialogService: UploadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
     protected _exportDatasetDialogService: ExportDatasetDialogService,
+    protected _importDatasetDialogService: ImportDatasetDialogService,
     protected _confirmDialogService: ConfirmDialogService,
     readonly measureInteractions: MeasureInteractionService
   ) {}
@@ -238,17 +236,20 @@ export class MeasureTableComponent implements OnInit {
     }
   }
 
-  async onImportMeasures(): Promise<void> {
-    const dialogRef = this._uploadDialogService.openUploadDialog(
-      (file: File) => {
-        if (this.requirement) {
-          return this._measureService.uploadMeasureExcel(file, {
-            fallback_requirement_id: this.requirement.id,
-          });
-        } else {
-          throw new Error('Requirement is undefined');
-        }
-      }
+  async onImportMeasuresDataset(): Promise<void> {
+    if (!this.requirement) throw new Error('Requirement is undefined');
+
+    const dialogRef = this._importDatasetDialogService.openImportDatasetDialog(
+      'Measures',
+      {
+        uploadExcel: this._measureService.uploadMeasureExcel.bind(
+          this._measureService
+        ),
+        uploadCsv: this._measureService.uploadMeasureCsv.bind(
+          this._measureService
+        ),
+      },
+      { fallback_requirement_id: this.requirement.id }
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());
     if (uploadState && uploadState.state === 'done') {

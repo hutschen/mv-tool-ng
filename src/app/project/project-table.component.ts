@@ -22,7 +22,6 @@ import {
   QueryParamsService,
 } from '../shared/services/query-params.service';
 import { HideColumnsDialogService } from '../shared/components/hide-columns-dialog.component';
-import { DownloadDialogService } from '../shared/components/download-dialog.component';
 import { combineQueryParams } from '../shared/combine-query-params';
 import { DataSelection } from '../shared/data/selection';
 import { ProjectInteractionService } from '../shared/services/project-interaction.service';
@@ -45,7 +44,6 @@ export class ProjectTableComponent implements OnInit {
   constructor(
     protected _queryParamsService: QueryParamsService,
     protected _projectService: ProjectService,
-    protected _downloadDialogService: DownloadDialogService,
     protected _hideColumnsDialogService: HideColumnsDialogService,
     protected _exportDatasetDialogService: ExportDatasetDialogService,
     protected _importDatasetDialogService: ImportDatasetDialogService,
