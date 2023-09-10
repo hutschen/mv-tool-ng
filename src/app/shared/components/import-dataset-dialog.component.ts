@@ -34,6 +34,7 @@ export interface IImportDatasetService {
 export interface IImportDatasetDialogData {
   datasetName: string;
   importDatasetService: IImportDatasetService;
+  importQueryParams: IQueryParams;
 }
 
 @Injectable({
@@ -44,11 +45,13 @@ export class ImportDatasetDialogService {
 
   openImportDatasetDialog(
     datasetName: string,
-    importDatasetService: IImportDatasetService
+    importDatasetService: IImportDatasetService,
+    importQueryParams: IQueryParams = {}
   ): MatDialogRef<ImportDatasetDialogComponent, IUploadState | null> {
     const data: IImportDatasetDialogData = {
       datasetName,
       importDatasetService,
+      importQueryParams,
     };
     return this._dialog.open(ImportDatasetDialogComponent, {
       width: '500px',
@@ -116,6 +119,7 @@ export class ImportDatasetDialogService {
 export class ImportDatasetDialogComponent implements OnInit {
   protected _datasetName: string;
   protected _importDatasetService: IImportDatasetService;
+  protected _importQueryParams: IQueryParams;
   protected _uploadForm!: FormGroup;
   protected _upload$: Observable<IUploadState> | null = null;
   protected _formats: IOption[] = [
@@ -132,6 +136,7 @@ export class ImportDatasetDialogComponent implements OnInit {
   ) {
     this._datasetName = dialogData.datasetName;
     this._importDatasetService = dialogData.importDatasetService;
+    this._importQueryParams = dialogData.importQueryParams;
   }
 
   ngOnInit(): void {
@@ -176,11 +181,12 @@ export class ImportDatasetDialogComponent implements OnInit {
     if (this._uploadForm.value.format === 'csv') {
       upload$ = this._importDatasetService.uploadCsv(
         this._uploadForm.value.file,
-        this._uploadForm.value.csvSettings
+        { ...this._importQueryParams, ...this._uploadForm.value.csvSettings }
       );
     } else {
       upload$ = this._importDatasetService.uploadExcel(
-        this._uploadForm.value.file
+        this._uploadForm.value.file,
+        this._importQueryParams
       );
     }
 
