@@ -55,6 +55,13 @@ describe('UserService', () => {
     expect(sut).toBeTruthy();
   });
 
+  it('should return users url', () => {
+    const jiraProjectId = '1000';
+    expect(sut.getUsersUrl(jiraProjectId)).toEqual(
+      `jira-projects/${jiraProjectId}/jira-users`
+    );
+  });
+
   it('should return user url', () => {
     expect(sut.getUserUrl()).toEqual('jira-user');
   });
@@ -69,5 +76,21 @@ describe('UserService', () => {
       url: crud.toAbsoluteUrl(sut.getUserUrl()),
     });
     mockResponse.flush(outputMock);
+  });
+
+  it('should search users', (done: DoneFn) => {
+    const jiraProjectId = '1000';
+    const searchStr = 'test';
+    sut.searchUsers(jiraProjectId, searchStr, {}).subscribe({
+      next: (value) => expect(value).toEqual([outputMock]),
+      complete: done,
+    });
+    const mockResponse = httpMock.expectOne({
+      method: 'get',
+      url:
+        crud.toAbsoluteUrl(sut.getUsersUrl(jiraProjectId)) +
+        `?search=${searchStr}`,
+    });
+    mockResponse.flush([outputMock]);
   });
 });

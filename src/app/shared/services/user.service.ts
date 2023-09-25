@@ -16,6 +16,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
+import { JiraProjectService } from './jira-project.service';
+import { IQueryParams } from './query-params.service';
 
 export interface IUser {
   id: string;
@@ -27,7 +29,14 @@ export interface IUser {
   providedIn: 'root',
 })
 export class UserService {
-  constructor(protected _crud: CRUDService<IUser, IUser>) {}
+  constructor(
+    protected _crud: CRUDService<IUser, IUser>,
+    protected _jiraProjects: JiraProjectService
+  ) {}
+
+  getUsersUrl(jiraProjectId: string): string {
+    return `${this._jiraProjects.getJiraProjectUrl(jiraProjectId)}/jira-users`;
+  }
 
   getUserUrl(): string {
     return 'jira-user';
@@ -35,5 +44,16 @@ export class UserService {
 
   getUser(): Observable<IUser> {
     return this._crud.read(this.getUserUrl());
+  }
+
+  searchUsers(
+    jiraProjectId: string,
+    search: string,
+    params: IQueryParams = {}
+  ): Observable<IUser[]> {
+    return this._crud.query(this.getUsersUrl(jiraProjectId), {
+      search,
+      ...params,
+    } as IQueryParams) as Observable<IUser[]>;
   }
 }
