@@ -41,6 +41,7 @@ describe('UserService', () => {
     sut = TestBed.inject(UserService);
 
     outputMock = {
+      id: 'id',
       display_name: 'Firstname Lastname',
       email_address: 'firstname.lastname@domain',
     };
