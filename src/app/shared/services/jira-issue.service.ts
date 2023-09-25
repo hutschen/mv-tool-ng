@@ -29,10 +29,11 @@ export interface IJiraIssueStatus {
 export interface IJiraIssueInput {
   summary: string;
   description: string | null;
+  assignee_id: string | null;
   issuetype_id: string;
 }
 
-export interface IJiraIssue extends IJiraIssueInput {
+export interface IJiraIssue extends Omit<IJiraIssueInput, 'assignee_id'> {
   id: string;
   key: string;
   project_id: string;

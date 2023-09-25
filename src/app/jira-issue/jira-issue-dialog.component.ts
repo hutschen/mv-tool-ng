@@ -60,6 +60,7 @@ export class JiraIssueDialogComponent implements OnInit {
   jiraIssueInput: IJiraIssueInput = {
     summary: '',
     description: null,
+    assignee_id: null,
     issuetype_id: '',
   };
   maxSummaryLength: number = 255; // Jira issue summary is limited to 255 characters

@@ -48,6 +48,7 @@ describe('JiraIssueService', () => {
     inputMock = {
       summary: 'A test JIRA issue',
       description: 'A test JIRA issue description',
+      assignee_id: '10000',
       issuetype_id: '10000',
     };
 
