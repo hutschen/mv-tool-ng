@@ -58,8 +58,16 @@ describe('JiraIssueService', () => {
       description: inputMock.description,
       key: 'MT-1',
       url: 'https://...',
-      project_id: '10000',
-      issuetype_id: inputMock.issuetype_id,
+      project: {
+        id: '10000',
+        key: 'MT',
+        name: 'A test project',
+        url: 'https://...',
+      },
+      issuetype: {
+        id: inputMock.issuetype_id,
+        name: 'A test issue type',
+      },
       status: {
         name: 'Backlog',
         color_name: 'blue',
