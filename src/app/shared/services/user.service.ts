@@ -34,8 +34,12 @@ export class UserService {
     protected _jiraProjects: JiraProjectService
   ) {}
 
-  getUsersUrl(jiraProjectId: string): string {
+  getSearchUsersUrl(jiraProjectId: string): string {
     return `${this._jiraProjects.getJiraProjectUrl(jiraProjectId)}/jira-users`;
+  }
+
+  getUsersUrl(): string {
+    return 'jira-users';
   }
 
   getUserUrl(): string {
@@ -51,9 +55,15 @@ export class UserService {
     search: string,
     params: IQueryParams = {}
   ): Observable<IUser[]> {
-    return this._crud.query(this.getUsersUrl(jiraProjectId), {
+    return this._crud.query(this.getSearchUsersUrl(jiraProjectId), {
       search,
       ...params,
+    } as IQueryParams) as Observable<IUser[]>;
+  }
+
+  getSpecificUsers(...userIds: string[]): Observable<IUser[]> {
+    return this._crud.query(this.getUsersUrl(), {
+      ids: userIds,
     } as IQueryParams) as Observable<IUser[]>;
   }
 }

@@ -21,6 +21,7 @@ import {
 import { CRUDService } from './crud.service';
 import { UserService, IUser } from './user.service';
 import { AuthService } from './auth.service';
+import { HttpRequest } from '@angular/common/http';
 
 describe('UserService', () => {
   let sut: UserService;
@@ -55,11 +56,15 @@ describe('UserService', () => {
     expect(sut).toBeTruthy();
   });
 
-  it('should return users url', () => {
+  it('should return url to search users', () => {
     const jiraProjectId = '1000';
-    expect(sut.getUsersUrl(jiraProjectId)).toEqual(
+    expect(sut.getSearchUsersUrl(jiraProjectId)).toEqual(
       `jira-projects/${jiraProjectId}/jira-users`
     );
+  });
+
+  it('should return users url', () => {
+    expect(sut.getUsersUrl()).toEqual('jira-users');
   });
 
   it('should return user url', () => {
@@ -88,9 +93,32 @@ describe('UserService', () => {
     const mockResponse = httpMock.expectOne({
       method: 'get',
       url:
-        crud.toAbsoluteUrl(sut.getUsersUrl(jiraProjectId)) +
+        crud.toAbsoluteUrl(sut.getSearchUsersUrl(jiraProjectId)) +
         `?search=${searchStr}`,
     });
+    mockResponse.flush([outputMock]);
+  });
+
+  it('should get specific users', (done: DoneFn) => {
+    const userIds = ['id1', 'id2'];
+    sut.getSpecificUsers(...userIds).subscribe({
+      next: (value) => expect(value).toEqual([outputMock]),
+      complete: done,
+    });
+
+    const mockResponse = httpMock.expectOne((req: HttpRequest<any>) => {
+      const ids = new Set(req.params.getAll('ids'));
+      if (
+        req.url !== crud.toAbsoluteUrl(sut.getUsersUrl()) ||
+        req.method !== 'GET' ||
+        ids.size !== userIds.length ||
+        !userIds.every((id) => ids.has(id))
+      ) {
+        return false;
+      }
+      return true;
+    });
+
     mockResponse.flush([outputMock]);
   });
 });
