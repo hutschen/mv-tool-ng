@@ -16,9 +16,11 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CRUDService } from './crud.service';
-import { JiraProjectService } from './jira-project.service';
+import { IJiraProject, JiraProjectService } from './jira-project.service';
 import { MeasureService } from './measure.service';
 import { IQueryParams } from './query-params.service';
+import { IUser } from './user.service';
+import { IJiraIssueType } from './jira-issue-type.service';
 
 export interface IJiraIssueStatus {
   name: string;
@@ -29,13 +31,17 @@ export interface IJiraIssueStatus {
 export interface IJiraIssueInput {
   summary: string;
   description: string | null;
+  assignee_id: string | null;
   issuetype_id: string;
 }
 
-export interface IJiraIssue extends IJiraIssueInput {
+export interface IJiraIssue
+  extends Omit<IJiraIssueInput, 'assignee_id' | 'issuetype_id'> {
   id: string;
   key: string;
-  project_id: string;
+  assignee?: IUser | null;
+  issuetype: IJiraIssueType;
+  project: IJiraProject;
   status: IJiraIssueStatus;
   url: string;
 }
@@ -46,7 +52,6 @@ export interface IJiraIssue extends IJiraIssueInput {
 export class JiraIssueService {
   constructor(
     protected _crud: CRUDService<IJiraIssueInput, IJiraIssue>,
-    protected _jiraProjects: JiraProjectService,
     protected _measureService: MeasureService
   ) {}
 

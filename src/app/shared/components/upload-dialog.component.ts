@@ -13,14 +13,15 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import { Component, Inject, Injectable } from '@angular/core';
+import { Component, Inject, Injectable, OnInit } from '@angular/core';
 import {
   MatDialog,
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
+import { Observable, finalize, tap } from 'rxjs';
 import { IUploadState } from '../services/upload.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Injectable({
   providedIn: 'root',
@@ -43,50 +44,32 @@ export class UploadDialogService {
   selector: 'mvtool-upload-dialog',
   template: `
     <div mat-dialog-content>
-      <!-- File input -->
-      <div *ngIf="!uploadState" class="fx-row fx-space-beetween-center">
-        <mat-form-field appearance="fill" class="fx-grow">
-          <mat-label>Filename</mat-label>
-          <input matInput readonly="true" [value]="file ? file.name : ''" />
-        </mat-form-field>
-        <div class="fx-no-grow">
-          <button mat-button (click)="fileInput.click()">
-            <mat-icon>attach_file</mat-icon>
-            Choose file
-          </button>
-          <input
-            hidden
-            type="file"
-            #fileInput
-            (change)="onFileInput(fileInput.files)"
-          />
-        </div>
-      </div>
+      <form
+        *ngIf="!_upload$"
+        id="uploadForm"
+        [formGroup]="_uploadForm"
+        (submit)="onUpload()"
+        class="fx-column"
+      >
+        <!-- Choose file -->
+        <mvtool-file-input formControlName="file"></mvtool-file-input>
+      </form>
 
       <!-- Progress bar -->
-      <div *ngIf="uploadState">
-        <strong>
-          <p *ngIf="uploadState.state == 'pending'">Preparing upload</p>
-          <p *ngIf="uploadState.state != 'pending'">
-            {{ uploadState.progress }}% complete
-          </p>
-        </strong>
-        <mat-progress-bar
-          [mode]="uploadState.state == 'pending' ? 'buffer' : 'determinate'"
-          [value]="uploadState.progress"
-        >
-        </mat-progress-bar>
-      </div>
+      <mvtool-upload *ngIf="_upload$" [upload$]="_upload$"></mvtool-upload>
     </div>
 
     <!-- Actions -->
     <div mat-dialog-actions mat-dialog-actions align="end">
-      <button mat-button (click)="onClose()">Cancel</button>
+      <button mat-button (click)="onClose()" [disabled]="_upload$">
+        Cancel
+      </button>
       <button
         mat-raised-button
-        [disabled]="uploadState || !file"
         color="accent"
-        (click)="onUpload()"
+        type="submit"
+        form="uploadForm"
+        [disabled]="_upload$ || _uploadForm.invalid"
       >
         <mat-icon>file_upload</mat-icon>
         Upload file
@@ -96,48 +79,42 @@ export class UploadDialogService {
   styleUrls: ['../styles/flex.scss'],
   styles: [],
 })
-export class UploadDialogComponent {
-  file: File | null = null;
-  uploadState: IUploadState | null = null;
-  protected _callback: (file: File) => Observable<IUploadState>;
+export class UploadDialogComponent implements OnInit {
+  protected _uploadForm!: FormGroup;
+  protected _upload$: Observable<IUploadState> | null = null;
 
   constructor(
     protected _dialogRef: MatDialogRef<UploadDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) callback: (file: File) => Observable<IUploadState>
-  ) {
-    this._callback = callback;
-  }
+    @Inject(MAT_DIALOG_DATA)
+    protected _callback: (file: File) => Observable<IUploadState>
+  ) {}
 
-  onFileInput(files: FileList | null): void {
-    if (files) {
-      this.file = files.item(0);
-    }
+  ngOnInit(): void {
+    this._uploadForm = new FormGroup({
+      file: new FormControl<File | null>(null, Validators.required),
+    });
   }
 
   onUpload(): void {
-    if (this.file) {
-      // handle upload
-      const subscription = this._callback(this.file).subscribe({
-        next: (uploadState) => {
-          this.uploadState = uploadState;
-          if (uploadState.state === 'done') {
-            this.onClose();
-          }
-        },
-        error: (error: any) => {
-          this.onClose();
-          throw error;
-        },
-      });
+    // Perform checks whether the upload can be started
+    if (this._upload$) return;
+    if (this._uploadForm.invalid) throw new Error('Form is invalid');
 
-      // handle when dialog is closed
-      this._dialogRef.afterClosed().subscribe(() => {
-        subscription.unsubscribe();
-      });
-    }
+    // Start upload by assigning the observable to this._upload$
+    this._dialogRef.disableClose = true;
+    this._upload$ = this._callback(this._uploadForm.value.file).pipe(
+      tap((uploadState) => {
+        if (uploadState.state === 'done') this._dialogRef.close(uploadState);
+      }),
+      finalize(() => {
+        this._upload$ = null;
+        this._dialogRef.disableClose = false;
+      })
+    );
   }
 
   onClose(): void {
-    this._dialogRef.close(this.uploadState);
+    if (this._upload$) throw new Error('Upload already started');
+    this._dialogRef.close(null);
   }
 }

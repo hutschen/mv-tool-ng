@@ -31,6 +31,8 @@ import {
 import { IJiraProject } from '../shared/services/jira-project.service';
 import { Measure } from '../shared/services/measure.service';
 import { finalize, firstValueFrom, map } from 'rxjs';
+import { UserOptions } from '../shared/data/user/user-options';
+import { UserService } from '../shared/services/user.service';
 
 @Injectable({
   providedIn: 'root',
@@ -56,10 +58,12 @@ export class JiraIssueDialogService {
 })
 export class JiraIssueDialogComponent implements OnInit {
   jiraProject: IJiraProject;
+  assigneeOptions: UserOptions;
   jiraIssueTypes: IJiraIssueType[] = [];
   jiraIssueInput: IJiraIssueInput = {
     summary: '',
     description: null,
+    assignee_id: null,
     issuetype_id: '',
   };
   maxSummaryLength: number = 255; // Jira issue summary is limited to 255 characters
@@ -68,6 +72,7 @@ export class JiraIssueDialogComponent implements OnInit {
   constructor(
     protected _jiraIssueTypeService: JiraIssueTypeService,
     protected _jiraIssueService: JiraIssueService,
+    userService: UserService,
     protected _dialogRef: MatDialogRef<JiraIssueDialogComponent>,
     @Inject(MAT_DIALOG_DATA) protected _measure: Measure
   ) {
@@ -79,6 +84,11 @@ export class JiraIssueDialogComponent implements OnInit {
     this.summary = _measure.summary;
     this.jiraIssueInput.description =
       JiraIssueDialogComponent.generateDescription(_measure);
+    this.assigneeOptions = new UserOptions(
+      userService,
+      this.jiraProject,
+      false
+    );
   }
 
   static generateDescription(measure: Measure): string {

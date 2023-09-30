@@ -41,6 +41,16 @@
       </mat-select>
     </mat-form-field>
 
+    <!-- Assignee input -->
+    <mvtool-options-input
+      name="assignee_id"
+      label="Assignee"
+      placeholder="Select Assignee"
+      [options]="assigneeOptions"
+      [(ngModel)]="jiraIssueInput.assignee_id"
+      [disabled]="isSaving"
+    ></mvtool-options-input>
+
     <!-- Summary input -->
     <mat-form-field class="form-field-width" appearance="fill">
       <mat-label>Summary</mat-label>

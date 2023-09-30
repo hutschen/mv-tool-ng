@@ -51,8 +51,16 @@ describe('Measure', () => {
       description: 'A test issue description',
       key: 'MT-1',
       url: 'https://...',
-      project_id: '10000',
-      issuetype_id: '10000',
+      project: {
+        id: '10000',
+        key: 'MT',
+        name: 'A test project',
+        url: 'https://...',
+      },
+      issuetype: {
+        id: '10000',
+        name: 'A test issue type',
+      },
       status: {
         name: 'Backlog',
         color_name: 'blue',
