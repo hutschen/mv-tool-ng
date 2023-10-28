@@ -184,27 +184,30 @@ export class ExportDatasetDialogComponent {
   onDownload(): void {
     if (this.downloadStarted) return;
 
-    // Extract selected column names and compose basic query params
+    // Prepare basic query params
     const selectedColumns = this.columnNameOptions.selection.map(
       (option) => option.value as string
     );
-    let queryParams: IQueryParams =
+    const queryParams: IQueryParams =
       selectedColumns.length > 0
         ? { ...this.datasetQueryParams, hidden_columns: selectedColumns }
         : this.datasetQueryParams;
 
-    // Handle case when format is csv or not
-    let downloadDataset: (params: IQueryParams) => Observable<IDownloadState>;
-    if (this.fileSettingsForm.get('format')?.value === 'csv') {
+    // Prepare method-specific settings and method reference
+    const format = this.fileSettingsForm.get('format')?.value;
+    let downloadMethod: (params: IQueryParams) => Observable<IDownloadState>;
+
+    if (format === 'csv') {
       const csvSettings: ICsvSettings =
         this.fileSettingsForm.get('csvSettings')?.value;
-      queryParams = { ...queryParams, ...csvSettings };
-      downloadDataset = this.exportDatasetService.downloadCsv;
+      downloadMethod = (params: IQueryParams) =>
+        this.exportDatasetService.downloadCsv({ ...params, ...csvSettings });
     } else {
-      downloadDataset = this.exportDatasetService.downloadExcel;
+      downloadMethod = this.exportDatasetService.downloadExcel;
     }
 
-    this._downloadSubscription = downloadDataset(queryParams).subscribe({
+    // Start download
+    this._downloadSubscription = downloadMethod(queryParams).subscribe({
       next: (downloadState) => this._downloadSubject.next(downloadState),
       error: (error) => this._downloadSubject.error(error),
       complete: () => this._downloadSubject.complete(),
