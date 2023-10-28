@@ -22,7 +22,7 @@ import {
 import { IQueryParams } from '../services/query-params.service';
 import { IDownloadState } from '../services/download.service';
 import { Observable, Subject, Subscription, of, switchMap } from 'rxjs';
-import { IOption, Options, StaticOptions } from '../data/options';
+import { IOption, Options } from '../data/options';
 import {
   FormBuilder,
   FormControl,
@@ -136,24 +136,30 @@ export class ExportDatasetDialogComponent {
     this.exportDatasetService = dialogData.exportDatasetService;
     this.columnNameOptions = new ColumnNameOptions(this.exportDatasetService);
 
-    // Create form groups for the different steps in the dialog
-    this.selectColumnsForm = formBuilder.group(
-      {},
-      {
-        validators: (): ValidationErrors | null =>
-          this.columnSelectionList?.isAllSelected ? { selection: false } : null,
-      }
-    );
-    const csvSettingsCtrl = new FormControl<ICsvSettings | null>(
-      { encoding: 'utf-8-sig', delimiter: ';' },
-      Validators.required
-    );
+    this.selectColumnsForm = formBuilder.group({
+      columnNames: [
+        null,
+        [
+          // Control is valid if not all columns are selected
+          () =>
+            this.columnSelectionList?.isAllSelected
+              ? { selection: false }
+              : null,
+        ],
+      ],
+    });
+
     this.fileSettingsForm = formBuilder.group({
       filename: [dialogData.filename, [Validators.required, filenameValidator]],
       format: ['xlsx', Validators.required],
     });
 
-    // Update csvSettingsCtrl when format changes
+    // Add and remove csvSettingsCtrl when format changes
+    const csvSettingsCtrl = new FormControl<ICsvSettings | null>(
+      { encoding: 'utf-8-sig', delimiter: ';' },
+      Validators.required
+    );
+
     this.fileSettingsForm.get('format')?.valueChanges.subscribe((format) => {
       if (format === 'csv') {
         this.fileSettingsForm.addControl('csvSettings', csvSettingsCtrl);
@@ -161,11 +167,6 @@ export class ExportDatasetDialogComponent {
         this.fileSettingsForm.removeControl('csvSettings');
       }
     });
-
-    // Validate selectColumnsForm when columnNameOptions changes
-    this.columnNameOptions.selectionChanged$.subscribe(() =>
-      this.selectColumnsForm.updateValueAndValidity()
-    );
   }
 
   get suffix(): string {
