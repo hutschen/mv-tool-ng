@@ -27,6 +27,7 @@ import { DataSelection } from '../shared/data/selection';
 import { CatalogInteractionService } from '../shared/services/catalog-interaction.service';
 import { ExportDatasetDialogService } from '../shared/components/export-dataset-dialog.component';
 import { ImportDatasetDialogService } from '../shared/components/import-dataset-dialog.component';
+import { UploadDialogService } from '../shared/components/upload-dialog.component';
 
 @Component({
   selector: 'mvtool-catalog-table',
@@ -51,6 +52,7 @@ export class CatalogTableComponent implements OnInit {
     protected _hideColumnsDialogService: HideColumnsDialogService,
     protected _exportDatasetDialogService: ExportDatasetDialogService,
     protected _importDatasetDialogService: ImportDatasetDialogService,
+    protected _uploadDialogService: UploadDialogService,
     readonly catalogInteractions: CatalogInteractionService
   ) {}
 
@@ -115,6 +117,16 @@ export class CatalogTableComponent implements OnInit {
           this._catalogService
         ),
       }
+    );
+    const uploadState = await firstValueFrom(dialogRef.afterClosed());
+    if (uploadState && uploadState.state === 'done') {
+      this.dataFrame.reload();
+    }
+  }
+
+  async onImportGSKompendium(): Promise<void> {
+    const dialogRef = this._uploadDialogService.openUploadDialog((file: File) =>
+      this._catalogService.uploadGSKompendium(file)
     );
     const uploadState = await firstValueFrom(dialogRef.afterClosed());
     if (uploadState && uploadState.state === 'done') {

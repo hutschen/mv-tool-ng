@@ -20,12 +20,31 @@
   <mvtool-table-toolbar
     (refresh)="this.dataFrame.reload()"
     (create)="catalogInteractions.onCreateCatalog()"
-    (upload)="onImportCatalogsDataset()"
-    (download)="onExportCatalogsDataset()"
     [(search)]="dataFrame.search.pattern"
     searchLabel="Search Catalogs"
     createLabel="Create Catalog"
-  ></mvtool-table-toolbar>
+  >
+    <button mat-button [matMenuTriggerFor]="importMenu">
+      <mat-icon>file_upload</mat-icon>
+      Import
+    </button>
+    <mat-menu #importMenu="matMenu">
+      <button mat-menu-item (click)="onImportCatalogsDataset()">
+        Import Excel/CSV
+      </button>
+      <button
+        mat-menu-item
+        (click)="onImportGSKompendium()"
+        matTooltip="Import the IT-Grundschutz-Kompendium of the German BSI in XML format"
+      >
+        Import from Catalog
+      </button>
+    </mat-menu>
+    <button mat-button (click)="onExportCatalogsDataset()">
+      <mat-icon>file_download</mat-icon>
+      Export
+    </button>
+  </mvtool-table-toolbar>
 </div>
 
 <div class="mat-elevation-z3 fx-column">
