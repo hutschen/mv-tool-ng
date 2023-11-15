@@ -24,12 +24,14 @@
         <p>Please select the columns to be included in the export.</p>
         <mvtool-selection-list
           #columnSelectionList
+          formControlName="columnNames"
           [options]="columnNameOptions"
           [invertSelection]="true"
         ></mvtool-selection-list>
         <div class="fx-row fx-end-center">
           <button
             mat-button
+            type="button"
             matStepperNext
             [disabled]="!selectColumnsForm.valid"
           >
@@ -69,12 +71,13 @@
         </mvtool-csv-settings-input>
 
         <div class="fx-row fx-end-center">
-          <button mat-button matStepperPrevious>
+          <button mat-button type="button" matStepperPrevious>
             <mat-icon>arrow_back</mat-icon>
             Back
           </button>
           <button
             mat-button
+            type="button"
             matStepperNext
             [disabled]="!fileSettingsForm.valid"
             (click)="onDownload()"
@@ -96,9 +99,10 @@
   </mat-vertical-stepper>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-button (click)="onClose()">Cancel</button>
+  <button mat-button type="button" (click)="onClose()">Cancel</button>
   <a
     mat-raised-button
+    type="button"
     [disabled]="!download.fileUrl"
     color="accent"
     [href]="download.fileUrl"

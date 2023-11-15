@@ -153,4 +153,9 @@ export class CatalogService {
   uploadCatalogExcel(file: File, params: IQueryParams = {}) {
     return this._upload.upload('excel/catalogs', file, params);
   }
+
+  uploadGSKompendium(file: File) {
+    const url = `${this.getCatalogsUrl()}/gs-kompendium`;
+    return this._upload.upload(url, file);
+  }
 }
