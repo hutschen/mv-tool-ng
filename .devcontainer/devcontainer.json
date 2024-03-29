@@ -1,0 +1,24 @@
+{
+  "name": "mv-tool-ng",
+  "build": {
+    "context": "..",
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "github.vscode-github-actions",
+        "gruntfuggly.todo-tree",
+        "angular.ng-template",
+        "visualstudioexptteam.intellicode-api-usage-examples",
+        "VisualStudioExptTeam.vscodeintellicode",
+        "ymotongpoo.licenser"
+      ]
+    }
+  },
+  "forwardPorts": [4200, 9876],
+  "workspaceFolder": "/workspace",
+  "postCreateCommand": "if [ ! -d node_modules ]; then npm clean-install; fi",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+}
