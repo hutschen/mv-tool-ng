@@ -28,7 +28,7 @@ RUN apt-get update \
        curl \
        ca-certificates && update-ca-certificates \
     && rm -rf /var/lib/apt/lists/* \
-    && npm install -g @angular/cli@16 \
+    && npm install -g @angular/cli@17 \
     && sed -i 's|/bin/bash|/usr/bin/zsh|' /etc/passwd
 
 # Install Oh-My-Zsh
