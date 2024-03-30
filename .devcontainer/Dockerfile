@@ -14,7 +14,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # Using a Debian-based lightweight base image
-FROM node:18.14.1-slim
+FROM node:20.12-slim
 
 # - Install general tools
 # - Update CA certificates to use SSL connections with git and curl
