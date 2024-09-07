@@ -16,20 +16,15 @@
 # Using a Debian-based lightweight base image
 FROM node:20.12-slim
 
-# - Install general tools
-# - Update CA certificates to use SSL connections with git and curl
+# - Install make, git, bash-completion for development
 # - Install Angular CLI
-# - Set zsh as default shell
+# - Configure bash prompt and enable bash completion
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
        make \
        git \
-       zsh \
-       curl \
-       ca-certificates && update-ca-certificates \
+       bash-completion \
     && rm -rf /var/lib/apt/lists/* \
     && npm install -g @angular/cli@17 \
-    && sed -i 's|/bin/bash|/usr/bin/zsh|' /etc/passwd
-
-# Install Oh-My-Zsh
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    && echo 'PS1=" \W ➜ "' >> ~/.bashrc \
+    && echo "if [ -f /etc/bash_completion ]; then . /etc/bash_completion; fi" >> ~/.bashrc

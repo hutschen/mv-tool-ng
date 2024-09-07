@@ -18,7 +18,7 @@
     }
   },
   "forwardPorts": [4200, 9876],
-  "workspaceFolder": "/workspace",
+  "workspaceFolder": "/mv-tool-ng",
   "postCreateCommand": "if [ ! -d node_modules ]; then npm clean-install; fi",
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+  "workspaceMount": "source=${localWorkspaceFolder},target=/mv-tool-ng,type=bind,consistency=cached"
 }
