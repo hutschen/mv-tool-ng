@@ -1,10 +1,14 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"licenser.license": "AGPLv3"
-	}
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.eol": "\n",
+    "licenser.license": "AGPLv3",
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "prettier.singleQuote": true
+  }
 }

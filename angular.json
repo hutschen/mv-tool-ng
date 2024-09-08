@@ -69,18 +69,21 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "mv-tool-ng:build:production"
+              "buildTarget": "mv-tool-ng:build:production"
             },
             "development": {
-              "browserTarget": "mv-tool-ng:build:development"
+              "buildTarget": "mv-tool-ng:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "host": "0.0.0.0"
+          }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "mv-tool-ng:build"
+            "buildTarget": "mv-tool-ng:build"
           }
         },
         "test": {
