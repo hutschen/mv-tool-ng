@@ -13,18 +13,19 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# Using a Debian-based lightweight base image
-FROM node:20.12-slim
+# Using an Alpine-based lightweight base image
+FROM node:20.12-alpine
 
 # - Install make, git, bash-completion for development
 # - Install Angular CLI
-# - Configure bash prompt and enable bash completion
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+# - Configure bash prompt, enable bash completion and set bash as default shell
+RUN apk update \
+    && apk add --no-cache \
        make \
        git \
        bash-completion \
-    && rm -rf /var/lib/apt/lists/* \
+       bash \
     && npm install -g @angular/cli@17 \
     && echo 'PS1=" \W ➜ "' >> ~/.bashrc \
-    && echo "if [ -f /etc/bash_completion ]; then . /etc/bash_completion; fi" >> ~/.bashrc
+    && echo "if [ -f /usr/share/bash-completion/bash_completion ]; then . /usr/share/bash-completion/bash_completion; fi" >> ~/.bashrc \
+    && sed -i 's|/bin/ash|/bin/bash|' /etc/passwd
