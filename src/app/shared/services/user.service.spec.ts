@@ -14,14 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TestBed } from '@angular/core/testing';
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-} from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
 import { UserService, IUser } from './user.service';
 import { AuthService } from './auth.service';
-import { HttpRequest } from '@angular/common/http';
+import { HttpRequest, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('UserService', () => {
   let sut: UserService;
@@ -31,8 +28,9 @@ describe('UserService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-    });
+    imports: [],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
     TestBed.inject(AuthService).setAccessToken({
       access_token: 'token',
       token_type: 'bearer',

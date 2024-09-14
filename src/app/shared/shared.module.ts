@@ -16,7 +16,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TruncatePipe } from './pipes';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { TableRowOptionsComponent } from './components/table-row-options.component';
 import { MaterialModule } from '../material/material.module';
 import { TableToolbarComponent } from './components/table-toolbar.component';
@@ -58,6 +58,7 @@ import { FileInputComponent } from './components/file-input.component';
 import { UploadComponent } from './components/upload.component';
 
 @NgModule({
+  providers: [provideHttpClient()],
   declarations: [
     TruncatePipe,
     TableRowOptionsComponent,
@@ -100,7 +101,6 @@ import { UploadComponent } from './components/upload.component';
   ],
   imports: [CommonModule, MaterialModule, ReactiveFormsModule],
   exports: [
-    HttpClientModule,
     TruncatePipe,
     TableOptionsComponent,
     TableRowOptionsComponent,

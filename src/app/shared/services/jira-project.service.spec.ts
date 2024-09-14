@@ -14,13 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TestBed } from '@angular/core/testing';
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-} from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
 import { JiraProjectService, IJiraProject } from './jira-project.service';
 import { AuthService } from './auth.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('JiraProjectService', () => {
   let sut: JiraProjectService;
@@ -30,8 +28,9 @@ describe('JiraProjectService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-    });
+    imports: [],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
     TestBed.inject(AuthService).setAccessToken({
       access_token: 'token',
       token_type: 'bearer',

@@ -14,10 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import { TestBed } from '@angular/core/testing';
-import {
-  HttpClientTestingModule,
-  HttpTestingController,
-} from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { CRUDService } from './crud.service';
 import {
   MeasureService,
@@ -27,6 +24,7 @@ import {
 } from './measure.service';
 import { AuthService } from './auth.service';
 import { IJiraIssue } from './jira-issue.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('Measure', () => {
   let sut: Measure;
@@ -108,8 +106,9 @@ describe('MeasureService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-    });
+    imports: [],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
     TestBed.inject(AuthService).setAccessToken({
       access_token: 'token',
       token_type: 'bearer',

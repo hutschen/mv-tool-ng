@@ -25,7 +25,7 @@ RUN apk update \
        git \
        bash-completion \
        bash \
-    && npm install -g @angular/cli@17 \
+    && npm install -g @angular/cli@18 \
     && echo 'PS1=" \W ➜ "' >> ~/.bashrc \
     && echo "if [ -f /usr/share/bash-completion/bash_completion ]; then . /usr/share/bash-completion/bash_completion; fi" >> ~/.bashrc \
     && sed -i 's|/bin/ash|/bin/bash|' /etc/passwd

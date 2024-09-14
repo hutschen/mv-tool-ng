@@ -13,12 +13,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import {
-  HttpClient,
-  HttpEvent,
-  HttpEventType,
-  HttpHeaders,
-} from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpEventType, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, scan } from 'rxjs';
 import { environment } from 'src/environments/environment';
