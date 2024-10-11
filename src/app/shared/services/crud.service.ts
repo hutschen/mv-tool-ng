@@ -125,11 +125,15 @@ export class CRUDService<
     });
   }
 
-  import(relativeUrl: string, itemIds: number[]): Observable<OutputType[]> {
+  import(
+    relativeUrl: string,
+    itemIds: number[],
+    params: IQueryParams = {}
+  ): Observable<OutputType[]> {
     return this._httpClient.post<OutputType[]>(
       this.toAbsoluteUrl(relativeUrl),
       itemIds,
-      this._httpOptions
+      { params, ...this._httpOptions }
     );
   }
 }
