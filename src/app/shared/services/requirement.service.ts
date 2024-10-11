@@ -233,11 +233,12 @@ export class RequirementService {
 
   importRequirements(
     projectId: number,
-    catalogModuleIds: number[]
+    catalogModuleIds: number[],
+    params: IQueryParams = {}
   ): Observable<Requirement[]> {
     const url = `${this.getRequirementsUrl(projectId)}/import`;
     return this._crud_requirement
-      .import(url, catalogModuleIds)
+      .import(url, catalogModuleIds, params)
       .pipe(map((requirements) => requirements.map((r) => new Requirement(r))));
   }
 
