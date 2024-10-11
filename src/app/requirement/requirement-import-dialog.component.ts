@@ -239,6 +239,9 @@ export class RequirementImportDialogService {
   template: `
     <div mat-dialog-title><h1>Import requirements from catalogs</h1></div>
     <div mat-dialog-content>
+      <mat-checkbox [(ngModel)]="autoCreateMeasures"
+        >Automatically create measures</mat-checkbox
+      >
       <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
         <!-- leaf node -->
         <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
@@ -298,6 +301,7 @@ export class RequirementImportDialogService {
 export class RequirementImportDialogComponent implements OnInit {
   treeControl: FlatTreeControl<INode>;
   dataSource: CatalogDataSource;
+  autoCreateMeasures: boolean = false;
   isSaving: boolean = false;
 
   constructor(
@@ -347,7 +351,8 @@ export class RequirementImportDialogComponent implements OnInit {
     // Define observable to import requirements
     const requirements$ = this._requirementService.importRequirements(
       this._project.id,
-      catalogModuleIds
+      catalogModuleIds,
+      { auto_create_measures: this.autoCreateMeasures }
     );
 
     // Perform import and close dialog
