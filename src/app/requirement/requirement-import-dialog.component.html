@@ -19,9 +19,13 @@
 <div mat-dialog-content>
   <div class="fx-column fx-gap-15">
     <div class="fx-column">
-      <mat-checkbox [(ngModel)]="autoCreateMeasures"
-        >Automatically create measures
-      </mat-checkbox>
+      <mat-slide-toggle
+        class="toggle"
+        [checked]="autoCreateMeasures"
+        (change)="toggleAutoCreateMeasures()"
+      >
+        Automatically create measures for requirements
+      </mat-slide-toggle>
       <p *ngIf="autoCreateMeasures">
         The description texts of the requirements are automatically split into
         sub-requirements if they contain the German modal verbs MUSS, SOLL or

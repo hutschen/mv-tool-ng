@@ -238,13 +238,16 @@ export class RequirementImportDialogService {
   selector: 'mvtool-requirement-import-dialog',
   templateUrl: './requirement-import-dialog.component.html',
   styleUrls: ['../shared/styles/flex.scss'],
-  styles: ['.progress-bar { margin-left: 30px; }'],
+  styles: [
+    '.toggle { margin: 8px 0 8px 0; }',
+    '.progress-bar { margin-left: 30px; }',
+  ],
 })
 export class RequirementImportDialogComponent implements OnInit {
   treeControl: FlatTreeControl<INode>;
   dataSource: CatalogDataSource;
-  autoCreateMeasures: boolean = false;
   isSaving: boolean = false;
+  protected _autoCreateMeasures: boolean = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<RequirementImportDialogComponent>,
@@ -294,7 +297,7 @@ export class RequirementImportDialogComponent implements OnInit {
     const requirements$ = this._requirementService.importRequirements(
       this._project.id,
       catalogModuleIds,
-      { auto_create_measures: this.autoCreateMeasures }
+      { auto_create_measures: this._autoCreateMeasures }
     );
 
     // Perform import and close dialog
@@ -319,6 +322,14 @@ export class RequirementImportDialogComponent implements OnInit {
 
   get importDisabled(): boolean {
     return this.dataSource.selection.length === 0;
+  }
+
+  get autoCreateMeasures(): boolean {
+    return this._autoCreateMeasures;
+  }
+
+  toggleAutoCreateMeasures(): void {
+    this._autoCreateMeasures = !this._autoCreateMeasures;
   }
 
   getLevel = (node: INode) => node.level;
