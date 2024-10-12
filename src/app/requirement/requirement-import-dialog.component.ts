@@ -236,66 +236,7 @@ export class RequirementImportDialogService {
 // Implemented according to examples from https://material.angular.io/components/tree/examples
 @Component({
   selector: 'mvtool-requirement-import-dialog',
-  template: `
-    <div mat-dialog-title><h1>Import requirements from catalogs</h1></div>
-    <div mat-dialog-content>
-      <mat-checkbox [(ngModel)]="autoCreateMeasures"
-        >Automatically create measures</mat-checkbox
-      >
-      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-        <!-- leaf node -->
-        <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
-          <button mat-icon-button disabled></button>
-          <mat-checkbox
-            [checked]="node.checked"
-            (change)="toggleChecked(node)"
-            [disabled]="isSaving"
-            >{{ node.name }}</mat-checkbox
-          >
-        </mat-tree-node>
-        <!-- parent node -->
-        <mat-tree-node
-          *matTreeNodeDef="let node; when: hasChild"
-          matTreeNodePadding
-        >
-          <button
-            mat-icon-button
-            matTreeNodeToggle
-            [attr.aria-label]="'toggle ' + node.name"
-            [disabled]="isSaving"
-          >
-            <mat-icon class="mat-icon-rtl-mirror">
-              {{
-                treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'
-              }}
-            </mat-icon>
-          </button>
-          <mat-checkbox
-            [checked]="node.checked"
-            [indeterminate]="node.indeterminate"
-            (change)="toggleChecked(node)"
-            [disabled]="isSaving"
-            >{{ node.name }}</mat-checkbox
-          >
-        </mat-tree-node>
-      </mat-tree>
-    </div>
-    <div mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()" [disabled]="isSaving">
-        Cancel
-      </button>
-      <mvtool-loading-overlay [isLoading]="isSaving" color="accent">
-        <button
-          mat-raised-button
-          color="accent"
-          (click)="onImport()"
-          [disabled]="importDisabled || isSaving"
-        >
-          Import
-        </button>
-      </mvtool-loading-overlay>
-    </div>
-  `,
+  templateUrl: './requirement-import-dialog.component.html',
   styles: ['.progress-bar { margin-left: 30px; }'],
 })
 export class RequirementImportDialogComponent implements OnInit {
