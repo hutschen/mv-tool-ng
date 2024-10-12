@@ -237,6 +237,7 @@ export class RequirementImportDialogService {
 @Component({
   selector: 'mvtool-requirement-import-dialog',
   templateUrl: './requirement-import-dialog.component.html',
+  styleUrls: ['../shared/styles/flex.scss'],
   styles: ['.progress-bar { margin-left: 30px; }'],
 })
 export class RequirementImportDialogComponent implements OnInit {
