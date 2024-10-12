@@ -1,0 +1,88 @@
+<!--
+ Copyright (C) 2024 Helmar Hutschenreuter
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Affero General Public License as
+ published by the Free Software Foundation, either version 3 of the
+ License, or (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Affero General Public License for more details.
+ 
+ You should have received a copy of the GNU Affero General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+
+<div mat-dialog-title><h1>Import requirements from catalogs</h1></div>
+<div mat-dialog-content>
+  <div class="fx-column fx-gap-15">
+    <div class="fx-column">
+      <mat-slide-toggle
+        class="toggle"
+        [checked]="autoCreateMeasures"
+        (change)="toggleAutoCreateMeasures()"
+      >
+        Automatically create measures for requirements
+      </mat-slide-toggle>
+      <p *ngIf="autoCreateMeasures">
+        The description texts of the requirements are automatically split into
+        sub-requirements if they contain the German modal verbs MUSS, SOLL or
+        DARF. The sub-requirements are then created as measures of the
+        respective requirement.
+      </p>
+    </div>
+
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+      <!-- leaf node -->
+      <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
+        <button mat-icon-button disabled></button>
+        <mat-checkbox
+          [checked]="node.checked"
+          (change)="toggleChecked(node)"
+          [disabled]="isSaving"
+          >{{ node.name }}</mat-checkbox
+        >
+      </mat-tree-node>
+      <!-- parent node -->
+      <mat-tree-node
+        *matTreeNodeDef="let node; when: hasChild"
+        matTreeNodePadding
+      >
+        <button
+          mat-icon-button
+          matTreeNodeToggle
+          [attr.aria-label]="'toggle ' + node.name"
+          [disabled]="isSaving"
+        >
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{ treeControl.isExpanded(node) ? "expand_more" : "chevron_right" }}
+          </mat-icon>
+        </button>
+        <mat-checkbox
+          [checked]="node.checked"
+          [indeterminate]="node.indeterminate"
+          (change)="toggleChecked(node)"
+          [disabled]="isSaving"
+          >{{ node.name }}</mat-checkbox
+        >
+      </mat-tree-node>
+    </mat-tree>
+  </div>
+</div>
+
+<!-- Actions -->
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()" [disabled]="isSaving">Cancel</button>
+  <mvtool-loading-overlay [isLoading]="isSaving" color="accent">
+    <button
+      mat-raised-button
+      color="accent"
+      (click)="onImport()"
+      [disabled]="importDisabled || isSaving"
+    >
+      Import
+    </button>
+  </mvtool-loading-overlay>
+</div>

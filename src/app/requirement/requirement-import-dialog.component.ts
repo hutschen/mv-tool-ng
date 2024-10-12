@@ -236,69 +236,18 @@ export class RequirementImportDialogService {
 // Implemented according to examples from https://material.angular.io/components/tree/examples
 @Component({
   selector: 'mvtool-requirement-import-dialog',
-  template: `
-    <div mat-dialog-title><h1>Import requirements from catalogs</h1></div>
-    <div mat-dialog-content>
-      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-        <!-- leaf node -->
-        <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
-          <button mat-icon-button disabled></button>
-          <mat-checkbox
-            [checked]="node.checked"
-            (change)="toggleChecked(node)"
-            [disabled]="isSaving"
-            >{{ node.name }}</mat-checkbox
-          >
-        </mat-tree-node>
-        <!-- parent node -->
-        <mat-tree-node
-          *matTreeNodeDef="let node; when: hasChild"
-          matTreeNodePadding
-        >
-          <button
-            mat-icon-button
-            matTreeNodeToggle
-            [attr.aria-label]="'toggle ' + node.name"
-            [disabled]="isSaving"
-          >
-            <mat-icon class="mat-icon-rtl-mirror">
-              {{
-                treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'
-              }}
-            </mat-icon>
-          </button>
-          <mat-checkbox
-            [checked]="node.checked"
-            [indeterminate]="node.indeterminate"
-            (change)="toggleChecked(node)"
-            [disabled]="isSaving"
-            >{{ node.name }}</mat-checkbox
-          >
-        </mat-tree-node>
-      </mat-tree>
-    </div>
-    <div mat-dialog-actions align="end">
-      <button mat-button (click)="onCancel()" [disabled]="isSaving">
-        Cancel
-      </button>
-      <mvtool-loading-overlay [isLoading]="isSaving" color="accent">
-        <button
-          mat-raised-button
-          color="accent"
-          (click)="onImport()"
-          [disabled]="importDisabled || isSaving"
-        >
-          Import
-        </button>
-      </mvtool-loading-overlay>
-    </div>
-  `,
-  styles: ['.progress-bar { margin-left: 30px; }'],
+  templateUrl: './requirement-import-dialog.component.html',
+  styleUrls: ['../shared/styles/flex.scss'],
+  styles: [
+    '.toggle { margin: 8px 0 8px 0; }',
+    '.progress-bar { margin-left: 30px; }',
+  ],
 })
 export class RequirementImportDialogComponent implements OnInit {
   treeControl: FlatTreeControl<INode>;
   dataSource: CatalogDataSource;
   isSaving: boolean = false;
+  protected _autoCreateMeasures: boolean = false;
 
   constructor(
     protected _dialogRef: MatDialogRef<RequirementImportDialogComponent>,
@@ -347,7 +296,8 @@ export class RequirementImportDialogComponent implements OnInit {
     // Define observable to import requirements
     const requirements$ = this._requirementService.importRequirements(
       this._project.id,
-      catalogModuleIds
+      catalogModuleIds,
+      { auto_create_measures: this._autoCreateMeasures }
     );
 
     // Perform import and close dialog
@@ -372,6 +322,14 @@ export class RequirementImportDialogComponent implements OnInit {
 
   get importDisabled(): boolean {
     return this.dataSource.selection.length === 0;
+  }
+
+  get autoCreateMeasures(): boolean {
+    return this._autoCreateMeasures;
+  }
+
+  toggleAutoCreateMeasures(): void {
+    this._autoCreateMeasures = !this._autoCreateMeasures;
   }
 
   getLevel = (node: INode) => node.level;
